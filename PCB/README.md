@@ -8,6 +8,15 @@ To build T-Top, two cutom PCBs must be made.
  - The [t-top.lib](t-top.lib) file contains the custom parts.
 
 ## PSU Control PCB
+ - [Schematic](psu_control/schematic.pdf)
+ - [Gerber](psu_control/gerber)
+ - [Bill of Materials](psu_control/BOM.md)
 
+TODO Add a photo of the PCB with the connector description and pinout
 
 ## Buck-Boost PCB
+ - [Schematic](buck_boost/schematic.pdf)
+ - [Gerber](buck_boost/gerber)
+ - [Bill of Materials](buck_boost/BOM.md)
+
+TODO Add a photo of the PCB with the connector description and pinout
