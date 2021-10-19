@@ -8,7 +8,7 @@
 | `Dynamixel cable`        | 1        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)   |
 | `Micro USB cable`        | 1        |                                                                |
 | `12V power supply`       | 1        |                                                                |
-
+| `Computer`               | 1        |                                                                |
 
 ## Computer Setup
 1. Install the Aarduino IDE.
@@ -21,6 +21,9 @@
 2. Connect the `OpenCR` to the computer with the `micro USB cable`.
 3. Make sure the `OpenCR` switch is OFF.
 4. Connect the `OpenCR` and a `Dynamixel XL430-W250-T` with the `Dynamixel cable`.
+
+![OpenCR, Dynamixel XL430-W250-T, Dynamixel cable](images/assembly/01%20dynamixel.jpg)
+
 5. Turn ON the `OpenCR` switch.
 6. Use the `d_BPS_Change` example (`OpenCR/08. DynamixelWorkbench/d_BPS_Change`) to change the baud rate to 1000000.
     - Change the value of `DXL_ID` according to the current configuration.
@@ -38,6 +41,9 @@
 2. Connect the `OpenCR` to the computer with the `micro USB cable`.
 3. Make sure the `OpenCR` switch is OFF.
 4. Connect the `OpenCR` and a `Dynamixel XL430-W250-T` with the `Dynamixel cable`.
+
+![OpenCR, Dynamixel XL430-W250-T, Dynamixel cable](images/assembly/01%20dynamixel.jpg)
+
 5. Turn ON the `OpenCR` switch.
 6. Use the `c_ID_Change` example (`OpenCR/08. DynamixelWorkbench/c_ID_Change`) to change the id.
     - Change the value of `BAUDRATE` to 1000000.
@@ -49,4 +55,4 @@
 10. Turn OFF the `OpenCR` switch.
 11. Disconnect the `Dynamixel XL430-W250-T`.
 12. Identify the ID on the `Dynamixel XL430-W250-T`.
-13. Repeat steps 4 to 12 for each `Dynamixel XL430-W250-T`, but increment the value of `NEW_DXL_ID`.
+13. Repeat steps 4 to 12 for each `Dynamixel XL430-W250-T`, but increment the value of `NEW_DXL_ID` each time.

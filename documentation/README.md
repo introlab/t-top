@@ -8,6 +8,7 @@
  - Soldering Iron
  - Solder
  - Heat Gun
+ - Threadlocker (blue)
  - JST XH Crimp Tool
  - Micro USB Cable
  - 12V Power Supply
