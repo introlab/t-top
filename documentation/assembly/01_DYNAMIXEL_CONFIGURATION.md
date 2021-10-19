@@ -7,7 +7,7 @@
 | `OpenCR`                 | 1        | ![OpenCR](images/electronics/OpenCR.jpg)                       |
 | `Dynamixel cable`        | 1        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)   |
 | `Micro USB cable`        | 1        |                                                                |
-| `12V power supply`       | 1        |     |
+| `12V power supply`       | 1        |                                                                |
 
 
 ## Computer Setup
