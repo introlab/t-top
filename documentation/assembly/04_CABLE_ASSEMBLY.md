@@ -206,9 +206,9 @@
 | `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
-1. Cut 2 `22 AWG brown wire` of 40 cm long.
-2. Cut a `22 AWG green wire` of 40 cm long.
-3. Cut a `22 AWG black wire` of 40 cm long.
+1. Cut 2 `22 AWG brown wires` of 40 cm long.
+2. Cut 2 `22 AWG green wires` of 40 cm long.
+3. Cut 2 `22 AWG black wires` of 40 cm long.
 4. For each `Adafruit MAX9744`, solder a brown wire to the SDA pad.
 5. For each `Adafruit MAX9744`, solder a green wire to the SCL pad.
 6. For each `Adafruit MAX9744`, solder a black wire to the GND pad.
@@ -230,3 +230,8 @@
 10. For each `Adafruit MAX9744`, insert the crimp contacts into a `3-position female JST XH connector`, as shown in the following picture.
 
 ![Adafruit MAX9744 Crimp Contacts](images/assembly/04G%20JST%20XH.jpg)
+
+
+## H. Slip Ring
+
+TODO
