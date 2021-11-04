@@ -99,6 +99,7 @@
 | `Speaker (Dayton Audio DMA45-8 1)`   | 4        | ![Fan](images/electronics/Dayton%20Audio%20DMA45-8%201.jpg)                                  |
 | `18 AWG Red Wire Spool`              | 1        | ![18 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
 | `18 AWG Black Wire Spool`            | 1        | ![18 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
+| `18 AWG Ferrule`                     | 8        | ![18 AWG Ferrule](images/electronics/18%20AWG%20ferrule.jpg)                                 |
 
 ### Steps
 1. Cut a `18 AWG red wire` of 15 cm long and a `18 AWG black wire` of 15 cm long.
@@ -114,13 +115,17 @@
 
 ![Speaker Tab Heat Shrink Tube](images/assembly/04D%20speaker%20tab%20heat%20shrink%20tube.jpg)
 
-8. For each speaker, twist the cable, as shown in the following picture.
+8. For each speaker, twist the wires, as shown in the following picture.
 
 ![Speaker Wire Twist](images/assembly/04D%20speaker%20twist.jpg)
 
 9. For each speaker, add a `heat shrink tube` to hold the twisted wires, as shown in the following picture.
 
 ![Speaker Twist Heat Shrink Tube](images/assembly/04D%20speaker%20twist%20heat%20shrink%20tube.jpg)
+
+10. For each wire, crimp a `18 AWG ferrule`.
+
+![Speaker Twist Heat Shrink Tube](images/assembly/04D%20ferrule.jpg)
 
 
 ## E. Power Switch
