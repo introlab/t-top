@@ -83,7 +83,7 @@ In order to assemble the robot, you need to buy the following Items.
 ### Aliexpress
 | Part                                   | Quantity | Quantity per Package | Package Quantity | Link                                                    |
 | -------------------------------------- | -------- | -------------------- | ---------------- | ------------------------------------------------------- |
-| Ball joint - M3xL26mm Silver           | 12       | 5                    | 3                | [Link](https://fr.aliexpress.com/item/33012480343.html) |
+| Ball Joint - M3xL26mm Silver           | 12       | 5                    | 3                | [Link](https://fr.aliexpress.com/item/33012480343.html) |
 | Threaded Rod - M3x170mm                | 6        | 10                   | 1                | [Link](https://fr.aliexpress.com/item/32859175622.html) |
 | Slip Ring - M220-24 36wire 2A flange A | 1        | 1                    | 1                | [Link](https://fr.aliexpress.com/item/32919903199.html) |
 | Battery Charger Connector - JST PHR-6  | 1        | 1                    | 1                | [Link](https://fr.aliexpress.com/item/32963428352.html) |

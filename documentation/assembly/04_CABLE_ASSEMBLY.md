@@ -1,4 +1,4 @@
-# 3. PCB Assembly
+# 4. Cable Assembly
 
 ## A. 16SoundsUSB Cables
 ### Required Parts
