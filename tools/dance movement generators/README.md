@@ -1,8 +1,6 @@
 # Dance Movement Generators
 This folder contains tools to generate dance movements.
 
-![Mics](images/mics.png)
-
 ## Setup
 1. Setup the Python virtual environment.
 ```bash
