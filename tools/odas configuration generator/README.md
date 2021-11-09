@@ -1,4 +1,4 @@
-# Odas Configuration Generators
+# Odas Configuration Generator
 This is a tool to generate the microphone configuration for [ODAS](https://github.com/introlab/odas).
 
 ![Mics](images/mics.png)

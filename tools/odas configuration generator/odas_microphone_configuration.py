@@ -126,4 +126,3 @@ for i in range(MICROPHONE_COUNT):
 print('    );')
 
 plt.show()
-
