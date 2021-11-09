@@ -14,7 +14,7 @@ SolidWorks files:
  - [gazebo_meshes](gazebo%20meshes) contains the CAD files for the simulation.
  - [hardware](hardware) contains the SolidWorks files for screws, nuts, spacers and rods.
  - [laser](laser) contains the SolidWorks files for the laser cutted parts.
- - [step](step) contains the robot assemble in STEP format.
+ - [step](step) contains the robot assembly in STEP format.
 
 Manufacture files:
  - [DXF](DXF)
