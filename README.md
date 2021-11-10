@@ -4,6 +4,10 @@ T-Top is a tabletop robot designed with advanced audio and vision sensors, deep 
 ![T-Top](images/t_top.jpg)
 ![T-Top Hoody](images/t_top_hoody.jpg)
 
+## Licensing
+- Source code files: [GPLv3](LICENSE_SOURCE_CODE)
+- Other files: [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License](LICENSE_OTHER)
+
 ## Repository Structure
 - The [documentation](documentation) folder contains the documentation to build and configure T-Top.
 - The [CAD](CAD) folder contains the SolidWorks files of the robot. Il also contains the DXF and STL files to cut and print custom parts.
