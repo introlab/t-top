@@ -237,6 +237,24 @@
 ![Adafruit MAX9744 Crimp Contacts](images/assembly/04G%20JST%20XH.jpg)
 
 
-## H. Slip Ring
+## H. 19V Power Adapter
+### Required Parts
+| Part                           | Quantity | Image                                                                                    |
+| ------------------------------ | -------- | ---------------------------------------------------------------------------------------- |
+| `Robot Power Connector - Male` | 1        | ![Robot Power Connector - Male](images/electronics/Robot%20Power%20Connector%20Male.jpg) |
+| `19V Power Adapter`            | 1        |                                                                                          |
 
+### Steps
+1. Cut the `19V power adapter` cable as shown in the following picture.
+
+![Adafruit MAX9744 Heat Shrink Tube](images/assembly/04H%20psu.jpg)
+
+2. Solder the `Robot Power Connector - Male` to the `19V power adapter` cable.
+    - Make sure the ground is outside.
+
+
+## I. Robot Power Connector - Female
+TODO
+
+## J. Slip Ring
 TODO
