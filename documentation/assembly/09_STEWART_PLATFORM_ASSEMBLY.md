@@ -22,9 +22,9 @@
 
 6. Turn ON the `OpenCR` switch.
 7. Use the `h_Position` example (`OpenCR/08. DynamixelWorkbench/h_Position`) to change the baud rate to 1000000.
-    - Change the value of `DXL_ID` according to the selected `Dynamixel XL430-W250-T`.
-    - Change the value of `BAUDRATE` to 1000000.
-    - Comment the line `dxl_wb.goalPosition(dxl_id, (int32_t)1023);`.
+    1. Change the value of `DXL_ID` according to the selected `Dynamixel XL430-W250-T`.
+    2. Change the value of `BAUDRATE` to 1000000.
+    3. Comment the line `dxl_wb.goalPosition(dxl_id, (int32_t)1023);`.
 8. Program the OpenCR.
 10. Wait until the `Dynamixel XL430-W250-T` is centered.
 11. Turn OFF the `OpenCR` switch.
@@ -42,7 +42,7 @@
 | `M2x12mm Socket`                         | 12       | ![M2x12mm Socket](images/hardware/M2x12mm%20socket.jpg)                           |
 
 ### Steps
-1. Install the `stewart horn (right)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket` screws, as shown in the following picture. 
+1. Install the `stewart horn (right)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket` screws, as shown in the following picture.
 
 ![Dynamixel Right](images/assembly/09B%20dynamixel%20right.jpg)
 
@@ -60,7 +60,7 @@
 | `M2x12mm Socket`                         | 12       | ![M2x12mm Socket](images/hardware/M2x12mm%20socket.jpg)                           |
 
 ### Steps
-1. Install the `stewart horn (left)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket` screws, as shown in the following picture. 
+1. Install the `stewart horn (left)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket` screws, as shown in the following picture.
 
 ![Dynamixel Left](images/assembly/09C%20dynamixel%20left.jpg)
 

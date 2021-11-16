@@ -27,9 +27,9 @@
 
 6. Turn ON the `OpenCR` switch.
 7. Use the `d_BPS_Change` example (`OpenCR/08. DynamixelWorkbench/d_BPS_Change`) to change the baud rate to 1000000.
-    - Change the value of `DXL_ID` according to the current configuration.
-    - Change the value of `BAUDRATE` according to the current configuration.
-    - Change the value of `NEW_BAUDRATE` to 1000000.
+    1. Change the value of `DXL_ID` according to the current configuration.
+    2. Change the value of `BAUDRATE` according to the current configuration.
+    3. Change the value of `NEW_BAUDRATE` to 1000000.
 8. Program the OpenCR.
 9. Open the serial monitor.
 10. Wait until the baud rate has changed.
@@ -47,9 +47,9 @@
 
 5. Turn ON the `OpenCR` switch.
 6. Use the `c_ID_Change` example (`OpenCR/08. DynamixelWorkbench/c_ID_Change`) to change the id.
-    - Change the value of `BAUDRATE` to 1000000.
-    - Change the value of `DXL_ID` according to the initial configuration.
-    - Change the value of `NEW_DXL_ID` to 1.
+    1. Change the value of `BAUDRATE` to 1000000.
+    2. Change the value of `DXL_ID` according to the initial configuration.
+    3. Change the value of `NEW_DXL_ID` to 1.
 7. Program the OpenCR.
 8. Open the serial monitor.
 9. Wait until the id has changed.
