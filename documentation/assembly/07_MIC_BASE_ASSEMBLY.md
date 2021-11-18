@@ -18,17 +18,17 @@
 5. Start the recording with the `16SoundsUSB`.
 6. For each `xSoundsMicrophones`, turn the potentiometer counterclockwise to increase the gain until the sound level is stable.
 
-![xSoundsMicrophones](images/assembly/07A%208SoundsUSB%20Mic%20pot.jpg)
+![xSoundsMicrophones](images/assemblies/07A%208SoundsUSB%20Mic%20pot.jpg)
 
 ## B. Mic Base Pre-Assembly
 ### Required Parts
 | Part                     | Quantity | Image                                                          |
 | ------------------------ | -------- | -------------------------------------------------------------- |
-| `base mic`               | 4        | ![16SoundsUSB](images/3d%20printed%20parts/base%20mic.jpg)     |
+| `Base Mic`               | 4        | ![16SoundsUSB](images/3d%20printed%20parts/base%20mic.jpg)     |
 | `xSoundsMicrophones`     | 8        | ![xSoundsMicrophones](images/electronics/8SoundsUSB%20Mic.jpg) |
-| `M3x5mm Plastic`         | 32       | ![M3x5mm Plastic](images/hardware/M3x5mm%20plastic.jpg)        |
+| `M3x5mm Plastic Screw`   | 32       | ![M3x5mm Plastic Screw](images/hardware/M3x5mm%20plastic.jpg)  |
 
 ### Steps
-1. For each `base mic` part, use `M3x5mm plastic` screws to install 2 `xSoundsMicrophones` in the middle, as shown in the following picture.
+1. For each `base mic` part, use `M3x5mm plastic screws` to install 2 `xSoundsMicrophones` in the middle, as shown in the following picture.
 
-![Mic Base Pre-Assembly](images/assembly/07B%20base%20mic.jpg)
+![Mic Base Pre-Assembly](images/assemblies/07B%20base%20mic.jpg)

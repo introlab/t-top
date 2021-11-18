@@ -11,7 +11,7 @@
 1. Cut 16 `RJ12 flat cables` of 6 cm long.
 2. For each cable, crimp 2 `RJ12 connectors` to create a crossover cable.
 
-![Crossover RJ12 Flat Cable](images/assembly/04A%20crossover%20RJ12%20flat%20cable.jpg)
+![Crossover RJ12 Flat Cable](images/assemblies/04A%20crossover%20RJ12%20flat%20cable.jpg)
 
 
 ## B. LEDs
@@ -37,23 +37,23 @@
 4. For each LED, solder a `22 AWG black wire` to the base of the other LED pin.
 5. Cut each LED pin at the base.
 
-![Soldered LEDs](images/assembly/04B%20soldered%20LEDs.jpg)
+![Soldered LEDs](images/assemblies/04B%20soldered%20LEDs.jpg)
 
 6. Crimp a `JST XH crimp contact` onto each wire.
 
-![LED Crimp Contacts](images/assembly/04B%20LED%20crimp%20tins.jpg)
+![LED Crimp Contacts](images/assemblies/04B%20LED%20crimp%20tins.jpg)
 
 7. For each LED, twist the wires.
 
-![LED Twisted Wire](images/assembly/04B%20LED%20twisted%20wire.jpg)
+![LED Twisted Wire](images/assemblies/04B%20LED%20twisted%20wire.jpg)
 
 8. Add a `heat shrink tube` onto the pins of each LED.
 
-![LED Heat Shrink Tube](images/assembly/04B%20LED%20heat%20shrink%20tube.jpg)
+![LED Heat Shrink Tube](images/assemblies/04B%20LED%20heat%20shrink%20tube.jpg)
 
 9. For each LED, insert the crimp contacts into a `2-position female JST XH connector`, as shown in the following picture.
 
-![LED JST XH](images/assembly/04B%20LED%20JST%20XH.jpg)
+![LED JST XH](images/assemblies/04B%20LED%20JST%20XH.jpg)
 
 
 ## C. Fans
@@ -69,26 +69,26 @@
 ### Steps
 1. Remove the cable sleeve from each fan.
 
-![Fan Without Sleeve](images/assembly/04C%20fan%20without%20sleeve.jpg)
+![Fan Without Sleeve](images/assemblies/04C%20fan%20without%20sleeve.jpg)
 
 2. For the first fan, cut the wires to 10 cm long.
 3. For the first fan, cut the wires to 20 cm long.
 4. For each fan, cut the yellow wire 3 cm shorter.
 
-![Fan Yellow Wire](images/assembly/04C%20fan%20yellow%20wire.jpg)
+![Fan Yellow Wire](images/assemblies/04C%20fan%20yellow%20wire.jpg)
 
 5. For each fan, twist the wires.
 6. For each fan, add a `heat shrink tube` to hold the yellow wire, as shown in the following picture.
 
-![Fan Heat Shrink Tube](images/assembly/04C%20fan%20heat%20shrink%20tube.jpg)
+![Fan Heat Shrink Tube](images/assemblies/04C%20fan%20heat%20shrink%20tube.jpg)
 
 7. For each fan, crimp a `JST XH crimp contact` onto the red and black wires.
 
-![Fan Crimp](images/assembly/04C%20fan%20crimp.jpg)
+![Fan Crimp](images/assemblies/04C%20fan%20crimp.jpg)
 
 8. For each fan, insert the crimp contacts into a `2-position female JST XH connector`, as shown in the following picture.
 
-![Fan Crimp](images/assembly/04C%20fan%20JST%20XH.jpg)
+![Fan Crimp](images/assemblies/04C%20fan%20JST%20XH.jpg)
 
 
 ## D. Speakers
@@ -109,23 +109,23 @@
 5. For each pair, solder the black wire to the biggest tab of a speaker.
 6. For each pair, solder the red wire to the other tab of a speaker.
 
-![Speaker Wire Tab](images/assembly/04D%20speaker%20wire%20tab.jpg)
+![Speaker Wire Tab](images/assemblies/04D%20speaker%20wire%20tab.jpg)
 
 7. For each speaker, add a `heat shrink tube` to protect each tab.
 
-![Speaker Tab Heat Shrink Tube](images/assembly/04D%20speaker%20tab%20heat%20shrink%20tube.jpg)
+![Speaker Tab Heat Shrink Tube](images/assemblies/04D%20speaker%20tab%20heat%20shrink%20tube.jpg)
 
 8. For each speaker, twist the wires, as shown in the following picture.
 
-![Speaker Wire Twist](images/assembly/04D%20speaker%20twist.jpg)
+![Speaker Wire Twist](images/assemblies/04D%20speaker%20twist.jpg)
 
 9. For each speaker, add a `heat shrink tube` to hold the twisted wires, as shown in the following picture.
 
-![Speaker Twist Heat Shrink Tube](images/assembly/04D%20speaker%20twist%20heat%20shrink%20tube.jpg)
+![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20speaker%20twist%20heat%20shrink%20tube.jpg)
 
 10. For each wire, crimp a `18 AWG ferrule`.
 
-![Speaker Twist Heat Shrink Tube](images/assembly/04D%20ferrule.jpg)
+![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20ferrule.jpg)
 
 
 ## E. Power Switch
@@ -143,20 +143,20 @@
 1. Cut 2 `22 AWG red wire` of 42 cm long.
 2. Solder the wires to the `power switch`.
 
-![Power Switch Wires](images/assembly/04E%20power%20switch%20wires.jpg)
+![Power Switch Wires](images/assemblies/04E%20power%20switch%20wires.jpg)
 
 3. Add a `heat shrink tube` to protect each tab.
 
-![Power Switch Heat Shrink Tube](images/assembly/04E%20power%20switch%20heat%20shrink%20tube.jpg)
+![Power Switch Heat Shrink Tube](images/assemblies/04E%20power%20switch%20heat%20shrink%20tube.jpg)
 
 4. Twist the wires.
 7. Crimp a `JST XH crimp contact` onto the wires.
 
-![Power Switch Crimp](images/assembly/04E%20power%20switch%20crimp.jpg)
+![Power Switch Crimp](images/assemblies/04E%20power%20switch%20crimp.jpg)
 
 8. Insert the crimp contacts into a `2-position female JST XH connector`, as shown in the following picture.
 
-![Power Switch JST XH](images/assembly/04E%20power%20switch%20JST%20XH.jpg)
+![Power Switch JST XH](images/assemblies/04E%20power%20switch%20JST%20XH.jpg)
 
 
 ## F. Limit Switch
@@ -175,26 +175,26 @@
 2. Keep one half.
 3. Remove the red and white wires.
 
-![Limit Switch Grove Cable](images/assembly/04F%20grove%20cable.jpg)
+![Limit Switch Grove Cable](images/assemblies/04F%20grove%20cable.jpg)
 
 4. Cut a `22 AWG white wire` of 32 cm long.
 5. Cut a `22 AWG black wire` of 32 cm long.
 6. Solder the wires to the `grove cable`, as shown in the following picture.
 
-![Limit Switch Wire](images/assembly/04F%20wires.jpg)
+![Limit Switch Wire](images/assemblies/04F%20wires.jpg)
 
 7. Add a `heat shrink tube` onto each connection.
 
-![Limit Switch Heat Shrink Tube](images/assembly/04F%20heat%20skrink%20tube.jpg)
+![Limit Switch Heat Shrink Tube](images/assemblies/04F%20heat%20skrink%20tube.jpg)
 
 8. Insert a `heat shrink tube` over each wire.
 9. Solder the wires to the limit switch tabs (C and NC).
 
-![Limit Switch Grove Cable](images/assembly/04F%20limit%20switch%20tabs.jpg)
+![Limit Switch Grove Cable](images/assemblies/04F%20limit%20switch%20tabs.jpg)
 
 10. Put the `heat shrink tubes` over the tabs.
 
-![Limit Switch Grove Cable](images/assembly/04F%20limit%20switch%20heat%20shrink%20tube.jpg)
+![Limit Switch Grove Cable](images/assemblies/04F%20limit%20switch%20heat%20shrink%20tube.jpg)
 
 
 ## G. Adafruit MAX9744
@@ -218,23 +218,23 @@
 5. For each `Adafruit MAX9744`, solder a green wire to the SCL pad.
 6. For each `Adafruit MAX9744`, solder a black wire to the GND pad.
 
-![Adafruit MAX9744 Wires](images/assembly/04G%20wires.jpg)
+![Adafruit MAX9744 Wires](images/assemblies/04G%20wires.jpg)
 
 7. For each `Adafruit MAX9744`, twist the soldered wires.
 
-![Adafruit MAX9744 Twisted Wires](images/assembly/04G%20twist.jpg)
+![Adafruit MAX9744 Twisted Wires](images/assemblies/04G%20twist.jpg)
 
 8. For each `Adafruit MAX9744`, add a `heat shrink tube` to hold the twisted wires, as shown in the following picture.
 
-![Adafruit MAX9744 Heat Shrink Tube](images/assembly/04G%20heat%20shrink%20tube.jpg)
+![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04G%20heat%20shrink%20tube.jpg)
 
 9. For each `Adafruit MAX9744`, crimp a `JST XH crimp contact` onto each wire.
 
-![Adafruit MAX9744 Crimp Contacts](images/assembly/04G%20crimp.jpg)
+![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20crimp.jpg)
 
 10. For each `Adafruit MAX9744`, insert the crimp contacts into a `3-position female JST XH connector`, as shown in the following picture.
 
-![Adafruit MAX9744 Crimp Contacts](images/assembly/04G%20JST%20XH.jpg)
+![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20JST%20XH.jpg)
 
 
 ## H. 19V Power Adapter
@@ -247,13 +247,13 @@
 ### Steps
 1. Cut the `19V power adapter` cable as shown in the following picture.
 
-![Adafruit MAX9744 Heat Shrink Tube](images/assembly/04H%20psu.jpg)
+![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04H%20psu.jpg)
 
 2. Solder the `Robot Power Connector - Male` to the `19V power adapter` cable.
     - Make sure the ground is outside.
 
 
-## I. Robot Power Connector - Female
+## I. Battery Charger
 TODO
 
 ## J. Slip Ring

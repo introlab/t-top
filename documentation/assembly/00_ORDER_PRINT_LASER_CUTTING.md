@@ -4,21 +4,26 @@ In order to assemble the robot, you need to buy the following Items.
 ## Bill of Materials Excluding Custom PCBs.
 
 ### Digi-Key
-| Part                                 | Quantity | Quantity per Package | Package Quantity | Link                                                                                      |
-| ------------------------------------ | -------- | -------------------- | ---------------- | ----------------------------------------------------------------------------------------- |
-| Audio Amplifier - Adafruit MAX9744   | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/adafruit-industries-llc/1752/4990780)    |
-| Robot Power Connector - Female       | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/switchcraft-inc/ST10U/4966994)           |
-| Robot Power Connector - Male         | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/switchcraft-inc/S10KS12/3909315)         |
-| Computer Power Connector - Male      | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/172-4208/172-4208-ND/2439192)            |
-| Power Switch                         | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/cit-relay-and-switch/RA1122CWC/12418886) |
-| Micro USB Connector                  | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/adafruit-industries-llc/4217/10244658)   |
-| Ethernet Connector                   | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/harting/09454521561/8033369)             |
-| WiFi Antenna                         | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/molex/2042811200/8020428)                |
-| Intel RealSense D435i                | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/intel-realsense/82635D435IDK5P/9926004)  |
-| Standoff - M2x10mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/wurth-electronics-inc/971100244/9488622) |
-| Standoff - M2x15mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/w%C3%BCrth-elektronik/971150244/9488640) |
-| Standoff - M3x10mm                   | 12       | 1                    | 12               | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24337/1532138)      |
-| Standoff - M3x25mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24342/1532143)      |
+| Part                                 | Quantity | Quantity per Package | Package Quantity | Link                                                                                                |
+| ------------------------------------ | -------- | -------------------- | ---------------- | --------------------------------------------------------------------------------------------------- |
+| Audio Amplifier - Adafruit MAX9744   | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/adafruit-industries-llc/1752/4990780)              |
+| Robot Power Connector - Female       | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/switchcraft-inc/ST10U/4966994)                     |
+| Robot Power Connector - Male         | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/switchcraft-inc/S10KS12/3909315)                   |
+| Computer Power Connector - Male      | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/172-4208/172-4208-ND/2439192)                      |
+| Power Switch                         | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/cit-relay-and-switch/RA1122CWC/12418886)           |
+| Micro USB Connector                  | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/adafruit-industries-llc/4217/10244658)             |
+| Ethernet Connector                   | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/harting/09454521561/8033369)                       |
+| WiFi Antenna                         | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/molex/2042811200/8020428)                          |
+| Intel RealSense D435i                | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/intel-realsense/82635D435IDK5P/9926004)            |
+| Standoff - M2x10mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/wurth-electronics-inc/971100244/9488622)           |
+| Standoff - M2x15mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/w%C3%BCrth-elektronik/971150244/9488640)           |
+| Standoff - M3x10mm                   | 12       | 1                    | 12               | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24337/1532138)                |
+| Standoff - M3x25mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24342/1532143)                |
+| JST B2P-VH                           | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1-1123723-2/686925) |
+| JST VHR-2N                           | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1744416-2/4730260)  |
+| JST SVH-21T-1.1                      | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1744201-1/4021812)  |
+
+TODO Remove JST B2P-VH if useless
 
 ### McMaster-Carr
 | Part                                 | Quantity | Quantity per Package | Package Quantity | Link                                        |
@@ -136,7 +141,7 @@ In order to assemble this PCB, you need to manufacture it. The Gerber files are 
 | 28 | 2        | R13, R14, R16, R17                                           | 0                         | [Link](https://www.digikey.ca/en/products/detail/stackpole-electronics-inc/RMCF0805ZT0R00/1756901)                           |
 | 29 | 1        | R22                                                          | 511                       | [Link](https://www.digikey.ca/en/products/detail/stackpole-electronics-inc/RNCP0805FTD511R/2240222)                          |
 | 30 | 2        | R24, R25                                                     | 1k                        | [Link](https://www.digikey.ca/en/products/detail/stackpole-electronics-inc/RNCP0805FTD1K00/2240229)                          |
-| 31 | 3        | R26, R27, R30                                                | 10k                       | [Link](https://www.digikey.ca/en/products/detail/stackpole-electronics-inc/RMCF0805JT10K0/1757762)                           |
+| 31 | 3        | R26, R27, R30                                                | 10k                       | [Link](https://www.digikey.ca/en/products/detail/susumu/RG2012P-103-B-T5/1212668)                                            |
 | 32 | 1        | RV1                                                          | V12ZA1P                   | [Link](https://www.digikey.ca/en/products/detail/littelfuse-inc/V12ZA1P/1009193)                                             |
 | 33 | 1        | TH1                                                          | 10K                       | [Link](https://www.digikey.ca/en/products/detail/murata-electronics/NXRT15XV103FA1B040/3900395)                              |
 | 34 | 1        | TH2                                                          | 10K                       | [Link](https://www.digikey.ca/en/products/detail/epcos-tdk-electronics/B57421V2103J062/739863)                               |

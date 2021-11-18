@@ -9,15 +9,15 @@
 ### Steps
 1. Solder the two `Adafruit MAX9744 kits` for digital control, but do not solder the headers ([instructions](https://learn.adafruit.com/adafruit-20w-stereo-audio-amplifier-class-d-max9744/assembly)).
 
-![Soldered Adafruit MAX9744](images/assembly/03A%20Adafruit%20MAX9744%201.jpg)
+![Soldered Adafruit MAX9744](images/assemblies/03A%20Adafruit%20MAX9744%201.jpg)
 
 2. Solder the `AD1` bridge on one of the `Adafruit MAX9744 kit`.
 
-![Soldered Adafruit MAX9744](images/assembly/03A%20Adafruit%20MAX9744%202.jpg)
+![Soldered Adafruit MAX9744](images/assemblies/03A%20Adafruit%20MAX9744%202.jpg)
 
 ## B. PSU Control PCB
 ### Required Parts
-See the [bill of materials](01_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
+See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 
 ### Steps
 1. Solder U2.
@@ -33,18 +33,18 @@ See the [bill of materials](01_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 11. Solder Q4 and Q6.
 12. Solder D7, D8 and D9.
 13. Solder C6, C7 and C9.
-14. Solder R20, R21, R22, R23, R28 and R29.
+14. Solder R20, R21, R28 and R29.
 15. Solder Q2.
 TODO Add a photo
 
 16. Solder all JST XH male connectors (D1, D2, D3, D4, D5, D6, SW1, J4, J6, J7, J8, J9, TH1, M1 and M2).
 17. Cut the trace between the pads to separate VIN from VUSB.
 
-![Soldered Adafruit MAX9744](images/assembly/03B%20cut%20Teensy.jpg)
+![Soldered Adafruit MAX9744](images/assemblies/03B%20cut%20Teensy.jpg)
 
 18. Solder the male headers to the Teensy LC.
 
-![Soldered Adafruit MAX9744](images/assembly/03B%20Teensy.jpg)
+![Soldered Adafruit MAX9744](images/assemblies/03B%20Teensy.jpg)
 
 19. Solder the female headers (U3) to the PCB.
 20. Solder the fuse holders (F1).
@@ -59,7 +59,7 @@ TODO Add a photo
 
 ## C. 12V Buck-Boost PCB
 ### Required Parts
-See the [bill of materials](01_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
+See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 
 ### Steps
 1. Solder U2.
@@ -91,7 +91,7 @@ TODO Add a photo
 
 ## D. 19V Buck-Boost PCB
 ### Required Parts
-See the [bill of materials](01_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
+See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 
 ### Steps
 1. Solder U2.

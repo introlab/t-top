@@ -2,9 +2,9 @@
 This folder contains all mechanical-related files. The CAD have been done with SOLIDWORKS. If you don't have SOLIDWORKS, you can open the [STEP file](step/robot.STEP).
 
 ## Bill of Materials
- - [Parts](../documentation/assembly/01_ORDER_PRINT_LASER_CUTTING.md#bill-of-materials-excluding-custom-pcbs)
- - [3d Printing](../documentation/assembly/01_ORDER_PRINT_LASER_CUTTING.md#3d-printing)
- - [Laser Cutting](../documentation/assembly/01_ORDER_PRINT_LASER_CUTTING.md#laser-cutting)
+ - [Parts](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#bill-of-materials-excluding-custom-pcbs)
+ - [3d Printing](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#3d-printing)
+ - [Laser Cutting](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#laser-cutting)
 
 ## Folder Structure
 SolidWorks files:

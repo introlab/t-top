@@ -15,7 +15,8 @@
 - 12V Power Supply
 
 ## Assembly Instructions
-1. [Orders/Print/Laser Cutting](01_ORDER_PRINT_LASER_CUTTING.md)
+0. [Orders/Print/Laser Cutting](00_ORDER_PRINT_LASER_CUTTING.md)
+1. [Computer Configuration](01_COMPUTER_CONFIGURATION.md)
 2. [Dynamixel Configuration](02_DYNAMIXEL_CONFIGURATION.md)
 3. [PCB Assembly](03_PCB_ASSEMBLY.md)
 4. [Cable Assembly](04_CABLE_ASSEMBLY.md)
@@ -26,4 +27,3 @@
 9. [Stewart Platform Assembly](09_STEWART_PLATFORM_ASSEMBLY.md)
 10. [Head Assembly](10_HEAD_ASSEMBLY.md)
 11. [MCU Configuration](11_MCU_CONFIGURATION.md)
-12. [Computer Configuration](12_COMPUTER_CONFIGURATION.md)

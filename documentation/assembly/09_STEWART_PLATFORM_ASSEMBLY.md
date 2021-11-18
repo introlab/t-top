@@ -18,7 +18,7 @@
 4. Make sure the `OpenCR` switch is OFF.
 5. Connect the `OpenCR` and a `Dynamixel XL430-W250-T` with the `Dynamixel cable`.
 
-![OpenCR, Dynamixel XL430-W250-T, Dynamixel cable](images/assembly/02%20dynamixel.jpg)
+![OpenCR, Dynamixel XL430-W250-T, Dynamixel cable](images/assemblies/02%20dynamixel.jpg)
 
 6. Turn ON the `OpenCR` switch.
 7. Use the `h_Position` example (`OpenCR/08. DynamixelWorkbench/h_Position`) to change the baud rate to 1000000.
@@ -44,11 +44,11 @@
 ### Steps
 1. Install the `stewart horn (right)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket` screws, as shown in the following picture.
 
-![Dynamixel Right](images/assembly/09B%20dynamixel%20right.jpg)
+![Dynamixel Right](images/assemblies/09B%20dynamixel%20right.jpg)
 
 2. Repeat step 1 for each `Dynamixel XL430-W250-T`.
 
-![Dynamixel ID 1, 3 and 5](images/assembly/09B%20dynamixel%201%203%205.jpg)
+![Dynamixel ID 1, 3 and 5](images/assemblies/09B%20dynamixel%201%203%205.jpg)
 
 ## C. Even-Id Dynamixel Pre-Assembly
 ### Required Parts
@@ -62,11 +62,11 @@
 ### Steps
 1. Install the `stewart horn (left)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket` screws, as shown in the following picture.
 
-![Dynamixel Left](images/assembly/09C%20dynamixel%20left.jpg)
+![Dynamixel Left](images/assemblies/09C%20dynamixel%20left.jpg)
 
 2. Repeat step 1 for each `Dynamixel XL430-W250-T`.
 
-![Dynamixel ID 2, 4 and 6](images/assembly/09C%20dynamixel%202%204%206.jpg)
+![Dynamixel ID 2, 4 and 6](images/assemblies/09C%20dynamixel%202%204%206.jpg)
 
 
 ## D. Stewart Platform Rod Pre-Assembly
@@ -82,4 +82,4 @@
 3. Unscrew one of the ball joints by 60°.
 4. Repeat steps 1 to 3 for each `threaded rod`.
 
-![Threaded Rod](images/assembly/09D%20stewart%20rod.jpg)
+![Threaded Rod](images/assemblies/09D%20stewart%20rod.jpg)
