@@ -224,7 +224,7 @@ In order to assemble the robot, you need to 3D print the following parts that ar
 | [head cable protector](../../CAD/STL/head%20cable%20protector.STL)       | 2 mm           | 25 %              | 1        |
 | [limit switch support](../../CAD/STL/limit%20switch%20support.STL)       | 2 mm           | 25 %              | 1        |
 | [OpenCR support 1](../../CAD/STL/OpenCR%20support%201.STL)               | 2 mm           | 25 %              | 1        |
-| [OpenCR support 1](../../CAD/STL/OpenCR%20support%202.STL)               | 2 mm           | 25 %              | 1        |
+| [OpenCR support 2](../../CAD/STL/OpenCR%20support%202.STL)               | 2 mm           | 25 %              | 1        |
 | [stewart bottom](../../CAD/STL/stewart%20bottom.STL)                     | 2 mm           | 25 %              | 1        |
 | [stewart horn (left)](../../CAD/STL/stewart%20horn%20(left).STL)         | 2 mm           | 25 %              | 3        |
 | [stewart horn (right)](../../CAD/STL/stewart%20horn%20(right).STL)       | 2 mm           | 25 %              | 3        |

@@ -1,11 +1,11 @@
 # 11. MCU Configuration
 
 ## Required Parts
-| Part                     | Quantity | Image                                                          |
-| ------------------------ | -------- | ---------------------------------------------------------------|
-| `Micro USB Cable`        | 1        |                                                                |
-| `19V Power Adapter`      | 1        |                                                                |
-| `Assembled Robot`        | 1        |                                                                |
+| Part                     | Quantity |
+| ------------------------ | -------- |
+| `Micro USB Cable`        | 1        |
+| `19V Power Adapter`      | 1        |
+| `Assembled Robot`        | 1        |
 
 ## A. Computer Setup
 1. Install [Visual Studio Code](https://code.visualstudio.com/download).

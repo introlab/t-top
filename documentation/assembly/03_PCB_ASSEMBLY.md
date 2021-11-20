@@ -35,7 +35,8 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 13. Solder C6, C7 and C9.
 14. Solder R20, R21, R28 and R29.
 15. Solder Q2.
-TODO Add a photo
+
+![PSU Control PCB - SMT](images/assemblies/03B%20SMT.jpg)
 
 16. Solder all JST XH male connectors (D1, D2, D3, D4, D5, D6, SW1, J4, J6, J7, J8, J9, TH1, M1 and M2).
 17. Cut the trace between the pads to separate VIN from VUSB.
@@ -78,7 +79,8 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 14. Solder U1.
 15. Solder C4.
 16. Solder Q1.
-TODO Add a photo
+
+![12V Buck-Boost PCB - SMT](images/assemblies/03C%20SMT.jpg)
 
 17. Solder R12.
 18. Solder J1, J2, J3, J4 and J5.
@@ -87,7 +89,8 @@ TODO Add a photo
 21. Solder C1, C2, C3, C11 and C25.
 22. Solder C19.
 23. Solder RV1.
-TODO Add a photo
+
+![12V Buck-Boost PCB - All](images/assemblies/03C%20all.jpg)
 
 ## D. 19V Buck-Boost PCB
 ### Required Parts
@@ -106,10 +109,10 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 10. Solder R11 and D5.
 11. Solder C5, C6, C7 and C8.
 12. Solder C20, C21, C22 and C23.
-
 13. Solder R7 and R9.
 14. Solder JP1.
-TODO Add a photo
+
+![19V Buck-Boost PCB - SMT](images/assemblies/03D%20SMT.jpg)
 
 15. Solder R12.
 16. Solder J1, J2, J3, J4 and J5.
@@ -117,4 +120,5 @@ TODO Add a photo
 18. Solder L1.
 19. Solder C1, C2, C3, C11 and C25.
 20. Solder C19.
-TODO Add a photo
+
+![19V Buck-Boost PCB - All](images/assemblies/03D%20all.jpg)
