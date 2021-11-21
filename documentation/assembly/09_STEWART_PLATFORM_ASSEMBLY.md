@@ -116,7 +116,7 @@
 | `Assembled OpenCR`                                         | 1        | ![OpenCR](images/assemblies/09E%20OpenCR%20supports.jpg)                                   |
 | `Assembled Stewart Platform Rod`                           | 6        | ![Threaded Rod](images/assemblies/09D%20stewart%20rod.jpg)                                 |
 | `USB Hub`                                                  | 2        | ![USB Hub](images/electronics/USB%20hub.jpg)                                               |
-| `Micro-USB Cable Included with the Screen`                 | 1        | ![Micro-USB Cable](images/electronics/Micro-USB%20cable%20screen.jpg)                         |
+| `Micro-USB Cable Included with the Touchscreen`            | 1        | ![Micro-USB Cable](images/electronics/Micro-USB%20cable%20screen.jpg)                      |
 | `M2.5x8 Plastic Screw`                                     | 36       | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm%20plastic.jpg)                            |
 | `M3x12 Plastic Screw`                                      | 24       | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                              |
 
@@ -179,3 +179,7 @@
 
 ![Stewart Top](images/assemblies/09F%20stewart%20top%201.jpg)
 ![Stewart Top](images/assemblies/09F%20stewart%20top%202.jpg)
+
+20. Connect the `OpenCR` to a `USB hub` with the `micro-USB cable`, as shown in the following picture.
+
+![OpentCR Cable](images/assemblies/09F%20USB%20cable.jpg)
