@@ -56,7 +56,8 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 25. Solder RV1.
 26. Solder U2.
 27. Clip the Teensy LC onto the PCB.
-TODO Add a photo
+
+![Soldered Adafruit MAX9744](images/assemblies/03B%20all.jpg)
 
 ## C. 12V Buck-Boost PCB
 ### Required Parts
