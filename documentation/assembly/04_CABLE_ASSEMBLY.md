@@ -256,5 +256,122 @@
 ## I. Battery Charger
 TODO
 
-## J. Slip Ring
-TODO
+## J. Slip Ring Cables
+### Required Parts
+| Part                              | Quantity | Image                                                                                          |
+| --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `Computer Power Connector`        | 1        | ![Computer Power Connector - Male](images/electronics/Computer%20Power%20Connector%20Male.jpg) |
+| `T-Connector`                     | 1        | ![T-Connector](images/electronics/T-Connector.jpg)                                             |
+| `Male Power Connector`            | 2        | ![Power Connector - Male](images/electronics/Power%20Connector%20Male.jpg)                     |
+| `Female Power Connector`          | 2        | ![Power Connector - Female](images/electronics/Power%20Connector%20Female.jpg)                 |
+| `Heat Shrink Tube`                | 4        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                        |
+| `18 AWG Ferrule`                  | 4        | ![18 AWG Ferrule](images/electronics/18%20AWG%20ferrule.jpg)                                   |
+
+### Steps
+1. Crimp a `18 AWG ferrule` onto each wire of the first `male power connector` and the first `female power connector`.
+
+![Computer Power Connector](images/assemblies/04J%20ferrule.jpg)
+
+2. Insert a `heat shrink tube` onto each remaining `power connector` wire.
+2. Solder the black wire of the second `female power connector` to the wire connected to the outside of the `computer power connector`.
+3. Solder the red wire of the second `female power connector` to the other wire of the `computer power connector`.
+4. Install the `heat shrink tubes`.
+
+![Computer Power Connector](images/assemblies/04J%20computer.jpg)
+
+5. Solder the black wire of the second `male power connector` to the black wire of the `T-connector`.
+6. Solder the red wire of the second `male power connector` to the red wire of the `T-connector`.
+7. Install the `heat shrink tubes`.
+
+![OpenCR Power Connector](images/assemblies/04J%20opencr.jpg)
+
+
+## K. Slip Ring
+### Required Parts
+| Part                                     | Quantity | Image                                                                                          |
+| ---------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `Slip Ring - M220-24 36wire 2A flange A` | 1        | ![Slip ring](images/electronics/slip%20ring.jpg)                                               |
+| `Male Power Connector`                   | 2        | ![Power Connector - Male](images/electronics/Power%20Connector%20Male.jpg)                     |
+| `Female Power Connector`                 | 2        | ![Power Connector - Female](images/electronics/Power%20Connector%20Female.jpg)                 |
+| `4-Position Female JST XH Connector`     | 1        | ![4-Position Female JST XH Connector](images/electronics/4-position%20female%20JST%20XH.jpg)   |
+| `JST XH Crimp Contact`                   | 4        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                               |
+| `Grove Cable`                            | 1        | ![Grove Cable](images/electronics/grove%20cable.jpg)                                           |
+| `Mini-USB Cable`                         | 1        | ![Mini-USB Cable](images/electronics/Mini-USB%20cable.jpg)                                     |
+| `Ethernet Cable`                         | 1        | ![Ethernet Cable](images/electronics/Ethernet%20cable.jpg)                                     |
+| `Big Heat Shrink Tube`                   | 14       | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                        |
+| `Small Heat Shrink Tube`                 | 24       | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20yellow.jpg)                      |
+
+### Steps
+1. Insert a `big heat shrink tube` onto each `power connector` wire.
+2. Solder the black wire of the first `male power connector` to 7 wires of the bottom side of the `slip ring`.
+3. Solder the black wire of the first `female power connector` to matching wires of the top side of the `slip ring`.
+5. Solder the red wire of the first `male power connector` to 7 wires of the bottom side of the `slip ring`.
+6. Solder the red wire of the first `female power connector` to matching wires of the top side of the `slip ring`.
+7. Install the `big heat shrink tubes`.
+
+![Male Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+![Female Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+
+8. Solder the black wire of the first `female power connector` to 5 wires of the bottom side of the `slip ring`.
+9. Solder the black wire of the first `male power connector` to matching wires of the top side of the `slip ring`.
+8. Solder the red wire of the first `female power connector` to 5 wires of the bottom side of the `slip ring`.
+9. Solder the red wire of the first `male power connector` to matching wires of the top side of the `slip ring`.
+10. Install the `big heat shrink tubes`.
+
+![Male Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+![Female Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+
+11. Crimp `JST XH crimp contacts` onto 4 wires of the bottom side of the `slip ring`.
+12. Insert a `small heat shrink tube` onto each matching wire of the top side of the `slip ring`.
+13. Insert a `big heat shrink tube` onto each the matching wires of the top side of the `slip ring`.
+14. Cut the `grove cable` in half.
+15. Keep one half.
+16. Solder each wire of the `grove cable` to a matching wire of the top side of the `slip ring`.
+17. Install the `small heat shrink tubes`.
+18. Install the `big heat shrink tube`.
+19. Insert the crimp contacts into a `4-position female JST XH connector`, as shown in the following pictures and table.
+
+| `JST XH Connector` | `Grove Cable` |
+| ------------------ | ------------- |
+| Red                | Red           |
+| Orange             | Yellow        |
+| Yellow             | White         |
+| Black              | Black         |
+
+![JST](images/assemblies/04K%20JST.jpg)
+![Grove](images/assemblies/04K%20Grove.jpg)
+
+20. Cut the `Mini-USB cable` in half.
+21. Cut 4 wires of the bottom side of the `slip ring` near it.
+22. Insert a `small heat shrink tube` onto each wire.
+23. Insert a `big heat shrink tube` onto the `Mini-USB cable part`.
+24. Solder each wire of the `Mini-USB cable part` onto a cutted wire.
+25. Install the `small heat shrink tubes`.
+26. Install the `big heat shrink tube`.
+
+![Mini-USB](images/assemblies/04K%20mini-usb.jpg)
+
+27. Cut the matching wires of the top side of the `slip ring` near it.
+28. Insert a `small heat shrink tube` onto each wire.
+29. Insert a `big heat shrink tube` onto the `USB-A cable part`.
+30. Solder each wire of the `USB-A cable part` onto the matching cutted wire.
+31. Install the `small heat shrink tubes`.
+32. Install the `big heat shrink tube`.
+
+![USB-A](images/assemblies/04K%20usb-a.jpg)
+
+33. Cut the `Ethernet cable` in half.
+34. Cut 4 wires of the bottom side of the `slip ring` near it.
+35. Insert a `small heat shrink tube` onto each wire.
+36. Insert a `big heat shrink tube` onto a `Ethernet cable part`.
+37. Solder the TX wires and the RX wires of the `Ethernet cable part` onto the cutted wires.
+38. Install the `small heat shrink tubes`.
+39. Install the `big heat shrink tube`.
+40. Cut the matching wires of the top side of the `slip ring` near it.
+41. Insert a `small heat shrink tube` onto each wire.
+42. Insert a `big heat shrink tube` onto a `Ethernet cable part`.
+43. Solder the TX wires and the RX wires of the `Ethernet cable part` onto the matching cutted wires.
+44. Install the `small heat shrink tubes`.
+45. Install the `big heat shrink tube`.
+
+![Ethernet](images/assemblies/04K%20ethernet.jpg)
