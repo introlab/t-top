@@ -17,8 +17,8 @@
 
 ## C. Setup the Teensy LC
 1. Open the [project](../../firmwares/psu_control) in PlatformIO.
-2. Change the value of `INA_TYPE` in [config.h](../../firmwares/psu_controlinclude/config.h) to the chip you have soldered (`INA220_TYPE` or `INA226_TYPE`).
-3. Change the value `FIRMWARE_MODE` in [config.h](../../firmwares/psu_controlinclude/config.h) to `FIRMWARE_MODE_NORMAL`.
+2. Change the value of `INA_TYPE` in [config.h](../../firmwares/psu_control/include/config.h) to the chip you have soldered (`INA220_TYPE` or `INA226_TYPE`).
+3. Change the value `FIRMWARE_MODE` in [config.h](../../firmwares/psu_control/include/config.h) to `FIRMWARE_MODE_NORMAL`.
 4. Connect the micro USB cable to the computer and the robot base.
 5. Turn off the robot.
 6. Connect the `19V Power Adapter` to the base.
