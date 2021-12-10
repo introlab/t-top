@@ -1,0 +1,1 @@
+from object_detection.trainers.descriptor_yolo_v4_trainer import DescriptorYoloV4Trainer

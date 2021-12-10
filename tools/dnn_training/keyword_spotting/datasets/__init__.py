@@ -1,0 +1,4 @@
+from keyword_spotting.datasets.google_speech_commands import GoogleSpeechCommands
+from keyword_spotting.datasets.keyword_spotting_transforms import KeywordSpottingTrainingTransforms, \
+    KeywordSpottingValidationTransforms
+from keyword_spotting.datasets.ttop_keyword import TtopKeyword

@@ -1,0 +1,1 @@
+from keyword_spotting.trainers.keyword_spotter_trainer import KeywordSpotterTrainer
