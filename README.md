@@ -4,6 +4,11 @@ T-Top is a tabletop robot designed with advanced audio and vision sensors, deep 
 ![T-Top](images/t_top.jpg)
 ![T-Top Hoody](images/t_top_hoody.jpg)
 
+## Authors
+- Marc-Antoine Maheux (@mamaheux)
+- Charles Caya (@chcaya)
+- Alexandre Filion (@alexfilion)
+
 ## Licensing
 - Source code files: [GPLv3](LICENSE_SOURCE_CODE)
 - Other files: [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License](LICENSE_OTHER)
