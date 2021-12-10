@@ -1,0 +1,4 @@
+bool is_filtering_all_messages
+int32 rate
+---
+bool ok

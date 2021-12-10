@@ -82,8 +82,8 @@ sudo -H pip3 install cupy
 ### G. Clone the Repository
 1. Execute the following bash commands.
 ```bash
-mkdir ~/t_top__ws
-cd ~/t_top_ws
+mkdir ~/t-top_ws
+cd ~/t-top_ws
 mkdir src
 catkin_make
 
@@ -93,7 +93,7 @@ git clone --recurse-submodules git@github.com:introlab/tabletop_robot.git
 
 ### H. Install the RealSense Packages
 1. Install [Librealsense](https://github.com/IntelRealSense/librealsense/blob/v2.39.0/doc/installation.md) (use the tag v2.39.0).
-2. Install [ROS node](https://github.com/IntelRealSense/realsense-ros#step-2-install-intel-realsense-ros-from-sources) in `~/t_top__ws/src`  (use the tag 2.2.18)
+2. Install [ROS node](https://github.com/IntelRealSense/realsense-ros#step-2-install-intel-realsense-ros-from-sources) in `~/t-top_ws/src`  (use the tag 2.2.18)
 
 ## All computer
 ### A. Setup Google Cloud
