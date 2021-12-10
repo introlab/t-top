@@ -23,6 +23,6 @@ T-Top is a tabletop robot designed with advanced audio and vision sensors, deep 
 - The [tools](tools) folder contains the tools to develop and use the robot.
 
 ## Development Computer Setup
-See [01_COMPUTER_CONFIGURATION.md](documentation/assembly/01_COMPUTER_CONFIGURATION.md)
+See [01_COMPUTER_CONFIGURATION.md](documentation/assembly/01_COMPUTER_CONFIGURATION.md#development-computer-ubuntu-2004)
 
 ## Papers
