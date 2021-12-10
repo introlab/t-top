@@ -1,7 +1,7 @@
 import rospy
 import message_filters
 
-from hbba_lite.filter_state import OnOffHbbaFilterState, ThrottlingHbbaFilterState
+from hbba_lite.filter_states import OnOffHbbaFilterState, ThrottlingHbbaFilterState
 
 
 class _HbbaSubscriber:
