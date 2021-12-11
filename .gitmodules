@@ -4,3 +4,6 @@
 [submodule "ros/opentera-webrtc-ros"]
 	path = ros/opentera-webrtc-ros
 	url = https://github.com/introlab/opentera-webrtc-ros.git
+[submodule "ros/perceptions/odas_ros"]
+	path = ros/perceptions/odas_ros
+	url = https://github.com/introlab/odas_ros.git
