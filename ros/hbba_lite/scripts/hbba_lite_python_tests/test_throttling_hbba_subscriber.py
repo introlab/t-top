@@ -7,12 +7,12 @@ import hbba_lite
 
 
 def callback(data):
-    rospy.loginfo("Data received : {}".format(data.data))
+    rospy.loginfo('Data received : {}'.format(data.data))
 
 
 def main():
     rospy.init_node('test_throttling_hbba_subscriber')
-    sub = hbba_lite.ThrottlingHbbaSubscriber("int_topic", Int8, callback)
+    sub = hbba_lite.ThrottlingHbbaSubscriber('int_topic', Int8, callback)
     rospy.spin()
     sub.unregister()
 

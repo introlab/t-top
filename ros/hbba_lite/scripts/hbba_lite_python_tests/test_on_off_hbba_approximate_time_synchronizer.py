@@ -8,7 +8,7 @@ import hbba_lite
 
 
 def callback(data1, data2):
-    rospy.loginfo("Data received : {} {}".format(data1.data, data2.data))
+    rospy.loginfo('Data received : {} {}'.format(data1.data, data2.data))
 
 
 def main():

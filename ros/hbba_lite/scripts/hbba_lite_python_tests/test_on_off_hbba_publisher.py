@@ -8,7 +8,7 @@ import hbba_lite
 
 def main():
     rospy.init_node('test_on_off_hbba_publisher')
-    pub = hbba_lite.OnOffHbbaPublisher("int_topic", Int8, queue_size=10)
+    pub = hbba_lite.OnOffHbbaPublisher('int_topic', Int8, queue_size=10)
 
     rate = rospy.Rate(1) # 1hz
     i = 0

@@ -7,12 +7,12 @@ import hbba_lite
 
 
 def callback(data):
-    rospy.loginfo("Data received : {}".format(data.data))
+    rospy.loginfo('Data received : {}'.format(data.data))
 
 
 def main():
     rospy.init_node('test_on_off_hbba_subscriber')
-    sub = hbba_lite.OnOffHbbaSubscriber("int_topic", Int8, callback)
+    sub = hbba_lite.OnOffHbbaSubscriber('int_topic', Int8, callback)
     rospy.spin()
     sub.unregister()
 

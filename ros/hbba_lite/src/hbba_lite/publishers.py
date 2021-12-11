@@ -9,11 +9,11 @@ class _HbbaPublisher:
             state_service_name = topic_name + '/filter_state'
 
         self._filter_state = filter_state_class(state_service_name)
-        self._subscriber = rospy.Publisher(topic_name, data_class, queue_size=queue_size)
+        self._publisher = rospy.Publisher(topic_name, data_class, queue_size=queue_size)
 
     def publish(self, msg):
         if self._filter_state.check():
-            self._subscriber.publish(msg)
+            self._publisher.publish(msg)
 
 
 class OnOffHbbaPublisher(_HbbaPublisher):

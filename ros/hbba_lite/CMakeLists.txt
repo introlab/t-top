@@ -138,6 +138,11 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 add_executable(on_off_hbba_filter_node src/on_off_hbba_filter_node.cpp)
 add_executable(throttling_hbba_filter_node src/throttling_hbba_filter_node.cpp)
 
+add_executable(test_on_off_hbba_subscriber src/hbba_lite_cpp_tests/test_on_off_hbba_subscriber.cpp)
+add_executable(test_throttling_hbba_subscriber src/hbba_lite_cpp_tests/test_throttling_hbba_subscriber.cpp)
+add_executable(test_on_off_hbba_publisher src/hbba_lite_cpp_tests/test_on_off_hbba_publisher.cpp)
+add_executable(test_throttling_hbba_publisher src/hbba_lite_cpp_tests/test_throttling_hbba_publisher.cpp)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -157,8 +162,24 @@ target_link_libraries(on_off_hbba_filter_node
   ${catkin_LIBRARIES}
   ${PROJECT_NAME}
 )
-
 target_link_libraries(throttling_hbba_filter_node
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+)
+
+target_link_libraries(test_on_off_hbba_subscriber
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+)
+target_link_libraries(test_throttling_hbba_subscriber
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+)
+target_link_libraries(test_on_off_hbba_publisher
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+)
+target_link_libraries(test_throttling_hbba_publisher
   ${catkin_LIBRARIES}
   ${PROJECT_NAME}
 )

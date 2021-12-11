@@ -8,7 +8,7 @@ import hbba_lite
 
 def main():
     rospy.init_node('test_throttling_hbba_publisher')
-    pub = hbba_lite.ThrottlingHbbaPublisher("int_topic", Int8, queue_size=10)
+    pub = hbba_lite.ThrottlingHbbaPublisher('int_topic', Int8, queue_size=10)
 
     rate = rospy.Rate(1) # 1hz
     i = 0
