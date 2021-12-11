@@ -5,7 +5,7 @@ This folder contains the tools to train the neural networks used by T-Top.
 - Training scripts
     - The [train_audio_descriptor_extractor.py](train_audio_descriptor_extractor.py) script trains a neural network that classifies a sound to one class and extracts an embedding. The network name is `audio_descriptor_extractor`.
     - The [train_descriptor_yolo_v4.py](train_descriptor_yolo_v4.py) script trains a neural network that detects objects, classifies them and extracts embeddings. The network name is `descriptor_yolo_v4`.
-    - The [train_face_descriptor_extractor.py](train_face_descriptor_extractor.py) script trains a neural network that extracts embeddings for a face. The network name is `face_descriptor_extractor`.
+    - The [train_face_descriptor_extractor.py](train_face_descriptor_extractor.py) script trains a neural network that extracts an embedding for a face. The network name is `face_descriptor_extractor`.
     - The [train_keyword_spotter.py](train_keyword_spotter.py) script trains a neural network that detects a wake-up word. The network name is `keyword_spotter`.
     - The [train_multiclass_audio_descriptor_extractor.py](train_multiclass_audio_descriptor_extractor.py) script trains a neural network that classifies a sound to many classes and extracts an embedding. The network name is `audio_descriptor_extractor`.
     - The [train_pose_estimator.py](train_pose_estimator.py) script trains a neural network that estimates the pose of a person. The network name is `pose_estimator`.

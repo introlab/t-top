@@ -3,7 +3,7 @@
 
 #include <hbba_lite/Publishers.h>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     ros::init(argc, argv, "test_on_off_hbba_publisher");
     ros::NodeHandle nodeHandle;
