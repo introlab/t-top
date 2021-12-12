@@ -45,11 +45,10 @@ class RobotNameDetectorNode:
         self._robot_name_model_probabilities = []
 
         self._message_rate = rospy.Rate(self._message_rate_value)
-        self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('audio_in/filter_state')
         self._sound_rms_pub = rospy.Publisher('sound_rms', Float32, queue_size=10)
         self._sound_presence_pub = rospy.Publisher('sound_presence', Bool, queue_size=10)
         self._robot_name_detected_pub = rospy.Publisher('robot_name_detected', Empty, queue_size=10)
-        self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
+        self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
 
     def _audio_cb(self, msg):
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
@@ -62,7 +61,7 @@ class RobotNameDetectorNode:
         audio_frame = np.frombuffer(msg.data, dtype=np.int16).astype(np.float32) / -np.iinfo(np.int16).min
         new_sound_rms = self._calculate_sound_rms(audio_frame)
 
-        if not self._hbba_filter_state.is_filtering_all_messages:
+        if not self._audio_sub.is_filtering_all_messages:
             self._detect_robot_name(audio_frame, new_sound_rms)
 
         with self._lock:

@@ -1,0 +1,35 @@
+<launch>
+    <node pkg="audio_utils" type="alsa_capture_node" name="alsa_capture_node">
+        <param name="device" value="hw:CARD=D20,DEV=0"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="256"/>
+
+        <param name="merge" value="true"/>
+        <param name="merge_gain" value="2"/>
+
+        <remap from="audio_out" to="audio_signed_32_44100"/>
+    </node>
+
+    <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
+        <param name="enable" value="false"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="256"/>
+        <param name="min_bpm" value="50"/>
+        <param name="max_bpm" value="180"/>
+        <param name="bpm_candidate_count" value="2"/>
+
+        <remap from="audio_in" to="audio_signed_32_44100"/>
+        <remap from="bpm" to="dance/bpm"/>
+        <remap from="beat" to="dance/beat"/>
+    </node>
+
+    <node pkg="dance" type="dance_node.py" name="head_dance_node">
+        <param name="movement_file" value="$(find dance)/head_movements.json"/>
+        <param name="head_z_zero" value="0.16893650962222248"/>
+    </node>
+    <node pkg="dance" type="dance_node.py" name="torso_dance_node">
+        <param name="movement_file" value="$(find dance)/torso_movements.json"/>
+    </node>
+</launch>
