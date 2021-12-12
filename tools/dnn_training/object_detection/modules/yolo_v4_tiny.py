@@ -10,9 +10,8 @@ IN_CHANNELS = 3
 
 # Genereated from: yolov4-tiny.cfg:
 class YoloV4Tiny(nn.Module):
-    def __init__(self, class_count):
+    def __init__(self):
         super(YoloV4Tiny, self).__init__()
-        self._class_count = class_count
 
         self._anchors = []
         self._output_strides = []
@@ -114,11 +113,11 @@ class YoloV4Tiny(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv29 = nn.Sequential(
-            nn.Conv2d(512, 3 * (5 + class_count), 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(512, 255, 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(81, 82), (135, 169), (344, 319)]))
         self._output_strides.append(32)
-        self._yolo30 = YoloLayer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, 1.05)
+        self._yolo30 = YoloLayer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, 1.05)
 
         self._conv32 = nn.Sequential(
             nn.Conv2d(256, 128, 1, stride=1, padding=0, bias=False),
@@ -133,14 +132,11 @@ class YoloV4Tiny(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv36 = nn.Sequential(
-            nn.Conv2d(256, 3 * (5 + class_count), 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(256, 255, 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(23, 27), (37, 58), (81, 82)]))
         self._output_strides.append(16)
-        self._yolo37 = YoloLayer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, 1.05)
-
-    def get_class_count(self):
-        return self._class_count
+        self._yolo37 = YoloLayer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, 1.05)
 
     def get_image_size(self):
         return IMAGE_SIZE
