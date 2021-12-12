@@ -11,7 +11,7 @@ This folder contains the node to detect the robot name.
  - `sound_rms_presence_threshold` (double): The threshold of the sound precense (default: 0.05).
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu).
  - `robot_name_model_probability_threshold` (double): The joint probability threshold.
- - `robot_name_model_interval` (int): The interval between inference in sample.
+ - `robot_name_model_interval` (int): The interval between inferences in sample.
  - `robot_name_model_analysis_delay` (int): The delay after the rising edge in sample.
  - `robot_name_model_analysis_count` (int): The number of inference to perform.
 
