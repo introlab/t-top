@@ -61,7 +61,7 @@ sudo apt install -y libasound2-dev \
 1. Execute the following bash commands.
 ```bash
 sudo apt install -y libprotobuf* protobuf-compiler ninja-build python3-pip
-sudo -H pip3 install numpy scipy matplotlib torch==1.6.0 torchvision==0.7.0 torchaudio==0.6.0 playsound google-cloud-texttospeech google-cloud-speech libconf tqdm pyside2 sounddevice librosa pyaudio
+sudo -H pip3 install numpy scipy matplotlib torch==1.6.0 torchvision==0.7.0 torchaudio==0.6.0 playsound google-cloud-texttospeech google-cloud-speech libconf tqdm pyside2 sounddevice librosa
 sudo -H pip3 install git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
 ```
 
@@ -98,7 +98,7 @@ git clone --recurse-submodules git@github.com:introlab/tabletop_robot.git
 
 ## All computer
 ### A. Setup Google Cloud
-1. Create a [service account JSON keyfile](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating) for Google Text-to-Speech and Google Speech-to-Text.
+1. Create a [service account JSON keyfile](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating) for Google Cloud Text-to-Speech and Google Cloud Speech-to-Text.
 2. Add the following line to `~/.bashrc`
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="[Path to the service account JSON keyfile]"
