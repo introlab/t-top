@@ -62,6 +62,7 @@ sudo apt install -y libasound2-dev \
 ```bash
 sudo apt install -y libprotobuf* protobuf-compiler ninja-build python3-pip
 sudo -H pip3 install numpy scipy matplotlib torch==1.6.0 torchvision==0.7.0 torchaudio==0.6.0 playsound google-cloud-texttospeech google-cloud-speech libconf tqdm pyside2 sounddevice librosa pyaudio
+sudo -H pip3 install git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
 ```
 
 ### F. Install CUDA Tools (Optional)

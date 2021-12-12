@@ -1,5 +1,5 @@
 # speech_to_text
-This folder contains a node to perform speech to text. It uses Google Cloud Speech-to-Text.
+This folder contains the node to perform speech to text. It uses Google Cloud Speech-to-Text.
 
 ## Nodes
 ### `speech_to_text_node.py`
