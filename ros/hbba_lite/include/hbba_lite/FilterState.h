@@ -15,10 +15,17 @@ class OnOffHbbaFilterState
 public:
     OnOffHbbaFilterState(ros::NodeHandle& nodeHandle, const std::string& stateServiceName);
     bool check();
+    bool isFilteringAllMessages() const;
 
+private:
     bool stateServiceCallback(hbba_lite::SetOnOffFilterState::Request &request,
             hbba_lite::SetOnOffFilterState::Response &response);
 };
+
+bool OnOffHbbaFilterState::isFilteringAllMessages() const
+{
+    return m_isFilteringAllMessages;
+}
 
 class ThrottlingHbbaFilterState
 {
@@ -30,9 +37,16 @@ class ThrottlingHbbaFilterState
 public:
     ThrottlingHbbaFilterState(ros::NodeHandle& nodeHandle, const std::string& stateServiceName);
     bool check();
+    bool isFilteringAllMessages() const;
 
+private:
     bool stateServiceCallback(hbba_lite::SetThrottlingFilterState::Request &request,
             hbba_lite::SetThrottlingFilterState::Response &response);
 };
+
+bool ThrottlingHbbaFilterState::isFilteringAllMessages() const
+{
+    return m_isFilteringAllMessages;
+}
 
 #endif

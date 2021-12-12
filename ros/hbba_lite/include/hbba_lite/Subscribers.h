@@ -25,6 +25,9 @@ public:
     std::string getTopic() const;
     void shutdown();
 
+    bool isFilteringAllMessages() const;
+
+private:
     void callback(const typename MessageType::ConstPtr& msg);
 };
 
@@ -67,6 +70,12 @@ template <class FilterState, class MessageType>
 void HbbaSubscriber<FilterState, MessageType>::shutdown()
 {
     m_subscriber.shutdown();
+}
+
+template <class FilterState, class MessageType>
+bool HbbaSubscriber<FilterState, MessageType>::isFilteringAllMessages() const
+{
+    return m_filterState.isFilteringAllMessages();
 }
 
 template <class FilterState, class MessageType>

@@ -18,8 +18,9 @@ class HbbaFilterNode
 
 public:
     HbbaFilterNode(ros::NodeHandle& nodeHandle);
-
     void run();
+
+private:
     void callback(const ros::MessageEvent<topic_tools::ShapeShifter>& msg_event);
 };
 

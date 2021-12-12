@@ -15,6 +15,13 @@ class _HbbaPublisher:
         if self._filter_state.check():
             self._publisher.publish(msg)
 
+    @property
+    def is_filtering_all_messages(self):
+        return self._filter_state._is_filtering_all_messages
+
+    def on_filter_state_changed(self, callback):
+        self._filter_state.on_changed(callback)
+
 
 class OnOffHbbaPublisher(_HbbaPublisher):
     def __init__(self, topic_name, data_class, state_service_name=None, queue_size=None):

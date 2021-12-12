@@ -17,6 +17,13 @@ class _HbbaSubscriber:
         if self._filter_state.check() and self._callback is not None:
             self._callback(msg)
 
+    @property
+    def is_filtering_all_messages(self):
+        return self._filter_state._is_filtering_all_messages
+
+    def on_filter_state_changed(self, callback):
+        self._filter_state.on_changed(callback)
+
     def unregister(self):
         self._subscriber.unregister()
 
@@ -46,6 +53,13 @@ class _HbbaTimeSynchronizer:
         if self._filter_state.check() and self._callback is not None:
             self._callback(*args)
 
+    @property
+    def is_filtering_all_messages(self):
+        return self._filter_state._is_filtering_all_messages
+
+    def on_filter_state_changed(self, callback):
+        self._filter_state.on_changed(callback)
+
 
 class OnOffHbbaTimeSynchronizer(_HbbaTimeSynchronizer):
     def __init__(self, message_filter_subscribers, queue_size, callback=None, state_service_name=None):
@@ -72,6 +86,13 @@ class _HbbaApproximateTimeSynchronizer:
     def _ts_callback(self, *args):
         if self._filter_state.check() and self._callback is not None:
             self._callback(*args)
+
+    @property
+    def is_filtering_all_messages(self):
+        return self._filter_state._is_filtering_all_messages
+
+    def on_filter_state_changed(self, callback):
+        self._filter_state.on_changed(callback)
 
 
 class OnOffHbbaApproximateTimeSynchronizer(_HbbaApproximateTimeSynchronizer):
