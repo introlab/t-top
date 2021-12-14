@@ -1,0 +1,34 @@
+<launch>
+    <!-- OpenCR serial comm launch -->
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserial" >
+        <param name="port" value="/dev/OPENCR"/>
+        <param name="baud" value="1000000"/>
+    </node>
+
+    <!--Static tf broadcast launch-->
+    <node pkg="tf" type="static_transform_publisher" name="stewart_base_tf_publisher" args="0 0 0.135137 0 0 0 torso_base stewart_base 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="opencr_tf_publisher" args="-0.028881 0 0.005936 0 0 0 stewart_base opencr 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="opencr_imu_tf_publisher" args="0 0 0 1.570796 0 1.570796 opencr opencr_imu 15"/> 
+    <node pkg="tf" type="static_transform_publisher" name="cam_link_tf_publisher" args="0.076980 0 0.134850 0 0 0 head camera_link 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="cam_depth_tf_publisher" args="0.012505 0 0 0 0 0 camera_link camera_depth_frame 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="cam_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_depth_frame camera_depth_optical_frame 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="cam_color_tf_publisher" args="0 0 0 0 0 0 camera_depth_frame camera_color_frame 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="cam_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_color_frame camera_color_optical_frame 15"/>
+    <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.078822 0 0 0 base_link odas 15"/>
+
+    <!-- IMU filter launch -->
+    <node pkg="imu_filter_madgwick" type="imu_filter_node" name="opencr_imu_filter_node">
+        <param name="use_mag" value="false"/>
+        <param name="world_frame" value="enu"/>
+        <param name="publish_tf" value="false"/>
+
+        <remap from="imu/data_raw" to="opencr_imu/data_raw"/>
+        <remap from="imu/mag" to="opencr_imu/mag"/>
+        <remap from="imu/data" to="opencr_imu/data"/>
+    </node>
+
+    <!--Dynamic tf broadcast and odom launch-->
+    <node pkg="tabletop" type="opencr_raw_data_interpreter.py" name="opencr_raw_data_interpreter" output="screen">
+        <param name="base_link_torso_base_delta_z" value="0.0755"/>
+    </node>
+</launch>

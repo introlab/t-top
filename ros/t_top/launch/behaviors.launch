@@ -1,0 +1,44 @@
+<launch>
+    <arg name="language"/> <!-- Options: fr or en -->
+
+    <!-- Telepresence -->
+    <!-- See opentera-webrtc-ros -->
+
+    <!-- Emotions -->
+    <!-- TODO -->
+
+    <!-- Talk -->
+    <node pkg="talk" type="talk_node.py" name="talk_node">
+        <param name="language" value="$(arg language)"/>
+        <param name="mouth_signal_gain" value="0.1"/>
+        <param name="frame_sample_count" value="256"/>
+
+        <remap from="audio_out" to="audio_float_22050"/>
+        <remap from="audio_out/filter_state" to="talk/filter_state"/>
+    </node>
+
+    <!-- Greet -->
+    <!-- TODO -->
+
+    <!-- Face Following -->
+    <!-- TODO -->
+
+    <!-- Dance -->
+    <node pkg="dance" type="dance_node.py" name="head_dance_node">
+        <param name="movement_file" value="$(find dance)/head_movements.json"/>
+
+        <remap from="pose/filter_state" to="head_dance/filter_state"/>
+    </node>
+    <node pkg="dance" type="dance_node.py" name="torso_dance_node">
+        <param name="movement_file" value="$(find dance)/torso_movements.json"/>
+
+        <remap from="pose/filter_state" to="torso_dance/filter_state"/>
+    </node>
+
+    <!-- Explore -->
+    <!-- TODO -->
+
+    <!-- Sound Following -->
+    <!-- TODO -->
+
+</launch>

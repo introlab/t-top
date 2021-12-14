@@ -10,6 +10,7 @@ from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseStamped
 
 import hbba_lite
+from t_top import HEAD_ZERO_Z
 
 
 P_CHANGE_MOVEMENT = 0.25
@@ -21,8 +22,6 @@ class DanceNode:
 
         with open(rospy.get_param('~movement_file'), 'r') as f:
             self._movements = json.load(f)
-
-        self._head_z_zero = rospy.get_param('~head_z_zero', 0.0)
 
         self._current_movement = self._movements[list(self._movements.keys())[0]]
         self._current_movement_pose_index = 0
@@ -95,7 +94,7 @@ class DanceNode:
 
             pose_msg.pose.position.x = pose[0]
             pose_msg.pose.position.y = pose[1]
-            pose_msg.pose.position.z = self._head_z_zero + pose[2]
+            pose_msg.pose.position.z = HEAD_ZERO_Z + pose[2]
 
             pose_msg.pose.orientation.x = pose[3]
             pose_msg.pose.orientation.y = pose[4]

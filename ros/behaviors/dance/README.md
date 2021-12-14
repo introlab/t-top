@@ -7,7 +7,6 @@ This node makes T-Top dance on the beat. The moves are randomly chosen.
 
 #### Parameters
  - `movement_file` (string): The JSON file path containing the movements.
- - `head_z_zero` (double): The attack value of the sound level filter (default: 0.05).
 
 #### Subscribed Topics
  - `bpm` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The bpm topic from the beat_detector_node.
