@@ -8,3 +8,4 @@ This folder contains the ROS packages to use the robot.
 - The [hbba_lite](hbba_lite) folder contains nodes and utilities to use the HBBA Lite architecture.
 - The [opentera-webrtc-ros](https://github.com/introlab/opentera-webrtc-ros/tree/dfbd3197be7013012243166723b2e46c0d1f70e3) folder contains nodes to perform telepresence calls.
 - The [perceptions](perceptions) folder contains ROS packages for the perceptual nodes.
+- The [user_interface](user_interface) folder contains the web user interface for the robot face.
