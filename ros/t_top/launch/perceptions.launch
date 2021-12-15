@@ -1,7 +1,7 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
-    <arg name="odas_configuration_path" default="$(find tabletop)/config/configuration_16SoundsUSB.cfg"/>
+    <arg name="odas_configuration_path" default="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
     <arg name="visualization" default="false"/>
 
     <!-- RTAM-Map -->
@@ -24,8 +24,8 @@
 
         <param name="queue_size" type="int" value="10"/>
 
-        <param name="RGBD/AngularUpdate"        type="string" value="0.01"/>
-        <param name="RGBD/LinearUpdate"         type="string" value="0.01"/>
+        <param name="RGBD/AngularUpdate" type="string" value="0.01"/>
+        <param name="RGBD/LinearUpdate" type="string" value="0.01"/>
         <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
 
         <remap from="odom" to="opencr/odom"/>

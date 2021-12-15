@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>face_following</name>
+  <name>sound_following</name>
   <version>0.0.0</version>
-  <description>The face_following package</description>
+  <description>The sound_following package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/face_following</url> -->
+  <!-- <url type="website">http://wiki.ros.org/sound_following</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -49,24 +49,18 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>geometry_msgs</build_depend>
   <build_depend>hbba_lite</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>t_top</build_depend>
-  <build_depend>tf</build_depend>
-  <build_depend>video_analyzer</build_depend>
-  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_depend>odas_ros</build_depend>
   <build_export_depend>hbba_lite</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>t_top</build_export_depend>
-  <build_export_depend>tf</build_export_depend>
-  <build_export_depend>video_analyzer</build_export_depend>
-  <exec_depend>geometry_msgs</exec_depend>
+  <build_export_depend>odas_ros</build_export_depend>
   <exec_depend>hbba_lite</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>t_top</exec_depend>
-  <exec_depend>tf</exec_depend>
-  <exec_depend>video_analyzer</exec_depend>
+  <exec_depend>odas_ros</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

@@ -1,19 +1,18 @@
 # face_following
-This folder contains the node to make T-Top follow the nearest face.
+This folder contains the node to make T-Top follow the loudest sound.
 
 ## Nodes
-### `face_following_node.py`
-This node makes T-Top follow the nearest face.
+### `sound_following_node.py`
+This node makes T-Top follow the loudest sound.
 
 #### Parameters
  - `simulation` (bool): Indicates if it's used in the simulation.
  - `control_frequency` (double): The frequency at which the pose messages are sent.
  - `control_alpha` (double): The low-pass filter parameter for the pose.
- - `nose_confidence_threshold` (double): The confidence threshold for the nose keypoint.
  - `head_enabled` (bool): Indicates if the head will move.
 
 #### Subscribed Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](../../perceptions/video_analyzer/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `sst` ([odas_ros/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/msg/OdasSstArrayStamped.msg)): The sound source tracking information.
 
 #### Published Topics
  - `opencr/head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)): The head pose.

@@ -48,6 +48,15 @@
     <!-- TODO -->
 
     <!-- Sound Following -->
-    <!-- TODO -->
+    <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="control_frequency" value="10"/>
+        <param name="control_alpha" value="0.05"/>
+        <param name="nose_confidence_threshold" value="0.5"/>
+        <param name="head_enabled" value="true"/>
+
+        <remap from="sst" to="audio_sst"/>
+        <remap from="pose/filter_state" to="sound_following/filter_state"/>
+    </node>
 
 </launch>

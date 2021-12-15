@@ -2,8 +2,6 @@
 
 import threading
 
-from librosa.core import pitch
-
 import rospy
 import tf
 from geometry_msgs.msg import PointStamped
@@ -37,7 +35,6 @@ class FaceFollowingNode:
             return
 
         yaw, pitch = self._find_nearest_face_yaw_pitch(msg.objects, msg.header)
-        print(yaw, pitch)
         with self._target_lock:
             self._target_torso_yaw = yaw
             self._target_head_pitch = pitch
