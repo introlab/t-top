@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import threading
-
 import rospy
+from std_msgs.msg import Empty
 
 from t_top import MovementCommands, HEAD_ZERO_Z
 
@@ -17,11 +16,8 @@ class ExploreNode:
         self._torso_speed = rospy.Rate(rospy.get_param('~torso_speed_rad_sec'))
         self._head_speed = rospy.Rate(rospy.get_param('~head_speed_rad_sec'))
 
-        self._target_lock = threading.Lock()
-        self._target_torso_yaw = None
-        self._target_head_pitch = None
-
         self._movement_commands = MovementCommands(self._simulation)
+        self._done_pub = rospy.Publisher('explore/done', Empty, queue_size=5)
 
     def run(self):
         while not rospy.is_shutdown():
@@ -42,6 +38,9 @@ class ExploreNode:
             self._movement_commands.move_torso(-1.57, should_wait=False, speed_rad_sec=self._torso_speed)
             self._movement_commands.move_torso(0, should_wait=True, speed_rad_sec=self._torso_speed)
             self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait=True, speed_rad_sec=self._head_speed)
+
+            self._done_pub.publish(Empty())
+
             self._rate.sleep()
 
 
