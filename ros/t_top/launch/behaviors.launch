@@ -45,7 +45,14 @@
     </node>
 
     <!-- Explore -->
-    <!-- TODO -->
+    <node pkg="explore" type="explore_node.py" name="explore_node">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="explore_frequency" value="0.00833333333"/>
+        <param name="torso_speed_rad_sec" value="0.3"/>
+        <param name="head_speed_rad_sec" value="0.3"/>
+
+        <remap from="pose/filter_state" to="explore_node/filter_state"/>
+    </node>
 
     <!-- Sound Following -->
     <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">

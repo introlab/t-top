@@ -89,14 +89,14 @@ class MovementCommands:
             self._read_head[4] = angles[1]
             self._read_head[5] = angles[2]
 
-    def move_torso(self, pose, should_wait=False, speed=1.0e10):
+    def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10):
         if self._hbba_filter_state.is_filtering_all_messages:
             return False
 
-        if speed < self._min_speed_rad_sec:
-            speed = self._min_speed_rad_sec
+        if speed_rad_sec < self._min_speed_rad_sec:
+            speed_rad_sec = self._min_speed_rad_sec
 
-        steps_size = speed * self._minTime
+        steps_size = speed_rad_sec * self._minTime
 
         pose = math.fmod(pose, 2 * math.pi)
         distance = pose - self.current_torso_pose
