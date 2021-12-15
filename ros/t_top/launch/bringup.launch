@@ -2,17 +2,19 @@
     <arg name="language" default="en"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="visualization" default="false"/>
+    <arg name="simulation" default="false"/>
 
     <include file="$(find t_top)/launch/opencr.launch"/>
     <include file="$(find t_top)/launch/actuators.launch"/>
     <include file="$(find t_top)/launch/sensors.launch"/>
 
     <include file="$(find t_top)/launch/perceptions.launch">
-        <arg name="language" value="$(language)"/>
+        <arg name="language" value="$(arg language)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
         <arg name="visualization" value="$(arg visualization)"/>
     </include>
     <include file="$(find t_top)/launch/behaviors.launch">
-        <arg name="language" value="$(language)"/>
+        <arg name="language" value="$(arg language)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
     </include>
 </launch>

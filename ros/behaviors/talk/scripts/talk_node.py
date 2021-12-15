@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import os
+import threading
 
 from google.cloud import texttospeech
 from librosa.core import audio
@@ -33,16 +34,18 @@ class TalkNode:
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
         self._done_talking_pub = rospy.Publisher('talk/done', Empty, queue_size=5)
 
+        self._text_sub_lock = threading.Lock()
         self._text_sub = rospy.Subscriber('talk/text', String, self._on_text_received_cb)
 
     def _on_text_received_cb(self, msg):
-        if self._audio_pub.is_filtering_all_messages:
-            return
+        with self._text_sub_lock:
+            if self._audio_pub.is_filtering_all_messages:
+                return
 
-        mp3_audio_content = self._generate_mp3_audio_content(msg.data)
-        file_path = self._write_mp3_audio_content(mp3_audio_content)
-        self._play_audio(file_path)
-        self._done_talking_pub.publish(Empty())
+            mp3_audio_content = self._generate_mp3_audio_content(msg.data)
+            file_path = self._write_mp3_audio_content(mp3_audio_content)
+            self._play_audio(file_path)
+            self._done_talking_pub.publish(Empty())
 
     def _generate_mp3_audio_content(self, text):
         language_code = self._convert_language_to_language_code(self._language)
@@ -138,13 +141,13 @@ class TalkNode:
 
     def run(self):
         rospy.spin()
-        self._pyaudio.terminate()
 
 
 def main():
     rospy.init_node('talk_node')
     talk_node = TalkNode()
     talk_node.run()
+
 
 if __name__ == '__main__':
     try:

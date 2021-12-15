@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import threading
+
 import rospy
 import tf
 import numpy as np
@@ -12,6 +14,13 @@ import hbba_lite
 
 
 HEAD_ZERO_Z = 0.16893650962222248
+
+HEAD_POSE_X_INDEX = 0
+HEAD_POSE_Y_INDEX = 1
+HEAD_POSE_Z_INDEX = 2
+HEAD_POSE_ROLL_INDEX = 3
+HEAD_POSE_PITCH_INDEX = 4
+HEAD_POSE_YAW_INDEX = 5
 
 
 def vector_to_angles(vector):
@@ -27,7 +36,10 @@ def vector_to_angles(vector):
 
 class MovementCommands:
     def __init__(self, simulation=False):
-        self._maxFreq = 30
+        self._read_torso_lock = threading.Lock()
+        self._read_head_lock = threading.Lock()
+
+        self._maxFreq = 10
         self._minTime = 1 / self._maxFreq
         self._read_torso = 0
         self._read_head = 6 * [0]
@@ -45,21 +57,37 @@ class MovementCommands:
         self._torso_orientation_sub = rospy.Subscriber('opencr/current_torso_orientation', Float32, self._read_torso_cb, queue_size=5)
         self._head_pose_sub = rospy.Subscriber('opencr/current_head_pose', PoseStamped, self._read_head_cb, queue_size=5)
 
+    @property
+    def is_filtering_all_messages(self):
+        return self._hbba_filter_state._is_filtering_all_messages
+
+    @property
+    def current_torso_pose(self):
+        with self._read_torso_lock:
+            return self._read_torso
+
+    @property
+    def current_head_pose(self):
+        with self._read_head_lock:
+            return self._read_head
+
     def _read_torso_cb(self, msg):
-        self._read_torso = math.fmod(msg.data, 2 * math.pi)
+        with self._read_torso_lock:
+            self._read_torso = math.fmod(msg.data, 2 * math.pi)
 
     def _read_head_cb(self, msg):
-        self._read_head[0] = msg.pose.position.x
-        self._read_head[1] = msg.pose.position.y
-        self._read_head[2] = msg.pose.position.z
-
         angles = tf.transformations.euler_from_quaternion([msg.pose.orientation.x,
-                                                           msg.pose.orientation.y,
-                                                           msg.pose.orientation.z,
-                                                           msg.pose.orientation.w])
-        self._read_head[3] = angles[0]
-        self._read_head[4] = angles[1]
-        self._read_head[5] = angles[2]
+                                                        msg.pose.orientation.y,
+                                                        msg.pose.orientation.z,
+                                                        msg.pose.orientation.w])
+
+        with self._read_head_lock:
+            self._read_head[0] = msg.pose.position.x
+            self._read_head[1] = msg.pose.position.y
+            self._read_head[2] = msg.pose.position.z
+            self._read_head[3] = angles[0]
+            self._read_head[4] = angles[1]
+            self._read_head[5] = angles[2]
 
     def move_torso(self, pose, should_wait=False, speed=1.0e10):
         if self._hbba_filter_state.is_filtering_all_messages:
@@ -71,7 +99,7 @@ class MovementCommands:
         steps_size = speed * self._minTime
 
         pose = math.fmod(pose, 2 * math.pi)
-        distance = pose - self._read_torso
+        distance = pose - self.current_torso_pose
         if distance < -math.pi:
             distance = 2 * math.pi + distance
         elif distance > math.pi:
@@ -96,7 +124,7 @@ class MovementCommands:
             self._torso_orientation_pub.publish(pose)
 
         if should_wait:
-            while abs(pose - self._read_torso) > 0.1:
+            while abs(pose - self.current_torso_pose) > 0.1:
                 if self._hbba_filter_state.is_filtering_all_messages:
                     return False
                 self._torso_orientation_pub.publish(pose)
@@ -150,6 +178,14 @@ class MovementCommands:
         self._head_pose_pub.publish(pose_msg)
 
     def move_head(self, pose, should_wait=False, speed_meters_sec=1.0e10, speed_rad_sec=1.0e10):
+        """
+        pose[0]: x
+        pose[1]: y
+        pose[2]: z
+        pose[3]: roll (x)
+        pose[4]: pitch (y)
+        pose[5]: yaw (z)
+        """
         if self._hbba_filter_state.is_filtering_all_messages:
                 return False
 
@@ -161,7 +197,7 @@ class MovementCommands:
 
         np_pose = np.array(pose)
 
-        np_distances = np_pose - np.array(self._read_head)
+        np_distances = np_pose - np.array(self.current_head_pose)
 
         np_steps_size = self._compute_head_steps_size_array(speed_meters_sec, speed_rad_sec, np_distances)
 
@@ -187,7 +223,7 @@ class MovementCommands:
             self._head_msg(pose)
 
         if should_wait:
-            while not (np.abs(np_pose - np.array(self._read_head)) < self._np_head_tolerances).all():
+            while not (np.abs(np_pose - np.array(self.current_head_pose)) < self._np_head_tolerances).all():
                 if self._hbba_filter_state.is_filtering_all_messages:
                     return False
                 self._head_msg(pose)
