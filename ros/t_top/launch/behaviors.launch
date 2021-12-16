@@ -1,0 +1,72 @@
+<launch>
+    <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="simulation"/>
+
+    <!-- Telepresence -->
+    <!-- See opentera-webrtc-ros -->
+
+    <!-- Emotions -->
+    <!-- See user_interface -->
+
+    <!-- Talk -->
+    <node pkg="talk" type="talk_node.py" name="talk_node">
+        <param name="language" value="$(arg language)"/>
+        <param name="mouth_signal_gain" value="0.1"/>
+        <param name="frame_sample_count" value="256"/>
+
+        <remap from="audio_out" to="audio_float_22050"/>
+        <remap from="audio_out/filter_state" to="talk/filter_state"/>
+    </node>
+
+    <!-- Gesture -->
+    <node pkg="gesture" type="gesture_node.py" name="gesture_node">
+        <param name="simulation" value="$(arg simulation)"/>
+
+        <remap from="pose/filter_state" to="gesture/filter_state"/>
+    </node>
+
+    <!-- Face Following -->
+    <node pkg="face_following" type="face_following_node.py" name="face_following_node">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="control_frequency" value="10"/>
+        <param name="control_alpha" value="0.05"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="head_enabled" value="true"/>
+
+        <remap from="pose/filter_state" to="face_following/filter_state"/>
+    </node>
+
+    <!-- Dance -->
+    <node pkg="dance" type="dance_node.py" name="head_dance_node">
+        <param name="movement_file" value="$(find dance)/head_movements.json"/>
+
+        <remap from="pose/filter_state" to="head_dance/filter_state"/>
+    </node>
+    <node pkg="dance" type="dance_node.py" name="torso_dance_node">
+        <param name="movement_file" value="$(find dance)/torso_movements.json"/>
+
+        <remap from="pose/filter_state" to="torso_dance/filter_state"/>
+    </node>
+
+    <!-- Explore -->
+    <node pkg="explore" type="explore_node.py" name="explore_node">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="explore_frequency" value="0.00833333333"/>
+        <param name="torso_speed_rad_sec" value="0.3"/>
+        <param name="head_speed_rad_sec" value="0.3"/>
+
+        <remap from="pose/filter_state" to="explore_node/filter_state"/>
+    </node>
+
+    <!-- Sound Following -->
+    <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="control_frequency" value="10"/>
+        <param name="control_alpha" value="0.05"/>
+        <param name="head_enabled" value="true"/>
+
+        <remap from="sst" to="audio_sst"/>
+        <remap from="pose/filter_state" to="sound_following/filter_state"/>
+    </node>
+
+</launch>

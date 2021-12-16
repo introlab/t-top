@@ -1,0 +1,153 @@
+<launch>
+    <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+    <arg name="odas_configuration_path" default="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
+    <arg name="visualization" default="false"/>
+
+    <!-- RTAM-Map -->
+    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
+        <remap from="rgb/image" to="/camera/color/image_raw"/>
+        <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
+        <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+
+        <param name="approx_sync" value="true"/>
+    </node>
+    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="rtabmap_filter">
+        <remap from="in" to="rgbd_image"/>
+        <remap from="out" to="rgbd_image_filtered"/>
+        <remap from="filter_state" to="rtabmap/filter_state"/>
+    </node>
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="--delete_db_on_start">
+        <param name="frame_id" type="string" value="camera_depth_optical_frame"/>
+        <param name="subscribe_depth" type="bool" value="false"/>
+        <param name="subscribe_rgbd" type="bool" value="true"/>
+
+        <param name="queue_size" type="int" value="10"/>
+
+        <param name="RGBD/AngularUpdate" type="string" value="0.01"/>
+        <param name="RGBD/LinearUpdate" type="string" value="0.01"/>
+        <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+
+        <remap from="odom" to="opencr/odom"/>
+        <remap from="rgbd_image" to="rgbd_image_filtered"/>
+    </node>
+
+    <!-- Video Analyzer -->
+    <node pkg="video_analyzer" type="video_analyzer_node.py" name="video_analyzer_node">
+        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="confidence_threshold" value="0.70"/>
+        <param name="nms_threshold" value="0.5"/>
+        <param name="person_probability_threshold" value="0.75"/>
+        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="depth_mean_offset" value="2"/>
+
+        <remap from="color_image_raw" to="/camera/color/image_raw"/>
+        <remap from="depth_image_raw" to="/camera/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>
+    </node>
+    <node if="$(arg visualization)" pkg="video_analyzer" name="video_analysis_markers" type="video_analysis_markers_node.py"/>
+
+    <!-- ODAS -->
+    <node pkg="odas_ros" type="odas_server_node.py" name="odas_server_node">
+        <param name="configuration_path" value="$(arg odas_configuration_path)"/>
+        <param name="frame_id" value="odas"/>
+
+        <remap from="sss" to="audio_signed_16_44100"/>
+        <remap from="sst" to="audio_sst"/>
+    </node>
+    <node if="$(arg visualization)" pkg="odas_ros" type="odas_visualization_node.py" name="odas_visualization_node">
+        <param name="configuration_path" value="$(arg odas_configuration_path)"/>
+
+        <remap from="sst" to="audio_sst"/>
+    </node>
+
+    <!-- Music Beat Detector -->
+    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="beat_detector_node_filter">
+        <remap from="in" to="audio_signed_16_44100"/>
+        <remap from="out" to="audio_signed_16_44100_filtered"/>
+        <remap from="filter_state" to="beat_detector/filter_state"/>
+    </node>
+    <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
+        <param name="enable" value="false"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="256"/>
+        <param name="min_bpm" value="50"/>
+        <param name="max_bpm" value="180"/>
+        <param name="bpm_candidate_count" value="2"/>
+
+        <remap from="audio_in" to="audio_signed_16_44100_filtered"/>
+        <remap from="bpm" to="dance/bpm"/>
+        <remap from="beat" to="dance/beat"/>
+    </node>
+
+    <!-- Audio Resampling -->
+    <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
+        <param name="input_format" value="signed_16"/>
+        <param name="output_format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="input_sampling_frequency" value="44100"/>
+        <param name="output_sampling_frequency" value="16000"/>
+        <param name="input_frame_sample_count" value="256"/>
+
+        <remap from="audio_in" to="audio_signed_16_44100"/>
+        <remap from="audio_out" to="audio_signed_16_16000"/>
+    </node>
+
+    <!-- Speech to Text -->
+    <node pkg="speech_to_text" type="speech_to_text_node.py" name="speech_to_text_node">
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="92"/>
+        <param name="request_frame_count" value="20"/>
+        <param name="language" value="$(arg language)"/>
+
+        <remap from="audio_in" to="audio_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+        <remap from="text" to="speech_to_text/transcript"/>
+    </node>
+
+    <!-- Robot Name Detector -->
+    <node pkg="robot_name_detector" type="robot_name_detector_node.py" name="robot_name_detector_node">
+        <param name="message_rate" value="10"/>
+        <param name="sound_rms_attack" value="0.05"/>
+        <param name="sound_rms_release" value="0.99"/>
+        <param name="sound_rms_presence_threshold" value="0.03"/>
+
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="robot_name_model_probability_threshold" value="0.225"/>
+        <param name="robot_name_model_interval" value="1600"/>
+        <param name="robot_name_model_analysis_delay" value="8000"/>
+        <param name="robot_name_model_analysis_count" value="3"/>
+
+        <remap from="audio_in" to="audio_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="robot_name_detector/filter_state"/>
+    </node>
+
+    <!-- Audio Analyzer -->
+    <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
+        <param name="multiclass_audio_descriptor" value="false"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="interval" value="32000"/> <!-- Low quality audio-->
+        <param name="voice_probability_threshold" value="0.5"/>
+        <param name="class_probability_threshold" value="0.5"/>
+
+        <remap from="low_quality_audio_in" to="audio_signed_16_16000"/>
+        <remap from="high_quality_audio_in" to="audio_signed_16_44100"/>
+        <remap from="audio_in/filter_state" to="audio_analyzer/filter_state"/>
+        <remap from="sst" to="audio_sst"/>
+    </node>
+
+    <!-- Person Identification -->
+    <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node">
+        <param name="face_descriptor_threshold" value="0.889"/>
+        <param name="voice_descriptor_threshold" value="1.2321"/>
+        <param name="face_voice_descriptor_threshold" value="1.7068"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="direction_frame" value="odas"/>
+        <param name="direction_angle_threshold_rad" value="0.15"/>
+        <param name="search_frequency" value="0.5"/>
+    </node>
+</launch>

@@ -1,0 +1,9 @@
+[submodule "ros/audio_utils"]
+	path = ros/audio_utils
+	url = https://github.com/introlab/audio_utils.git
+[submodule "ros/opentera-webrtc-ros"]
+	path = ros/opentera-webrtc-ros
+	url = https://github.com/introlab/opentera-webrtc-ros.git
+[submodule "ros/perceptions/odas_ros"]
+	path = ros/perceptions/odas_ros
+	url = https://github.com/introlab/odas_ros.git

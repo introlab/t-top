@@ -1,0 +1,1 @@
+from pose_estimation.trainers.pose_estimator_trainer import PoseEstimatorTrainer

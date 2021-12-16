@@ -1,0 +1,7 @@
+<launch>
+    <arg name="robotModel" default="$(find t_top)/urdf/ttop.urdf.xacro"/>
+    <param name="robot_description" command="$(find xacro)/xacro $(arg robotModel) use_nominal_extrinsics:=true add_plug:=true" />
+    <arg name="gui" default="True" />
+    <param name="use_gui" value="$(arg gui)" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find t_top)/rviz/urdf.rviz" required="true" />
+</launch>

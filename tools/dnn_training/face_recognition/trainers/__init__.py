@@ -1,0 +1,1 @@
+from face_recognition.trainers.face_descriptor_extractor_trainer import FaceDescriptorExtractorTrainer

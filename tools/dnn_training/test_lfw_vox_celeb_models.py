@@ -1,0 +1,174 @@
+import argparse
+import os
+import time
+
+import numpy as np
+from PIL import Image
+
+import torch
+import torchaudio
+
+from tqdm import tqdm
+
+from common.modules import load_checkpoint
+from common.metrics.roc_evaluation import RocDistancesThresholdsEvaluation
+
+from face_recognition.trainers.face_descriptor_extractor_trainer import create_validation_image_transform
+from train_face_descriptor_extractor import create_model as create_face_model
+
+from audio_descriptor.datasets import AudioDescriptorValidationTransforms
+from train_audio_descriptor_extractor import create_model as create_voice_model
+
+
+class LfwVoxCelebEvaluation(RocDistancesThresholdsEvaluation):
+    def __init__(self, lfw_dataset_root, vox_celeb_dataset_root, pairs_file, output_path,
+                 face_model, face_transforms, voice_model, voice_transforms):
+        super().__init__(output_path, thresholds=np.arange(0, 10, 0.0001))
+
+        self._lfw_dataset_root = lfw_dataset_root
+        self._vox_celeb_dataset_root = vox_celeb_dataset_root
+        self._pairs_file = pairs_file
+
+        self._face_model = face_model
+        self._face_transforms = face_transforms
+        self._voice_model = voice_model
+        self._voice_transforms = voice_transforms
+
+        self._pairs = self._read_pairs()
+
+    def _read_pairs(self):
+        pairs = []
+        with open(self._pairs_file, 'r') as f:
+            lines = f.readlines()
+
+        for line in lines:
+            sections = line.strip().split(' ')
+            voice_class_name_0 = sections[0]
+            voice_video_id_0 = sections[1]
+            voice_file_0 = sections[2]
+            voice_class_name_1 = sections[3]
+            voice_video_id_1 = sections[4]
+            voice_file_1 = sections[5]
+            voice_path_0 = os.path.join(self._vox_celeb_dataset_root, 'sounds', voice_class_name_0, voice_video_id_0,
+                                        voice_file_0)
+            voice_path_1 = os.path.join(self._vox_celeb_dataset_root, 'sounds', voice_class_name_1, voice_video_id_1,
+                                        voice_file_1)
+
+            face_class_name_0 = sections[6]
+            face_file_0 = sections[7]
+            face_class_name_1 = sections[8]
+            face_file_1 = sections[9]
+            face_path_0 = os.path.join(self._lfw_dataset_root, face_class_name_0, face_file_0)
+            face_path_1 = os.path.join(self._lfw_dataset_root, face_class_name_1, face_file_1)
+
+            if not os.path.exists(voice_path_0) or not os.path.exists(voice_path_1) or \
+                    not os.path.exists(face_path_0) or not os.path.exists(face_path_1):
+                raise ValueError('Invalid paths')
+
+            if voice_class_name_0 == voice_class_name_1 and face_class_name_0 == face_class_name_1:
+                is_same_person = True
+            elif voice_class_name_0 != voice_class_name_1 and face_class_name_0 != face_class_name_1:
+                is_same_person = False
+            else:
+                raise ValueError('Invalid class association')
+
+            pairs.append((voice_path_0, voice_path_1, face_path_0, face_path_1, is_same_person))
+
+        return pairs
+
+    def _calculate_distances(self):
+        distances = []
+
+        for voice_path_0, voice_path_1, face_path_0, face_path_1, _ in tqdm(self._pairs):
+            voice_sound_0 = self._load_voice_sound(voice_path_0)
+            voice_sound_1 = self._load_voice_sound(voice_path_1)
+            face_image_0 = self._load_face_image(face_path_0)
+            face_image_1 = self._load_face_image(face_path_1)
+
+            voice_descriptors = self._voice_model(torch.stack((voice_sound_0, voice_sound_1)))#
+            face_descriptors = self._face_model(torch.stack((face_image_0, face_image_1)))
+
+            descriptor_0 = torch.cat((voice_descriptors[0], face_descriptors[0]))
+            descriptor_1 = torch.cat((voice_descriptors[1], face_descriptors[1]))
+            distance = torch.dist(descriptor_0, descriptor_1, p=2).item()
+            distances.append(distance)
+
+        return torch.tensor(distances)
+
+    def _load_voice_sound(self, path):
+        waveform, sample_rate = torchaudio.load(path)
+        class_index = 0
+
+        metadata = {
+            'original_sample_rate': sample_rate
+        }
+
+        if self._voice_transforms is not None:
+            waveform, _, _ = self._voice_transforms(waveform, class_index, metadata)
+
+        return waveform
+
+    def _load_face_image(self, path):
+        image = Image.open(path).convert('RGB')
+        if self._face_transforms is not None:
+            image = self._face_transforms(image)
+
+        return image
+
+    def _get_is_same_person_target(self):
+        return torch.tensor([pair[4] for pair in self._pairs])
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Test exported face descriptor extractor')
+
+    parser.add_argument('--lfw_dataset_root', type=str, help='Choose the lfw dataset root path', required=True)
+    parser.add_argument('--vox_celeb_dataset_root', type=str, help='Choose the vox celeb dataset root path',
+                        required=True)
+    parser.add_argument('--pairs_file', type=str, help='Choose the file that contains the pairs',
+                        required=True)
+    parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
+
+    parser.add_argument('--face_embedding_size', type=int, help='Set the face embedding size', required=True)
+    parser.add_argument('--face_model_checkpoint', type=str, help='Choose the face model checkpoint path',
+                        required=True)
+
+    parser.add_argument('--voice_backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
+                                                          'resnet18', 'resnet34', 'resnet50',
+                                                          'open_face_inception'],
+                        help='Choose the voice backbone type', required=True)
+    parser.add_argument('--voice_embedding_size', type=int, help='Set the voice embedding size', required=True)
+    parser.add_argument('--voice_waveform_size', type=int, help='Set the voice waveform size', required=True)
+    parser.add_argument('--voice_n_features', type=int, help='Set voice n_features', required=True)
+    parser.add_argument('--voice_n_fft', type=int, help='Set voice n_fft', required=True)
+    parser.add_argument('--voice_audio_transform_type', choices=['mfcc', 'mel_spectrogram'],
+                        help='Choose the voice audio transform type', required=True)
+    parser.add_argument('--voice_model_checkpoint', type=str, help='Choose the voice model checkpoint path',
+                        required=True)
+
+    args = parser.parse_args()
+
+    face_model = create_face_model(args.face_embedding_size)
+    load_checkpoint(face_model, args.face_model_checkpoint)
+    face_transforms = create_validation_image_transform()
+
+    voice_model = create_voice_model(args.voice_backbone_type, args.voice_embedding_size)
+    load_checkpoint(voice_model, args.voice_model_checkpoint)
+    voice_transforms = AudioDescriptorValidationTransforms(waveform_size=args.voice_waveform_size,
+                                                           n_features=args.voice_n_features,
+                                                           n_fft=args.voice_n_fft,
+                                                           audio_transform_type=args.voice_audio_transform_type)
+
+    evaluation = LfwVoxCelebEvaluation(args.lfw_dataset_root,
+                                       args.vox_celeb_dataset_root,
+                                       args.pairs_file,
+                                       args.output_path,
+                                       face_model,
+                                       face_transforms,
+                                       voice_model,
+                                       voice_transforms)
+    evaluation.evaluate()
+
+
+if __name__ == '__main__':
+    main()

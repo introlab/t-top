@@ -1,0 +1,6 @@
+dataset_data
+output
+.idea/
+stewart_forward_kinematics_dataset/
+venv
+__pycache__

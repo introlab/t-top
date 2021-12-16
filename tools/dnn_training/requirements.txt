@@ -1,0 +1,12 @@
+numpy
+scipy
+matplotlib
+torch
+torchvision
+torchaudio
+scikit-image
+tqdm
+opencv-python
+git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
+librosa
+sklearn
