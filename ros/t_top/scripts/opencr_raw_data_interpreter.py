@@ -26,11 +26,11 @@ class OpenCrRawDataInterpreter:
 
         self._odom_pub = rospy.Publisher('opencr/odom', Odometry, queue_size=5)
 
-        self._raw_imu_sub = rospy.Subscriber("opencr/raw_imu",
+        self._raw_imu_sub = rospy.Subscriber('opencr/raw_imu',
             Float32MultiArray, self._raw_imu_cb, queue_size=5)
-        self._current_torso_orientation_sub = rospy.Subscriber("opencr/current_torso_orientation",
+        self._current_torso_orientation_sub = rospy.Subscriber('opencr/current_torso_orientation',
             Float32, self._current_torso_orientation_cb, queue_size=5)
-        self._current_head_pose_sub = rospy.Subscriber("opencr/current_head_pose",
+        self._current_head_pose_sub = rospy.Subscriber('opencr/current_head_pose',
             PoseStamped, self._current_head_pose_cb, queue_size=5)
 
     def _raw_imu_cb(self, raw_imu):
@@ -59,19 +59,19 @@ class OpenCrRawDataInterpreter:
         now = rospy.Time.now()
         translation = (0, 0, self._base_footprint_torso_base_delta_z)
         quaternion = tf.transformations.quaternion_from_euler(0, 0, orientation.data)
-        self._tf_broadcaster.sendTransform(translation, quaternion, now, "torso_base", "base_link")
+        self._tf_broadcaster.sendTransform(translation, quaternion, now, 'torso_base', 'base_link')
 
     def _current_head_pose_cb(self, pose):
         now = rospy.Time.now()
         translation = (pose.pose.position.x, pose.pose.position.y, pose.pose.position.z)
         quaternion = (pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w)
-        self._tf_broadcaster.sendTransform(translation, quaternion, now, "head", pose.header.frame_id)
+        self._tf_broadcaster.sendTransform(translation, quaternion, now, 'head', pose.header.frame_id)
 
     def _send_odom(self, trans, ori):
         odom_msg = Odometry()
-        odom_msg.header.frame_id = "base_link"
+        odom_msg.header.frame_id = 'base_link'
         odom_msg.header.stamp = rospy.Time.now()
-        odom_msg.child_frame_id = "camera_depth_optical_frame"
+        odom_msg.child_frame_id = 'camera_depth_optical_frame'
 
         odom_msg.pose.pose.position.x = trans[0]
         odom_msg.pose.pose.position.y = trans[1]
@@ -97,7 +97,7 @@ class OpenCrRawDataInterpreter:
             self._rate.sleep()
 
             try:
-                (trans, ori) = self._tf_listener.lookupTransform("/camera_depth_optical_frame", "/base_link", rospy.Time(0))
+                (trans, ori) = self._tf_listener.lookupTransform('/camera_depth_optical_frame', '/base_link', rospy.Time(0))
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
 

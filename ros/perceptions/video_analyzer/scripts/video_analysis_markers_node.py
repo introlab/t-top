@@ -18,7 +18,7 @@ class VideoAnalysisMarkersNode:
         markerArray.markers.append(marker)
         self._video_analysis_markers_pub.publish(markerArray)
 
-    def _create_marker(self, header, tag, type, pose, ID, scale, rgb, points=[], name=""):
+    def _create_marker(self, header, tag, type, pose, ID, scale, rgb, points=[], name=''):
         marker = Marker()
         marker.header.stamp = header.stamp
         marker.header.frame_id = header.frame_id
@@ -55,19 +55,19 @@ class VideoAnalysisMarkersNode:
         for obj in msg.objects:
             if obj.person_pose == []:
                 color = [1, 0, 0]
-                objMarker = self._create_marker(msg.header, "objects", Marker.SPHERE, obj.center, objID, 0.1, color)
+                objMarker = self._create_marker(msg.header, 'objects', Marker.SPHERE, obj.center, objID, 0.1, color)
                 markerArray.markers.append(objMarker)
 
                 objID += 1
 
             else:
                 color = [0, 1, 0]
-                personMarker = self._create_marker(msg.header, "people", Marker.SPHERE_LIST, obj.person_pose[0], personID, 0.05, color, obj.person_pose)
+                personMarker = self._create_marker(msg.header, 'people', Marker.SPHERE_LIST, obj.person_pose[0], personID, 0.05, color, obj.person_pose)
                 markerArray.markers.append(personMarker)
 
                 personID += 1
 
-            nameMarker = self._create_marker(msg.header, "names", Marker.TEXT_VIEW_FACING, obj.center, nameID, 0.1, color, name=obj.object_class)
+            nameMarker = self._create_marker(msg.header, 'names', Marker.TEXT_VIEW_FACING, obj.center, nameID, 0.1, color, name=obj.object_class)
             markerArray.markers.append(nameMarker)
 
             nameID += 1
@@ -79,7 +79,7 @@ class VideoAnalysisMarkersNode:
 
 
 def main():
-    rospy.init_node("video_analysis_markers_node")
+    rospy.init_node('video_analysis_markers_node')
     video_analysis_markers_node = VideoAnalysisMarkersNode()
     video_analysis_markers_node.run()
 

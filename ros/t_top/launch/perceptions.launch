@@ -39,7 +39,7 @@
         <param name="nms_threshold" value="0.5"/>
         <param name="person_probability_threshold" value="0.75"/>
         <param name="pose_confidence_threshold" value="0.4"/>
-        <param name="inference_type" value="$(neural_network_inference_type)"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="depth_mean_offset" value="2"/>
 
         <remap from="color_image_raw" to="/camera/color/image_raw"/>
@@ -116,7 +116,7 @@
         <param name="sound_rms_release" value="0.99"/>
         <param name="sound_rms_presence_threshold" value="0.03"/>
 
-        <param name="inference_type" value="$(neural_network_inference_type)"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="robot_name_model_probability_threshold" value="0.225"/>
         <param name="robot_name_model_interval" value="1600"/>
         <param name="robot_name_model_analysis_delay" value="8000"/>
@@ -129,7 +129,7 @@
     <!-- Audio Analyzer -->
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
         <param name="multiclass_audio_descriptor" value="false"/>
-        <param name="inference_type" value="$(neural_network_inference_type)"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="interval" value="32000"/> <!-- Low quality audio-->
         <param name="voice_probability_threshold" value="0.5"/>
         <param name="class_probability_threshold" value="0.5"/>
@@ -141,5 +141,13 @@
     </node>
 
     <!-- Person Identification -->
-    <!-- TODO -->
+    <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node">
+        <param name="face_descriptor_threshold" value="0.889"/>
+        <param name="voice_descriptor_threshold" value="1.2321"/>
+        <param name="face_voice_descriptor_threshold" value="1.7068"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="direction_frame" value="odas"/>
+        <param name="direction_angle_threshold_rad" value="0.15"/>
+        <param name="search_frequency" value="0.5"/>
+    </node>
 </launch>

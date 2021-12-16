@@ -28,7 +28,7 @@ class FaceFollowingNode:
         self._tf_listener = tf.TransformListener()
 
         self._movement_commands = MovementCommands(self._simulation)
-        self._video_analysis_sub = rospy.Subscriber("video_analysis", VideoAnalysis, self._video_analysis_cb, queue_size=1)
+        self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
 
     def _video_analysis_cb(self, msg):
         if self._movement_commands.is_filtering_all_messages:
@@ -61,8 +61,8 @@ class FaceFollowingNode:
         temp_in_point.point.y = point.y
         temp_in_point.point.z = point.z
 
-        base_link_point = self._tf_listener.transformPoint("/base_link", temp_in_point)
-        stewart_base_point = self._tf_listener.transformPoint("/stewart_base", temp_in_point)
+        base_link_point = self._tf_listener.transformPoint('/base_link', temp_in_point)
+        stewart_base_point = self._tf_listener.transformPoint('/stewart_base', temp_in_point)
 
         point.x = base_link_point.point.x
         point.y = base_link_point.point.y

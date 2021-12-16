@@ -78,8 +78,8 @@ def display_predictions(predictions, scale, image):
         x1 = center_x + w / 2
         y1 = center_y + h / 2
 
-        draw.rectangle([x0, y0, x1, y1], outline="red")
-        draw.text((x0, y0), COCO_CLASSES[class_index], fill="red")
+        draw.rectangle([x0, y0, x1, y1], outline='red')
+        draw.text((x0, y0), COCO_CLASSES[class_index], fill='red')
 
     del draw
     image.show()

@@ -18,15 +18,19 @@
         <remap from="audio_out/filter_state" to="talk/filter_state"/>
     </node>
 
-    <!-- Greet -->
-    <!-- TODO -->
+    <!-- Gesture -->
+    <node pkg="gesture" type="gesture_node.py" name="gesture_node">
+        <param name="simulation" value="$(arg simulation)"/>
+
+        <remap from="pose/filter_state" to="gesture/filter_state"/>
+    </node>
 
     <!-- Face Following -->
     <node pkg="face_following" type="face_following_node.py" name="face_following_node">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="10"/>
         <param name="control_alpha" value="0.05"/>
-        <param name="nose_confidence_threshold" value="0.5"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
         <param name="head_enabled" value="true"/>
 
         <remap from="pose/filter_state" to="face_following/filter_state"/>
@@ -59,7 +63,6 @@
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="10"/>
         <param name="control_alpha" value="0.05"/>
-        <param name="nose_confidence_threshold" value="0.5"/>
         <param name="head_enabled" value="true"/>
 
         <remap from="sst" to="audio_sst"/>

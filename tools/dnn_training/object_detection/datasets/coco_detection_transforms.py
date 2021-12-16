@@ -63,7 +63,7 @@ def _resize_image(image, size):
 
     image = image.resize((int(w * scale), int(h * scale)), Image.BILINEAR)
 
-    padded_image = Image.new("RGB", (size[0], size[1]), (128, 128, 128))
+    padded_image = Image.new('RGB', (size[0], size[1]), (128, 128, 128))
     padded_image.paste(image)
 
     return padded_image, scale

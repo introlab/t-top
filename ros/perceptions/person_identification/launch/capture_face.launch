@@ -1,0 +1,38 @@
+<launch>
+    <arg name="name"/>
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+        <arg name="color_width" value="1280"/>
+        <arg name="color_height" value="720"/>
+        <arg name="align_depth" value="true"/>
+
+        <arg name="color_fps" value="30"/>
+        <arg name="infra_fps" value="30"/>
+        <arg name="depth_fps" value="30"/>
+
+        <arg name="filters" value="pointcloud"/>
+    </include>
+
+    <node pkg="video_analyzer" type="video_analyzer_node.py" name="video_analyzer_node">
+        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="confidence_threshold" value="0.70"/>
+        <param name="nms_threshold" value="0.5"/>
+        <param name="person_probability_threshold" value="0.75"/>
+        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="depth_mean_offset" value="2"/>
+
+        <remap from="color_image_raw" to="/camera/color/image_raw"/>
+        <remap from="depth_image_raw" to="/camera/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>
+    </node>
+
+    <node pkg="person_identification" type="capture_face_node.py" name="capture_face_node" output="screen">
+        <param name="name" value="$(arg name)"/>
+        <param name="mean_size" value="50"/>
+    </node>
+</launch>

@@ -50,7 +50,7 @@ class DarknetCfgToPytorchModuleConverter:
                     raise ValueError('Invalid layer type (line={})'.format(i + 1))
             elif line.startswith('[') or line.endswith(']'):
                 raise ValueError('Invalid cfg file (line={})'.format(i + 1))
-            elif line.count("=") == 1:
+            elif line.count('=') == 1:
                 key, value = line.split('=')
                 layer[key.strip()] = value.strip()
             else:

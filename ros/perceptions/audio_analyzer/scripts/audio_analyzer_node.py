@@ -61,7 +61,7 @@ class AudioAnalyzerNode:
         self._audio_analysis_count = 0
 
         self._audio_direction_lock = threading.Lock()
-        self._audio_direction = ("", 0.0, 0.0, 0.0)
+        self._audio_direction = ('', 0.0, 0.0, 0.0)
 
         self._audio_analysis_pub = rospy.Publisher('audio_analysis', AudioAnalysis, queue_size=10)
         self._audio_analysis_seq = 0

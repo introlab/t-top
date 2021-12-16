@@ -231,36 +231,41 @@ class MovementCommands:
 
         return True
 
-    def move_yes(self):
-        for i in range(0, 5):
-            decay = 0.03 * i
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, -0.3 + decay, 0], True, speed_rad_sec=1.0):
+    def move_yes(self, count=3, speed_rad_sec=1.0):
+        for i in range(count):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.15 - decay, 0], True, speed_rad_sec=1.0):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
                 return False
 
-        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=1.0):
+        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
             return False
         return True
 
-    def move_no(self):
-        for i in range(0, 3):
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0.25], True, speed_rad_sec=1.0):
+    def move_no(self, count=3, speed_rad_sec=1.0):
+        for i in range(count):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0.25], True, speed_rad_sec=speed_rad_sec):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, -0.25], True, speed_rad_sec=1.0):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, -0.25], True, speed_rad_sec=speed_rad_sec):
                 return False
 
-        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=1.0):
+        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
             return False
         return True
 
-    def move_maybe(self):
-        if not self.move_head([-0.01, 0, HEAD_ZERO_Z, 0.1, -0.2, 0], True, speed_rad_sec=0.5):
-            return False
-        rospy.sleep(1.2)
-        if not self.move_head([-0.02, 0, HEAD_ZERO_Z, -0.2, -0.3, 0], True, speed_rad_sec=0.5):
-            return False
-        rospy.sleep(2.0)
-        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=0.5):
+    def move_maybe(self, count=3, speed_rad_sec=1.0):
+        for i in range(count):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0.25, 0, 0], True, speed_rad_sec=speed_rad_sec):
+                return False
+            if not self.move_head([0, 0, HEAD_ZERO_Z, -0.25, 0, 0], True, speed_rad_sec=speed_rad_sec):
+                return False
+
+        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
             return False
         return True
+
+    def move_head_to_origin(self):
+        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True)
+
+    def move_torso_to_origin(self):
+        self.move_torso(0, True)

@@ -20,7 +20,7 @@ class SoundFollowingNode:
         self._target_head_pitch = None
 
         self._movement_commands = MovementCommands(self._simulation)
-        self._sst_sub = rospy.Subscriber("sst", OdasSstArrayStamped, self._sst_cb, queue_size=10)
+        self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
     def _sst_cb(self, sst):
         if self._movement_commands.is_filtering_all_messages or len(sst.sources) == 0:

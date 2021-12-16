@@ -26,7 +26,7 @@ class Trainer:
         if model_checkpoint is not None:
             load_checkpoint(model, model_checkpoint, strict=False)
         if device.type == 'cuda' and torch.cuda.device_count() > 1:
-            print("DataParallel - GPU count:", torch.cuda.device_count())
+            print('DataParallel - GPU count:', torch.cuda.device_count())
             model = nn.DataParallel(model)
 
         self._model = model.to(device)

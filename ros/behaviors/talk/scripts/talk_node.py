@@ -79,7 +79,7 @@ class TalkNode:
         frames, sample_rate = self._load_frames(file_path)
 
         if sample_rate != SUPPORTED_SAMPLE_RATE:
-            rospy.logerr("Sample rate is not equal to " + str(SUPPORTED_SAMPLE_RATE) + ".\nSound will not be played")
+            rospy.logerr('Sample rate is not equal to ' + str(SUPPORTED_SAMPLE_RATE) + '.\nSound will not be played')
             return
 
         global_energy_filter_sos, global_energy_filter_zi = self._initialize_global_energy_filter(sample_rate)
