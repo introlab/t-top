@@ -6,7 +6,7 @@
     <!-- See opentera-webrtc-ros -->
 
     <!-- Emotions -->
-    <!-- TODO -->
+    <!-- See user_interface -->
 
     <!-- Talk -->
     <node pkg="talk" type="talk_node.py" name="talk_node">
