@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import threading
 
 import rospy
@@ -50,7 +51,13 @@ class SoundFollowingNode:
         if target_torso_yaw is None:
             return
 
-        pose = self._control_alpha * target_torso_yaw + (1 - self._control_alpha) * self._movement_commands.current_torso_pose
+        distance = target_torso_yaw - self._movement_commands.current_torso_pose
+        if distance < -math.pi:
+            distance = 2 * math.pi + distance
+        elif distance > math.pi:
+            distance = -(2 * math.pi - distance)
+
+        pose = self._movement_commands.current_torso_pose + self._control_alpha * distance
         self._movement_commands.move_torso(pose)
 
     def _update_head(self):

@@ -29,7 +29,8 @@ def vector_to_angles(vector):
     x = unit_vector[0]
     y = unit_vector[1]
     z = unit_vector[2]
-    yaw = np.arctan2(y,x)
+
+    yaw = math.fmod(np.arctan2(y,x), 2 * math.pi)
     pitch = -np.arctan2(z,x)
     return yaw, pitch
 
