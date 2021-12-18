@@ -254,7 +254,51 @@
 
 
 ## I. Battery Charger
-TODO
+TODO SMBus
+
+| Part                                 | Quantity | Image                                                                                        |
+| ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
+| `Robot Power Connector - Female`     | 1        | ![Robot Power Connector - Female](images/electronics/Robot%20Power%20Connector%20Female.jpg) |
+| `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
+| `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
+| `16 AWG Ferrule`                     | 4        | ![18 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
+| `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST%20VHR-2N.jpg)                                 |
+| `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST%20SVH-21T-1.1.jpg)                   |
+| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+
+### Steps
+1. Cut a `16 AWG red wire` of 8.5 cm long.
+2. Cut a `16 AWG black wire` of 8.5 cm long.
+3. For each wire, crimp a `16 AWG ferrule` on one end.
+
+![Ferrules](images/assemblies/04I%20ferrule.jpg)
+
+4. For each wire, crimp a `JST SVH-21T-1.1 crimp contact` on the other end.
+
+![JST SVH-21T-1.1 crimp contact](images/assemblies/04I%20crimp.jpg)
+
+5. Insert the wires into a `JST VHR-2N connector`, as shown in the following picture.
+
+![JST VHR-2N Connector](images/assemblies/04I%20JST%20VHR-2N%20Connector.jpg)
+
+6. Cut a `16 AWG red wire` of 24.5 cm long.
+7. Cut a `16 AWG black wire` of 24.5 cm long.
+8. Solder the wires onto the `robot power connector`, as shown in the following picture.
+
+![Robot Power Connector - Female](images/assemblies/03I%20Robot%20Power%20Connector%20-%20Female.jpg)
+
+9. Install a `heat shrink tube` onto each wire, as shown in the following picture.
+
+![Robot Power Connector - Female - Heat Shrink Tube](images/assemblies/03I%20heat%20shrink%20tube.jpg)
+
+10. For each wire, crimp a `JST SVH-21T-1.1 crimp contact` on the other end.
+
+![JST SVH-21T-1.1 crimp contact](images/assemblies/04I%20crimp.jpg)
+
+11. Insert the wires into a `JST VHR-2N connector`, as shown in the following picture.
+
+![JST VHR-2N Connector](images/assemblies/04I%20JST%20VHR-2N%20Connector.jpg)
+
 
 ## J. Slip Ring Cables
 ### Required Parts

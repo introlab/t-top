@@ -123,3 +123,20 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 20. Solder C19.
 
 ![19V Buck-Boost PCB - All](images/assemblies/03D%20all.jpg)
+
+## E. Battery Charger - RRC-PMM240
+
+### Required Parts
+| Part                           | Quantity | Image                                                              |
+| ------------------------------ | -------- | ------------------------------------------------------------------ |
+| `Battery Charger - RRC-PMM240` | 1        | ![Battery Charger - RRC-PMM240](images/electronics/RRC-PMM240.jpg) |
+| `JST B2P-VH Connector`         | 2        | ![JST B2P-VH Connector](images/electronics/JST%20B2P-VH.jpg)       |
+
+### Steps
+1. Desolder the following connectors.
+
+![Battery Charger - Desolder](images/assemblies/03E%20RRC-PMM240%20horizontal.jpg)
+
+2. Solder the `JST B2P-VH connectors`, as shown in the following picture.
+
+![Battery Charger - Desolder](images/assemblies/03E%20RRC-PMM240%20vertical.jpg)

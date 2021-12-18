@@ -23,8 +23,6 @@ In order to assemble the robot, you need to buy the following Items.
 | JST VHR-2N                           | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1744416-2/4730260)  |
 | JST SVH-21T-1.1                      | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1744201-1/4021812)  |
 
-TODO Remove JST B2P-VH if useless
-
 ### McMaster-Carr
 | Part                                 | Quantity | Quantity per Package | Package Quantity | Link                                        |
 | ------------------------------------ | -------- | -------------------- | ---------------- | ------------------------------------------- |
