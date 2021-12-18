@@ -4,7 +4,7 @@
     <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
         <arg name="port" value="9090"/>
     </include>
-    <node pkg="user_interface" type="web.sh" name="talk_node"/>
+    <node pkg="user_interface" type="web.sh" name="user_interface"/>
 
     <!-- Sound -->
     <node pkg="alsa_playback_node" type="alsa_playback_node" name="alsa_playback_node">
