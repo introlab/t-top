@@ -40,7 +40,7 @@ class MovementCommands:
         self._read_torso_lock = threading.Lock()
         self._read_head_lock = threading.Lock()
 
-        self._maxFreq = 10
+        self._maxFreq = 30
         self._minTime = 1 / self._maxFreq
         self._read_torso = 0
         self._read_head = 6 * [0]
