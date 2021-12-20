@@ -21,6 +21,8 @@ class FaceFollowingNode:
         self._control_alpha = rospy.get_param('~control_alpha')
         self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
         self._head_enabled = rospy.get_param('~head_enabled')
+        self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
+        self._max_head_pitch = rospy.get_param('~max_head_pitch_rad')
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
@@ -38,7 +40,7 @@ class FaceFollowingNode:
         yaw, pitch = self._find_nearest_face_yaw_pitch(msg.objects, msg.header)
         with self._target_lock:
             self._target_torso_yaw = yaw
-            self._target_head_pitch = pitch
+            self._target_head_pitch = max(self._min_head_pitch, min(pitch, self._max_head_pitch))
 
     def _find_nearest_face_yaw_pitch(self, objects, header):
         nose_points = []

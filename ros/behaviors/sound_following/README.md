@@ -10,6 +10,8 @@ This node makes T-Top follow the loudest sound.
  - `control_frequency` (double): The frequency at which the pose messages are sent.
  - `control_alpha` (double): The low-pass filter parameter for the pose.
  - `head_enabled` (bool): Indicates if the head will move.
+ - `min_head_pitch_rad` (double): The minimum pitch angle in radian of the head.
+ - `max_head_pitch_rad` (double): The maximum pitch angle in radian of the head.
 
 #### Subscribed Topics
  - `sst` ([odas_ros/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/msg/OdasSstArrayStamped.msg)): The sound source tracking information.

@@ -28,10 +28,12 @@
     <!-- Face Following -->
     <node pkg="face_following" type="face_following_node.py" name="face_following_node">
         <param name="simulation" value="$(arg simulation)"/>
-        <param name="control_frequency" value="10"/>
-        <param name="control_alpha" value="0.05"/>
+        <param name="control_frequency" value="30"/>
+        <param name="control_alpha" value="0.1"/>
         <param name="nose_confidence_threshold" value="0.4"/>
         <param name="head_enabled" value="true"/>
+        <param name="min_head_pitch_rad" value="-0.35"/>
+        <param name="max_head_pitch_rad" value="0.35"/>
 
         <remap from="pose/filter_state" to="face_following/filter_state"/>
     </node>
@@ -61,9 +63,11 @@
     <!-- Sound Following -->
     <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
         <param name="simulation" value="$(arg simulation)"/>
-        <param name="control_frequency" value="10"/>
-        <param name="control_alpha" value="0.05"/>
-        <param name="head_enabled" value="true"/>
+        <param name="control_frequency" value="30"/>
+        <param name="control_alpha" value="0.1"/>
+        <param name="head_enabled" value="false"/>
+        <param name="min_head_pitch_rad" value="-0.35"/>
+        <param name="max_head_pitch_rad" value="0.35"/>
 
         <remap from="sst" to="audio_sst"/>
         <remap from="pose/filter_state" to="sound_following/filter_state"/>

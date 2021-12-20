@@ -142,6 +142,8 @@ class PersonIdentificationNode:
             if distance <= self._face_descriptor_threshold:
                 names.add(name)
 
+        return names
+
     def _find_voice_descriptor_name(self):
         if self._voice_descriptor is None:
             return set()
