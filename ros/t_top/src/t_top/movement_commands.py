@@ -29,7 +29,8 @@ def vector_to_angles(vector):
     x = unit_vector[0]
     y = unit_vector[1]
     z = unit_vector[2]
-    yaw = np.arctan2(y,x)
+
+    yaw = math.fmod(np.arctan2(y,x), 2 * math.pi)
     pitch = -np.arctan2(z,x)
     return yaw, pitch
 
@@ -39,7 +40,7 @@ class MovementCommands:
         self._read_torso_lock = threading.Lock()
         self._read_head_lock = threading.Lock()
 
-        self._maxFreq = 10
+        self._maxFreq = 30
         self._minTime = 1 / self._maxFreq
         self._read_torso = 0
         self._read_head = 6 * [0]
@@ -231,18 +232,18 @@ class MovementCommands:
 
         return True
 
-    def move_yes(self, count=3, speed_rad_sec=1.0):
+    def move_yes(self, count=3, speed_rad_sec=0.5):
         for i in range(count):
             if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, -0.25, 0], True, speed_rad_sec=speed_rad_sec):
                 return False
 
         if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
             return False
         return True
 
-    def move_no(self, count=3, speed_rad_sec=1.0):
+    def move_no(self, count=3, speed_rad_sec=0.5):
         for i in range(count):
             if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0.25], True, speed_rad_sec=speed_rad_sec):
                 return False
@@ -253,7 +254,7 @@ class MovementCommands:
             return False
         return True
 
-    def move_maybe(self, count=3, speed_rad_sec=1.0):
+    def move_maybe(self, count=3, speed_rad_sec=0.5):
         for i in range(count):
             if not self.move_head([0, 0, HEAD_ZERO_Z, 0.25, 0, 0], True, speed_rad_sec=speed_rad_sec):
                 return False

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import threading
 
 import rospy
@@ -20,6 +21,8 @@ class FaceFollowingNode:
         self._control_alpha = rospy.get_param('~control_alpha')
         self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
         self._head_enabled = rospy.get_param('~head_enabled')
+        self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
+        self._max_head_pitch = rospy.get_param('~max_head_pitch_rad')
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
@@ -37,7 +40,7 @@ class FaceFollowingNode:
         yaw, pitch = self._find_nearest_face_yaw_pitch(msg.objects, msg.header)
         with self._target_lock:
             self._target_torso_yaw = yaw
-            self._target_head_pitch = pitch
+            self._target_head_pitch = None if pitch is None else max(self._min_head_pitch, min(pitch, self._max_head_pitch))
 
     def _find_nearest_face_yaw_pitch(self, objects, header):
         nose_points = []
@@ -84,7 +87,13 @@ class FaceFollowingNode:
         if target_torso_yaw is None:
             return
 
-        pose = self._control_alpha * target_torso_yaw + (1 - self._control_alpha) * self._movement_commands.current_torso_pose
+        distance = target_torso_yaw - self._movement_commands.current_torso_pose
+        if distance < -math.pi:
+            distance = 2 * math.pi + distance
+        elif distance > math.pi:
+            distance = -(2 * math.pi - distance)
+
+        pose = self._movement_commands.current_torso_pose + self._control_alpha * distance
         self._movement_commands.move_torso(pose)
 
     def _update_head(self):

@@ -5,7 +5,7 @@
     <arg name="visualization" default="false"/>
 
     <!-- RTAM-Map -->
-    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
+    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
         <remap from="rgb/image" to="/camera/color/image_raw"/>
         <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
         <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
@@ -17,7 +17,7 @@
         <remap from="out" to="rgbd_image_filtered"/>
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
-    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="--delete_db_on_start">
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
         <param name="frame_id" type="string" value="camera_depth_optical_frame"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>
@@ -68,7 +68,7 @@
     <!-- Music Beat Detector -->
     <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="beat_detector_node_filter">
         <remap from="in" to="audio_signed_16_44100"/>
-        <remap from="out" to="audio_signed_16_44100_filtered"/>
+        <remap from="out" to="beat_detector/audio_signed_16_44100_filtered"/>
         <remap from="filter_state" to="beat_detector/filter_state"/>
     </node>
     <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
@@ -79,7 +79,7 @@
         <param name="max_bpm" value="180"/>
         <param name="bpm_candidate_count" value="2"/>
 
-        <remap from="audio_in" to="audio_signed_16_44100_filtered"/>
+        <remap from="audio_in" to="beat_detector/audio_signed_16_44100_filtered"/>
         <remap from="bpm" to="dance/bpm"/>
         <remap from="beat" to="dance/beat"/>
     </node>
@@ -128,7 +128,7 @@
 
     <!-- Audio Analyzer -->
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
-        <param name="multiclass_audio_descriptor" value="false"/>
+        <param name="multiclass_audio_descriptor" value="true"/>
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="interval" value="32000"/> <!-- Low quality audio-->
         <param name="voice_probability_threshold" value="0.5"/>
@@ -143,11 +143,12 @@
     <!-- Person Identification -->
     <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node">
         <param name="face_descriptor_threshold" value="0.889"/>
-        <param name="voice_descriptor_threshold" value="1.2321"/>
+        <param name="voice_descriptor_threshold" value="1.45"/>
         <param name="face_voice_descriptor_threshold" value="1.7068"/>
         <param name="nose_confidence_threshold" value="0.4"/>
         <param name="direction_frame" value="odas"/>
         <param name="direction_angle_threshold_rad" value="0.15"/>
+        <param name="ignore_direction_z" value="true"/>
         <param name="search_frequency" value="0.5"/>
     </node>
 </launch>

@@ -11,6 +11,8 @@ This node makes T-Top follow the nearest face.
  - `control_alpha` (double): The low-pass filter parameter for the pose.
  - `nose_confidence_threshold` (double): The confidence threshold for the nose keypoint.
  - `head_enabled` (bool): Indicates if the head will move.
+ - `min_head_pitch_rad` (double): The minimum pitch angle in radian of the head.
+ - `max_head_pitch_rad` (double): The maximum pitch angle in radian of the head.
 
 #### Subscribed Topics
  - `video_analysis` ([video_analyzer/VideoAnalysis](../../perceptions/video_analyzer/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.

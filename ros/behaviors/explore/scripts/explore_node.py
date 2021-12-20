@@ -13,8 +13,8 @@ class ExploreNode:
     def __init__(self):
         self._simulation = rospy.get_param('~simulation')
         self._rate = rospy.Rate(rospy.get_param('~explore_frequency'))
-        self._torso_speed = rospy.Rate(rospy.get_param('~torso_speed_rad_sec'))
-        self._head_speed = rospy.Rate(rospy.get_param('~head_speed_rad_sec'))
+        self._torso_speed = rospy.get_param('~torso_speed_rad_sec')
+        self._head_speed = rospy.get_param('~head_speed_rad_sec')
 
         self._movement_commands = MovementCommands(self._simulation)
         self._done_pub = rospy.Publisher('explore/done', Empty, queue_size=5)
