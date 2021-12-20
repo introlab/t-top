@@ -5,7 +5,7 @@
     <arg name="visualization" default="false"/>
 
     <!-- RTAM-Map -->
-    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
+    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
         <remap from="rgb/image" to="/camera/color/image_raw"/>
         <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
         <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
@@ -17,7 +17,7 @@
         <remap from="out" to="rgbd_image_filtered"/>
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
-    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="--delete_db_on_start">
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
         <param name="frame_id" type="string" value="camera_depth_optical_frame"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>
