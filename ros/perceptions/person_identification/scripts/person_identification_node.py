@@ -106,9 +106,9 @@ class PersonIdentificationNode:
         while not rospy.is_shutdown():
             names = set()
             with self._descriptors_lock:
-                names.union(self._find_face_voice_descriptor_name())
-                names.union(self._find_face_descriptor_names())
-                names.union(self._find_voice_descriptor_name())
+                names = names.union(self._find_face_voice_descriptor_name())
+                names = names.union(self._find_face_descriptor_names())
+                names = names.union(self._find_voice_descriptor_name())
 
                 self._face_descriptors.clear()
                 self._voice_descriptor = None
