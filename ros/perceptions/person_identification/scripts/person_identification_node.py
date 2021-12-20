@@ -31,6 +31,7 @@ class PersonIdentificationNode:
         self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold') # 0.4
         self._direction_frame = rospy.get_param('~direction_frame') # odas
         self._direction_angle_threshold_rad = rospy.get_param('~direction_angle_threshold_rad') #0.174533
+        self._ignore_direction_z = rospy.Rate(rospy.get_param('~ignore_direction_z'))
         self._rate = rospy.Rate(rospy.get_param('~search_frequency'))
 
         self._face_descriptors_by_name = {}
@@ -78,6 +79,9 @@ class PersonIdentificationNode:
         odas_point = self._tf_listener.transformPoint(self._direction_frame, temp_in_point)
 
         direction = np.array([odas_point.point.x, odas_point.point.y, odas_point.point.z])
+        if self._ignore_direction_z:
+            direction[2] = 0
+
         direction /= np.linalg.norm(direction)
         return direction
 
@@ -90,6 +94,9 @@ class PersonIdentificationNode:
             return
 
         voice_direction = np.array([msg.direction_x, msg.direction_y, msg.direction_z])
+        if self._ignore_direction_z:
+            voice_direction[2] = 0
+
         voice_direction /= np.linalg.norm(voice_direction)
         if np.isfinite(voice_direction).all():
             with self._descriptors_lock:
