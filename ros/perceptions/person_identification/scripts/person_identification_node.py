@@ -120,7 +120,7 @@ class PersonIdentificationNode:
         if self._voice_descriptor is None or len(self._face_descriptors) == 0:
             return set()
 
-        face_descriptor_index_angle_pairs = [(x[0], calculate_angle(x[1], self._voice_descriptor[1]))
+        face_descriptor_index_angle_pairs = [(i, calculate_angle(x[1], self._voice_descriptor[1]))
                                              for i, x in enumerate(self._face_descriptors)]
         face_descriptor_index, angle = min(face_descriptor_index_angle_pairs, key=lambda x: x[1])
         if angle > self._direction_angle_threshold_rad:
