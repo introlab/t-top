@@ -68,7 +68,7 @@
     <!-- Music Beat Detector -->
     <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="beat_detector_node_filter">
         <remap from="in" to="audio_signed_16_44100"/>
-        <remap from="out" to="audio_signed_16_44100_filtered"/>
+        <remap from="out" to="beat_detector/audio_signed_16_44100_filtered"/>
         <remap from="filter_state" to="beat_detector/filter_state"/>
     </node>
     <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
@@ -79,7 +79,7 @@
         <param name="max_bpm" value="180"/>
         <param name="bpm_candidate_count" value="2"/>
 
-        <remap from="audio_in" to="audio_signed_16_44100_filtered"/>
+        <remap from="audio_in" to="beat_detector/audio_signed_16_44100_filtered"/>
         <remap from="bpm" to="dance/bpm"/>
         <remap from="beat" to="dance/beat"/>
     </node>
@@ -128,7 +128,7 @@
 
     <!-- Audio Analyzer -->
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
-        <param name="multiclass_audio_descriptor" value="false"/>
+        <param name="multiclass_audio_descriptor" value="true"/>
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="interval" value="32000"/> <!-- Low quality audio-->
         <param name="voice_probability_threshold" value="0.5"/>

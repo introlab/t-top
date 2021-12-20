@@ -55,7 +55,7 @@
         <param name="torso_speed_rad_sec" value="0.3"/>
         <param name="head_speed_rad_sec" value="0.3"/>
 
-        <remap from="pose/filter_state" to="explore_node/filter_state"/>
+        <remap from="pose/filter_state" to="explore/filter_state"/>
     </node>
 
     <!-- Sound Following -->

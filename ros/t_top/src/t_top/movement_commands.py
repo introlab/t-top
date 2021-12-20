@@ -232,18 +232,18 @@ class MovementCommands:
 
         return True
 
-    def move_yes(self, count=3, speed_rad_sec=1.0):
+    def move_yes(self, count=3, speed_rad_sec=0.5):
         for i in range(count):
             if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, -0.25, 0], True, speed_rad_sec=speed_rad_sec):
                 return False
 
         if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
             return False
         return True
 
-    def move_no(self, count=3, speed_rad_sec=1.0):
+    def move_no(self, count=3, speed_rad_sec=0.5):
         for i in range(count):
             if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0.25], True, speed_rad_sec=speed_rad_sec):
                 return False
@@ -254,7 +254,7 @@ class MovementCommands:
             return False
         return True
 
-    def move_maybe(self, count=3, speed_rad_sec=1.0):
+    def move_maybe(self, count=3, speed_rad_sec=0.5):
         for i in range(count):
             if not self.move_head([0, 0, HEAD_ZERO_Z, 0.25, 0, 0], True, speed_rad_sec=speed_rad_sec):
                 return False

@@ -12,6 +12,7 @@ trap "kill ${SERVER_PID}; exit 1" INT
 sleep 10
 
 
+export DISPLAY=:0.0
 URL="http://localhost:8080/face"
 
 if which xdg-open > /dev/null
