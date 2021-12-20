@@ -30,7 +30,7 @@ class SoundFollowingNode:
             rospy.logerr('Invalid sst (len(sst.sources)={})'.format(len(sst.sources)))
             return
 
-        yaw, pitch = vector_to_angles(sst.sources)
+        yaw, pitch = vector_to_angles(sst.sources[0])
         with self._target_lock:
             self._target_torso_yaw = yaw
             self._target_head_pitch = pitch
