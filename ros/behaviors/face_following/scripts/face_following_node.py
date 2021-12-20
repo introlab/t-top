@@ -40,7 +40,7 @@ class FaceFollowingNode:
         yaw, pitch = self._find_nearest_face_yaw_pitch(msg.objects, msg.header)
         with self._target_lock:
             self._target_torso_yaw = yaw
-            self._target_head_pitch = max(self._min_head_pitch, min(pitch, self._max_head_pitch))
+            self._target_head_pitch = None if pitch is None else max(self._min_head_pitch, min(pitch, self._max_head_pitch))
 
     def _find_nearest_face_yaw_pitch(self, objects, header):
         nose_points = []

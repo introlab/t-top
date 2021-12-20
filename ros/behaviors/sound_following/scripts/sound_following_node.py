@@ -26,16 +26,18 @@ class SoundFollowingNode:
         self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
     def _sst_cb(self, sst):
-        if self._movement_commands.is_filtering_all_messages or len(sst.sources) == 0:
-            return
         if len(sst.sources) > 1:
             rospy.logerr('Invalid sst (len(sst.sources)={})'.format(len(sst.sources)))
             return
 
-        yaw, pitch = vector_to_angles(sst.sources[0])
+        if self._movement_commands.is_filtering_all_messages or len(sst.sources) == 0:
+            yaw, pitch = None, None
+        else:
+            yaw, pitch = vector_to_angles(sst.sources[0])
+
         with self._target_lock:
             self._target_torso_yaw = yaw
-            self._target_head_pitch = max(self._min_head_pitch, min(pitch, self._max_head_pitch))
+            self._target_head_pitch = None if pitch is None else max(self._min_head_pitch, min(pitch, self._max_head_pitch))
 
     def run(self):
         while not rospy.is_shutdown():
