@@ -67,7 +67,7 @@ class PersonIdentificationNode:
 
                 direction = self._get_face_direction(object.person_pose[PERSON_POSE_NOSE_INDEX], msg.header)
                 if np.isfinite(direction).all():
-                    self._face_descriptors.append((np.array([object.face_descriptor]), direction))
+                    self._face_descriptors.append((np.array(object.face_descriptor), direction))
 
     def _get_face_direction(self, point, header):
         temp_in_point = PointStamped()
@@ -100,7 +100,7 @@ class PersonIdentificationNode:
         voice_direction /= np.linalg.norm(voice_direction)
         if np.isfinite(voice_direction).all():
             with self._descriptors_lock:
-                self._voice_descriptor = (np.array([msg.voice_descriptor]), voice_direction)
+                self._voice_descriptor = (np.array(msg.voice_descriptor), voice_direction)
 
     def run(self):
         while not rospy.is_shutdown():
