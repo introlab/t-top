@@ -126,7 +126,7 @@ class PersonIdentificationNode:
         if angle > self._direction_angle_threshold_rad:
             return set()
 
-        face_descriptor = self._face_descriptors[face_descriptor_index[0]]
+        face_descriptor = self._face_descriptors[face_descriptor_index]
         descriptor = np.concatenate([face_descriptor[0], self._voice_descriptor[0]])
 
         name_distance_pairs = [(x[0], calculate_distance(x[1], descriptor))
