@@ -124,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-  src/hbba_lite_cpp/FilterState.cpp
+  src/hbba_lite_cpp/filters/FilterState.cpp
 )
 
 ## Add cmake target dependencies of the library

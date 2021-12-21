@@ -1,5 +1,5 @@
-#ifndef HBBA_FILTER_NODE_H
-#define HBBA_FILTER_NODE_H
+#ifndef HBBA_FILTER_FILTERS_NODE_H
+#define HBBA_FILTER_FILTERS_NODE_H
 
 #include <ros/ros.h>
 #include <topic_tools/shape_shifter.h>

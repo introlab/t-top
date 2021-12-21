@@ -1,4 +1,4 @@
-#include <hbba_lite/FilterState.h>
+#include <hbba_lite/filters/FilterState.h>
 
 using namespace std;
 
