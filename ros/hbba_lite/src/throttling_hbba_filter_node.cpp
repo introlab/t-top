@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <hbba_lite/HbbaFilterNode.h>
+#include <hbba_lite/filters/HbbaFilterNode.h>
 
 int main(int argc, char** argv)
 {

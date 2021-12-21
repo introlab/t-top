@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
 
-#include <hbba_lite/Publishers.h>
+#include <hbba_lite/filters/Publishers.h>
 
 int main(int argc, char** argv)
 {

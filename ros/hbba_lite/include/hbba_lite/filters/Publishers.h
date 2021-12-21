@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 
-#include <hbba_lite/FilterState.h>
+#include <hbba_lite/filters/FilterState.h>
 
 template <class FilterState, class MessageType>
 class HbbaPublisher

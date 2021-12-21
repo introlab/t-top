@@ -125,6 +125,8 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/hbba_lite_cpp/filters/FilterState.cpp
+  src/hbba_lite_cpp/Desire.cpp
+  src/hbba_lite_cpp/DesireSet.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -231,10 +233,14 @@ target_link_libraries(test_throttling_hbba_publisher
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_hbba_lite.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+catkin_add_gtest(${PROJECT_NAME}-test
+  test/hbba_lite_cpp/DesireTests.cpp
+  test/hbba_lite_cpp/DesireSetTests.cpp
+  test/hbba_lite_cpp/main.cpp
+)
+if(TARGET ${PROJECT_NAME}-test)
+  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

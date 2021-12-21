@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
 
-#include <hbba_lite/Subscribers.h>
+#include <hbba_lite/filters/Subscribers.h>
 
 void callback(const std_msgs::Int8::ConstPtr& msg)
 {

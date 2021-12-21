@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <topic_tools/shape_shifter.h>
 
-#include <hbba_lite/FilterState.h>
+#include <hbba_lite/filters/FilterState.h>
 
 // Inspired by https://github.com/ros/ros_comm/blob/indigo-devel/tools/topic_tools/src/relay.cpp
 template <class FilterState>
