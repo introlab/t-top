@@ -22,7 +22,6 @@ protected:
     {
         while (!stopped())
         {
-
         }
         finished = true;
     }

@@ -128,6 +128,7 @@ add_library(${PROJECT_NAME}
   src/hbba_lite_cpp/Desire.cpp
   src/hbba_lite_cpp/DesireSet.cpp
   src/hbba_lite_cpp/Motivation.cpp
+  src/hbba_lite_cpp/Strategy.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -238,6 +239,7 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/hbba_lite_cpp/DesireTests.cpp
   test/hbba_lite_cpp/DesireSetTests.cpp
   test/hbba_lite_cpp/MotivationTests.cpp
+  test/hbba_lite_cpp/StrategyTests.cpp
   test/hbba_lite_cpp/main.cpp
 )
 if(TARGET ${PROJECT_NAME}-test)

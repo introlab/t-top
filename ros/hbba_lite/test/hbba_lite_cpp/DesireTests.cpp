@@ -31,6 +31,11 @@ public:
     {
         return make_unique<DesireA>(*this);
     }
+
+    type_index type() override
+    {
+        return type_index(typeid(*this));
+    }
 };
 
 class DesireB : public Desire
@@ -45,6 +50,11 @@ public:
     unique_ptr<Desire> clone() override
     {
         return make_unique<DesireB>(*this);
+    }
+
+    type_index type() override
+    {
+        return type_index(typeid(*this));
     }
 };
 

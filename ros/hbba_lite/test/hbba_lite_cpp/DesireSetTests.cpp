@@ -32,6 +32,11 @@ public:
     {
         return make_unique<DesireC>(*this);
     }
+
+    type_index type() override
+    {
+        return type_index(typeid(*this));
+    }
 };
 
 

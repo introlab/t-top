@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <atomic>
 #include <memory>
+#include <typeindex>
 
 class DesireSet;
 
@@ -24,6 +25,7 @@ public:
     bool enabled() const;
 
     virtual std::unique_ptr<Desire> clone() = 0;
+    virtual std::type_index type() = 0;
 
 private:
     void enable();
