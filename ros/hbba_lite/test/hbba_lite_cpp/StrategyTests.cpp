@@ -1,42 +1,80 @@
 #include <hbba_lite/Strategy.h>
+#include <hbba_lite/HbbaLiteException.h>
 
 #include <gtest/gtest.h>
 
 using namespace std;
 
-class StrategyTestee : public Strategy
+class FilterPoolMock : public FilterPool
 {
 public:
-    int onEnableChangedCount;
+    unordered_map<string, FilterConfiguration> enabledFilters;
+    unordered_map<string, int> counts;
 
-    StrategyTestee() :
+    void add(const std::string& name, FilterType type) override
+    {
+        lock_guard<recursive_mutex> lock(m_mutex);
+        FilterPool::add(name, type);
+        counts[name] = 0;
+    }
+
+protected:
+    void applyEnabling(const string& name, const FilterConfiguration& configuration) override
+    {
+        enabledFilters[name] = configuration;
+        counts[name]++;
+    }
+
+    void applyDisabling(const string& name) override
+    {
+        enabledFilters.erase(name);
+        counts[name]--;
+    }
+};
+
+class StrategyTestee : public Strategy<int>
+{
+public:
+    int onEnablingCount;
+    int onDisablingCount;
+
+    StrategyTestee(shared_ptr<FilterPoolMock> filterPool) :
             Strategy(1,
                 {{"a", 1}, {"b", 2}},
-                {{"c", FilterConfiguration()}, {"d", FilterConfiguration(2)}}),
-            onEnableChangedCount(0)
+                {{"c", FilterConfiguration(1)}, {"d", FilterConfiguration(2)}},
+                filterPool),
+            onEnablingCount(0),
+            onDisablingCount(0)
     {
     }
     ~StrategyTestee() override = default;
 
-    type_index desireType() override
+protected:
+    void onEnabling() override
     {
-        return type_index(typeid(int));
+        Strategy::onEnabling();
+        onEnablingCount++;
     }
 
-protected:
-    void onEnableChanged() override
+    void onDisabling() override
     {
-        onEnableChangedCount++;
+        Strategy::onDisabling();
+        onDisablingCount++;
     }
 };
+
+TEST(FilterConfigurationTests, constructor_invalidRate_shouldThrowHbbaLiteException)
+{
+    EXPECT_THROW(FilterConfiguration(0), HbbaLiteException);
+}
 
 TEST(FilterConfigurationTests, getters_shouldReturnTheRightValues)
 {
     FilterConfiguration a;
     FilterConfiguration b(10);
 
-    EXPECT_FALSE(a.hasRate());
-    EXPECT_TRUE(b.hasRate());
+    EXPECT_EQ(a.type(), FilterType::ON_OFF);
+    EXPECT_EQ(b.type(), FilterType::THROTTLING);
     EXPECT_EQ(b.rate(), 10);
 }
 
@@ -58,39 +96,108 @@ TEST(FilterConfigurationTests, notEqualOperator_shouldReturnTheRightValue)
     EXPECT_FALSE(FilterConfiguration(5) != FilterConfiguration(5));
 }
 
+TEST(FilterPoolTests, add_invalidType_shouldThrowHbbaLiteException)
+{
+    FilterPoolMock testee;
+    testee.add("a", FilterType::ON_OFF);
+    EXPECT_THROW(testee.add("a", FilterType::THROTTLING), HbbaLiteException);
+}
+
+TEST(FilterPoolTests, enable_invalidName_shouldThrowHbbaLiteException)
+{
+    FilterPoolMock testee;
+    EXPECT_THROW(testee.enable("a", FilterConfiguration()), HbbaLiteException);
+}
+
+TEST(FilterPoolTests, enable_invalidConfiguration_shouldThrowHbbaLiteException)
+{
+    FilterPoolMock testee;
+    testee.add("a", FilterType::THROTTLING);
+    EXPECT_THROW(testee.enable("a", FilterConfiguration()), HbbaLiteException);
+
+    testee.enable("a", FilterConfiguration(10));
+    EXPECT_THROW(testee.enable("a", FilterConfiguration(5)), HbbaLiteException);
+
+    testee.disable("a");
+    testee.enable("a", FilterConfiguration(5));
+    EXPECT_THROW(testee.enable("a", FilterConfiguration(10)), HbbaLiteException);
+}
+
+TEST(FilterPoolTests, disable_invalidName_shouldThrowHbbaLiteException)
+{
+    FilterPoolMock testee;
+    EXPECT_THROW(testee.disable("a"), HbbaLiteException);
+}
+
+TEST(FilterPoolTests, enableDisable_shouldCallOnMethodOnce)
+{
+    FilterPoolMock testee;
+    testee.add("a", FilterType::THROTTLING);
+
+    testee.enable("a", FilterConfiguration(1));
+    EXPECT_EQ(testee.enabledFilters["a"], FilterConfiguration(1));
+    EXPECT_EQ(testee.counts["a"], 1);
+
+    testee.enable("a", FilterConfiguration(1));
+    EXPECT_EQ(testee.enabledFilters["a"], FilterConfiguration(1));
+    EXPECT_EQ(testee.counts["a"], 1);
+
+    testee.disable("a");
+    EXPECT_EQ(testee.enabledFilters["a"], FilterConfiguration(1));
+    EXPECT_EQ(testee.counts["a"], 1);
+
+    testee.disable("a");
+    EXPECT_NE(testee.enabledFilters["a"], FilterConfiguration(1));
+    EXPECT_EQ(testee.counts["a"], 0);
+}
+
 TEST(StrategyTests, getters_shouldReturnTheRightValues)
 {
     const unordered_map<string, uint16_t> EXPECTED_RESSOURCES({{"a", 1}, {"b", 2}});
-    const unordered_map<string, FilterConfiguration> EXPECTED_FILTER_CONFIGURATIONS({{"c", FilterConfiguration()}, {"d", FilterConfiguration(2)}});
-    StrategyTestee testee;
+    const unordered_map<string, FilterConfiguration> EXPECTED_FILTER_CONFIGURATIONS({{"c", FilterConfiguration(1)}, {"d", FilterConfiguration(2)}});
+
+    shared_ptr<FilterPoolMock> filterPool = make_shared<FilterPoolMock>();
+    StrategyTestee testee(filterPool);
 
     EXPECT_EQ(testee.ressourcesByName(), EXPECTED_RESSOURCES);
-    EXPECT_EQ(testee.filterConfigurationByName(), EXPECTED_FILTER_CONFIGURATIONS);
+    EXPECT_EQ(testee.filterConfigurationsByName(), EXPECTED_FILTER_CONFIGURATIONS);
+    EXPECT_EQ(testee.desireType(), type_index(typeid(int)));
 }
 
 TEST(StrategyTests, enableDisable_shouldChangeOnceTheState)
 {
-    StrategyTestee testee;
-    EXPECT_EQ(testee.onEnableChangedCount, 0);
+    shared_ptr<FilterPoolMock> filterPool = make_shared<FilterPoolMock>();
+    StrategyTestee testee(filterPool);
+    EXPECT_EQ(testee.onEnablingCount, 0);
+    EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_FALSE(testee.enabled());
 
     testee.disable();
-    EXPECT_EQ(testee.onEnableChangedCount, 0);
+    EXPECT_EQ(testee.onEnablingCount, 0);
+    EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_FALSE(testee.enabled());
+    EXPECT_EQ(filterPool->enabledFilters.size(), 0);
 
     testee.enable();
-    EXPECT_EQ(testee.onEnableChangedCount, 1);
+    EXPECT_EQ(testee.onEnablingCount, 1);
+    EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_TRUE(testee.enabled());
+    EXPECT_EQ(filterPool->enabledFilters["c"], FilterConfiguration(1));
+    EXPECT_EQ(filterPool->enabledFilters["d"], FilterConfiguration(2));
 
     testee.enable();
-    EXPECT_EQ(testee.onEnableChangedCount, 1);
+    EXPECT_EQ(testee.onEnablingCount, 1);
+    EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_TRUE(testee.enabled());
 
     testee.disable();
-    EXPECT_EQ(testee.onEnableChangedCount, 2);
+    EXPECT_EQ(testee.onEnablingCount, 1);
+    EXPECT_EQ(testee.onDisablingCount, 1);
     EXPECT_FALSE(testee.enabled());
+    EXPECT_EQ(filterPool->enabledFilters.size(), 0);
 
     testee.disable();
-    EXPECT_EQ(testee.onEnableChangedCount, 2);
+    EXPECT_EQ(testee.onEnablingCount, 1);
+    EXPECT_EQ(testee.onDisablingCount, 1);
     EXPECT_FALSE(testee.enabled());
 }
