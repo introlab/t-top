@@ -1,5 +1,5 @@
-#include <hbba_lite/RosStrategy.h>
-#include <hbba_lite/HbbaLiteException.h>
+#include <hbba_lite/core/RosFilterPool.h>
+#include <hbba_lite/utils/HbbaLiteException.h>
 
 #include <hbba_lite/SetOnOffFilterState.h>
 #include <hbba_lite/SetThrottlingFilterState.h>

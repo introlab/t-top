@@ -125,12 +125,15 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/hbba_lite_cpp/filters/FilterState.cpp
-  src/hbba_lite_cpp/HbbaLiteException.cpp
-  src/hbba_lite_cpp/Desire.cpp
-  src/hbba_lite_cpp/DesireSet.cpp
-  src/hbba_lite_cpp/Motivation.cpp
-  src/hbba_lite_cpp/Strategy.cpp
-  src/hbba_lite_cpp/RosStrategy.cpp
+  src/hbba_lite_cpp/utils/BinarySemaphore.cpp
+  src/hbba_lite_cpp/utils/HbbaLiteException.cpp
+  src/hbba_lite_cpp/core/Desire.cpp
+  src/hbba_lite_cpp/core/DesireSet.cpp
+  src/hbba_lite_cpp/core/Motivation.cpp
+  src/hbba_lite_cpp/core/Strategy.cpp
+  src/hbba_lite_cpp/core/RosFilterPool.cpp
+  src/hbba_lite_cpp/core/Solver.cpp
+  src/hbba_lite_cpp/core/HbbaLite.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -238,9 +241,11 @@ target_link_libraries(test_throttling_hbba_publisher
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test
-  test/hbba_lite_cpp/DesireTests.cpp
-  test/hbba_lite_cpp/DesireSetTests.cpp
-  test/hbba_lite_cpp/StrategyTests.cpp
+  test/hbba_lite_cpp/utils/BinarySemaphoreTests.cpp
+  test/hbba_lite_cpp/core/DesireTests.cpp
+  test/hbba_lite_cpp/core/DesireSetTests.cpp
+  test/hbba_lite_cpp/core/StrategyTests.cpp
+  test/hbba_lite_cpp/core/HbbaLiteTests.cpp
   test/hbba_lite_cpp/main.cpp
 )
 if(TARGET ${PROJECT_NAME}-test)

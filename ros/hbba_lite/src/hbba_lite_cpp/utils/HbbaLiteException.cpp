@@ -1,4 +1,4 @@
-#include <hbba_lite/HbbaLiteException.h>
+#include <hbba_lite/utils/HbbaLiteException.h>
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-#include <hbba_lite/Motivation.h>
+#include <hbba_lite/core/Motivation.h>
 
 using namespace std;
 

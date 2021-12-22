@@ -1,7 +1,7 @@
-#ifndef HBBA_LITE_MOTIVATION_H
-#define HBBA_LITE_MOTIVATION_H
+#ifndef HBBA_LITE_CORE_MOTIVATION_H
+#define HBBA_LITE_CORE_MOTIVATION_H
 
-#include <hbba_lite/DesireSet.h>
+#include <hbba_lite/core/DesireSet.h>
 
 #include <memory>
 #include <atomic>

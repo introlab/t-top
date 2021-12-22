@@ -1,4 +1,4 @@
-#include <hbba_lite/Desire.h>
+#include <hbba_lite/core/Desire.h>
 
 #include <gtest/gtest.h>
 

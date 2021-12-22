@@ -1,7 +1,7 @@
-#ifndef HBBA_LITE_STRATEGY_H
-#define HBBA_LITE_STRATEGY_H
+#ifndef HBBA_LITE_CORE_STRATEGY_H
+#define HBBA_LITE_CORE_STRATEGY_H
 
-#include <hbba_lite/ClassMacros.h>
+#include <hbba_lite/utils/ClassMacros.h>
 
 #include <cstdint>
 #include <unordered_map>
@@ -83,58 +83,39 @@ protected:
     virtual void applyDisabling(const std::string& name) = 0;
 };
 
-template <class T>
-class Strategy
+class BaseStrategy
 {
     bool m_enabled;
     uint16_t m_utility;
-    std::unordered_map<std::string, uint16_t> m_ressourcesByName;
+    std::unordered_map<std::string, uint16_t> m_resourcesByName;
     std::unordered_map<std::string, FilterConfiguration> m_filterConfigurationsByName;
     std::shared_ptr<FilterPool> m_filterPool;
 
 public:
-    Strategy(uint16_t utility,
-        std::unordered_map<std::string, uint16_t> ressourcesByName,
+    BaseStrategy(uint16_t utility,
+        std::unordered_map<std::string, uint16_t> resourcesByName,
         std::unordered_map<std::string, FilterConfiguration> filterConfigurationByName,
         std::shared_ptr<FilterPool> filterPool);
-    virtual ~Strategy() = default;
+    virtual ~BaseStrategy() = default;
 
-    DECLARE_NOT_COPYABLE(Strategy);
-    DECLARE_NOT_MOVABLE(Strategy);
+    DECLARE_NOT_COPYABLE(BaseStrategy);
+    DECLARE_NOT_MOVABLE(BaseStrategy);
 
     void enable();
     void disable();
     bool enabled() const;
 
-    const std::unordered_map<std::string, uint16_t>& ressourcesByName() const;
+    const std::unordered_map<std::string, uint16_t>& resourcesByName() const;
     const std::unordered_map<std::string, FilterConfiguration> filterConfigurationsByName() const;
 
-    std::type_index desireType();
+    virtual std::type_index desireType() = 0;
 
 protected:
     virtual void onEnabling();
     virtual void onDisabling();
 };
 
-template <class T>
-inline Strategy<T>::Strategy(uint16_t utility,
-    std::unordered_map<std::string, uint16_t> ressourcesByName,
-    std::unordered_map<std::string, FilterConfiguration> filterConfigurationsByName,
-    std::shared_ptr<FilterPool> filterPool) :
-        m_enabled(false),
-        m_utility(utility),
-        m_ressourcesByName(move(ressourcesByName)),
-        m_filterConfigurationsByName(move(filterConfigurationsByName)),
-        m_filterPool(filterPool)
-{
-    for (auto& pair : m_filterConfigurationsByName)
-    {
-        m_filterPool->add(pair.first, pair.second.type());
-    }
-}
-
-template <class T>
-inline void Strategy<T>::enable()
+inline void BaseStrategy::enable()
 {
     if (!m_enabled)
     {
@@ -143,8 +124,7 @@ inline void Strategy<T>::enable()
     }
 }
 
-template <class T>
-inline void Strategy<T>::disable()
+inline void BaseStrategy::disable()
 {
     if (m_enabled)
     {
@@ -153,40 +133,45 @@ inline void Strategy<T>::disable()
     }
 }
 
-template <class T>
-inline bool Strategy<T>::enabled() const
+inline bool BaseStrategy::enabled() const
 {
     return m_enabled;
 }
 
-template <class T>
-inline const std::unordered_map<std::string, uint16_t>& Strategy<T>::ressourcesByName() const
+inline const std::unordered_map<std::string, uint16_t>& BaseStrategy::resourcesByName() const
 {
-    return m_ressourcesByName;
+    return m_resourcesByName;
 }
 
-template <class T>
-inline const std::unordered_map<std::string, FilterConfiguration> Strategy<T>::filterConfigurationsByName() const
+inline const std::unordered_map<std::string, FilterConfiguration> BaseStrategy::filterConfigurationsByName() const
 {
     return m_filterConfigurationsByName;
 }
 
-template <class T>
-inline void Strategy<T>::onEnabling()
-{
-    for (auto& pair : m_filterConfigurationsByName)
-    {
-        m_filterPool->enable(pair.first, pair.second);
-    }
-}
 
 template <class T>
-inline void Strategy<T>::onDisabling()
+class Strategy : public BaseStrategy
 {
-    for (auto& pair : m_filterConfigurationsByName)
-    {
-        m_filterPool->disable(pair.first);
-    }
+public:
+    Strategy(uint16_t utility,
+        std::unordered_map<std::string, uint16_t> resourcesByName,
+        std::unordered_map<std::string, FilterConfiguration> filterConfigurationByName,
+        std::shared_ptr<FilterPool> filterPool);
+    ~Strategy() override = default;
+
+    DECLARE_NOT_COPYABLE(Strategy);
+    DECLARE_NOT_MOVABLE(Strategy);
+
+    std::type_index desireType() override;
+};
+
+template <class T>
+Strategy<T>::Strategy(uint16_t utility,
+    std::unordered_map<std::string, uint16_t> resourcesByName,
+    std::unordered_map<std::string, FilterConfiguration> filterConfigurationByName,
+    std::shared_ptr<FilterPool> filterPool) :
+        BaseStrategy(utility, move(resourcesByName), move(filterConfigurationByName), move(filterPool))
+{
 }
 
 template <class T>

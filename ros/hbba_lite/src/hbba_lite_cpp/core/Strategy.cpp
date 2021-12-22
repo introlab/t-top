@@ -1,6 +1,6 @@
-#include <hbba_lite/Strategy.h>
+#include <hbba_lite/core/Strategy.h>
 
-#include <hbba_lite/HbbaLiteException.h>
+#include <hbba_lite/utils/HbbaLiteException.h>
 
 using namespace std;
 
@@ -73,5 +73,37 @@ void FilterPool::disable(const string& name)
     if (it->second == 0)
     {
         applyDisabling(name);
+    }
+}
+
+BaseStrategy::BaseStrategy(uint16_t utility,
+    unordered_map<string, uint16_t> resourcesByName,
+    unordered_map<string, FilterConfiguration> filterConfigurationsByName,
+    shared_ptr<FilterPool> filterPool) :
+        m_enabled(false),
+        m_utility(utility),
+        m_resourcesByName(move(resourcesByName)),
+        m_filterConfigurationsByName(move(filterConfigurationsByName)),
+        m_filterPool(move(filterPool))
+{
+    for (auto& pair : m_filterConfigurationsByName)
+    {
+        m_filterPool->add(pair.first, pair.second.type());
+    }
+}
+
+inline void BaseStrategy::onEnabling()
+{
+    for (auto& pair : m_filterConfigurationsByName)
+    {
+        m_filterPool->enable(pair.first, pair.second);
+    }
+}
+
+inline void BaseStrategy::onDisabling()
+{
+    for (auto& pair : m_filterConfigurationsByName)
+    {
+        m_filterPool->disable(pair.first);
     }
 }

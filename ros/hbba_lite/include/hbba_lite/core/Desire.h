@@ -1,5 +1,5 @@
-#ifndef HBBA_LITE_DESIRE_H
-#define HBBA_LITE_DESIRE_H
+#ifndef HBBA_LITE_CORE_DESIRE_H
+#define HBBA_LITE_CORE_DESIRE_H
 
 #include <cstdint>
 #include <atomic>

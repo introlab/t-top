@@ -1,36 +1,12 @@
-#include <hbba_lite/Strategy.h>
-#include <hbba_lite/HbbaLiteException.h>
+#include <hbba_lite/core/Strategy.h>
+#include <hbba_lite/utils/HbbaLiteException.h>
+
+#include "FilterPoolMock.h"
 
 #include <gtest/gtest.h>
 
 using namespace std;
 
-class FilterPoolMock : public FilterPool
-{
-public:
-    unordered_map<string, FilterConfiguration> enabledFilters;
-    unordered_map<string, int> counts;
-
-    void add(const std::string& name, FilterType type) override
-    {
-        lock_guard<recursive_mutex> lock(m_mutex);
-        FilterPool::add(name, type);
-        counts[name] = 0;
-    }
-
-protected:
-    void applyEnabling(const string& name, const FilterConfiguration& configuration) override
-    {
-        enabledFilters[name] = configuration;
-        counts[name]++;
-    }
-
-    void applyDisabling(const string& name) override
-    {
-        enabledFilters.erase(name);
-        counts[name]--;
-    }
-};
 
 class StrategyTestee : public Strategy<int>
 {
@@ -153,20 +129,20 @@ TEST(FilterPoolTests, enableDisable_shouldCallOnMethodOnce)
 
 TEST(StrategyTests, getters_shouldReturnTheRightValues)
 {
-    const unordered_map<string, uint16_t> EXPECTED_RESSOURCES({{"a", 1}, {"b", 2}});
+    const unordered_map<string, uint16_t> EXPECTED_RESOURCES({{"a", 1}, {"b", 2}});
     const unordered_map<string, FilterConfiguration> EXPECTED_FILTER_CONFIGURATIONS({{"c", FilterConfiguration(1)}, {"d", FilterConfiguration(2)}});
 
-    shared_ptr<FilterPoolMock> filterPool = make_shared<FilterPoolMock>();
+    auto filterPool = make_shared<FilterPoolMock>();
     StrategyTestee testee(filterPool);
 
-    EXPECT_EQ(testee.ressourcesByName(), EXPECTED_RESSOURCES);
+    EXPECT_EQ(testee.resourcesByName(), EXPECTED_RESOURCES);
     EXPECT_EQ(testee.filterConfigurationsByName(), EXPECTED_FILTER_CONFIGURATIONS);
     EXPECT_EQ(testee.desireType(), type_index(typeid(int)));
 }
 
 TEST(StrategyTests, enableDisable_shouldChangeOnceTheState)
 {
-    shared_ptr<FilterPoolMock> filterPool = make_shared<FilterPoolMock>();
+    auto filterPool = make_shared<FilterPoolMock>();
     StrategyTestee testee(filterPool);
     EXPECT_EQ(testee.onEnablingCount, 0);
     EXPECT_EQ(testee.onDisablingCount, 0);

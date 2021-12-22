@@ -1,8 +1,8 @@
-#ifndef HBBA_LITE_DESIRE_SET_H
-#define HBBA_LITE_DESIRE_SET_H
+#ifndef HBBA_LITE_CORE_DESIRE_SET_H
+#define HBBA_LITE_CORE_DESIRE_SET_H
 
-#include <hbba_lite/ClassMacros.h>
-#include <hbba_lite/Desire.h>
+#include <hbba_lite/utils/ClassMacros.h>
+#include <hbba_lite/core/Desire.h>
 
 #include <memory>
 #include <unordered_map>

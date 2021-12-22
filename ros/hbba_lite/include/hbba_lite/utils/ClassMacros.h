@@ -1,5 +1,5 @@
-#ifndef HBBA_LITE_CLASS_MACROS_H
-#define HBBA_LITE_CLASS_MACROS_H
+#ifndef HBBA_LITE_UTILS_CLASS_MACROS_H
+#define HBBA_LITE_UTILS_CLASS_MACROS_H
 
 #define DECLARE_NOT_COPYABLE(className) \
     className(const className&) = delete; \

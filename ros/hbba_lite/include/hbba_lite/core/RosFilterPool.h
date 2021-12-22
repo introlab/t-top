@@ -1,7 +1,7 @@
-#ifndef HBBA_LITE_ROS_STRATEGY_H
-#define HBBA_LITE_ROS_STRATEGY_H
+#ifndef HBBA_LITE_CORE_ROS_STRATEGY_H
+#define HBBA_LITE_CORE_ROS_STRATEGY_H
 
-#include <hbba_lite/Strategy.h>
+#include <hbba_lite/core/Strategy.h>
 
 #include <ros/ros.h>
 

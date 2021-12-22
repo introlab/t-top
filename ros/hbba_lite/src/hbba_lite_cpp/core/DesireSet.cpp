@@ -1,4 +1,4 @@
-#include <hbba_lite/DesireSet.h>
+#include <hbba_lite/core/DesireSet.h>
 
 using namespace std;
 
@@ -39,7 +39,7 @@ DesireSetTransaction DesireSet::beginTransaction()
     return move(DesireSetTransaction(*this, move(lock)));
 }
 
-void DesireSet::addDesire(std::unique_ptr<Desire>&& desire)
+void DesireSet::addDesire(unique_ptr<Desire>&& desire)
 {
     unique_lock<recursive_mutex> lock(m_desireMutex);
     m_desiresById[desire->id()] = move(desire);
