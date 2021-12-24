@@ -165,6 +165,16 @@ add_executable(test_throttling_hbba_publisher src/hbba_lite_cpp_tests/test_throt
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  gecodeflatzinc
+  gecodedriver
+  gecodegist
+  gecodesearch
+  gecodeminimodel
+  gecodeset
+  gecodefloat
+  gecodeint
+  gecodekernel
+  gecodesupport
 )
 
 target_link_libraries(on_off_hbba_filter_node
@@ -249,7 +259,19 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/hbba_lite_cpp/main.cpp
 )
 if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}-test
+    ${PROJECT_NAME}
+    gecodeflatzinc
+    gecodedriver
+    gecodegist
+    gecodesearch
+    gecodeminimodel
+    gecodeset
+    gecodefloat
+    gecodeint
+    gecodekernel
+    gecodesupport
+  )
 endif()
 
 ## Add folders to be run by python nosetests

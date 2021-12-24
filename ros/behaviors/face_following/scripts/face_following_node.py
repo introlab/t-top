@@ -34,9 +34,6 @@ class FaceFollowingNode:
         self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
 
     def _video_analysis_cb(self, msg):
-        if self._movement_commands.is_filtering_all_messages:
-            return
-
         yaw, pitch = self._find_nearest_face_yaw_pitch(msg.objects, msg.header)
         with self._target_lock:
             self._target_torso_yaw = yaw
