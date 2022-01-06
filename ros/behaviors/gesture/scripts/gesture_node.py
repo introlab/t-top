@@ -3,7 +3,7 @@
 import threading
 
 import rospy
-from std_msgs.msg import String, Empty
+from gesture.msg import GestureName, Done
 
 from t_top import MovementCommands
 
@@ -15,29 +15,31 @@ class GestureNode:
         self._gesture_lock = threading.Lock()
         self._movement_commands = MovementCommands(self._simulation)
 
-        self._done_pub = rospy.Publisher('gesture/done', Empty, queue_size=5)
-        self._gesture_sub = rospy.Subscriber('gesture/name', String, self._on_gesture_cb)
+        self._done_pub = rospy.Publisher('gesture/done', Done, queue_size=5)
+        self._gesture_sub = rospy.Subscriber('gesture/name', GestureName, self._on_gesture_cb)
 
     def _on_gesture_cb(self, msg):
         with self._gesture_lock:
             if self._movement_commands.is_filtering_all_messages:
                 return
 
-            if msg.data == 'yes':
+            if msg.name == 'yes':
                 self._movement_commands.move_yes()
-            elif msg.data == 'no':
+            elif msg.name == 'no':
                 self._movement_commands.move_no()
-            elif msg.data == 'maybe':
+            elif msg.name == 'maybe':
                 self._movement_commands.move_maybe()
-            elif msg.data == 'origin_all':
+            elif msg.name == 'origin_all':
                 self._movement_commands.move_head_to_origin()
                 self._movement_commands.move_torso_to_origin()
-            elif msg.data == 'origin_head':
+            elif msg.name == 'origin_head':
                 self._movement_commands.move_head_to_origin()
-            elif msg.data == 'origin_torso':
+            elif msg.name == 'origin_torso':
                 self._movement_commands.move_torso_to_origin()
+            else:
+                rospy.logerr('Invalid gesture name ({})'.format(msg.name))
 
-            self._done_pub.publish(Empty())
+            self._done_pub.publish(Done(id=msg.id))
 
     def run(self):
         rospy.spin()
