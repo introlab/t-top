@@ -1,5 +1,7 @@
 #include <hbba_lite/core/DesireSet.h>
 
+#include "Desires.h"
+
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -18,27 +20,6 @@ public:
         }
     }
 };
-
-class DesireC : public Desire
-{
-public:
-    DesireC() : Desire(1)
-    {
-    }
-
-    ~DesireC() override = default;
-
-    unique_ptr<Desire> clone() override
-    {
-        return make_unique<DesireC>(*this);
-    }
-
-    type_index type() override
-    {
-        return type_index(typeid(*this));
-    }
-};
-
 
 TEST(DesireSetTests, addObserverRemoveObserver_shouldAddAndRemoveTheObserver)
 {

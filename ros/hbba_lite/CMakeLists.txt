@@ -133,6 +133,7 @@ add_library(${PROJECT_NAME}
   src/hbba_lite_cpp/core/Strategy.cpp
   src/hbba_lite_cpp/core/RosFilterPool.cpp
   src/hbba_lite_cpp/core/Solver.cpp
+  src/hbba_lite_cpp/core/GecodeSolver.cpp
   src/hbba_lite_cpp/core/HbbaLite.cpp
 )
 
@@ -255,6 +256,8 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/hbba_lite_cpp/core/DesireTests.cpp
   test/hbba_lite_cpp/core/DesireSetTests.cpp
   test/hbba_lite_cpp/core/StrategyTests.cpp
+  test/hbba_lite_cpp/core/SolverTests.cpp
+  test/hbba_lite_cpp/core/GecodeSolverTests.cpp
   test/hbba_lite_cpp/core/HbbaLiteTests.cpp
   test/hbba_lite_cpp/main.cpp
 )

@@ -1,31 +1,12 @@
 #include <hbba_lite/core/HbbaLite.h>
 #include <hbba_lite/utils/HbbaLiteException.h>
 
+#include "Desires.h"
 #include "FilterPoolMock.h"
 
 #include <gtest/gtest.h>
 
 using namespace std;
-
-class DesireD : public Desire
-{
-public:
-    DesireD() : Desire(1)
-    {
-    }
-
-    ~DesireD() override = default;
-
-    unique_ptr<Desire> clone() override
-    {
-        return make_unique<DesireD>(*this);
-    }
-
-    type_index type() override
-    {
-        return type_index(typeid(*this));
-    }
-};
 
 class SolverMock : public Solver
 {
@@ -36,7 +17,7 @@ public:
     ~SolverMock() override = default;
 
     // Return the strategy to activate (Desire Type, strategy index)
-    virtual unordered_set<pair<type_index, size_t>> solve(const vector<unique_ptr<Desire>>& desires,
+    virtual unordered_set<SolverResult> solve(const vector<unique_ptr<Desire>>& desires,
         const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
         const unordered_map<string, uint16_t>& systemResourcesByName)
     {
@@ -69,7 +50,7 @@ public:
         const unordered_map<string, uint16_t> EXPECTED_RESSOURCES({{"ra", 10}});
         EXPECT_EQ(systemResourcesByName, EXPECTED_RESSOURCES);
 
-        return {{type_index(typeid(DesireD)), 0}};
+        return {SolverResult(0, 0)};
     }
 };
 

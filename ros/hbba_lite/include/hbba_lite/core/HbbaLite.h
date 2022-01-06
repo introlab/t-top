@@ -16,6 +16,17 @@
 #include <thread>
 #include <mutex>
 
+template<>
+struct std::hash<std::pair<std::type_index, size_t>>
+{
+    std::size_t operator()(std::pair<std::type_index, size_t> const& x) const noexcept
+    {
+        std::size_t h1 = std::hash<std::type_index>()(x.first);
+        std::size_t h2 = std::hash<size_t>()(x.second);
+        return h1 ^ (h2 << 1);
+    }
+};
+
 class HbbaLite : public DesireSetObserver
 {
     std::shared_ptr<DesireSet> m_desireSet;

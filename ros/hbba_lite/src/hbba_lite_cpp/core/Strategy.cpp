@@ -92,7 +92,7 @@ BaseStrategy::BaseStrategy(uint16_t utility,
     }
 }
 
-inline void BaseStrategy::onEnabling()
+inline void BaseStrategy::onEnabling(const std::unique_ptr<Desire>& desire)
 {
     for (auto& pair : m_filterConfigurationsByName)
     {

@@ -1,6 +1,7 @@
 #ifndef HBBA_LITE_CORE_STRATEGY_H
 #define HBBA_LITE_CORE_STRATEGY_H
 
+#include <hbba_lite/core/Desire.h>
 #include <hbba_lite/utils/ClassMacros.h>
 
 #include <cstdint>
@@ -101,7 +102,9 @@ public:
     DECLARE_NOT_COPYABLE(BaseStrategy);
     DECLARE_NOT_MOVABLE(BaseStrategy);
 
-    void enable();
+    uint16_t utility() const;
+
+    void enable(const std::unique_ptr<Desire>& desire);
     void disable();
     bool enabled() const;
 
@@ -111,16 +114,21 @@ public:
     virtual std::type_index desireType() = 0;
 
 protected:
-    virtual void onEnabling();
+    virtual void onEnabling(const std::unique_ptr<Desire>& desire);
     virtual void onDisabling();
 };
 
-inline void BaseStrategy::enable()
+inline uint16_t BaseStrategy::utility() const
+{
+    return m_utility;
+}
+
+inline void BaseStrategy::enable(const std::unique_ptr<Desire>& desire)
 {
     if (!m_enabled)
     {
         m_enabled = true;
-        onEnabling();
+        onEnabling(desire);
     }
 }
 

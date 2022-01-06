@@ -26,9 +26,9 @@ public:
     ~StrategyTestee() override = default;
 
 protected:
-    void onEnabling() override
+    void onEnabling(const std::unique_ptr<Desire>& desire) override
     {
-        Strategy::onEnabling();
+        Strategy::onEnabling(desire);
         onEnablingCount++;
     }
 
@@ -135,6 +135,7 @@ TEST(StrategyTests, getters_shouldReturnTheRightValues)
     auto filterPool = make_shared<FilterPoolMock>();
     StrategyTestee testee(filterPool);
 
+    EXPECT_EQ(testee.utility(), 1);
     EXPECT_EQ(testee.resourcesByName(), EXPECTED_RESOURCES);
     EXPECT_EQ(testee.filterConfigurationsByName(), EXPECTED_FILTER_CONFIGURATIONS);
     EXPECT_EQ(testee.desireType(), type_index(typeid(int)));
@@ -154,14 +155,14 @@ TEST(StrategyTests, enableDisable_shouldChangeOnceTheState)
     EXPECT_FALSE(testee.enabled());
     EXPECT_EQ(filterPool->enabledFilters.size(), 0);
 
-    testee.enable();
+    testee.enable(nullptr);
     EXPECT_EQ(testee.onEnablingCount, 1);
     EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_TRUE(testee.enabled());
     EXPECT_EQ(filterPool->enabledFilters["c"], FilterConfiguration(1));
     EXPECT_EQ(filterPool->enabledFilters["d"], FilterConfiguration(2));
 
-    testee.enable();
+    testee.enable(nullptr);
     EXPECT_EQ(testee.onEnablingCount, 1);
     EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_TRUE(testee.enabled());

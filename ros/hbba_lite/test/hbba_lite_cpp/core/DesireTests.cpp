@@ -1,5 +1,7 @@
 #include <hbba_lite/core/Desire.h>
 
+#include "Desires.h"
+
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -15,46 +17,6 @@ public:
     static void disable(Desire& desire)
     {
         desire.disable();
-    }
-};
-
-class DesireA : public Desire
-{
-public:
-    DesireA(uint16_t intensity) : Desire(intensity)
-    {
-    }
-
-    ~DesireA() override = default;
-
-    unique_ptr<Desire> clone() override
-    {
-        return make_unique<DesireA>(*this);
-    }
-
-    type_index type() override
-    {
-        return type_index(typeid(*this));
-    }
-};
-
-class DesireB : public Desire
-{
-public:
-    DesireB(uint16_t intensity) : Desire(intensity)
-    {
-    }
-
-    ~DesireB() override = default;
-
-    unique_ptr<Desire> clone() override
-    {
-        return make_unique<DesireB>(*this);
-    }
-
-    type_index type() override
-    {
-        return type_index(typeid(*this));
     }
 };
 
