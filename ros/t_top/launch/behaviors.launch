@@ -12,6 +12,7 @@
     <node pkg="talk" type="talk_node.py" name="talk_node">
         <param name="language" value="$(arg language)"/>
         <param name="mouth_signal_gain" value="0.1"/>
+        <param name="sampling_frequency" value="44100"/>
         <param name="frame_sample_count" value="256"/>
 
         <remap from="audio_out" to="audio_float_22050"/>
