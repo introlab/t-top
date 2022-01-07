@@ -61,7 +61,7 @@ sudo apt install -y libasound2-dev \
 1. Execute the following bash commands.
 ```bash
 sudo apt install -y libprotobuf* protobuf-compiler ninja-build python3-pip
-sudo -H pip3 install numpy scipy matplotlib torch==1.6.0 torchvision==0.7.0 torchaudio==0.6.0 playsound google-cloud-texttospeech google-cloud-speech libconf tqdm pyside2 sounddevice librosa
+sudo -H pip3 install numpy scipy matplotlib torch==1.6.0 torchvision==0.7.0 torchaudio==0.6.0 playsound google-cloud-texttospeech google-cloud-speech libconf tqdm pyside2 sounddevice librosa requests ipinfo
 sudo -H pip3 install git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
 ```
 
@@ -102,4 +102,11 @@ git clone --recurse-submodules git@github.com:introlab/tabletop_robot.git
 2. Add the following line to `~/.bashrc`
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="[Path to the service account JSON keyfile]"
+```
+
+### B. Setup OpenWeatherMap
+1. Create an [OpenWeatherMap API Key](https://home.openweathermap.org/users/sign_up).
+2. Add the following line to `~/.bashrc`
+```bash
+export OPEN_WEATHER_MAP_API_KEY="[The key]"
 ```
