@@ -21,7 +21,9 @@ class GecodeSolverSpace : public IntMaximizeSpace {
 
     // Intermediate variables
     IntVar m_zero;
+    IntVar m_minusOne;
     unordered_map<string, IntVar> m_ressourcesValuesByName;
+    unordered_map<string, IntVar> m_filterRatesByName;
 
     // Cost variable
     IntVar m_costValue;
@@ -41,10 +43,14 @@ public:
 private:
     void setupStrategyIndexDomains();
     void setupResourceContraints();
+    void setupFilterRateContraints();
     void setupCostValue();
 
     IntArgs getUtilityIntArgs(const vector<unique_ptr<BaseStrategy>>& strategies);
     IntArgs getResourcesIntArgs(const string& name, const vector<unique_ptr<BaseStrategy>>& strategies);
+
+    vector<string> getAllFilterNames();
+    IntArgs getFilterRateIntArgs(const string& name, const vector<unique_ptr<BaseStrategy>>& strategies);
 };
 
 GecodeSolverSpace::GecodeSolverSpace(const vector<unique_ptr<Desire>>& desires,
@@ -58,10 +64,12 @@ GecodeSolverSpace::GecodeSolverSpace(const vector<unique_ptr<Desire>>& desires,
         m_isDesireEnabled(*this, mostIntenseDesiresIndexes.size(), 0, 1),
         m_strategyIndexes(*this, mostIntenseDesiresIndexes.size(), 0, MAX_INT_VAR_VALUE),
         m_zero(*this, IntSet({0})),
+        m_minusOne(*this, IntSet({-1})),
         m_costValue(*this, 0, MAX_INT_VAR_VALUE)
 {
     setupStrategyIndexDomains();
     setupResourceContraints();
+    setupFilterRateContraints();
     setupCostValue();
 
     branch(*this, m_isDesireEnabled, BOOL_VAR_NONE(), BOOL_VAL_MAX());
@@ -78,10 +86,15 @@ GecodeSolverSpace::GecodeSolverSpace(GecodeSolverSpace& other) : IntMaximizeSpac
     m_strategyIndexes.update(*this, other.m_strategyIndexes);
 
     m_zero.update(*this, other.m_zero);
+    m_minusOne.update(*this, other.m_minusOne);
 
     for (auto& pair : other.m_ressourcesValuesByName)
     {
         m_ressourcesValuesByName[pair.first].update(*this, pair.second);
+    }
+    for (auto& pair : other.m_filterRatesByName)
+    {
+        m_filterRatesByName[pair.first].update(*this, pair.second);
     }
 
     m_costValue.update(*this, other.m_costValue);
@@ -119,7 +132,6 @@ void GecodeSolverSpace::setupStrategyIndexDomains()
         size_t strategyCount = m_strategiesByDesireType.at(desireType).size();
         dom(*this, m_strategyIndexes[i], 0, strategyCount - 1);
     }
-    cout << endl;
 }
 
 void GecodeSolverSpace::setupResourceContraints()
@@ -150,6 +162,43 @@ void GecodeSolverSpace::setupResourceContraints()
     }
 }
 
+void GecodeSolverSpace::setupFilterRateContraints()
+{
+    auto allFilterNames = getAllFilterNames();
+    unordered_map<string, IntVarArgs> filterRatesByName;
+
+    for (size_t i = 0; i < m_mostIntenseDesiresIndexes.size(); i++)
+    {
+        auto desireType = m_desires[m_mostIntenseDesiresIndexes[i]]->type();
+
+        for (auto& name : allFilterNames)
+        {
+            IntArgs filterRates = getFilterRateIntArgs(name, m_strategiesByDesireType.at(desireType));
+            IntVar filterRate(*this, -1, MAX_INT_VAR_VALUE);
+            element(*this, filterRates, m_strategyIndexes[i], filterRate);
+
+            IntVar filterRateWithState(*this, -1, MAX_INT_VAR_VALUE);
+            ite(*this, m_isDesireEnabled[i], filterRate, m_minusOne, filterRateWithState);
+
+            filterRatesByName[name] << filterRateWithState;
+        }
+    }
+
+    for (auto& pair : filterRatesByName)
+    {
+        m_filterRatesByName[pair.first] = IntVar(*this, -1, MAX_INT_VAR_VALUE);
+        max(*this, pair.second, m_filterRatesByName[pair.first]);
+
+        IntVar minusOneCount(*this, 0, MAX_INT_VAR_VALUE);
+        IntVar maxCount(*this, 0, MAX_INT_VAR_VALUE);
+        count(*this, pair.second, -1, IRT_EQ, minusOneCount);
+        count(*this, pair.second, m_filterRatesByName[pair.first], IRT_EQ, maxCount);
+
+        rel(*this, filterRatesByName[pair.first].size() == minusOneCount + maxCount ||
+            2 * filterRatesByName[pair.first].size() == minusOneCount + maxCount);
+    }
+}
+
 void GecodeSolverSpace::setupCostValue()
 {
     IntVarArray utilityValues(*this, m_mostIntenseDesiresIndexes.size(), 0, MAX_INT_VAR_VALUE);
@@ -159,7 +208,7 @@ void GecodeSolverSpace::setupCostValue()
     for (size_t i = 0; i < m_mostIntenseDesiresIndexes.size(); i++)
     {
         auto desireType = m_desires[m_mostIntenseDesiresIndexes[i]]->type();
-        auto desireIntensity = m_desires[m_mostIntenseDesiresIndexes[i]]->intensity();
+        int desireIntensity = m_desires[m_mostIntenseDesiresIndexes[i]]->intensity();
 
         IntArgs utilities = getUtilityIntArgs(m_strategiesByDesireType.at(desireType));
         element(*this, utilities, m_strategyIndexes[i], utilityValues[i]);
@@ -197,6 +246,45 @@ IntArgs GecodeSolverSpace::getResourcesIntArgs(const string& name, const vector<
 
     }
     return resources;
+}
+
+vector<string> GecodeSolverSpace::getAllFilterNames()
+{
+    unordered_set<string> allFilterNames;
+
+    for (auto& pair : m_strategiesByDesireType)
+    {
+        for (auto& strategy : pair.second)
+        {
+            for (auto filter : strategy->filterConfigurationsByName())
+            {
+                allFilterNames.insert(filter.first);
+            }
+        }
+    }
+
+    return vector<string>(allFilterNames.begin(), allFilterNames.end());
+}
+
+IntArgs GecodeSolverSpace::getFilterRateIntArgs(const string& name, const vector<unique_ptr<BaseStrategy>>& strategies)
+{
+    IntArgs filterRates(strategies.size());
+    for (size_t i = 0; i < strategies.size(); i++)
+    {
+        auto& filterConfigurationsByName = strategies[i]->filterConfigurationsByName();
+        auto it = filterConfigurationsByName.find(name);
+        if (it == filterConfigurationsByName.end())
+        {
+            filterRates[i] = -1;
+        }
+        else
+        {
+            filterRates[i] = it->second.rate();
+        }
+
+    }
+
+    return filterRates;
 }
 
 
