@@ -11,11 +11,11 @@
         <param name="device" value="plughw:CARD=D20,DEV=0"/>
         <param name="format" value="float"/>
         <param name="channel_count" value="1"/>
-        <param name="sampling_frequency" value="22050"/>
+        <param name="sampling_frequency" value="44100"/>
         <param name="frame_sample_count" value="256"/>
         <param name="latency_us" value="400"/>
 
-        <remap from="audio_in" to="audio_float_22050"/>
+        <remap from="audio_in" to="audio_float_44100"/>
     </node>
 
 </launch>

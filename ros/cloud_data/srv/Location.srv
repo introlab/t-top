@@ -1,0 +1,5 @@
+---
+string city
+string region
+string country_code
+string country_name

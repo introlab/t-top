@@ -17,4 +17,8 @@
         <arg name="language" value="$(arg language)"/>
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
+
+    <node pkg="cloud_data" type="cloud_data_node.py" name="cloud_data_node">
+        <param name="language" value="$(arg language)"/>
+    </node>
 </launch>

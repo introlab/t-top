@@ -1,0 +1,26 @@
+# 0: today
+# 1: tomorow
+# ...
+uint64 relative_day
+---
+string city
+string region
+string country_code
+string country_name
+
+float64 temperature_morning_celsius
+float64 temperature_day_celsius
+float64 temperature_evening_celsius
+float64 temperature_night_celsius
+
+float64 feals_like_temperature_morning_celsius
+float64 feals_like_temperature_day_celsius
+float64 feals_like_temperature_evening_celsius
+float64 feals_like_temperature_night_celsius
+
+float64 pressure_kpa
+float64 humidity_percent
+float64 clouds_percent
+float64 wind_speed_kph
+float64 wind_gust_kph # -1 if not available
+string weather_description # '' if not available
