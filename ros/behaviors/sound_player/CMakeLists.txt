@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(gesture)
+project(sound_player)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,11 +8,10 @@ project(gesture)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  hbba_lite
-  rospy
-  std_msgs
+  audio_utils
   message_generation
-  t_top
+  rospy
+  hbba_lite
 )
 
 ## System dependencies are found with CMake's conventions
@@ -51,7 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  GestureName.msg
+  SoundFile.msg
   Done.msg
 )
 
@@ -103,8 +102,8 @@ generate_messages()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES gesture
-#  CATKIN_DEPENDS hbba_lite rospy std_msgs t_top
+#  LIBRARIES sound_player
+#  CATKIN_DEPENDS audio_utils message_generation rospy
 #  DEPENDS system_lib
 )
 
@@ -121,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/gesture.cpp
+#   src/${PROJECT_NAME}/sound_player.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -132,7 +131,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/gesture_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/sound_player_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -158,10 +157,10 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-catkin_install_python(PROGRAMS
-  scripts/gesture_node.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# catkin_install_python(PROGRAMS
+#   scripts/my_python_script
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -196,7 +195,7 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_gesture.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_sound_player.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

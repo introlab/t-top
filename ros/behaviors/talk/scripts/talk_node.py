@@ -34,7 +34,7 @@ class TalkNode:
         self._done_talking_pub = rospy.Publisher('talk/done', Done, queue_size=5)
 
         self._text_sub_lock = threading.Lock()
-        self._text_sub = rospy.Subscriber('talk/text', Text, self._on_text_received_cb)
+        self._text_sub = rospy.Subscriber('talk/text', Text, self._on_text_received_cb, queue_size=1)
 
     def _on_text_received_cb(self, msg):
         with self._text_sub_lock:

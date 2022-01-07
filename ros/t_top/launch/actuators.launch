@@ -15,7 +15,7 @@
         <param name="frame_sample_count" value="256"/>
         <param name="latency_us" value="400"/>
 
-        <remap from="audio_in" to="audio_float_22050"/>
+        <remap from="audio_in" to="audio_float_44100"/>
     </node>
 
 </launch>
