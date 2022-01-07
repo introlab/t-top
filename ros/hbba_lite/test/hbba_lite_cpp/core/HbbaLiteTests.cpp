@@ -60,7 +60,7 @@ TEST(HbbaLiteTests, constructor_invalidResourceName_shouldThrowHbbaLiteException
     auto filterPool = make_shared<FilterPoolMock>();
     auto strategy = make_unique<Strategy<DesireD>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
     auto solver = make_unique<SolverMock>();
 
@@ -77,7 +77,7 @@ TEST(HbbaLiteTests, constructor_invalidResourceCount_shouldThrowHbbaLiteExceptio
     auto filterPool = make_shared<FilterPoolMock>();
     auto strategy = make_unique<Strategy<DesireD>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
     auto solver = make_unique<SolverMock>();
 
@@ -94,7 +94,7 @@ TEST(HbbaLiteTests, onDesireSetChange_shouldEnableDisableStrategies)
     auto filterPool = make_shared<FilterPoolMock>();
     auto strategy = make_unique<Strategy<DesireD>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
     auto solver = make_unique<SolverMock>();
 

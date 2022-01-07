@@ -19,7 +19,7 @@ TEST(SolverTests, checkDesireStrategies_missingStrategy_shouldThrowHbbaLiteExcep
 
     auto strategyA = make_unique<Strategy<DesireA>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
 
     unordered_map<type_index, vector<unique_ptr<BaseStrategy>>> strategiesByDesireType;
@@ -38,7 +38,7 @@ TEST(SolverTests, checkDesireStrategies_emptyStrategies_shouldThrowHbbaLiteExcep
 
     auto strategyA = make_unique<Strategy<DesireA>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
 
     unordered_map<type_index, vector<unique_ptr<BaseStrategy>>> strategiesByDesireType;
@@ -58,11 +58,11 @@ TEST(SolverTests, checkDesireStrategies_shouldNotThrowHbbaLiteException)
 
     auto strategyA = make_unique<Strategy<DesireA>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
     auto strategyB = make_unique<Strategy<DesireB>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
 
     unordered_map<type_index, vector<unique_ptr<BaseStrategy>>> strategiesByDesireType;
@@ -78,11 +78,11 @@ TEST(SolverTests, checkStrategyResources_missingRessource_shouldThrowHbbaLiteExc
 
     auto strategyA = make_unique<Strategy<DesireA>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
     auto strategyB = make_unique<Strategy<DesireB>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
 
     unordered_map<type_index, vector<unique_ptr<BaseStrategy>>> strategiesByDesireType;
@@ -100,11 +100,11 @@ TEST(SolverTests, checkStrategyResources_shouldNotThrowHbbaLiteException)
 
     auto strategyA = make_unique<Strategy<DesireA>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
     auto strategyB = make_unique<Strategy<DesireB>>(10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration(1)}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
 
     unordered_map<type_index, vector<unique_ptr<BaseStrategy>>> strategiesByDesireType;

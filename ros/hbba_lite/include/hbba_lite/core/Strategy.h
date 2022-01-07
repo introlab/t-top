@@ -28,6 +28,9 @@ public:
     FilterType type() const;
     uint16_t rate() const;
 
+    static FilterConfiguration onOff();
+    static FilterConfiguration throttling(uint16_t rate);
+
     friend bool operator==(const FilterConfiguration& a, const FilterConfiguration& b);
     friend bool operator!=(const FilterConfiguration& a, const FilterConfiguration& b);
 };
@@ -40,6 +43,16 @@ inline FilterType FilterConfiguration::type() const
 inline uint16_t FilterConfiguration::rate() const
 {
     return m_rate;
+}
+
+inline FilterConfiguration FilterConfiguration::onOff()
+{
+    return FilterConfiguration();
+}
+
+inline FilterConfiguration FilterConfiguration::throttling(uint16_t rate)
+{
+    return FilterConfiguration(rate);
 }
 
 inline bool operator==(const FilterConfiguration& a, const FilterConfiguration& b)
