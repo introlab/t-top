@@ -116,7 +116,7 @@ TEST(SolverTests, checkStrategyResources_shouldNotThrowHbbaLiteException)
     checkStrategyResources(strategiesByDesireType, systemResourcesByName);
 }
 
-TEST(SolverTests, selectMostIntenseDesireIndexess_shouldReturnMostIntenseDesireIndexes)
+TEST(SolverTests, selectMostIntenseEnabledDesireIndexes_shouldReturnMostIntenseDesireIndexes)
 {
     vector<unique_ptr<Desire>> desires;
     desires.emplace_back(make_unique<DesireA>(1));
@@ -126,7 +126,10 @@ TEST(SolverTests, selectMostIntenseDesireIndexess_shouldReturnMostIntenseDesireI
     desires.emplace_back(make_unique<DesireB>(1));
     desires.emplace_back(make_unique<DesireC>());
 
-    auto mostIntenseDesires = selectMostIntenseDesireIndexes(desires);
+    desires.emplace_back(make_unique<DesireB>(4));
+    desires[6]->disable();
+
+    auto mostIntenseDesires = selectMostIntenseEnabledDesireIndexes(desires);
 
     EXPECT_EQ(mostIntenseDesires, vector<size_t>({5, 2, 1}));
 }

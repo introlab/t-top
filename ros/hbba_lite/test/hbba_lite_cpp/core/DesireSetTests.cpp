@@ -69,6 +69,47 @@ TEST(DesireSetTests, removeDesire_shouldRemoveTheDesireAndCallTheObservers)
     ASSERT_EQ(observer.desires[0].size(), 0);
 }
 
+TEST(DesireSetTests, removeDesire_invalidId_shouldDoNothing)
+{
+    DesireSetObserverMock observer;
+    DesireC desire;
+    DesireSet testee;
+
+    testee.addDesire(desire.clone());
+
+    testee.addObserver(&observer);
+    testee.removeDesire(999999999);
+
+    ASSERT_EQ(observer.desires.size(), 0);
+}
+
+TEST(DesireSetTests, clear_empty_shouldDoNothing)
+{
+    DesireSetObserverMock observer;
+    DesireC desire;
+    DesireSet testee;
+
+    testee.addObserver(&observer);
+    testee.clear();
+
+    ASSERT_EQ(observer.desires.size(), 0);
+}
+
+TEST(DesireSetTests, clear_shouldRemoveAllDesiresAndCallTheObservers)
+{
+    DesireSetObserverMock observer;
+    DesireC desire;
+    DesireSet testee;
+
+    testee.addDesire(desire.clone());
+
+    testee.addObserver(&observer);
+    testee.clear();
+
+    ASSERT_EQ(observer.desires.size(), 1);
+    ASSERT_EQ(observer.desires[0].size(), 0);
+}
+
 TEST(DesireSetTests, enableAllDesires_shouldEnableAllDesiresAndCallTheObservers)
 {
     DesireSetObserverMock observer;

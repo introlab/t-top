@@ -35,7 +35,6 @@ DesireSetTransaction DesireSet::beginTransaction()
 {
     unique_lock<recursive_mutex> lock(m_desireMutex);
     m_isTransactionStarted = true;
-    m_hasChanged = false;
     return move(DesireSetTransaction(*this, move(lock)));
 }
 
@@ -50,8 +49,21 @@ void DesireSet::addDesire(unique_ptr<Desire>&& desire)
 void DesireSet::removeDesire(uint64_t id)
 {
     unique_lock<recursive_mutex> lock(m_desireMutex);
-    m_desiresById.erase(id);
-    m_hasChanged = true;
+    if (m_desiresById.erase(id) == 1)
+    {
+        m_hasChanged = true;
+    }
+    callObservers(move(lock));
+}
+
+void DesireSet::clear()
+{
+    unique_lock<recursive_mutex> lock(m_desireMutex);
+    if (!m_desiresById.empty())
+    {
+        m_hasChanged = true;
+    }
+    m_desiresById.clear();
     callObservers(move(lock));
 }
 
@@ -114,4 +126,6 @@ void DesireSet::callObservers(unique_lock<recursive_mutex> desireLock)
     {
         observer->onDesireSetChanged(enabledDesires);
     }
+
+    m_hasChanged = false;
 }

@@ -54,6 +54,6 @@ void checkDesireStrategies(const std::vector<std::unique_ptr<Desire>>& desires,
 void checkStrategyResources(const std::unordered_map<std::type_index, std::vector<std::unique_ptr<BaseStrategy>>>& strategiesByDesireType,
     const std::unordered_map<std::string, uint16_t>& systemResourcesByName);
 
-std::vector<size_t> selectMostIntenseDesireIndexes(const std::vector<std::unique_ptr<Desire>>& desires);
+std::vector<size_t> selectMostIntenseEnabledDesireIndexes(const std::vector<std::unique_ptr<Desire>>& desires);
 
 #endif

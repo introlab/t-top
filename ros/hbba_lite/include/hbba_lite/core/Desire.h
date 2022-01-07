@@ -27,11 +27,8 @@ public:
     virtual std::unique_ptr<Desire> clone() = 0;
     virtual std::type_index type() = 0;
 
-private:
     void enable();
     void disable();
-
-    friend DesireSet;
 };
 
 inline uint64_t Desire::id() const

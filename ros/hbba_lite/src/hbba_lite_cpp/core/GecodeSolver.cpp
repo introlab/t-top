@@ -216,7 +216,7 @@ unordered_set<SolverResult> GecodeSolver::solve(const vector<unique_ptr<Desire>>
     checkDesireStrategies(desires, strategiesByDesireType);
     checkStrategyResources(strategiesByDesireType, systemResourcesByName);
 
-    auto mostIntenseDesiresIndexes = selectMostIntenseDesireIndexes(desires);
+    auto mostIntenseDesiresIndexes = selectMostIntenseEnabledDesireIndexes(desires);
 
     GecodeSolverSpace model(desires, mostIntenseDesiresIndexes, strategiesByDesireType, systemResourcesByName);
     BAB<GecodeSolverSpace> e(&model);

@@ -56,6 +56,8 @@ public:
 
     void addDesire(std::unique_ptr<Desire>&& desire);
     void removeDesire(uint64_t id);
+    void clear();
+
     void enableAllDesires();
     void disableAllDesires();
 

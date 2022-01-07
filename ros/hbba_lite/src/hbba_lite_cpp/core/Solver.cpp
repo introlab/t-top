@@ -47,12 +47,17 @@ void checkStrategyResources(const unordered_map<type_index, vector<unique_ptr<Ba
     }
 }
 
-vector<size_t> selectMostIntenseDesireIndexes(const vector<unique_ptr<Desire>>& desires)
+vector<size_t> selectMostIntenseEnabledDesireIndexes(const vector<unique_ptr<Desire>>& desires)
 {
     unordered_map<type_index, pair<uint16_t, size_t>> mostIntenseDesiresByType;
 
     for (size_t i = 0; i < desires.size(); i++)
     {
+        if (!desires[i]->enabled())
+        {
+            continue;
+        }
+
         if (mostIntenseDesiresByType.find(desires[i]->type()) == mostIntenseDesiresByType.end() ||
             desires[i]->intensity() > mostIntenseDesiresByType[desires[i]->type()].first)
         {
