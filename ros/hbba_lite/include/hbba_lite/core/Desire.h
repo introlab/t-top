@@ -6,8 +6,6 @@
 #include <memory>
 #include <typeindex>
 
-class DesireSet;
-
 class Desire
 {
     static std::atomic_uint64_t m_idCounter;
