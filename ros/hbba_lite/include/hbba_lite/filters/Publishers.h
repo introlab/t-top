@@ -1,9 +1,9 @@
-#ifndef HBBA_LITE_PUBLISHERS_H
-#define HBBA_LITE_PUBLISHERS_H
+#ifndef HBBA_LITE_FILTERS_PUBLISHERS_H
+#define HBBA_LITE_FILTERS_PUBLISHERS_H
 
 #include <ros/ros.h>
 
-#include <hbba_lite/FilterState.h>
+#include <hbba_lite/filters/FilterState.h>
 
 template <class FilterState, class MessageType>
 class HbbaPublisher

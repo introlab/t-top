@@ -1,8 +1,8 @@
-#include <hbba_lite/FilterState.h>
+#include <hbba_lite/filters/FilterState.h>
 
 using namespace std;
 
-OnOffHbbaFilterState::OnOffHbbaFilterState(ros::NodeHandle& nodeHandle, const std::string& stateServiceName) :
+OnOffHbbaFilterState::OnOffHbbaFilterState(ros::NodeHandle& nodeHandle, const string& stateServiceName) :
     m_isFilteringAllMessages(true)
 {
     m_stateService = nodeHandle.advertiseService(stateServiceName, &OnOffHbbaFilterState::stateServiceCallback, this);
@@ -21,7 +21,7 @@ bool OnOffHbbaFilterState::stateServiceCallback(hbba_lite::SetOnOffFilterState::
     return true;
 }
 
-ThrottlingHbbaFilterState::ThrottlingHbbaFilterState(ros::NodeHandle& nodeHandle, const std::string& stateServiceName) :
+ThrottlingHbbaFilterState::ThrottlingHbbaFilterState(ros::NodeHandle& nodeHandle, const string& stateServiceName) :
     m_isFilteringAllMessages(true), m_rate(1), m_counter(0)
 {
     m_stateService = nodeHandle.advertiseService(stateServiceName, &ThrottlingHbbaFilterState::stateServiceCallback, this);

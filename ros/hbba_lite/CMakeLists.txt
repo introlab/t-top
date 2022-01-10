@@ -124,7 +124,17 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-  src/hbba_lite_cpp/FilterState.cpp
+  src/hbba_lite_cpp/filters/FilterState.cpp
+  src/hbba_lite_cpp/utils/BinarySemaphore.cpp
+  src/hbba_lite_cpp/utils/HbbaLiteException.cpp
+  src/hbba_lite_cpp/core/Desire.cpp
+  src/hbba_lite_cpp/core/DesireSet.cpp
+  src/hbba_lite_cpp/core/Motivation.cpp
+  src/hbba_lite_cpp/core/Strategy.cpp
+  src/hbba_lite_cpp/core/RosFilterPool.cpp
+  src/hbba_lite_cpp/core/Solver.cpp
+  src/hbba_lite_cpp/core/GecodeSolver.cpp
+  src/hbba_lite_cpp/core/HbbaLite.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -156,6 +166,16 @@ add_executable(test_throttling_hbba_publisher src/hbba_lite_cpp_tests/test_throt
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  gecodeflatzinc
+  gecodedriver
+  gecodegist
+  gecodesearch
+  gecodeminimodel
+  gecodeset
+  gecodefloat
+  gecodeint
+  gecodekernel
+  gecodesupport
 )
 
 target_link_libraries(on_off_hbba_filter_node
@@ -231,10 +251,31 @@ target_link_libraries(test_throttling_hbba_publisher
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_hbba_lite.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+catkin_add_gtest(${PROJECT_NAME}-test
+  test/hbba_lite_cpp/utils/BinarySemaphoreTests.cpp
+  test/hbba_lite_cpp/core/DesireTests.cpp
+  test/hbba_lite_cpp/core/DesireSetTests.cpp
+  test/hbba_lite_cpp/core/StrategyTests.cpp
+  test/hbba_lite_cpp/core/SolverTests.cpp
+  test/hbba_lite_cpp/core/GecodeSolverTests.cpp
+  test/hbba_lite_cpp/core/HbbaLiteTests.cpp
+  test/hbba_lite_cpp/main.cpp
+)
+if(TARGET ${PROJECT_NAME}-test)
+  target_link_libraries(${PROJECT_NAME}-test
+    ${PROJECT_NAME}
+    gecodeflatzinc
+    gecodedriver
+    gecodegist
+    gecodesearch
+    gecodeminimodel
+    gecodeset
+    gecodefloat
+    gecodeint
+    gecodekernel
+    gecodesupport
+  )
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

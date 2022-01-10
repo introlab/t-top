@@ -1,5 +1,5 @@
-#ifndef HBBA_LITE_FILTER_STATE
-#define HBBA_LITE_FILTER_STATE
+#ifndef HBBA_LITE_FILTERS_FILTER_STATE_H
+#define HBBA_LITE_FILTERS_FILTER_STATE_H
 
 #include <ros/ros.h>
 #include <hbba_lite/SetOnOffFilterState.h>

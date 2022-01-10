@@ -30,7 +30,7 @@ class SoundFollowingNode:
             rospy.logerr('Invalid sst (len(sst.sources)={})'.format(len(sst.sources)))
             return
 
-        if self._movement_commands.is_filtering_all_messages or len(sst.sources) == 0:
+        if len(sst.sources) == 0:
             yaw, pitch = None, None
         else:
             yaw, pitch = vector_to_angles(sst.sources[0])
