@@ -22,7 +22,7 @@ DesireSet::DesireSet() : m_isTransactionStarted(false), m_hasChanged(false)
 void DesireSet::addObserver(DesireSetObserver* observer)
 {
     lock_guard<mutex> lock(m_observerMutex);
-    m_observers.insert(observer);
+    m_observers.emplace(observer);
 }
 
 void DesireSet::removeObserver(DesireSetObserver* observer)

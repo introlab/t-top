@@ -90,7 +90,7 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         {
             if (p.second[i]->enabled())
             {
-                enabledStrategies.insert(pair<type_index, size_t>(p.first, i));
+                enabledStrategies.emplace(p.first, i);
             }
         }
     }

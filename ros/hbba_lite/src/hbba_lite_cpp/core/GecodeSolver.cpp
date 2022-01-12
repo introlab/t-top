@@ -117,7 +117,7 @@ unordered_set<SolverResult> GecodeSolverSpace::convert()
     {
         if (m_isDesireEnabled[i].val())
         {
-            results.insert(SolverResult(m_mostIntenseDesiresIndexes[i], m_strategyIndexes[i].val()));
+            results.emplace(m_mostIntenseDesiresIndexes[i], m_strategyIndexes[i].val());
         }
     }
 
@@ -258,7 +258,7 @@ vector<string> GecodeSolverSpace::getAllFilterNames()
         {
             for (auto filter : strategy->filterConfigurationsByName())
             {
-                allFilterNames.insert(filter.first);
+                allFilterNames.emplace(filter.first);
             }
         }
     }
