@@ -55,7 +55,8 @@ sudo apt install -y libasound2-dev \
     libsqlite3-dev \
     portaudio19-dev \
     python3-all-dev \
-    libgecode-dev
+    libgecode-dev \
+    qt5-default
 ```
 
 ### E. Install Python Dependancies
