@@ -3,13 +3,25 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QVariant>
 
-class BehaviorsTab : public QWidget
+#include <hbba_lite/core/DesireSet.h>
+
+#include <memory>
+#include <utility>
+
+class BehaviorsTab : public QWidget, public DesireSetObserver
 {
     Q_OBJECT
 
+    std::shared_ptr<DesireSet> m_desireSet;
+    QVariant m_desireId;
+
 public:
-    explicit BehaviorsTab(QWidget* parent = nullptr);
+    BehaviorsTab(std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    ~BehaviorsTab() override;
+
+    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 private slots:
     void onFaceFollowingButtonToggled(bool checked);

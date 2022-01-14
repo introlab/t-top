@@ -1,17 +1,21 @@
 #include "AvatarTab.h"
+#include "../ControlPanelDesires.h"
 
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTimer>
 
+using namespace std;
 
 constexpr const char* URL = "http://localhost:8080/face";
 constexpr int RELOAD_INTERVAL_MS = 10000;
 
-AvatarTab::AvatarTab(QWidget* parent) : QWidget(parent)
+AvatarTab::AvatarTab(shared_ptr<DesireSet> desireSet, QWidget* parent) :
+        QWidget(parent), m_desireSet(std::move(desireSet))
 {
     createUi();
+    onAnimationChanged(m_animationComboBox->currentText());
 }
 
 void AvatarTab::onAvatarViewLoadFinished(bool ok)
@@ -28,8 +32,15 @@ void AvatarTab::onAvatarViewLoadFinished(bool ok)
 
 void AvatarTab::onAnimationChanged(const QString& animation)
 {
-    // TODO
-    qDebug() << "onAnimationChanged - " << animation;
+    auto transaction = m_desireSet->beginTransaction();
+    if (m_faceAnimationDesireId.isValid())
+    {
+        m_desireSet->removeDesire(m_faceAnimationDesireId.toULongLong());
+    }
+
+    auto desire = make_unique<FaceAnimationDesire>(animation.toStdString());
+    m_faceAnimationDesireId = static_cast<qint64>(desire->id());
+    m_desireSet->addDesire(std::move(desire));
 }
 
 void AvatarTab::reloadAvatarView()

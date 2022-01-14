@@ -15,7 +15,7 @@ class Desire
     bool m_enabled;
 
 public:
-    Desire(uint16_t intensity);
+    explicit Desire(uint16_t intensity);
     virtual ~Desire();
 
     uint64_t id() const;

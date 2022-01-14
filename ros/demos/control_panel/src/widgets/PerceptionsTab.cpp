@@ -1,5 +1,6 @@
 #include "PerceptionsTab.h"
-#include "QtUtils.h"
+#include "../QtUtils.h"
+#include "../ControlPanelDesires.h"
 
 #include <QDebug>
 #include <QDateTime>
@@ -23,7 +24,8 @@ QString mergeStdStrings(const vector<string> values)
     return mergedValues;
 }
 
-PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, QWidget* parent) : QWidget(parent), m_nodeHandle(nodeHandle)
+PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent) :
+        QWidget(parent), m_nodeHandle(nodeHandle), m_desireSet(std::move(desireSet))
 {
     createUi();
 
@@ -39,20 +41,47 @@ PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, QWidget* parent) : Q
 
 void PerceptionsTab::onVideoAnalyzerButtonToggled(bool checked)
 {
-    // TODO
-    qDebug() << "onVideoAnalyzerButtonToggled - " << checked;
+    if (checked)
+    {
+        auto desire = make_unique<VideoAnalyzerDesire>();
+        m_videoAnalyzerDesireId = static_cast<qint64>(desire->id());
+        m_desireSet->addDesire(std::move(desire));
+    }
+    else if (m_videoAnalyzerDesireId.isValid())
+    {
+        m_desireSet->removeDesire(m_videoAnalyzerDesireId.toULongLong());
+        m_videoAnalyzerDesireId.clear();
+    }
 }
 
 void PerceptionsTab::onAudioAnalyzerButtonToggled(bool checked)
 {
-    // TODO
-    qDebug() << "onAudioAnalyzerButtonToggled - " << checked;
+    if (checked)
+    {
+        auto desire = make_unique<AudioAnalyzerDesire>();
+        m_audioAnalyzerDesireId = static_cast<qint64>(desire->id());
+        m_desireSet->addDesire(std::move(desire));
+    }
+    else if (m_audioAnalyzerDesireId.isValid())
+    {
+        m_desireSet->removeDesire(m_audioAnalyzerDesireId.toULongLong());
+        m_audioAnalyzerDesireId.clear();
+    }
 }
 
 void PerceptionsTab::onRobotNameDetectorButtonToggled(bool checked)
 {
-    // TODO
-    qDebug() << "onRobotNameDetectorButtonToggled - " << checked;
+    if (checked)
+    {
+        auto desire = make_unique<RobotNameDetectorDesire>();
+        m_robotNameDetectorDesireId = static_cast<qint64>(desire->id());
+        m_desireSet->addDesire(std::move(desire));
+    }
+    else if (m_robotNameDetectorDesireId.isValid())
+    {
+        m_desireSet->removeDesire(m_robotNameDetectorDesireId.toULongLong());
+        m_robotNameDetectorDesireId.clear();
+    }
 }
 
 void PerceptionsTab::analyzedImageSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg)

@@ -6,12 +6,20 @@
 #include <QPushButton>
 #include <QComboBox>
 
+#include <hbba_lite/core/DesireSet.h>
+
+#include <memory>
+#include <utility>
+
 class AvatarTab : public QWidget
 {
     Q_OBJECT
 
+    std::shared_ptr<DesireSet> m_desireSet;
+    QVariant m_faceAnimationDesireId;
+
 public:
-    explicit AvatarTab(QWidget* parent = nullptr);
+    AvatarTab(std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
 
 private slots:
     void onAvatarViewLoadFinished(bool ok);

@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   talk
   video_analyzer
+  hbba_lite
 )
 
 ## System dependencies are found with CMake's conventions
@@ -144,24 +145,26 @@ include_directories(
 
 set(headers
   src/QtUtils.h
-  src/ImageDisplay.h
-  src/ControlPanel.h
-  src/AvatarTab.h
-  src/SpeechTab.h
-  src/GestureTab.h
-  src/BehaviorsTab.h
-  src/PerceptionsTab.h
+  src/widgets/ImageDisplay.h
+  src/widgets/ControlPanel.h
+  src/widgets/AvatarTab.h
+  src/widgets/SpeechTab.h
+  src/widgets/GestureTab.h
+  src/widgets/BehaviorsTab.h
+  src/widgets/PerceptionsTab.h
+  src/ControlPanelDesires.h
 )
 
 set(srcs
   src/main.cpp
-  src/ImageDisplay.cpp
-  src/ControlPanel.cpp
-  src/AvatarTab.cpp
-  src/SpeechTab.cpp
-  src/GestureTab.cpp
-  src/BehaviorsTab.cpp
-  src/PerceptionsTab.cpp
+  src/widgets/ImageDisplay.cpp
+  src/widgets/ControlPanel.cpp
+  src/widgets/AvatarTab.cpp
+  src/widgets/SpeechTab.cpp
+  src/widgets/GestureTab.cpp
+  src/widgets/BehaviorsTab.cpp
+  src/widgets/PerceptionsTab.cpp
+  src/ControlPanelDesires.cpp
 )
 
 qt5_wrap_cpp(project_moc_srcs ${headers})

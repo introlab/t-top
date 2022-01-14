@@ -6,12 +6,18 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QVariant>
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <audio_analyzer/AudioAnalysis.h>
 #include <std_msgs/Empty.h>
 #include <person_identification/PersonNames.h>
+
+#include <hbba_lite/core/DesireSet.h>
+
+#include <memory>
+#include <utility>
 
 class PerceptionsTab : public QWidget
 {
@@ -23,8 +29,13 @@ class PerceptionsTab : public QWidget
     ros::Subscriber m_robotNameDetectedSubscriber;
     ros::Subscriber m_personNamesSubscriber;
 
+    std::shared_ptr<DesireSet> m_desireSet;
+    QVariant m_videoAnalyzerDesireId;
+    QVariant m_audioAnalyzerDesireId;
+    QVariant m_robotNameDetectorDesireId;
+
 public:
-    explicit PerceptionsTab(ros::NodeHandle& nodeHandle, QWidget* parent = nullptr);
+    PerceptionsTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
 
 private slots:
     void onVideoAnalyzerButtonToggled(bool checked);

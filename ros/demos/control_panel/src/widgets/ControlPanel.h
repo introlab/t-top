@@ -14,6 +14,11 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32MultiArray.h>
 
+#include <hbba_lite/core/DesireSet.h>
+
+#include <memory>
+#include <utility>
+
 class ControlPanel : public QWidget
 {
     Q_OBJECT
@@ -22,8 +27,10 @@ class ControlPanel : public QWidget
     ros::Publisher m_volumePublisher;
     ros::Subscriber m_batterySubscriber;
 
+    std::shared_ptr<DesireSet> m_desireSet;
+
 public:
-    ControlPanel(ros::NodeHandle& nodeHandle, QWidget* parent = nullptr);
+    ControlPanel(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
 
 private slots:
     void onVolumeChanged(int volume);

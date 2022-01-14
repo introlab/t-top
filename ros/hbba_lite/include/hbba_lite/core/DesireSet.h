@@ -56,6 +56,8 @@ public:
 
     void addDesire(std::unique_ptr<Desire>&& desire);
     void removeDesire(uint64_t id);
+    void removeDesires(std::type_index type);
+    bool contains(uint64_t id);
     void clear();
 
     void enableAllDesires();
