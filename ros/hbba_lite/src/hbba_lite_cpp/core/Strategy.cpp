@@ -2,6 +2,8 @@
 
 #include <hbba_lite/utils/HbbaLiteException.h>
 
+#include <limits>
+
 using namespace std;
 
 FilterConfiguration::FilterConfiguration() : m_type(FilterType::ON_OFF), m_rate(0)
@@ -81,6 +83,7 @@ BaseStrategy::BaseStrategy(uint16_t utility,
     unordered_map<string, FilterConfiguration> filterConfigurationsByName,
     shared_ptr<FilterPool> filterPool) :
         m_enabled(false),
+        m_desireId(std::numeric_limits<uint64_t>::max()),
         m_utility(utility),
         m_resourcesByName(move(resourcesByName)),
         m_filterConfigurationsByName(move(filterConfigurationsByName)),

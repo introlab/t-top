@@ -102,7 +102,9 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         auto desireType = desire->type();
         auto p = pair<type_index, size_t>(desireType, result.strategyIndex);
         bool toBeEnabled = enabledStrategies.count(p) == 0;
-        if (toBeEnabled)
+        auto& strategy = m_strategiesByDesireType[p.first][p.second];
+
+        if (toBeEnabled || strategy->enabled() && strategy->desireId() != desire->id())
         {
             strategiesToEnable.emplace_back(desireType, result.strategyIndex, desire);
         }

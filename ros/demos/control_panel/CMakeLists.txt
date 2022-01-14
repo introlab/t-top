@@ -153,6 +153,7 @@ set(headers
   src/widgets/BehaviorsTab.h
   src/widgets/PerceptionsTab.h
   src/ControlPanelDesires.h
+  src/ControlPanelStrategies.h
 )
 
 set(srcs
@@ -165,6 +166,7 @@ set(srcs
   src/widgets/BehaviorsTab.cpp
   src/widgets/PerceptionsTab.cpp
   src/ControlPanelDesires.cpp
+  src/ControlPanelStrategies.cpp
 )
 
 qt5_wrap_cpp(project_moc_srcs ${headers})
