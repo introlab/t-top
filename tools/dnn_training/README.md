@@ -23,6 +23,7 @@ This folder contains the tools to train the neural networks used by T-Top.
     - The [test_exported_keyword_spotter.py](test_exported_keyword_spotter.py) script tests the exported `keyword_spotter` network.
     - The [test_exported_pose_estimator.py](test_exported_pose_estimator.py) script tests the exported `pose_estimator` network.
     - The [test_lfw_vox_celeb_models.py](test_lfw_vox_celeb_models.py) script tests the combination of the `audio_descriptor_extractor` network and the `face_descriptor_extractor` network.
+    - The [test_pose_estimator_with_yolo_v4.py](test_pose_estimator_with_yolo_v4.py) script tests the `pose_estimator` network with the `yolo_v4` network on the COCO dataset.
 
 ## Setup
 
