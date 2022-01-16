@@ -1,7 +1,3 @@
-#include "widgets/ControlPanel.h"
-
-#include <QApplication>
-
 #include <ros/ros.h>
 
 #include <hbba_lite/core/DesireSet.h>
@@ -15,9 +11,9 @@
 
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "control_panel_node");
+    ros::init(argc, argv, "smart_speaker_node");
     ros::NodeHandle nodeHandle;
 
     auto desireSet = make_shared<DesireSet>();
@@ -25,7 +21,8 @@ int main(int argc, char *argv[])
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));
-    strategies.emplace_back(createFastVideoAnalyzerWithAnalyzedImageStrategy(filterPool));
+    strategies.emplace_back(createSlowVideoAnalyzerStrategy(filterPool));
+    strategies.emplace_back(createFastVideoAnalyzerStrategy(filterPool));
     strategies.emplace_back(createAudioAnalyzerStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
@@ -36,18 +33,10 @@ int main(int argc, char *argv[])
     strategies.emplace_back(createTalkStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createGestureStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createDanceStrategy(filterPool));
+    strategies.emplace_back(createPlaySoundStrategy(filterPool, nodeHandle));
 
     auto solver = make_unique<GecodeSolver>();
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
-    QApplication a(argc, argv);
-    ControlPanel controlPanel(nodeHandle, desireSet);
-    controlPanel.show();
-
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
-    int returnCode = a.exec();
-    spinner.stop();
-
-    return returnCode;
+    return 0;
 }

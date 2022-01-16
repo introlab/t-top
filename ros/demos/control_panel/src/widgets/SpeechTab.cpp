@@ -1,10 +1,11 @@
 #include "SpeechTab.h"
 #include "../QtUtils.h"
-#include "../ControlPanelDesires.h"
 
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+
+#include <t_top/hbba_lite/Desires.h>
 
 using namespace std;
 
@@ -32,14 +33,14 @@ void SpeechTab::onListenButtonToggled(bool checked)
 {
     if (checked)
     {
-        auto desire = make_unique<ListenDesire>();
-        m_listenDesireId = static_cast<qint64>(desire->id());
+        auto desire = make_unique<SpeechToTextDesire>();
+        m_speechToTextDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
-    else if (m_listenDesireId.isValid())
+    else if (m_speechToTextDesireId.isValid())
     {
-        m_desireSet->removeDesire(m_listenDesireId.toULongLong());
-        m_listenDesireId.clear();
+        m_desireSet->removeDesire(m_speechToTextDesireId.toULongLong());
+        m_speechToTextDesireId.clear();
     }
 }
 

@@ -1,8 +1,10 @@
 #include "BehaviorsTab.h"
 #include "../QtUtils.h"
-#include "../ControlPanelDesires.h"
+#include "../DesireUtils.h"
 
 #include <QVBoxLayout>
+
+#include <t_top/hbba_lite/Desires.h>
 
 using namespace std;
 

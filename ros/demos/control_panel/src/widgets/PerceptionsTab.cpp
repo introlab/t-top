@@ -1,11 +1,12 @@
 #include "PerceptionsTab.h"
 #include "../QtUtils.h"
-#include "../ControlPanelDesires.h"
 
 #include <QDebug>
 #include <QDateTime>
 #include <QLabel>
 #include <QVBoxLayout>
+
+#include <t_top/hbba_lite/Desires.h>
 
 using namespace std;
 
@@ -43,7 +44,7 @@ void PerceptionsTab::onVideoAnalyzerButtonToggled(bool checked)
 {
     if (checked)
     {
-        auto desire = make_unique<VideoAnalyzerDesire>();
+        auto desire = make_unique<FastVideoAnalyzerWithAnalyzedImageDesire>();
         m_videoAnalyzerDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }

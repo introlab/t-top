@@ -1,10 +1,11 @@
 #include "AvatarTab.h"
-#include "../ControlPanelDesires.h"
 
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTimer>
+
+#include <t_top/hbba_lite/Desires.h>
 
 using namespace std;
 

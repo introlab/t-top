@@ -25,7 +25,7 @@ class SpeechTab : public QWidget
 
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_talkDesireId;
-    QVariant m_listenDesireId;
+    QVariant m_speechToTextDesireId;
 
 public:
     SpeechTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
