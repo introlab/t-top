@@ -1,5 +1,5 @@
 <launch>
-    <arg name="language" default="en"/>
+    <arg name="language" default="en"/>  <!-- Options: fr or en -->
 
     <node pkg="control_panel" type="control_panel_node" name="control_panel_node"/>
 

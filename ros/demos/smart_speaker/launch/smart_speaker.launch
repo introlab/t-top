@@ -1,5 +1,5 @@
 <launch>
-    <arg name="language" default="fr"/>
+    <arg name="language" default="fr"/>  <!-- Options: fr or en -->
 
     <node pkg="smart_speaker" type="smart_speaker_node" name="smart_speaker_node" output="screen">
         <param name="language" value="$(arg language)"/>

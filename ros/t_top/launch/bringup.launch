@@ -1,5 +1,5 @@
 <launch>
-    <arg name="language" default="en"/>
+    <arg name="language" default="en"/>  <!-- Options: fr or en -->
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
