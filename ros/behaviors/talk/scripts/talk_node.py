@@ -41,9 +41,11 @@ class TalkNode:
             if self._audio_pub.is_filtering_all_messages:
                 return
 
-            mp3_audio_content = self._generate_mp3_audio_content(msg.text)
-            file_path = self._write_mp3_audio_content(mp3_audio_content)
-            self._play_audio(file_path)
+            if msg.text != '':
+                mp3_audio_content = self._generate_mp3_audio_content(msg.text)
+                file_path = self._write_mp3_audio_content(mp3_audio_content)
+                self._play_audio(file_path)
+
             self._done_talking_pub.publish(Done(id=msg.id))
 
     def _generate_mp3_audio_content(self, text):

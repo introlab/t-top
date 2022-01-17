@@ -1,6 +1,7 @@
 #include <hbba_lite/core/Strategy.h>
 #include <hbba_lite/utils/HbbaLiteException.h>
 
+#include "Desires.h"
 #include "FilterPoolMock.h"
 
 #include <gtest/gtest.h>
@@ -144,6 +145,8 @@ TEST(StrategyTests, getters_shouldReturnTheRightValues)
 
 TEST(StrategyTests, enableDisable_shouldChangeOnceTheState)
 {
+    unique_ptr<Desire> desire = make_unique<DesireD>();
+
     auto filterPool = make_shared<FilterPoolMock>();
     StrategyTestee testee(filterPool);
     EXPECT_EQ(testee.onEnablingCount, 0);
@@ -156,14 +159,14 @@ TEST(StrategyTests, enableDisable_shouldChangeOnceTheState)
     EXPECT_FALSE(testee.enabled());
     EXPECT_EQ(filterPool->enabledFilters.size(), 0);
 
-    testee.enable(nullptr);
+    testee.enable(desire);
     EXPECT_EQ(testee.onEnablingCount, 1);
     EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_TRUE(testee.enabled());
     EXPECT_EQ(filterPool->enabledFilters["c"], FilterConfiguration::throttling(1));
     EXPECT_EQ(filterPool->enabledFilters["d"], FilterConfiguration::throttling(2));
 
-    testee.enable(nullptr);
+    testee.enable(desire);
     EXPECT_EQ(testee.onEnablingCount, 1);
     EXPECT_EQ(testee.onDisablingCount, 0);
     EXPECT_TRUE(testee.enabled());

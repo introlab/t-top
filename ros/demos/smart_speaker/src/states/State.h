@@ -1,18 +1,54 @@
-#ifndef SMART_SPEAKER_SMART_STATES_H
-#define SMART_SPEAKER_SMART_STATES_H
+#ifndef SMART_SPEAKER_STATES_STATE_H
+#define SMART_SPEAKER_STATES_STATE_H
 
+#include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/utils/ClassMacros.h>
+
+#include <ros/ros.h>
+
+#include <memory>
+#include <numeric>
+#include <vector>
+#include <typeindex>
+
+constexpr double TIMEOUT_S = 10;
+constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max(); // TODO change to optional with C++17
+
+class StateManager;
 
 class State
 {
     bool m_enabled;
 
+protected:
+    StateManager& m_stateManager;
+    std::shared_ptr<DesireSet> m_desireSet;
+    ros::NodeHandle& m_nodeHandle;
+
+    std::vector<uint64_t> m_desireIds;
+
 public:
-    State();
+    State(StateManager& stateManager,
+        std::shared_ptr<DesireSet> desireSet,
+        ros::NodeHandle& nodeHandle);
     virtual ~State() = default;
 
     DECLARE_NOT_COPYABLE(State);
     DECLARE_NOT_MOVABLE(State);
+
+    bool enabled() const;
+    virtual std::type_index type() const = 0;
+
+protected:
+    virtual void enable(const std::string& parameter);
+    virtual void disable();
+
+    friend StateManager;
 };
+
+inline bool State::enabled() const
+{
+    return m_enabled;
+}
 
 #endif

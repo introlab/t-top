@@ -220,7 +220,8 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
         unordered_map<string, FilterConfiguration>
         {
             {"beat_detector/filter_state", FilterConfiguration::onOff()},
-            {"explore/filter_state", FilterConfiguration::onOff()}
+            {"head_dance/filter_state", FilterConfiguration::onOff()},
+            {"torso_dance/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));
 }

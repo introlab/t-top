@@ -1,0 +1,53 @@
+#include "DanceState.h"
+#include "StateManager.h"
+#include "IdleState.h"
+
+#include <t_top/hbba_lite/Desires.h>
+
+using namespace std;
+
+DanceState::DanceState(StateManager& stateManager,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle) :
+        State(stateManager, desireSet, nodeHandle)
+{
+}
+
+void DanceState::enable(const string& parameter)
+{
+    State::enable(parameter);
+
+    auto danceDesire = make_unique<DanceDesire>();
+    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
+
+    m_desireIds.emplace_back(danceDesire->id());
+    m_desireIds.emplace_back(faceAnimationDesire->id());
+
+    auto transaction = m_desireSet->beginTransaction();
+    m_desireSet->addDesire(move(danceDesire));
+    m_desireSet->addDesire(move(faceAnimationDesire));
+
+    constexpr bool oneshot = true;
+    m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(DANCE_TIMEOUT_S),
+        &DanceState::timeoutTimerCallback, this, oneshot);
+}
+
+void DanceState::disable()
+{
+    State::disable();
+
+    if (m_timeoutTimer.isValid())
+    {
+        m_timeoutTimer.stop();
+    }
+}
+
+void DanceState::timeoutTimerCallback(const ros::TimerEvent& event)
+{
+    if (!enabled())
+    {
+        return;
+    }
+
+    m_stateManager.switchTo<IdleState>();
+}

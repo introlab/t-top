@@ -143,6 +143,20 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node
   src/main.cpp
+  src/StringUtils.cpp
+  src/states/State.cpp
+  src/states/StateManager.cpp
+  src/states/IdleState.cpp
+  src/states/WaitPersonIdentificationState.cpp
+  src/states/AskTaskState.cpp
+  src/states/WaitAnswerState.cpp
+  src/states/ValidTaskState.cpp
+  src/states/InvalidTaskState.cpp
+  src/states/CurrentWeatherState.cpp
+  src/states/WeatherForecastState.cpp
+  src/states/StoryState.cpp
+  src/states/DanceState.cpp
+  src/states/DancePlayedSongState.cpp
 )
 
 ## Rename C++ executable without prefix

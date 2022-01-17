@@ -13,7 +13,7 @@
     } \
     std::type_index type() override \
     { \
-        return std::type_index(typeid(*this)); \
+        return std::type_index(typeid(className)); \
     }
 
 class Desire

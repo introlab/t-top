@@ -5,7 +5,7 @@ string country_code
 string country_name
 
 float64 temperature_celsius
-float64 feals_like_temperature_celsius
+float64 feels_like_temperature_celsius
 float64 pressure_kpa
 float64 humidity_percent
 float64 clouds_percent
