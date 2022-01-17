@@ -12,7 +12,8 @@ class AskTaskState : public State
     uint64_t m_talkDesireId;
 
 public:
-    AskTaskState(StateManager& stateManager,
+    AskTaskState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~AskTaskState() override = default;
@@ -20,14 +21,16 @@ public:
     DECLARE_NOT_COPYABLE(AskTaskState);
     DECLARE_NOT_MOVABLE(AskTaskState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 
 private:
     std::string generateText(const std::string& personName);
+    std::string generateEnglishText(const std::string& personName);
+    std::string generateFrenchText(const std::string& personName);
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
 };
 

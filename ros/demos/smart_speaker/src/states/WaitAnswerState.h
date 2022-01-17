@@ -10,8 +10,15 @@ class WaitAnswerState : public State
     ros::Subscriber m_speechToTextSubscriber;
     ros::Timer m_timeoutTimer;
 
+    std::string m_weatherWord;
+    std::string m_forecastWord;
+    std::string m_storyWord;
+    std::string m_danceWord;
+    std::string m_songWord;
+
 public:
-    WaitAnswerState(StateManager& stateManager,
+    WaitAnswerState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~WaitAnswerState() override = default;
@@ -19,9 +26,9 @@ public:
     DECLARE_NOT_COPYABLE(WaitAnswerState);
     DECLARE_NOT_MOVABLE(WaitAnswerState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 

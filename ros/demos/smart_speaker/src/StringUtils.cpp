@@ -51,6 +51,13 @@ string toUpperString(const string& str)
     return upperStr;
 }
 
+string toLowerString(const string& str)
+{
+    string upperStr(str);
+    transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::tolower);
+    return upperStr;
+}
+
 string trimString(const string& str)
 {
     static const string SPACES = " \t\n\r";

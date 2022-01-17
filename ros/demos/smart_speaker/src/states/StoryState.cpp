@@ -15,18 +15,28 @@ StoryLine::StoryLine(std::string faceAnimation, std::string text) :
 {
 }
 
-StoryState::StoryState(StateManager& stateManager,
+StoryState::StoryState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-        const std::string& storyPath) :
-        State(stateManager, desireSet, nodeHandle),
+    const std::string& englishStoryPath,
+    const std::string& frenchStoryPath) :
+        State(language, stateManager, desireSet, nodeHandle),
         m_talkDesireId(MAX_DESIRE_ID),
         m_faceAnimationDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
         &StoryState::talkDoneSubscriberCallback, this);
 
-    readStory(storyPath);
+    switch (language)
+    {
+    case Language::ENGLISH:
+        readStory(englishStoryPath);
+        break;
+    case Language::FRENCH:
+        readStory(frenchStoryPath);
+        break;
+    }
 }
 
 void StoryState::enable(const string& parameter)

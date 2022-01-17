@@ -6,11 +6,12 @@
 
 using namespace std;
 
-DancePlayedSongState::DancePlayedSongState(StateManager& stateManager,
+DancePlayedSongState::DancePlayedSongState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     string songPath) :
-        State(stateManager, desireSet, nodeHandle),
+        State(language, stateManager, desireSet, nodeHandle),
         m_songPath(move(songPath)),
         m_songDesireId(MAX_DESIRE_ID)
 {

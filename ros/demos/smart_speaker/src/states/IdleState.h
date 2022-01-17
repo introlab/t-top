@@ -12,7 +12,8 @@ class IdleState : public State
     ros::Subscriber m_personNamesSubscriber;
 
 public:
-    IdleState(StateManager& stateManager,
+    IdleState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~IdleState() override = default;
@@ -20,9 +21,9 @@ public:
     DECLARE_NOT_COPYABLE(IdleState);
     DECLARE_NOT_MOVABLE(IdleState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
 
 private:

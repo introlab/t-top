@@ -12,19 +12,44 @@
 
 using namespace std;
 
-static const string WEATHER_WORD = "WEATHER";
-static const string FORECAST_WORD = "FORECAST";
-static const string STORY_WORD = "STORY";
-static const string DANCE_WORD = "DANCE";
-static const string SONG_WORD = "SONG";
+static const string ENGLISH_WEATHER_WORD = "weather";
+static const string ENGLISH_FORECAST_WORD = "forecast";
+static const string ENGLISH_STORY_WORD = "story";
+static const string ENGLISH_DANCE_WORD = "dance";
+static const string ENGLISH_SONG_WORD = "song";
 
-WaitAnswerState::WaitAnswerState(StateManager& stateManager,
+static const string FRENCH_WEATHER_WORD = "météo";
+static const string FRENCH_FORECAST_WORD = "prévisions";
+static const string FRENCH_STORY_WORD = "histoire";
+static const string FRENCH_DANCE_WORD = "danses";
+static const string FRENCH_SONG_WORD = "chanson";
+
+WaitAnswerState::WaitAnswerState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle)
+        State(language, stateManager, desireSet, nodeHandle)
 {
     m_speechToTextSubscriber = nodeHandle.subscribe("speech_to_text/transcript", 1,
         &WaitAnswerState::speechToTextSubscriberCallback, this);
+
+    switch (language)
+    {
+    case Language::ENGLISH:
+        m_weatherWord = ENGLISH_WEATHER_WORD;
+        m_forecastWord = ENGLISH_FORECAST_WORD;
+        m_storyWord = ENGLISH_STORY_WORD;
+        m_danceWord = ENGLISH_DANCE_WORD;
+        m_songWord = ENGLISH_SONG_WORD;
+        break;
+    case Language::FRENCH:
+        m_weatherWord = FRENCH_WEATHER_WORD;
+        m_forecastWord = FRENCH_FORECAST_WORD;
+        m_storyWord = FRENCH_STORY_WORD;
+        m_danceWord = FRENCH_DANCE_WORD;
+        m_songWord = FRENCH_SONG_WORD;
+        break;
+    }
 }
 
 void WaitAnswerState::enable(const string& parameter)
@@ -66,14 +91,15 @@ void WaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::Con
         return;
     }
 
-    auto words = splitStrings(toUpperString(msg->data), " \n.,!?");
+    auto words = splitStrings(toLowerString(msg->data), " \n.,!?");
     unordered_set<string> wordSet(words.begin(), words.end());
 
-    bool weather = static_cast<bool>(wordSet.count(WEATHER_WORD));
-    bool forecast = static_cast<bool>(wordSet.count(FORECAST_WORD));
-    bool story = static_cast<bool>(wordSet.count(STORY_WORD));
-    bool dance = static_cast<bool>(wordSet.count(DANCE_WORD));
-    bool song = static_cast<bool>(wordSet.count(SONG_WORD));
+    // TODO Improve the task classification
+    bool weather = static_cast<bool>(wordSet.count(m_weatherWord));
+    bool forecast = static_cast<bool>(wordSet.count(m_forecastWord));
+    bool story = static_cast<bool>(wordSet.count(m_storyWord));
+    bool dance = static_cast<bool>(wordSet.count(m_danceWord));
+    bool song = static_cast<bool>(wordSet.count(m_songWord));
 
     if (weather && !forecast && !story && !dance && !song)
     {

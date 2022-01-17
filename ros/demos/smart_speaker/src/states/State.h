@@ -13,12 +13,20 @@
 
 constexpr double TIMEOUT_S = 10;
 constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max(); // TODO change to optional with C++17
+constexpr int FLOAT_NUMBER_PRECISION = 3;
+
+enum class Language // TODO Use a resource manager for the strings
+{
+    ENGLISH,
+    FRENCH
+};
 
 class StateManager;
 
 class State
 {
     bool m_enabled;
+    Language m_language;
 
 protected:
     StateManager& m_stateManager;
@@ -28,7 +36,8 @@ protected:
     std::vector<uint64_t> m_desireIds;
 
 public:
-    State(StateManager& stateManager,
+    State(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     virtual ~State() = default;
@@ -36,10 +45,11 @@ public:
     DECLARE_NOT_COPYABLE(State);
     DECLARE_NOT_MOVABLE(State);
 
+protected:
     bool enabled() const;
+    Language language() const;
     virtual std::type_index type() const = 0;
 
-protected:
     virtual void enable(const std::string& parameter);
     virtual void disable();
 
@@ -49,6 +59,11 @@ protected:
 inline bool State::enabled() const
 {
     return m_enabled;
+}
+
+inline Language State::language() const
+{
+    return m_language;
 }
 
 #endif

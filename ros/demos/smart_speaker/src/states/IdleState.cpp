@@ -9,10 +9,11 @@
 
 using namespace std;
 
-IdleState::IdleState(StateManager& stateManager,
+IdleState::IdleState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle)
+        State(language, stateManager, desireSet, nodeHandle)
 {
     m_robotNameDetectedSubscriber = nodeHandle.subscribe("robot_name_detected", 1,
         &IdleState::robotNameDetectedSubscriberCallback, this);

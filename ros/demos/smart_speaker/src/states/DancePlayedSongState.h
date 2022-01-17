@@ -12,7 +12,8 @@ class DancePlayedSongState : public State
     uint64_t m_songDesireId;
 
 public:
-    DancePlayedSongState(StateManager& stateManager,
+    DancePlayedSongState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         std::string songPath);
@@ -21,9 +22,9 @@ public:
     DECLARE_NOT_COPYABLE(DancePlayedSongState);
     DECLARE_NOT_MOVABLE(DancePlayedSongState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 

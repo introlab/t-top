@@ -3,6 +3,7 @@
 
 #include "State.h"
 
+#include <cloud_data/CurrentLocalWeather.h>
 #include <talk/Done.h>
 
 class CurrentWeatherState : public State
@@ -12,7 +13,8 @@ class CurrentWeatherState : public State
     uint64_t m_talkDesireId;
 
 public:
-    CurrentWeatherState(StateManager& stateManager,
+    CurrentWeatherState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~CurrentWeatherState() override = default;
@@ -20,14 +22,16 @@ public:
     DECLARE_NOT_COPYABLE(CurrentWeatherState);
     DECLARE_NOT_MOVABLE(CurrentWeatherState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 
 private:
     std::string generateText();
+    std::string generateEnglishText(bool ok, const cloud_data::CurrentLocalWeather& srv);
+    std::string generateFrenchText(bool ok, const cloud_data::CurrentLocalWeather& srv);
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
 };
 

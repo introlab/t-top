@@ -2,9 +2,11 @@
 
 using namespace std;
 
-State::State(StateManager& stateManager,
+State::State(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
+        m_language(language),
         m_stateManager(stateManager),
         m_desireSet(move(desireSet)),
         m_nodeHandle(nodeHandle)

@@ -1,6 +1,11 @@
 # control_panel
 This is a graphical user interface to control T-Top's features manually. The control is done with [hbba_lite](../../hbba_lite).
 
+## How to Launch
+```bash
+roslaunch control_panel control_panel.launch
+```
+
 ## Interface Description
 At the bottom, there are a slider to change the volume of the audio amplifiers and a widget showing the battery level.
 The Avatar tab shows the avatar. Also, it contains a button to refresh the web page and a combo box to choose the facial animation.

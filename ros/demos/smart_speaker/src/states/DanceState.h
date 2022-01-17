@@ -10,7 +10,8 @@ class DanceState : public State
     ros::Timer m_timeoutTimer;
 
 public:
-    DanceState(StateManager& stateManager,
+    DanceState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~DanceState() override = default;
@@ -18,9 +19,9 @@ public:
     DECLARE_NOT_COPYABLE(DanceState);
     DECLARE_NOT_MOVABLE(DanceState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 

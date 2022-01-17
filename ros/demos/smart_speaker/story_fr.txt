@@ -1,0 +1,3 @@
+happy|Il était une fois un petit robot nommé T-Top qui vivait à Sherbrooke.
+sad|Il était seul et n'avait aucun ami, donc, il a décidé de partir en aventure dans la ville pour trouver d'autres robots.
+awe|À l'université, il a trouvé TIAGo, un robot polyvalent.

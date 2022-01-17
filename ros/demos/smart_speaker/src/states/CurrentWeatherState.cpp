@@ -2,18 +2,17 @@
 #include "StateManager.h"
 #include "IdleState.h"
 
-#include <cloud_data/CurrentLocalWeather.h>
-
 #include <t_top/hbba_lite/Desires.h>
 
 #include <sstream>
 
 using namespace std;
 
-CurrentWeatherState::CurrentWeatherState(StateManager& stateManager,
+CurrentWeatherState::CurrentWeatherState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle),
+        State(language, stateManager, desireSet, nodeHandle),
         m_talkDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
@@ -47,12 +46,25 @@ void CurrentWeatherState::disable()
 
 string CurrentWeatherState::generateText()
 {
-    stringstream ss;
-    ss.precision(3);
-
     ros::ServiceClient service = m_nodeHandle.serviceClient<cloud_data::CurrentLocalWeather>("cloud_data/current_local_weather");
     cloud_data::CurrentLocalWeather srv;
-    if (service.exists() && service.call(srv))
+
+    bool ok = service.exists() && service.call(srv);
+    switch (language())
+    {
+    case Language::ENGLISH:
+        return generateEnglishText(ok, srv);
+    case Language::FRENCH:
+        return generateFrenchText(ok, srv);
+    }
+}
+
+string CurrentWeatherState::generateEnglishText(bool ok, const cloud_data::CurrentLocalWeather& srv)
+{
+    stringstream ss;
+    ss.precision(FLOAT_NUMBER_PRECISION);
+
+    if (ok)
     {
         ss << "The current temperature is " << srv.response.temperature_celsius << "°C. ";
         ss << "The current feels like temperature is " << srv.response.feels_like_temperature_celsius << "°C. ";
@@ -67,6 +79,31 @@ string CurrentWeatherState::generateText()
     else
     {
         ss << "I am not able to get the current weather.";
+    }
+
+    return ss.str();
+}
+
+string CurrentWeatherState::generateFrenchText(bool ok, const cloud_data::CurrentLocalWeather& srv)
+{
+    stringstream ss;
+    ss.precision(FLOAT_NUMBER_PRECISION);
+
+    if (ok)
+    {
+        ss << "La température courante est de " << srv.response.temperature_celsius << "°C. ";
+        ss << "La température courante ressentie est de " << srv.response.feels_like_temperature_celsius << "°C. ";
+        ss << "L'humidité courante est de " << srv.response.humidity_percent << "%. ";
+        ss << "La vitesse courante du vent est de " << srv.response.wind_speed_kph << " kilomètres par heure. ";
+
+        if (srv.response.wind_gust_kph != -1)
+        {
+            ss << "La vitesse courante des rafales de vent est de " << srv.response.wind_gust_kph << " kilomètres par heure. ";
+        }
+    }
+    else
+    {
+        ss << "Je ne suis pas capable d'obtenir la météo actuelle.";
     }
 
     return ss.str();

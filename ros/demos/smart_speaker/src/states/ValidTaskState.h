@@ -25,7 +25,8 @@ class ValidTaskState : public State
     bool m_gestureDone;
 
 public:
-    ValidTaskState(StateManager& stateManager,
+    ValidTaskState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~ValidTaskState() override = default;
@@ -33,13 +34,15 @@ public:
     DECLARE_NOT_COPYABLE(ValidTaskState);
     DECLARE_NOT_MOVABLE(ValidTaskState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 
 private:
+    std::string generateText();
+
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
     void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
     void switchState();

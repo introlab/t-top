@@ -9,10 +9,11 @@
 
 using namespace std;
 
-InvalidTaskState::InvalidTaskState(StateManager& stateManager,
+InvalidTaskState::InvalidTaskState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle),
+        State(language, stateManager, desireSet, nodeHandle),
         m_talkDesireId(MAX_DESIRE_ID),
         m_gestureDesireId(MAX_DESIRE_ID),
         m_talkDone(false),
@@ -33,7 +34,7 @@ void InvalidTaskState::enable(const string& parameter)
 
     auto gestureDesire = make_unique<GestureDesire>("no");
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("sad");
-    auto talkDesire = make_unique<TalkDesire>("The task is invalid.");
+    auto talkDesire = make_unique<TalkDesire>(generateText());
     m_talkDesireId = talkDesire->id();
     m_gestureDesireId = gestureDesire->id();
 
@@ -53,6 +54,19 @@ void InvalidTaskState::disable()
 
     m_talkDesireId = MAX_DESIRE_ID;
     m_gestureDesireId = MAX_DESIRE_ID;
+}
+
+string InvalidTaskState::generateText()
+{
+    switch (language())
+    {
+    case Language::ENGLISH:
+        return "The task is invalid.";
+    case Language::FRENCH:
+        return "La tâche n'est pas valide.";
+    }
+
+    return "";
 }
 
 void InvalidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)

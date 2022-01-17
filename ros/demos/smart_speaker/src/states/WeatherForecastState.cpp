@@ -2,18 +2,17 @@
 #include "StateManager.h"
 #include "IdleState.h"
 
-#include <cloud_data/LocalWeatherForecast.h>
-
 #include <t_top/hbba_lite/Desires.h>
 
 #include <sstream>
 
 using namespace std;
 
-WeatherForecastState::WeatherForecastState(StateManager& stateManager,
+WeatherForecastState::WeatherForecastState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle),
+        State(language, stateManager, desireSet, nodeHandle),
         m_talkDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
@@ -47,37 +46,87 @@ void WeatherForecastState::disable()
 
 string WeatherForecastState::generateText()
 {
-    stringstream ss;
-    ss.precision(3);
-
     ros::ServiceClient service = m_nodeHandle.serviceClient<cloud_data::LocalWeatherForecast>("cloud_data/local_weather_forecast");
     cloud_data::LocalWeatherForecast srv;
     srv.request.relative_day = 1; // tomorow
-    if (service.exists() && service.call(srv))
+    bool ok = service.exists() && service.call(srv);
+
+    switch (language())
     {
-        ss << "Tomorrow morning, the temperature will be " << srv.response.temperature_morning_celsius << " °C. ";
-        ss << "The feels like temperature will be " << srv.response.feals_like_temperature_morning_celsius << " °C. ";
+    case Language::ENGLISH:
+        return generateEnglishText(ok, srv);
+    case Language::FRENCH:
+        return generateFrenchText(ok, srv);
+    }
 
-        ss << "During the day of tomorrow, the temperature will be " << srv.response.temperature_day_celsius << " °C. ";
-        ss << "The feels like temperature will be " << srv.response.feals_like_temperature_day_celsius << " °C. ";
+    return "";
+}
 
-        ss << "Tomorrow evening, the temperature will be " << srv.response.temperature_evening_celsius << " °C. ";
-        ss << "The feels like temperature will be " << srv.response.feals_like_temperature_evening_celsius << " °C. ";
+string WeatherForecastState::generateEnglishText(bool ok, const cloud_data::LocalWeatherForecast& srv)
+{
+    stringstream ss;
+    ss.precision(FLOAT_NUMBER_PRECISION);
 
-        ss << "Tomorrow night, the temperature will be " << srv.response.temperature_night_celsius << " °C. ";
-        ss << "The feels like temperature will be " << srv.response.feals_like_temperature_night_celsius << " °C. ";
+    if (ok)
+    {
+        ss << "Tomorrow morning, the temperature will be " << srv.response.temperature_morning_celsius << " °C and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_morning_celsius << " °C. ";
+
+        ss << "During the day of tomorrow, the temperature will be " << srv.response.temperature_day_celsius << " °C and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_day_celsius << " °C. ";
+
+        ss << "Tomorrow evening, the temperature will be " << srv.response.temperature_evening_celsius << " °C and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_evening_celsius << " °C. ";
+
+        ss << "Tomorrow night, the temperature will be " << srv.response.temperature_night_celsius << " °C and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_night_celsius << " °C. ";
 
         ss << "Tomorrow, the humidity will be " << srv.response.humidity_percent << "%, ";
-        ss << "the wind speed will be " << srv.response.wind_speed_kph << " kilometers per hour, ";
+        ss << "the wind speed will be " << srv.response.wind_speed_kph << " kilometers per hour,";
 
         if (srv.response.wind_gust_kph != -1)
         {
-            ss << "the wind gust speed will be " << srv.response.wind_gust_kph << " kilometers per hour. ";
+            ss << "and the wind gust speed will be " << srv.response.wind_gust_kph << " kilometers per hour. ";
         }
     }
     else
     {
         ss << "I am not able to get the weather forecast.";
+    }
+
+    return ss.str();
+}
+
+string WeatherForecastState::generateFrenchText(bool ok, const cloud_data::LocalWeatherForecast& srv)
+{
+    stringstream ss;
+    ss.precision(FLOAT_NUMBER_PRECISION);
+
+    if (ok)
+    {
+        ss << "Demain matin, la température sera de " << srv.response.temperature_morning_celsius << " °C et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_morning_celsius << " °C. ";
+
+        ss << "Demain en journée, la température sera de " << srv.response.temperature_day_celsius << " °C et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_day_celsius << " °C. ";
+
+        ss << "Demain en soirée, la température sera de " << srv.response.temperature_evening_celsius << " °C et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_evening_celsius << " °C. ";
+
+        ss << "La nuit prochaine, la température sera de " << srv.response.temperature_night_celsius << " °C et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_night_celsius << " °C. ";
+
+        ss << "Demain, l'humidité sera de " << srv.response.humidity_percent << "%, ";
+        ss << "la vitesse du vent sera de " << srv.response.wind_speed_kph << " kilomètres par heure, ";
+
+        if (srv.response.wind_gust_kph != -1)
+        {
+            ss << "et la vitesse des rafales de vent sera de " << srv.response.wind_gust_kph << " kilomètres par heure. ";
+        }
+    }
+    else
+    {
+        ss << "Je ne suis pas capable d'obtenir les prévisions météo.";
     }
 
     return ss.str();

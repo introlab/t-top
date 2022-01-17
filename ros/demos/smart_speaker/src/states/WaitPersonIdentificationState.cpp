@@ -9,10 +9,11 @@
 
 using namespace std;
 
-WaitPersonIdentificationState::WaitPersonIdentificationState(StateManager& stateManager,
+WaitPersonIdentificationState::WaitPersonIdentificationState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle)
+        State(language, stateManager, desireSet, nodeHandle)
 {
     m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
         &WaitPersonIdentificationState::personNamesSubscriberCallback, this);

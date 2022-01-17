@@ -24,18 +24,20 @@ class StoryState : public State
     uint64_t m_faceAnimationDesireId;
 
 public:
-    StoryState(StateManager& stateManager,
+    StoryState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        const std::string& storyPath);
+        const std::string& englishStoryPath,
+        const std::string& frenchStoryPath);
     ~StoryState() override = default;
 
     DECLARE_NOT_COPYABLE(StoryState);
     DECLARE_NOT_MOVABLE(StoryState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 

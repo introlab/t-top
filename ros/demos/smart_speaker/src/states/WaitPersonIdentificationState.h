@@ -11,7 +11,8 @@ class WaitPersonIdentificationState : public State
     ros::Timer m_timeoutTimer;
 
 public:
-    WaitPersonIdentificationState(StateManager& stateManager,
+    WaitPersonIdentificationState(Language language,
+        StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
     ~WaitPersonIdentificationState() override = default;
@@ -19,9 +20,9 @@ public:
     DECLARE_NOT_COPYABLE(WaitPersonIdentificationState);
     DECLARE_NOT_MOVABLE(WaitPersonIdentificationState);
 
+protected:
     std::type_index type() const override;
 
-protected:
     void enable(const std::string& parameter) override;
     void disable() override;
 

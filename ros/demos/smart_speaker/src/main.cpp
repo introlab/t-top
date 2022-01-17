@@ -26,9 +26,10 @@
 
 using namespace std;
 
-void startNode(ros::NodeHandle& nodeHandle,
-    const string& language,
-    const string& storyPath,
+void startNode(Language language,
+    ros::NodeHandle& nodeHandle,
+    const string& englishStoryPath,
+    const string& frenchStoryPath,
     const string& songPath)
 {
     auto desireSet = make_shared<DesireSet>();
@@ -54,18 +55,19 @@ void startNode(ros::NodeHandle& nodeHandle,
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
     StateManager stateManager;
-    stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WaitPersonIdentificationState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<AskTaskState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WaitAnswerState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<ValidTaskState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<InvalidTaskState>(stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<IdleState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<WaitPersonIdentificationState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<AskTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<WaitAnswerState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<ValidTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle));
 
-    stateManager.addState(make_unique<CurrentWeatherState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WeatherForecastState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<StoryState>(stateManager, desireSet, nodeHandle, storyPath));
-    stateManager.addState(make_unique<DanceState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<DancePlayedSongState>(stateManager, desireSet, nodeHandle, songPath));
+    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<StoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath,
+        frenchStoryPath));
+    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, songPath));
 
     stateManager.switchTo<IdleState>();
 
@@ -78,19 +80,36 @@ int main(int argc, char **argv)
     ros::NodeHandle nodeHandle;
     ros::NodeHandle privateNodeHandle("~");
 
-    string language;
-    privateNodeHandle.param<std::string>("language", language, "");
-    if (language != "en")
+    string languageString;
+    Language language;
+    privateNodeHandle.param<std::string>("language", languageString, "");
+    if (languageString == "en")
     {
-        ROS_ERROR("Language must be English (language=en).");
+        language = Language::ENGLISH;
+    }
+    else if (languageString == "fr")
+    {
+        language = Language::FRENCH;
+    }
+    else
+    {
+        ROS_ERROR("Language must be English (language=en) or French (language=fr).");
         return -1;
     }
 
-    string storyPath;
-    privateNodeHandle.param<std::string>("story_path", storyPath, "");
-    if (storyPath == "")
+    string englishStoryPath;
+    privateNodeHandle.param<std::string>("story_path_en", englishStoryPath, "");
+    if (englishStoryPath == "")
     {
-        ROS_ERROR("A valid path must be set for the story.");
+        ROS_ERROR("A valid path must be set for the English story.");
+        return -1;
+    }
+
+    string frenchStoryPath;
+    privateNodeHandle.param<std::string>("story_path_fr", frenchStoryPath, "");
+    if (frenchStoryPath == "")
+    {
+        ROS_ERROR("A valid path must be set for the French story.");
         return -1;
     }
 
@@ -102,7 +121,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    startNode(nodeHandle, language, storyPath, songPath);
+    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath);
 
     return 0;
 }

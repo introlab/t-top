@@ -6,10 +6,11 @@
 
 using namespace std;
 
-DanceState::DanceState(StateManager& stateManager,
+DanceState::DanceState(Language language,
+    StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(stateManager, desireSet, nodeHandle)
+        State(language, stateManager, desireSet, nodeHandle)
 {
 }
 

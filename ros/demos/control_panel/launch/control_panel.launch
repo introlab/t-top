@@ -1,0 +1,10 @@
+<launch>
+    <arg name="language" default="en"/>
+
+    <node pkg="control_panel" type="control_panel_node" name="control_panel_node"/>
+
+    <include file="$(find t_top)/launch/bringup.launch">
+        <arg name="language" value="$(arg language)"/>
+        <arg name="slam" value="false"/>
+    </include>
+</launch>
