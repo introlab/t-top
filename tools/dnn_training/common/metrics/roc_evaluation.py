@@ -31,6 +31,13 @@ class RocEvaluation:
     def _calculate_auc(self, true_positive_rate_curve, false_positive_rate_curve):
         return np.trapz(true_positive_rate_curve, false_positive_rate_curve)
 
+    def _calculate_eer(self, true_positive_rate_curve, false_positive_rate_curve):
+        false_negative_rate_curve = 1 - true_positive_rate_curve
+        abs_diff = np.abs(false_negative_rate_curve - false_positive_rate_curve)
+        index = np.argmin(abs_diff)
+
+        return (false_negative_rate_curve[index] + false_positive_rate_curve[index]) / 2
+
     def _save_roc_curve(self, true_positive_rate_curve, false_positive_rate_curve):
         fig = plt.figure(figsize=(5, 5), dpi=300)
         ax1 = fig.add_subplot(111)
@@ -67,8 +74,9 @@ class RocDistancesThresholdsEvaluation(RocEvaluation):
         best_accuracy, best_threshold, true_positive_rate_curve, false_positive_rate_curve, thresholds = \
             self._calculate_accuracy_true_positive_rate_false_positive_rate(distances, is_same_person_target)
         auc = self._calculate_auc(true_positive_rate_curve, false_positive_rate_curve)
+        eer = self._calculate_eer(true_positive_rate_curve, false_positive_rate_curve)
 
-        print('Best accuracy: {}, threshold: {}, AUC: {}'.format(best_accuracy, best_threshold, auc))
+        print('Best accuracy: {}, threshold: {}, AUC: {}, EER: {}'.format(best_accuracy, best_threshold, auc, eer))
         self._save_roc_curve(true_positive_rate_curve, false_positive_rate_curve)
         self._save_roc_curve_data(true_positive_rate_curve, false_positive_rate_curve, thresholds)
 
