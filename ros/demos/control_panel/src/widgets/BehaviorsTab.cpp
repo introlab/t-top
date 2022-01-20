@@ -52,8 +52,8 @@ void BehaviorsTab::onFaceFollowingButtonToggled(bool checked)
     }
     else if (m_desireId.isValid())
     {
-        m_desireId.clear();
         m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireId.clear();
     }
 }
 
@@ -74,8 +74,8 @@ void BehaviorsTab::onSoundFollowingButtonToggled(bool checked)
     }
     else if (m_desireId.isValid())
     {
-        m_desireId.clear();
         m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireId.clear();
     }
 }
 
@@ -96,8 +96,8 @@ void BehaviorsTab::onDanceButtonToggled(bool checked)
     }
     else if (m_desireId.isValid())
     {
-        m_desireId.clear();
         m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireId.clear();
     }
 }
 
@@ -118,8 +118,8 @@ void BehaviorsTab::onExploreButtonToggled(bool checked)
     }
     else if (m_desireId.isValid())
     {
-        m_desireId.clear();
         m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireId.clear();
     }
 }
 
