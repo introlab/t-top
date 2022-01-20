@@ -18,6 +18,7 @@ def main():
                                                     'open_face_inception'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
+    parser.add_argument('--vlad', action='store_true', help='Use VLAD pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
@@ -38,7 +39,8 @@ def main():
     args = parser.parse_args()
 
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
-    model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count, args.am_softmax_linear)
+    model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count, args.am_softmax_linear,
+                         args.vlad)
     x = torch.ones((1, 1, image_size[0], image_size[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16)

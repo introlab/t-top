@@ -138,6 +138,7 @@ def main():
                                                           'open_face_inception'],
                         help='Choose the voice backbone type', required=True)
     parser.add_argument('--voice_embedding_size', type=int, help='Set the voice embedding size', required=True)
+    parser.add_argument('--voice_vlad', action='store_true', help='Use VLAD pooling layer for the voice')
     parser.add_argument('--voice_waveform_size', type=int, help='Set the voice waveform size', required=True)
     parser.add_argument('--voice_n_features', type=int, help='Set voice n_features', required=True)
     parser.add_argument('--voice_n_fft', type=int, help='Set voice n_fft', required=True)
@@ -152,7 +153,7 @@ def main():
     load_checkpoint(face_model, args.face_model_checkpoint)
     face_transforms = create_validation_image_transform()
 
-    voice_model = create_voice_model(args.voice_backbone_type, args.voice_embedding_size)
+    voice_model = create_voice_model(args.voice_backbone_type, args.voice_embedding_size, vlad=args.voice_vlad)
     load_checkpoint(voice_model, args.voice_model_checkpoint)
     voice_transforms = AudioDescriptorValidationTransforms(waveform_size=args.voice_waveform_size,
                                                            n_features=args.voice_n_features,

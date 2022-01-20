@@ -3,7 +3,7 @@ import argparse
 import torch
 
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor
+from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
 from audio_descriptor.trainers import AudioDescriptorExtractorTrainer
 
 
@@ -17,6 +17,7 @@ def main():
                                                     'open_face_inception'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
+    parser.add_argument('--vlad', action='store_true', help='Use VLAD pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
@@ -43,11 +44,12 @@ def main():
     args = parser.parse_args()
 
     if args.criterion_type == 'triplet_loss' and args.dataset_class_count is None:
-        model = create_model(args.backbone_type, args.embedding_size)
+        model = create_model(args.backbone_type, args.embedding_size, vlad=args.vlad)
     elif args.criterion_type == 'cross_entropy_loss' and args.dataset_class_count is not None:
-        model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count)
+        model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count, vlad=args.vlad)
     elif args.criterion_type == 'am_softmax_loss' and args.dataset_class_count is not None:
-        model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count, am_softmax_linear=True)
+        model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count,
+                             am_softmax_linear=True, vlad=args.vlad)
     else:
         raise ValueError('--dataset_class_count must be used with "cross_entropy_loss" and "am_softmax_loss" criterion '
                          'types')
@@ -73,12 +75,16 @@ def main():
     trainer.train()
 
 
-def create_model(backbone_type, embedding_size, class_count=None, am_softmax_linear=False):
+def create_model(backbone_type, embedding_size, class_count=None, am_softmax_linear=False, vlad=False):
     pretrained = True
 
     backbone = create_backbone(backbone_type, pretrained)
-    return AudioDescriptorExtractor(backbone, embedding_size=embedding_size,
-                                    class_count=class_count, am_softmax_linear=am_softmax_linear)
+    if vlad:
+        return AudioDescriptorExtractorVLAD(backbone, embedding_size=embedding_size,
+                                            class_count=class_count, am_softmax_linear=am_softmax_linear)
+    else:
+        return AudioDescriptorExtractor(backbone, embedding_size=embedding_size,
+                                        class_count=class_count, am_softmax_linear=am_softmax_linear)
 
 
 def create_backbone(backbone_type, pretrained):
