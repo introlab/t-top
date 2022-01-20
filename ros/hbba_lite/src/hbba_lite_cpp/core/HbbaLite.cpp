@@ -83,6 +83,7 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
 {
     auto results = m_solver->solve(desires, m_strategiesByDesireType, m_resourcesByNames);
     unordered_set<pair<type_index, size_t>> enabledStrategies;
+    vector<tuple<type_index, size_t, unique_ptr<Desire>&>> strategiesToEnable;
 
     for (auto& p : m_strategiesByDesireType)
     {
@@ -101,9 +102,11 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         auto desireType = desire->type();
         auto p = pair<type_index, size_t>(desireType, result.strategyIndex);
         bool toBeEnabled = enabledStrategies.count(p) == 0;
-        if (toBeEnabled)
+        auto& strategy = m_strategiesByDesireType[p.first][p.second];
+
+        if (toBeEnabled || strategy->enabled() && strategy->desireId() != desire->id())
         {
-            m_strategiesByDesireType[desireType][result.strategyIndex]->enable(desire);
+            strategiesToEnable.emplace_back(desireType, result.strategyIndex, desire);
         }
         else
         {
@@ -114,5 +117,9 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
     for (auto& p : enabledStrategies)
     {
         m_strategiesByDesireType[p.first][p.second]->disable();
+    }
+    for (auto& s : strategiesToEnable)
+    {
+        m_strategiesByDesireType[get<0>(s)][get<1>(s)]->enable(get<2>(s));
     }
 }

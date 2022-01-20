@@ -83,6 +83,39 @@ TEST(DesireSetTests, removeDesire_invalidId_shouldDoNothing)
     ASSERT_EQ(observer.desires.size(), 0);
 }
 
+TEST(DesireSetTests, removeDesires_shouldRemoveTheMatchingDesires)
+{
+    DesireSetObserverMock observer;
+    DesireC desire1;
+    DesireC desire2;
+    DesireD desire3;
+    DesireSet testee;
+
+    testee.addDesire(desire1.clone());
+    testee.addDesire(desire2.clone());
+    testee.addDesire(desire3.clone());
+
+    testee.addObserver(&observer);
+    testee.removeDesires(type_index(typeid(DesireC)));
+
+    ASSERT_EQ(observer.desires.size(), 1);
+    ASSERT_EQ(observer.desires[0].size(), 1);
+    EXPECT_EQ(observer.desires[0][0]->id(), desire3.id());
+}
+
+TEST(DesireSetTests, contains_shouldIfTheDesireIsInTheSet)
+{
+    DesireC desire;
+    DesireSet testee;
+    EXPECT_FALSE(testee.contains(desire.id()));
+
+    testee.addDesire(desire.clone());
+    EXPECT_TRUE(testee.contains(desire.id()));
+
+    testee.removeDesire(desire.id());
+    EXPECT_FALSE(testee.contains(desire.id()));
+}
+
 TEST(DesireSetTests, clear_empty_shouldDoNothing)
 {
     DesireSetObserverMock observer;

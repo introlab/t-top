@@ -6,6 +6,16 @@
 #include <memory>
 #include <typeindex>
 
+#define DECLARE_DESIRE_METHODS(className) \
+    std::unique_ptr<Desire> clone() override \
+    { \
+        return std::make_unique<className>(*this); \
+    } \
+    std::type_index type() override \
+    { \
+        return std::type_index(typeid(className)); \
+    }
+
 class Desire
 {
     static std::atomic_uint64_t m_idCounter;
@@ -15,7 +25,7 @@ class Desire
     bool m_enabled;
 
 public:
-    Desire(uint16_t intensity);
+    explicit Desire(uint16_t intensity);
     virtual ~Desire();
 
     uint64_t id() const;

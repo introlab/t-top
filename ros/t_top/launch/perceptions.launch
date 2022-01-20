@@ -3,21 +3,22 @@
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
     <arg name="odas_configuration_path" default="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
     <arg name="visualization" default="false"/>
+    <arg name="slam" default="true"/>
 
     <!-- RTAM-Map -->
-    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
+    <node if="$(arg slam)" pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
         <remap from="rgb/image" to="/camera/color/image_raw"/>
         <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
         <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
 
         <param name="approx_sync" value="true"/>
     </node>
-    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="rtabmap_filter">
+    <node if="$(arg slam)" pkg="hbba_lite" type="on_off_hbba_filter_node" name="rtabmap_filter">
         <remap from="in" to="rgbd_image"/>
         <remap from="out" to="rgbd_image_filtered"/>
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
-    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
+    <node if="$(arg slam)" name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
         <param name="frame_id" type="string" value="camera_depth_optical_frame"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>
@@ -52,7 +53,7 @@
     <node if="$(arg visualization)" pkg="video_analyzer" name="video_analysis_markers" type="video_analysis_markers_node.py"/>
 
     <!-- ODAS -->
-    <node pkg="odas_ros" type="odas_server_node.py" name="odas_server_node">
+    <node pkg="odas_ros" type="odas_server_node.py" name="odas_server_node" respawn="true">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 

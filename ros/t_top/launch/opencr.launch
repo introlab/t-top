@@ -28,7 +28,7 @@
     </node>
 
     <!--Dynamic tf broadcast and odom launch-->
-    <node pkg="tabletop" type="opencr_raw_data_interpreter.py" name="opencr_raw_data_interpreter">
+    <node pkg="t_top" type="opencr_raw_data_interpreter.py" name="opencr_raw_data_interpreter">
         <param name="base_link_torso_base_delta_z" value="0.151"/>
     </node>
 </launch>

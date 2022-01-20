@@ -56,6 +56,37 @@ void DesireSet::removeDesire(uint64_t id)
     callObservers(move(lock));
 }
 
+void DesireSet::removeDesires(type_index type)
+{
+    unique_lock<recursive_mutex> lock(m_desireMutex);
+    size_t sizeBefore = m_desiresById.size();
+
+    for (auto it = m_desiresById.begin(); it != m_desiresById.end();)
+    {
+        if (it->second->type() == type)
+        {
+            it = m_desiresById.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    if (sizeBefore != m_desiresById.size())
+    {
+        m_hasChanged = true;
+    }
+    callObservers(move(lock));
+}
+
+bool DesireSet::contains(uint64_t id)
+{
+    unique_lock<recursive_mutex> lock(m_desireMutex);
+    auto it = m_desiresById.find(id);
+    return it != m_desiresById.end();
+}
+
 void DesireSet::clear()
 {
     unique_lock<recursive_mutex> lock(m_desireMutex);

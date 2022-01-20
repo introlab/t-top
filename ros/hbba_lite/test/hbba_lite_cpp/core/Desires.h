@@ -12,15 +12,7 @@ public:
 
     ~DesireA() override = default;
 
-    std::unique_ptr<Desire> clone() override
-    {
-        return std::make_unique<DesireA>(*this);
-    }
-
-    std::type_index type() override
-    {
-        return std::type_index(typeid(*this));
-    }
+    DECLARE_DESIRE_METHODS(DesireA)
 };
 
 class DesireB : public Desire
@@ -32,15 +24,7 @@ public:
 
     ~DesireB() override = default;
 
-    std::unique_ptr<Desire> clone() override
-    {
-        return std::make_unique<DesireB>(*this);
-    }
-
-    std::type_index type() override
-    {
-        return std::type_index(typeid(*this));
-    }
+    DECLARE_DESIRE_METHODS(DesireB)
 };
 
 class DesireC : public Desire
@@ -52,15 +36,7 @@ public:
 
     ~DesireC() override = default;
 
-    std::unique_ptr<Desire> clone() override
-    {
-        return std::make_unique<DesireC>(*this);
-    }
-
-    std::type_index type() override
-    {
-        return std::type_index(typeid(*this));
-    }
+    DECLARE_DESIRE_METHODS(DesireC)
 };
 
 class DesireD : public Desire
@@ -72,15 +48,7 @@ public:
 
     ~DesireD() override = default;
 
-    std::unique_ptr<Desire> clone() override
-    {
-        return std::make_unique<DesireD>(*this);
-    }
-
-    std::type_index type() override
-    {
-        return std::type_index(typeid(*this));
-    }
+    DECLARE_DESIRE_METHODS(DesireD)
 };
 
 #endif

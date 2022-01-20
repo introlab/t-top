@@ -61,7 +61,7 @@ class CloudDataNode:
             country_name=location.country_name,
 
             temperature_celsius=current_weather['temp'],
-            feals_like_temperature_celsius=current_weather['feels_like'],
+            feels_like_temperature_celsius=current_weather['feels_like'],
             pressure_kpa=self._hpa_to_kpa(current_weather['pressure']),
             humidity_percent=current_weather['humidity'],
             clouds_percent=current_weather['clouds'],

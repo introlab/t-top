@@ -27,7 +27,7 @@ class MelSpectrogram:
         elif GPU_SUPPORTED:
             return torch.as_tensor(self._gpu_tranform(x), device='cuda')
         else:
-            raise ValueError('GPU is not supported (python_speech_features_cuda and cupy must be installed)')
+            raise ValueError('GPU is not supported (cupy must be installed)')
 
 
 class _CpuMelSpectrogram:
@@ -102,7 +102,7 @@ class MFCC:
         elif GPU_SUPPORTED:
             return torch.as_tensor(self._gpu_tranform(x), device='cuda')
         else:
-            raise ValueError('GPU is not supported (python_speech_features_cuda and cupy must be installed)')
+            raise ValueError('GPU is not supported (cupy must be installed)')
 
 
 class _CpuMFCC:
