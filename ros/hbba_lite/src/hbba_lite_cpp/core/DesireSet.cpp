@@ -1,7 +1,5 @@
 #include <hbba_lite/core/DesireSet.h>
 
-#include <algorithm>
-
 using namespace std;
 
 DesireSetTransaction::DesireSetTransaction(DesireSet& desireSet, unique_lock<recursive_mutex>&& lock) :
