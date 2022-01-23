@@ -151,10 +151,12 @@ def main():
 
     face_model = create_face_model(args.face_embedding_size)
     load_checkpoint(face_model, args.face_model_checkpoint)
+    face_model.eval()
     face_transforms = create_validation_image_transform()
 
     voice_model = create_voice_model(args.voice_backbone_type, args.voice_embedding_size, vlad=args.voice_vlad)
     load_checkpoint(voice_model, args.voice_model_checkpoint)
+    voice_model.eval()
     voice_transforms = AudioDescriptorValidationTransforms(waveform_size=args.voice_waveform_size,
                                                            n_features=args.voice_n_features,
                                                            n_fft=args.voice_n_fft,
