@@ -65,9 +65,9 @@ string ValidTaskState::generateText()
     switch (language())
     {
     case Language::ENGLISH:
-        return "The task is valid.";
+        return "Yes, of course.";
     case Language::FRENCH:
-        return "La tâche est valide.";
+        return "Oui, biensûr.";
     }
 
     return "";

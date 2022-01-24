@@ -61,9 +61,9 @@ string InvalidTaskState::generateText()
     switch (language())
     {
     case Language::ENGLISH:
-        return "The task is invalid.";
+        return "I cannot do that.";
     case Language::FRENCH:
-        return "La tâche n'est pas valide.";
+        return "Je ne peux pas faire cela.";
     }
 
     return "";

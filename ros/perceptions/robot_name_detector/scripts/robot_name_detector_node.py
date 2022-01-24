@@ -48,7 +48,7 @@ class RobotNameDetectorNode:
         self._sound_rms_pub = rospy.Publisher('sound_rms', Float32, queue_size=10)
         self._sound_presence_pub = rospy.Publisher('sound_presence', Bool, queue_size=10)
         self._robot_name_detected_pub = rospy.Publisher('robot_name_detected', Empty, queue_size=10)
-        self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
+        self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
 
     def _audio_cb(self, msg):
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
