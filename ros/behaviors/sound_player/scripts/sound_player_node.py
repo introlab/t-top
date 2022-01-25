@@ -7,7 +7,7 @@ import numpy as np
 import librosa
 
 import rospy
-from sound_player.msg import SoundFile, Done
+from sound_player.msg import SoundFile, Started, Done
 from audio_utils.msg import AudioFrame
 
 import hbba_lite
@@ -19,6 +19,7 @@ class SoundPlayerNode:
         self._frame_sample_count = rospy.get_param('~frame_sample_count')
 
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
+        self._started_pub = rospy.Publisher('sound_player/started', Started, queue_size=5)
         self._done_pub = rospy.Publisher('sound_player/done', Done, queue_size=5)
 
         self._file_sub_lock = threading.Lock()
@@ -30,14 +31,16 @@ class SoundPlayerNode:
                 return
 
             try:
-                self._play_audio(msg.path)
+                self._play_audio(msg.id, msg.path)
                 ok = True
             except Exception:
                 ok = False
             self._done_pub.publish(Done(id=msg.id, ok=ok))
 
-    def _play_audio(self, path):
+    def _play_audio(self, id, path):
         frames = self._load_frames(path)
+
+        self._started_pub.publish(Started(id=id))
 
         audio_frame = AudioFrame()
         audio_frame.format = 'float'
