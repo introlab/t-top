@@ -57,6 +57,8 @@ string CurrentWeatherState::generateText()
     case Language::FRENCH:
         return generateFrenchText(ok, srv);
     }
+
+    return "";
 }
 
 string CurrentWeatherState::generateEnglishText(bool ok, const cloud_data::CurrentLocalWeather& srv)
@@ -66,15 +68,10 @@ string CurrentWeatherState::generateEnglishText(bool ok, const cloud_data::Curre
 
     if (ok)
     {
-        ss << "The current temperature is " << srv.response.temperature_celsius << "°C. ";
-        ss << "The current feels like temperature is " << srv.response.feels_like_temperature_celsius << "°C. ";
-        ss << "The current humidity is " << srv.response.humidity_percent << "%. ";
-        ss << "The current wind speed is " << srv.response.wind_speed_kph << " kilometers per hour. ";
-
-        if (srv.response.wind_gust_kph != -1)
-        {
-            ss << "The current wind gust speed is " << srv.response.wind_gust_kph << " kilometers per hour. ";
-        }
+        ss << "The current temperature is " << srv.response.temperature_celsius << "°C and ";
+        ss << " it feels like " << srv.response.feels_like_temperature_celsius << "°C. ";
+        ss << "Humidity is " << srv.response.humidity_percent << "% and ";
+        ss << " wind speed is " << srv.response.wind_speed_kph << " kilometers per hour. ";
     }
     else
     {
