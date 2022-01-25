@@ -1,6 +1,6 @@
-<template>  
-  <face :width="width" :height="height" :drawing="faceDrawer.drawing" :eye-state="displayedEyeState" 
-    :mouth-signal="displayMouthState"/>  
+<template>
+  <face :width="width" :height="height" :drawing="faceDrawer.drawing" :state="displayedState"
+    :mouth-signal="displayedMouthState"/>
 </template>
 
 <script>
@@ -19,14 +19,14 @@ export default {
 
   data() {
     return {
-      displayedEyeState: null,
+      displayedState: null,
       currentAnimation: null,
       currentAnimationIndex: 0,
-      currentEyeState: null,
+      currentState: null,
       nextEyeStage: null,
       currentFaceTime: 0,
 
-      displayMouthState: null,
+      displayedMouthState: null,
     };
   },
   methods: {
@@ -34,10 +34,10 @@ export default {
       this.loopIntervalId = setInterval(function() {
         this.updateCurrentAnimation();
         this.updateStates();
-        this.displayedEyeState = this.interpolateDisplayedEyeState();
+        this.displayedState = this.interpolateDisplayedState();
 
         this.updateCurrentMouth();
-        
+
         this.currentFaceTime += StepDuration;
       }.bind(this), 1000 / Constants.CanvasRefreshRate);
     },
@@ -50,8 +50,8 @@ export default {
         this.currentAnimation = animation;
         this.currentFaceTime = 0;
 
-        if (this.currentEyeState === null) {
-          this.currentEyeState = this.currentAnimation[0];
+        if (this.currentState === null) {
+          this.currentState = this.currentAnimation[0];
           this.currentAnimationIndex = 1 % this.currentAnimation.length;
           this.nextEyeStage = this.currentAnimation[this.currentAnimationIndex];
         }
@@ -63,26 +63,26 @@ export default {
     },
     updateStates() {
       if (this.currentFaceTime > this.nextEyeStage.duration) {
-        this.currentEyeState = this.nextEyeStage;
+        this.currentState = this.nextEyeStage;
         this.currentAnimationIndex = (this.currentAnimationIndex + 1) % this.currentAnimation.length;
         this.nextEyeStage = this.currentAnimation[this.currentAnimationIndex];
         this.currentFaceTime = 0;
       }
     },
-    interpolateDisplayedEyeState() {
-      let displayedEyeState = {};
-      for (let property in this.currentEyeState.state) {
-        let delta = this.nextEyeStage.state[property] - this.currentEyeState.state[property];
+    interpolateDisplayedState() {
+      let displayedState = {};
+      for (let property in this.currentState.state) {
+        let delta = this.nextEyeStage.state[property] - this.currentState.state[property];
         let offset = delta * this.currentFaceTime / this.nextEyeStage.duration;
-        displayedEyeState[property] = this.currentEyeState.state[property] + offset;
+        displayedState[property] = this.currentState.state[property] + offset;
       }
-      return displayedEyeState;
+      return displayedState;
     },
     updateCurrentMouth() {
       let arrayMouthSignalUp = this.faceDrawer.mouth.arrayMouthSignalUp.map(x => x * this.mouthSignalScale);
       let arrayMouthSignalDown = this.faceDrawer.mouth.arrayMouthSignalDown.map(x => x * this.mouthSignalScale);
 
-      this.displayMouthState = {
+      this.displayedMouthState = {
         arrayMouthSignalUp,
         arrayMouthSignalDown,
         mouthHeight: this.faceDrawer.mouth.mouthHeight,

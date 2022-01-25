@@ -5,7 +5,7 @@
 <script>
 export default {
   name: 'Face',
-  props: ['width', 'height', 'drawing', 'eyeState', 'mouthSignal'],
+  props: ['width', 'height', 'drawing', 'state', 'mouthSignal'],
   data() {
     return {
       loopIntervalId: null,
@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     updateCanvas() {
-      this.drawing.updateCanvas(this.canvas, this.context, this.eyeState, this.mouthSignal);
+      this.drawing.updateCanvas(this.canvas, this.context, this.state, this.mouthSignal);
     }
   },
   watch: {
@@ -29,7 +29,7 @@ export default {
     eyeHeight() {
       this.updateCanvas();
     },
-    eyeState() {
+    state() {
       this.updateCanvas();
     },
     mouthSignal() {
