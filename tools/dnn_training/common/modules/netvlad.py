@@ -42,8 +42,4 @@ class NetVLAD(nn.Module):
 
         vlad = F.normalize(vlad, p=2, dim=2)  # intra-normalization
         return  F.normalize(vlad.view(N, -1), p=2, dim=1)  # L2 normalize
-
-
-
-
-
+    
