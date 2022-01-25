@@ -146,7 +146,7 @@
     <!-- Person Identification -->
     <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node">
         <param name="face_descriptor_threshold" value="0.889"/>
-        <param name="voice_descriptor_threshold" value="1.1"/>
+        <param name="voice_descriptor_threshold" value="1.266"/>
         <param name="face_voice_descriptor_threshold" value="1.7068"/>
         <param name="nose_confidence_threshold" value="0.4"/>
         <param name="direction_frame" value="odas"/>
