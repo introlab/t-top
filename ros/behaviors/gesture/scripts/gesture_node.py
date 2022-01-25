@@ -24,11 +24,11 @@ class GestureNode:
                 return
 
             if msg.name == 'yes':
-                self._movement_commands.move_yes()
+                self._movement_commands.move_yes(count=1)
             elif msg.name == 'no':
-                self._movement_commands.move_no()
+                self._movement_commands.move_no(count=1)
             elif msg.name == 'maybe':
-                self._movement_commands.move_maybe()
+                self._movement_commands.move_maybe(count=1)
             elif msg.name == 'origin_all':
                 self._movement_commands.move_head_to_origin()
                 self._movement_commands.move_torso_to_origin()
