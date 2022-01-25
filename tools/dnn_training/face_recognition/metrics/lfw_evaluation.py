@@ -21,13 +21,35 @@ class LfwEvaluation(RocDistancesThresholdsEvaluation):
         self._transforms = transforms
         self._lfw_dataset_root = lwf_dataset_root
 
-        self._image_pairs = self._read_image_pairs()
+        self._fold_count, self._fold_size, self._image_pairs = self._read_image_pairs()
+
+    def evaluate(self):
+        print('Calculate distances')
+        distances = self._calculate_distances()
+        is_same_person_target = self._get_is_same_person_target()
+
+        _, best_threshold, true_positive_rate_curve, false_positive_rate_curve, thresholds = \
+            self._calculate_accuracy_true_positive_rate_false_positive_rate(distances, is_same_person_target)
+        auc = self._calculate_auc(true_positive_rate_curve, false_positive_rate_curve)
+        eer = self._calculate_eer(true_positive_rate_curve, false_positive_rate_curve)
+
+        accuracy, accuracy_std = self._calculate_fold_accuracy(distances, is_same_person_target, best_threshold)
+
+        print('Accuracy: {}±{}, threshold: {}, AUC: {}, EER: {}'.format(accuracy, accuracy_std, best_threshold, auc,
+                                                                        eer))
+        self._save_roc_curve(true_positive_rate_curve, false_positive_rate_curve)
+        self._save_roc_curve_data(true_positive_rate_curve, false_positive_rate_curve, thresholds)
 
     def _read_image_pairs(self):
         image_pairs = []
         with open(os.path.join(self._lfw_dataset_root, 'pairs.txt'), 'r') as f:
-            lines = f.readlines()[1:]
+            lines = f.readlines()
 
+        p = lines[0].strip().split()
+        fold_count = int(p[0])
+        fold_size = int(p[1])
+
+        lines = lines[1:]
         for line in lines:
             p = line.strip().split()
             if len(p) == 3:
@@ -44,7 +66,7 @@ class LfwEvaluation(RocDistancesThresholdsEvaluation):
             if os.path.exists(image_path1) and os.path.exists(image_path2):
                 image_pairs.append((image_path1, image_path2, is_same_person))
 
-        return image_pairs
+        return fold_count, fold_size, image_pairs
 
     def _calculate_distances(self):
         distances = []
@@ -74,3 +96,20 @@ class LfwEvaluation(RocDistancesThresholdsEvaluation):
 
     def _get_is_same_person_target(self):
         return torch.tensor([image_pair[2] for image_pair in self._image_pairs])
+
+    def _calculate_fold_accuracy(self, distances, is_same_person_target, threshold):
+        accuracies = []
+
+        for i in range(self._fold_count):
+            start = i * self._fold_size
+            end = (i + 1) * self._fold_size
+
+            accuracy, _, _ = \
+                self._calculate_accuracy_true_positive_rate_false_positive_rate_for_threshold(
+                    distances[start:end],
+                    is_same_person_target[start:end],
+                    threshold)
+
+            accuracies.append(accuracy)
+
+        return np.mean(accuracies), np.std(accuracies)
