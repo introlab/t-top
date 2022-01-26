@@ -75,9 +75,7 @@
     <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
         <param name="enable" value="false"/>
         <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="768"/>
-        <param name="oss_ftt_window_size" value="1536"/>
-        <param name="oss_bpm_window_size" value="1536"/>
+        <param name="frame_sample_count" value="256"/>
         <param name="min_bpm" value="50"/>
         <param name="max_bpm" value="180"/>
         <param name="bpm_candidate_count" value="2"/>
@@ -94,7 +92,7 @@
         <param name="channel_count" value="1"/>
         <param name="input_sampling_frequency" value="44100"/>
         <param name="output_sampling_frequency" value="16000"/>
-        <param name="input_frame_sample_count" value="768"/>
+        <param name="input_frame_sample_count" value="2048"/>
 
         <remap from="audio_in" to="audio_signed_16_44100"/>
         <remap from="audio_out" to="audio_signed_16_16000"/>
@@ -103,8 +101,8 @@
     <!-- Speech to Text -->
     <node pkg="speech_to_text" type="speech_to_text_node.py" name="speech_to_text_node">
         <param name="sampling_frequency" value="16000"/>
-        <param name="frame_sample_count" value="278"/>
-        <param name="request_frame_count" value="20"/>
+        <param name="frame_sample_count" value="743"/>
+        <param name="request_frame_count" value="4"/>
         <param name="language" value="$(arg language)"/>
 
         <remap from="audio_in" to="audio_signed_16_16000"/>
@@ -147,7 +145,7 @@
     <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node">
         <param name="face_descriptor_threshold" value="0.889"/>
         <param name="voice_descriptor_threshold" value="1.266"/>
-        <param name="face_voice_descriptor_threshold" value="1.7068"/>
+        <param name="face_voice_descriptor_threshold" value="1.5092"/>
         <param name="nose_confidence_threshold" value="0.4"/>
         <param name="direction_frame" value="odas"/>
         <param name="direction_angle_threshold_rad" value="0.15"/>
