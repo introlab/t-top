@@ -17,6 +17,7 @@ class SoundFollowingNode:
         self._head_enabled = rospy.get_param('~head_enabled')
         self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
         self._max_head_pitch = rospy.get_param('~max_head_pitch_rad')
+        self._min_activity = rospy.get_param('~min_activity')
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
@@ -32,6 +33,8 @@ class SoundFollowingNode:
 
         if len(sst.sources) == 0:
             yaw, pitch = None, None
+        elif sst.sources[0].activity < self._min_activity:
+            return
         else:
             yaw, pitch = vector_to_angles(sst.sources[0])
 

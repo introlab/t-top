@@ -69,6 +69,7 @@
         <param name="head_enabled" value="false"/>
         <param name="min_head_pitch_rad" value="-0.35"/>
         <param name="max_head_pitch_rad" value="0.35"/>
+        <param name="min_activity" value="0.1"/>
 
         <remap from="sst" to="audio_sst"/>
         <remap from="pose/filter_state" to="sound_following/filter_state"/>
