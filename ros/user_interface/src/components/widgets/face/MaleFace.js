@@ -11,16 +11,16 @@ function getMouthCurve (n, a) {
 
 export default {
   drawing: {
-    updateCanvas: function (canvas, context, eyeState, mouthSignal) {
-      if (eyeState === null || eyeState === undefined) {
-        eyeState = this.getDefaultEyeState();
+    updateCanvas: function (canvas, context, state, mouthSignal) {
+      if (state === null || state === undefined) {
+        state = this.getDefaultState();
       }
       if (mouthSignal === null || mouthSignal === undefined) {
         mouthSignal = this.getDefaultMouthSignal(canvas);
       }
-      this.drawFrame(canvas, context, eyeState, mouthSignal);
+      this.drawFrame(canvas, context, state, mouthSignal);
     },
-    getDefaultEyeState: function () {
+    getDefaultState: function () {
       return {
         x1_leftEye: 116,
         x2_leftEye: 126,
@@ -29,7 +29,7 @@ export default {
         x5_leftEye: 172,
         x6_leftEye: 182,
         x7_leftEye: 188,
-  
+
         y1_leftEyeUp: 384,
         y2_leftEyeUp: 373,
         y3_leftEyeUp: 370,
@@ -37,13 +37,13 @@ export default {
         y5_leftEyeUp: 373,
         y6_leftEyeUp: 377,
         y7_leftEyeUp: 384,
-  
+
         y2_leftEyeDown: 392,
         y3_leftEyeDown: 394,
         y4_leftEyeDown: 396,
         y5_leftEyeDown: 391,
         y6_leftEyeDown: 385,
-      
+
         x1_rightEye: Constants.FaceWidth - 116,
         x2_rightEye: Constants.FaceWidth - 126,
         x3_rightEye: Constants.FaceWidth - 142,
@@ -51,7 +51,7 @@ export default {
         x5_rightEye: Constants.FaceWidth - 172,
         x6_rightEye: Constants.FaceWidth - 182,
         x7_rightEye: Constants.FaceWidth - 188,
-  
+
         y1_rightEyeUp: 384,
         y2_rightEyeUp: 373,
         y3_rightEyeUp: 370,
@@ -59,44 +59,44 @@ export default {
         y5_rightEyeUp: 373,
         y6_rightEyeUp: 377,
         y7_rightEyeUp: 384,
-  
+
         y2_rightEyeDown: 392,
         y3_rightEyeDown: 394,
         y4_rightEyeDown: 396,
         y5_rightEyeDown: 391,
         y6_rightEyeDown: 385,
-  
-  
+
+
         x_leftPupil: 152,
         y_leftPupil: 382,
         r_leftPupil: 7,
         x_leftIris: 152,
         y_leftIris: 382,
         r_leftIris: 17,
-  
+
         x_rightPupil: Constants.FaceWidth - 152,
         y_rightPupil: 382,
         r_rightPupil: 7,
         x_rightIris: Constants.FaceWidth - 152,
         y_rightIris: 382,
         r_rightIris: 17,
-  
-      
+
+
         x1_leftEyebrow: 92,
         x2_leftEyebrow: 120,
         x3_leftEyebrow: 200,
-  
+
         y1_leftEyebrowUp: 357,
         y2_leftEyebrowUp: 332,
         y3_leftEyebrowUp: 349,
         y1_leftEyebrowDown: 359,
         y2_leftEyebrowDown: 338,
         y3_leftEyebrowDown: 359,
-  
+
         x1_rightEyebrow: Constants.FaceWidth - 92,
         x2_rightEyebrow: Constants.FaceWidth - 120,
         x3_rightEyebrow: Constants.FaceWidth - 200,
-  
+
         y1_rightEyebrowUp: 357,
         y2_rightEyebrowUp: 332,
         y3_rightEyebrowUp: 349,
@@ -116,7 +116,7 @@ export default {
         mouthWidth: 0
       };
     },
-    drawFrame: function (canvas, context, eyeState, mouthSignal) {
+    drawFrame: function (canvas, context, state, mouthSignal) {
       context.clearRect(0, 0, Constants.FaceWidth, canvas.height);
       this.draw_sweater(canvas, context);
       this.draw_neck(canvas, context);
@@ -128,15 +128,15 @@ export default {
       this.draw_nose(canvas, context);
       this.draw_dark_circles(canvas, context);
 
-      this.draw_left_eye(canvas, context, eyeState);
-      this.draw_right_eye(canvas, context, eyeState);
+      this.draw_left_eye(canvas, context, state);
+      this.draw_right_eye(canvas, context, state);
 
-      this.draw_mouth(canvas, context, mouthSignal, eyeState);
+      this.draw_mouth(canvas, context, mouthSignal, state);
     },
     draw_sweater: function (canvas, context) {
       const x1 = 100, y1 = 624, x2 = 48, y2 = 704, x3 = 0, y3 = 740, x4 = 0, y4 = canvas.height, x5 = Constants.FaceWidth/2, y5 = canvas.height, x6 = 55, y6 = 740, x7 = 72, y7 = canvas.height;
 
-      context.beginPath();      
+      context.beginPath();
       context.moveTo(this.ratioX(canvas, x1), this.ratioY(canvas, y1));
       context.lineTo(this.ratioX(canvas, x2), this.ratioY(canvas, y2));
       context.lineTo(this.ratioX(canvas, x3), this.ratioY(canvas, y3));
@@ -148,8 +148,8 @@ export default {
       context.lineTo(this.ratioX(canvas, Constants.FaceWidth-x3), this.ratioY(canvas, y3));
       context.lineTo(this.ratioX(canvas, Constants.FaceWidth-x2), this.ratioY(canvas, y2));
       context.lineTo(this.ratioX(canvas, Constants.FaceWidth-x1), this.ratioY(canvas, y1));
-      context.fillStyle = "#0000CD"; 
-      context.fill(); 
+      context.fillStyle = "#0000CD";
+      context.fill();
 
       context.moveTo(this.ratioX(canvas, x2), this.ratioY(canvas, y2));
       context.quadraticCurveTo(this.ratioX(canvas, x6), this.ratioY(canvas, y6), this.ratioX(canvas, x7), this.ratioY(canvas, y7));
@@ -157,9 +157,9 @@ export default {
       // Symmetry
       context.moveTo(this.ratioX(canvas, Constants.FaceWidth-x2), this.ratioY(canvas, y2));
       context.quadraticCurveTo(this.ratioX(canvas, Constants.FaceWidth-x6), this.ratioY(canvas, y6), this.ratioX(canvas, Constants.FaceWidth-x7), this.ratioY(canvas, y7));
-      context.strokeStyle = "#000000";   
+      context.strokeStyle = "#000000";
       context.lineWidth = 5;
-      context.stroke(); 
+      context.stroke();
     },
     draw_neck: function (canvas, context) {
       const x1 = 92, y1 = 557, x2 = 95, y2 = 592, x3 = 100, y3 = 672, x4 = 110, y4 = 720, x5 = 156, y5 = canvas.height, x6 = Constants.FaceWidth/2, y6 = canvas.height;
@@ -176,7 +176,7 @@ export default {
       context.quadraticCurveTo(this.ratioX(canvas, Constants.FaceWidth-x4), this.ratioY(canvas, y4), this.ratioX(canvas, Constants.FaceWidth-x3), this.ratioY(canvas, y3));
       context.quadraticCurveTo(this.ratioX(canvas, Constants.FaceWidth-x2), this.ratioY(canvas, y2), this.ratioX(canvas, Constants.FaceWidth-x1), this.ratioY(canvas, y1));
 
-      context.fillStyle = "#DEB887"; 
+      context.fillStyle = "#DEB887";
       context.fill();
       context.lineWidth = 3;
       context.stroke();
@@ -184,7 +184,7 @@ export default {
       context.moveTo(this.ratioX(canvas, x7), this.ratioY(canvas, y7));
       context.quadraticCurveTo(this.ratioX(canvas, x8), this.ratioY(canvas, y8), this.ratioX(canvas, x10), this.ratioY(canvas, y10));
       context.lineWidth = 2;
-      context.stroke(); 
+      context.stroke();
     },
     draw_hair_outline: function (canvas, context) {
       const x1 = 64, y1 = 352, x2 = 56, y2 = 288, x3 = 52, y3 = 240, x4 = 50, y4 = 200, x5 = 60, y5 = 176, x6 = 76, y6 = 148, x7 = 92, y7 = 136;
@@ -248,7 +248,7 @@ export default {
 
       context.moveTo(this.ratioX(canvas, x4), this.ratioY(canvas, y4));
       context.quadraticCurveTo(this.ratioX(canvas, x5), this.ratioY(canvas, y5), this.ratioX(canvas, x6), this.ratioY(canvas, y6));
-      
+
       context.moveTo(this.ratioX(canvas, x7), this.ratioY(canvas, y7));
       context.quadraticCurveTo(this.ratioX(canvas, x8), this.ratioY(canvas, y8), this.ratioX(canvas, x9), this.ratioY(canvas, y9));
 
@@ -268,14 +268,14 @@ export default {
       context.quadraticCurveTo(this.ratioX(canvas, x22), this.ratioY(canvas, y22), this.ratioX(canvas, x23), this.ratioY(canvas, y23));
 
       context.moveTo(this.ratioX(canvas, x21), this.ratioY(canvas, y21));
-      context.quadraticCurveTo(this.ratioX(canvas, x24), this.ratioY(canvas, y24), this.ratioX(canvas, x25), this.ratioY(canvas, y25));  
+      context.quadraticCurveTo(this.ratioX(canvas, x24), this.ratioY(canvas, y24), this.ratioX(canvas, x25), this.ratioY(canvas, y25));
 
       context.lineWidth = 4;
       context.strokeStyle = "#8B4513";
       context.lineCap = "round";
       context.stroke();
     },
-    draw_ears_outline: function (canvas, context) {     
+    draw_ears_outline: function (canvas, context) {
       const x1 = 68, y1 = 380, x2 = 52, y2 = 352, x3 = 40, y3 = 342, x4 = 31, y4 = 336, x5 = 25, y5 = 350, x6 = 21, y6 = 368, x7 = 27, y7 = 404, x8 = 38, y8 = 447, x9 = 47, y9 = 458, x10 = 58, y10 = 470, x11 = 72, y11 = 472;
 
       context.beginPath();
@@ -294,12 +294,12 @@ export default {
       context.quadraticCurveTo(this.ratioX(canvas, Constants.FaceWidth-x8), this.ratioY(canvas, y8), this.ratioX(canvas,Constants.FaceWidth- x9), this.ratioY(canvas, y9));
       context.quadraticCurveTo(this.ratioX(canvas, Constants.FaceWidth-x10), this.ratioY(canvas, y10), this.ratioX(canvas, Constants.FaceWidth-x11), this.ratioY(canvas, y11));
 
-      context.fillStyle = "#DEB887"; 
+      context.fillStyle = "#DEB887";
       context.fill();
       context.lineWidth = 3;
-      context.strokeStyle = "#000000";    
+      context.strokeStyle = "#000000";
       context.stroke();
-    },    
+    },
     draw_inner_ears: function (canvas, context) {
       const x1 = 68, y1 = 404, x2 = 47, y2 = 368, x3 = 32, y3 = 352, x4 = 28, y4 = 350, x5 = 24, y5 = 352, x6 = 26, y6 = 402, x7 = 70, y7 = 456, x8 = 57, y8 = 455, x9 = 45, y9 = 440;
       const x10 = 27, y10 = 358, x11 = 28, y11 = 370;
@@ -351,7 +351,7 @@ export default {
       context.lineWidth = 6;
       context.stroke();
     },
-    draw_face_contour: function (canvas, context, lips_cte) {    
+    draw_face_contour: function (canvas, context, lips_cte) {
       const x1 = 64, y1 = 352, x2 = 70, y2 = 380, x3 = 75, y3 = 492, x4 = 77, y4 = 555, x5 = 143, y5 = 634+lips_cte, x6 = 180, y6 = 685+lips_cte, x7 = Constants.FaceWidth/2, y7 = 683+lips_cte;
       const x8 = 76, y8 = 324, x9 = 80, y9 = 292, x10 = 85, y10 = 250, x11 = 110, y11 = 232, x12 = 146, y12 = 216, x13 = 180, y13 = 230, x14 = 216, y14 = 250;
       const x15 = 276, y15 = 245, x16 = 340, y16 = 230, x17 = 362, y17 = 260, x18 = 375, y18 = 284, x19 = 382, y19 = 328, x20 = 390, y20 = 348;
@@ -380,7 +380,7 @@ export default {
       context.lineWidth = 3;
       context.fill();
       context.stroke();
-    },   
+    },
     draw_nose: function (canvas, context) {
       const x1 = 208, y1 = 420, x2 = 204, y2 = 444, x3 = 200, y3 = 456, x4 = 184, y4 = 505, x5 = 210, y5 = 507, x6 = Constants.FaceWidth/2, y6 = 525;
 
@@ -416,17 +416,17 @@ export default {
       context.lineWidth = 1;
       context.stroke();
     },
-    draw_left_eye: function (canvas, context, eyeState) {
-      this.draw_eye(canvas, context, eyeState.x1_leftEye, eyeState.x2_leftEye, eyeState.x3_leftEye, eyeState.x4_leftEye, eyeState.x5_leftEye, eyeState.x6_leftEye, eyeState.x7_leftEye, eyeState.y1_leftEyeUp, eyeState.y2_leftEyeUp, eyeState.y3_leftEyeUp, eyeState.y4_leftEyeUp,
-        eyeState.y5_leftEyeUp, eyeState.y6_leftEyeUp, eyeState.y7_leftEyeUp, eyeState.y2_leftEyeDown, eyeState.y3_leftEyeDown, eyeState.y4_leftEyeDown, eyeState.y5_leftEyeDown, eyeState.y6_leftEyeDown,
-        eyeState.x_leftPupil, eyeState.y_leftPupil, eyeState.r_leftPupil, eyeState.x_leftIris, eyeState.y_leftIris, eyeState.r_leftIris,
-        eyeState.x1_leftEyebrow, eyeState.x2_leftEyebrow, eyeState.x3_leftEyebrow, eyeState.y1_leftEyebrowUp, eyeState.y2_leftEyebrowUp, eyeState.y3_leftEyebrowUp, eyeState.y1_leftEyebrowDown, eyeState.y2_leftEyebrowDown, eyeState.y3_leftEyebrowDown);
+    draw_left_eye: function (canvas, context, state) {
+      this.draw_eye(canvas, context, state.x1_leftEye, state.x2_leftEye, state.x3_leftEye, state.x4_leftEye, state.x5_leftEye, state.x6_leftEye, state.x7_leftEye, state.y1_leftEyeUp, state.y2_leftEyeUp, state.y3_leftEyeUp, state.y4_leftEyeUp,
+        state.y5_leftEyeUp, state.y6_leftEyeUp, state.y7_leftEyeUp, state.y2_leftEyeDown, state.y3_leftEyeDown, state.y4_leftEyeDown, state.y5_leftEyeDown, state.y6_leftEyeDown,
+        state.x_leftPupil, state.y_leftPupil, state.r_leftPupil, state.x_leftIris, state.y_leftIris, state.r_leftIris,
+        state.x1_leftEyebrow, state.x2_leftEyebrow, state.x3_leftEyebrow, state.y1_leftEyebrowUp, state.y2_leftEyebrowUp, state.y3_leftEyebrowUp, state.y1_leftEyebrowDown, state.y2_leftEyebrowDown, state.y3_leftEyebrowDown);
       },
-    draw_right_eye: function (canvas, context, eyeState) {
-      this.draw_eye(canvas, context, eyeState.x1_rightEye, eyeState.x2_rightEye, eyeState.x3_rightEye, eyeState.x4_rightEye, eyeState.x5_rightEye, eyeState.x6_rightEye, eyeState.x7_rightEye, eyeState.y1_rightEyeUp, eyeState.y2_rightEyeUp, eyeState.y3_rightEyeUp, eyeState.y4_rightEyeUp,
-        eyeState.y5_rightEyeUp, eyeState.y6_rightEyeUp, eyeState.y7_rightEyeUp, eyeState.y2_rightEyeDown, eyeState.y3_rightEyeDown, eyeState.y4_rightEyeDown, eyeState.y5_rightEyeDown, eyeState.y6_rightEyeDown,
-        eyeState.x_rightPupil, eyeState.y_rightPupil, eyeState.r_rightPupil, eyeState.x_rightIris, eyeState.y_rightIris, eyeState.r_rightIris,
-        eyeState.x1_rightEyebrow, eyeState.x2_rightEyebrow, eyeState.x3_rightEyebrow, eyeState.y1_rightEyebrowUp, eyeState.y2_rightEyebrowUp, eyeState.y3_rightEyebrowUp, eyeState.y1_rightEyebrowDown, eyeState.y2_rightEyebrowDown, eyeState.y3_rightEyebrowDown);
+    draw_right_eye: function (canvas, context, state) {
+      this.draw_eye(canvas, context, state.x1_rightEye, state.x2_rightEye, state.x3_rightEye, state.x4_rightEye, state.x5_rightEye, state.x6_rightEye, state.x7_rightEye, state.y1_rightEyeUp, state.y2_rightEyeUp, state.y3_rightEyeUp, state.y4_rightEyeUp,
+        state.y5_rightEyeUp, state.y6_rightEyeUp, state.y7_rightEyeUp, state.y2_rightEyeDown, state.y3_rightEyeDown, state.y4_rightEyeDown, state.y5_rightEyeDown, state.y6_rightEyeDown,
+        state.x_rightPupil, state.y_rightPupil, state.r_rightPupil, state.x_rightIris, state.y_rightIris, state.r_rightIris,
+        state.x1_rightEyebrow, state.x2_rightEyebrow, state.x3_rightEyebrow, state.y1_rightEyebrowUp, state.y2_rightEyebrowUp, state.y3_rightEyebrowUp, state.y1_rightEyebrowDown, state.y2_rightEyebrowDown, state.y3_rightEyebrowDown);
       },
     draw_eye: function (canvas, context, x1_eye, x2_eye, x3_eye, x4_eye, x5_eye, x6_eye, x7_eye, y1_eyeUp, y2_eyeUp, y3_eyeUp, y4_eyeUp,
       y5_eyeUp, y6_eyeUp, y7_eyeUp, y2_eyeDown, y3_eyeDown, y4_eyeDown, y5_eyeDown, y6_eyeDown,
@@ -472,7 +472,7 @@ export default {
       context.fill();
       context.stroke();
     },
-    eye_contour: function (canvas, context, x1_eye, x2_eye, x3_eye, x4_eye, x5_eye, x6_eye, x7_eye, y1_eyeUp, y2_eyeUp, y3_eyeUp, y4_eyeUp, y5_eyeUp, y6_eyeUp, y7_eyeUp, 
+    eye_contour: function (canvas, context, x1_eye, x2_eye, x3_eye, x4_eye, x5_eye, x6_eye, x7_eye, y1_eyeUp, y2_eyeUp, y3_eyeUp, y4_eyeUp, y5_eyeUp, y6_eyeUp, y7_eyeUp,
       y2_eyeDown, y3_eyeDown, y4_eyeDown, y5_eyeDown, y6_eyeDown) {
 
       context.moveTo(this.ratioX(canvas, x1_eye), this.ratioY(canvas, y1_eyeUp));
@@ -484,7 +484,7 @@ export default {
       context.quadraticCurveTo(this.ratioX(canvas, x4_eye), this.ratioY(canvas, y4_eyeDown ), this.ratioX(canvas, x3_eye), this.ratioY(canvas, y3_eyeDown));
       context.quadraticCurveTo(this.ratioX(canvas, x2_eye), this.ratioY(canvas, y2_eyeDown ), this.ratioX(canvas, x1_eye), this.ratioY(canvas, y1_eyeUp));
     },
-    draw_mouth: function (canvas, context, mouthSignal, eyeState) {
+    draw_mouth: function (canvas, context, mouthSignal, state) {
       const x1_upperUpperLip = mouthSignal.arrayMouthSignalUp[0] + 164;
       const x2_upperUpperLip = mouthSignal.arrayMouthSignalUp[1] + 178;
       const x3_upperUpperLip = mouthSignal.arrayMouthSignalUp[2] + 188;
@@ -500,7 +500,7 @@ export default {
       const y5_upperUpperLip = mouthSignal.arrayMouthSignalUp[11] + 562;
       const y6_upperUpperLip = mouthSignal.arrayMouthSignalUp[12] + 564;
       const y7_upperUpperLip = mouthSignal.arrayMouthSignalUp[13] + 564;
-  
+
 
       const x1_upperLowerLip = mouthSignal.arrayMouthSignalUp[14] + 164;
       const x2_upperLowerLip = mouthSignal.arrayMouthSignalUp[15] + 178;
@@ -533,7 +533,7 @@ export default {
       const y5_lowerUpperLip = mouthSignal.arrayMouthSignalDown[11] + 578;
       const y6_lowerUpperLip = mouthSignal.arrayMouthSignalDown[12] + 580;
       const y7_lowerUpperLip = mouthSignal.arrayMouthSignalDown[13] + 580;
-  
+
 
       const x1_lowerLowerLip = mouthSignal.arrayMouthSignalDown[14] + 164;
       const x2_lowerLowerLip = mouthSignal.arrayMouthSignalDown[15] + 178;
@@ -552,8 +552,8 @@ export default {
       const y7_lowerLowerLip = mouthSignal.arrayMouthSignalDown[27] + 600;
 
 
-      const upperMouthCurve = getMouthCurve(7, eyeState.upperMouthCurveA);
-      const lowerMouthCurve = getMouthCurve(7, eyeState.lowerMouthCurveA);
+      const upperMouthCurve = getMouthCurve(7, state.upperMouthCurveA);
+      const lowerMouthCurve = getMouthCurve(7, state.lowerMouthCurveA);
 
       // Black mouth
       context.beginPath();
@@ -618,7 +618,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -626,13 +626,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -640,7 +640,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -648,44 +648,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -709,7 +709,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 392,
           y3_leftEyeUp: 394,
@@ -717,13 +717,13 @@ export default {
           y5_leftEyeUp: 391,
           y6_leftEyeUp: 385,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -731,7 +731,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 392,
           y3_rightEyeUp: 394,
@@ -739,44 +739,44 @@ export default {
           y5_rightEyeUp: 391,
           y6_rightEyeUp: 385,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -800,7 +800,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -808,13 +808,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -822,7 +822,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -830,44 +830,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -889,7 +889,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 392,
           y3_leftEyeUp: 394,
@@ -897,13 +897,13 @@ export default {
           y5_leftEyeUp: 391,
           y6_leftEyeUp: 385,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -911,7 +911,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 392,
           y3_rightEyeUp: 394,
@@ -919,44 +919,44 @@ export default {
           y5_rightEyeUp: 391,
           y6_rightEyeUp: 385,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -978,7 +978,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -986,13 +986,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1000,7 +1000,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1008,44 +1008,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1067,7 +1067,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1075,13 +1075,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1089,7 +1089,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1097,44 +1097,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1158,7 +1158,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1166,13 +1166,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1180,7 +1180,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1188,44 +1188,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1247,7 +1247,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 392,
           y3_leftEyeUp: 394,
@@ -1255,13 +1255,13 @@ export default {
           y5_leftEyeUp: 391,
           y6_leftEyeUp: 385,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1269,7 +1269,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1277,44 +1277,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 362,
           y2_leftEyebrowUp: 337,
           y3_leftEyebrowUp: 352,
           y1_leftEyebrowDown: 364,
           y2_leftEyebrowDown: 343,
           y3_leftEyebrowDown: 362,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1336,7 +1336,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1344,13 +1344,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1358,7 +1358,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1366,44 +1366,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1425,7 +1425,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1433,13 +1433,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1447,7 +1447,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1455,44 +1455,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1516,7 +1516,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1524,13 +1524,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1538,7 +1538,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1546,44 +1546,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1613,13 +1613,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1627,7 +1627,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 392,
           y3_rightEyeUp: 394,
@@ -1635,44 +1635,44 @@ export default {
           y5_rightEyeUp: 391,
           y6_rightEyeUp: 385,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 362,
           y2_rightEyebrowUp: 337,
           y3_rightEyebrowUp: 352,
@@ -1694,7 +1694,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1702,13 +1702,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1716,7 +1716,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1724,44 +1724,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1783,7 +1783,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -1791,13 +1791,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1805,7 +1805,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -1813,44 +1813,44 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 349,
@@ -1874,7 +1874,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 366,
           y3_leftEyeUp: 362,
@@ -1882,13 +1882,13 @@ export default {
           y5_leftEyeUp: 366,
           y6_leftEyeUp: 371,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 394,
           y3_leftEyeDown: 396,
           y4_leftEyeDown: 398,
           y5_leftEyeDown: 393,
           y6_leftEyeDown: 387,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1896,7 +1896,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 366,
           y3_rightEyeUp: 362,
@@ -1904,44 +1904,44 @@ export default {
           y5_rightEyeUp: 366,
           y6_rightEyeUp: 371,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 394,
           y3_rightEyeDown: 396,
           y4_rightEyeDown: 398,
           y5_rightEyeDown: 393,
           y6_rightEyeDown: 387,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 140,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 310,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 316,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 140,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 310,
           y3_rightEyebrowUp: 349,
@@ -1965,7 +1965,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 370,
           y3_leftEyeUp: 366,
@@ -1973,13 +1973,13 @@ export default {
           y5_leftEyeUp: 370,
           y6_leftEyeUp: 375,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 394,
           y3_leftEyeDown: 396,
           y4_leftEyeDown: 398,
           y5_leftEyeDown: 393,
           y6_leftEyeDown: 387,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -1987,7 +1987,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 375,
           y3_rightEyeUp: 372,
@@ -1995,44 +1995,44 @@ export default {
           y5_rightEyeUp: 375,
           y6_rightEyeUp: 379,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 135,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 315,
           y3_leftEyebrowUp: 349,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 321,
           y3_leftEyebrowDown: 359,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 364,
           y2_rightEyebrowUp: 339,
           y3_rightEyebrowUp: 356,
@@ -2056,7 +2056,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 371,
           y3_leftEyeUp: 367,
@@ -2064,13 +2064,13 @@ export default {
           y5_leftEyeUp: 370,
           y6_leftEyeUp: 374,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -2078,7 +2078,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 371,
           y3_rightEyeUp: 367,
@@ -2086,44 +2086,44 @@ export default {
           y5_rightEyeUp: 370,
           y6_rightEyeUp: 374,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 357,
           y2_leftEyebrowUp: 332,
           y3_leftEyebrowUp: 362,
           y1_leftEyebrowDown: 359,
           y2_leftEyebrowDown: 338,
           y3_leftEyebrowDown: 372,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 357,
           y2_rightEyebrowUp: 332,
           y3_rightEyebrowUp: 362,
@@ -2147,7 +2147,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 373,
           y3_leftEyeUp: 370,
@@ -2155,13 +2155,13 @@ export default {
           y5_leftEyeUp: 373,
           y6_leftEyeUp: 377,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -2169,7 +2169,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 373,
           y3_rightEyeUp: 370,
@@ -2177,33 +2177,33 @@ export default {
           y5_rightEyeUp: 373,
           y6_rightEyeUp: 377,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 362,
           y2_leftEyebrowUp: 359,
           y3_leftEyebrowUp: 345,
@@ -2238,7 +2238,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 381,
           y3_leftEyeUp: 380,
@@ -2246,13 +2246,13 @@ export default {
           y5_leftEyeUp: 381,
           y6_leftEyeUp: 383,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -2260,7 +2260,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 381,
           y3_rightEyeUp: 380,
@@ -2268,44 +2268,44 @@ export default {
           y5_rightEyeUp: 381,
           y6_rightEyeUp: 383,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 97,
           x2_leftEyebrow: 154,
           x3_leftEyebrow: 207,
-    
+
           y1_leftEyebrowUp: 360,
           y2_leftEyebrowUp: 349,
           y3_leftEyebrowUp: 362,
           y1_leftEyebrowDown: 362,
           y2_leftEyebrowDown: 355,
           y3_leftEyebrowDown: 372,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 97,
           x2_rightEyebrow: Constants.FaceWidth - 157,
           x3_rightEyebrow: Constants.FaceWidth - 207,
-    
+
           y1_rightEyebrowUp: 360,
           y2_rightEyebrowUp: 349,
           y3_rightEyebrowUp: 362,
@@ -2329,7 +2329,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 366,
           y3_leftEyeUp: 362,
@@ -2337,13 +2337,13 @@ export default {
           y5_leftEyeUp: 366,
           y6_leftEyeUp: 371,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 394,
           y3_leftEyeDown: 396,
           y4_leftEyeDown: 398,
           y5_leftEyeDown: 393,
           y6_leftEyeDown: 387,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -2351,7 +2351,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 366,
           y3_rightEyeUp: 362,
@@ -2359,44 +2359,44 @@ export default {
           y5_rightEyeUp: 366,
           y6_rightEyeUp: 371,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 394,
           y3_rightEyeDown: 396,
           y4_rightEyeDown: 398,
           y5_rightEyeDown: 393,
           y6_rightEyeDown: 387,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 120,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 352,
           y2_leftEyebrowUp: 349,
           y3_leftEyebrowUp: 335,
           y1_leftEyebrowDown: 354,
           y2_leftEyebrowDown: 355,
           y3_leftEyebrowDown: 345,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 120,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 352,
           y2_rightEyebrowUp: 349,
           y3_rightEyebrowUp: 335,
@@ -2420,7 +2420,7 @@ export default {
           x5_leftEye: 172,
           x6_leftEye: 182,
           x7_leftEye: 188,
-    
+
           y1_leftEyeUp: 384,
           y2_leftEyeUp: 371,
           y3_leftEyeUp: 368,
@@ -2428,13 +2428,13 @@ export default {
           y5_leftEyeUp: 371,
           y6_leftEyeUp: 375,
           y7_leftEyeUp: 384,
-    
+
           y2_leftEyeDown: 392,
           y3_leftEyeDown: 394,
           y4_leftEyeDown: 396,
           y5_leftEyeDown: 391,
           y6_leftEyeDown: 385,
-        
+
           x1_rightEye: Constants.FaceWidth - 116,
           x2_rightEye: Constants.FaceWidth - 126,
           x3_rightEye: Constants.FaceWidth - 142,
@@ -2442,7 +2442,7 @@ export default {
           x5_rightEye: Constants.FaceWidth - 172,
           x6_rightEye: Constants.FaceWidth - 182,
           x7_rightEye: Constants.FaceWidth - 188,
-    
+
           y1_rightEyeUp: 384,
           y2_rightEyeUp: 371,
           y3_rightEyeUp: 368,
@@ -2450,44 +2450,44 @@ export default {
           y5_rightEyeUp: 371,
           y6_rightEyeUp: 375,
           y7_rightEyeUp: 384,
-    
+
           y2_rightEyeDown: 392,
           y3_rightEyeDown: 394,
           y4_rightEyeDown: 396,
           y5_rightEyeDown: 391,
           y6_rightEyeDown: 385,
-    
-    
+
+
           x_leftPupil: 152,
           y_leftPupil: 382,
           r_leftPupil: 7,
           x_leftIris: 152,
           y_leftIris: 382,
           r_leftIris: 17,
-    
+
           x_rightPupil: Constants.FaceWidth - 152,
           y_rightPupil: 382,
           r_rightPupil: 7,
           x_rightIris: Constants.FaceWidth - 152,
           y_rightIris: 382,
           r_rightIris: 17,
-    
-        
+
+
           x1_leftEyebrow: 92,
           x2_leftEyebrow: 140,
           x3_leftEyebrow: 200,
-    
+
           y1_leftEyebrowUp: 355,
           y2_leftEyebrowUp: 324,
           y3_leftEyebrowUp: 347,
           y1_leftEyebrowDown: 357,
           y2_leftEyebrowDown: 330,
           y3_leftEyebrowDown: 357,
-    
+
           x1_rightEyebrow: Constants.FaceWidth - 92,
           x2_rightEyebrow: Constants.FaceWidth - 135,
           x3_rightEyebrow: Constants.FaceWidth - 200,
-    
+
           y1_rightEyebrowUp: 355,
           y2_rightEyebrowUp: 324,
           y3_rightEyebrowUp: 347,

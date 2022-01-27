@@ -3,11 +3,14 @@
 
 #include "State.h"
 
+#include <sound_player/Started.h>
 #include <sound_player/Done.h>
 
 class DancePlayedSongState : public State
 {
+    ros::Subscriber m_songStartedSubscriber;
     ros::Subscriber m_songDoneSubscriber;
+
     std::string m_songPath;
     uint64_t m_songDesireId;
 
@@ -29,6 +32,7 @@ protected:
     void disable() override;
 
 private:
+    void songStartedSubscriberCallback(const sound_player::Started::ConstPtr& msg);
     void songDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg);
 };
 

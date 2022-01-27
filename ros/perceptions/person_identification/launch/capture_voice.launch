@@ -16,7 +16,7 @@
         <param name="channel_count" value="1"/>
         <param name="input_sampling_frequency" value="44100"/>
         <param name="output_sampling_frequency" value="16000"/>
-        <param name="input_frame_sample_count" value="256"/>
+        <param name="input_frame_sample_count" value="2048"/>
 
         <remap from="audio_in" to="audio_signed_16_44100"/>
         <remap from="audio_out" to="audio_signed_16_16000"/>

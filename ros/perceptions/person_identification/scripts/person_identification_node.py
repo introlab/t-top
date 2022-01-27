@@ -117,7 +117,8 @@ class PersonIdentificationNode:
             self._rate.sleep()
 
     def _find_face_voice_descriptor_name(self):
-        if self._voice_descriptor is None or len(self._face_descriptors) == 0:
+        if self._voice_descriptor is None or len(self._face_descriptors) == 0 or \
+                len(self._face_voice_descriptors_by_name) == 0:
             return set()
 
         face_descriptor_index_angle_pairs = [(i, calculate_angle(x[1], self._voice_descriptor[1]))
@@ -140,6 +141,9 @@ class PersonIdentificationNode:
             return set()
 
     def _find_face_descriptor_names(self):
+        if len(self._face_descriptors_by_name) == 0:
+            return set()
+
         names = set()
         for face_descriptor in self._face_descriptors:
             name_distance_pairs = [(x[0], calculate_distance(x[1], face_descriptor[0]))
@@ -152,11 +156,11 @@ class PersonIdentificationNode:
         return names
 
     def _find_voice_descriptor_name(self):
-        if self._voice_descriptor is None:
+        if self._voice_descriptor is None or len(self._voice_descriptors_by_name) == 0:
             return set()
 
         name_distance_pairs = [(x[0], calculate_distance(x[1], self._voice_descriptor[0]))
-                               for x in self._face_descriptors_by_name.items()]
+                               for x in self._voice_descriptors_by_name.items()]
         name, distance = min(name_distance_pairs, key=lambda x: x[1])
 
         if distance <= self._voice_descriptor_threshold:
