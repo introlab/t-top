@@ -114,7 +114,7 @@
     <node pkg="robot_name_detector" type="robot_name_detector_node.py" name="robot_name_detector_node">
         <param name="message_rate" value="10"/>
         <param name="sound_rms_attack" value="0.05"/>
-        <param name="sound_rms_release" value="0.99"/>
+        <param name="sound_rms_release" value="0.95"/>
         <param name="sound_rms_presence_threshold" value="0.03"/>
 
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
