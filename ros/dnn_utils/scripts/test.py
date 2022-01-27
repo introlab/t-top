@@ -9,7 +9,7 @@ import torch
 import rospy
 
 from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor
-from dnn_utils import AudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
+from dnn_utils import AudioDescriptorExtractor, MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
 
 
 def mean_abs_diff(a, b):
@@ -143,6 +143,28 @@ def test_audio_descriptor_extractor():
           mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
 
 
+def test_multiclass_audio_descriptor_extractor():
+    print('----------test_multiclass_audio_descriptor_extractor----------')
+
+    cpu_model = MulticlassAudioDescriptorExtractor(inference_type='cpu')
+    torch_gpu_model = MulticlassAudioDescriptorExtractor(inference_type='torch_gpu')
+    trt_gpu_model = MulticlassAudioDescriptorExtractor(inference_type='trt_gpu')
+
+    x = torch.randn(cpu_model.get_supported_duration(), dtype=torch.float32)
+    cpu_descriptor, cpu_class_probabilities = cpu_model(x)
+    torch_gpu_descriptor, torch_gpu_class_probabilities = torch_gpu_model(x)
+    trt_gpu_descriptor, trt_gpu_class_probabilities = trt_gpu_model(x)
+
+    print('mean(abs(cpu_descriptor - torch_gpu_descriptor)) =',
+          mean_abs_diff(cpu_descriptor, torch_gpu_descriptor))
+    print('mean(abs(cpu_descriptor - trt_gpu_descriptor)) =',
+          mean_abs_diff(cpu_descriptor, trt_gpu_descriptor))
+    print('mean(abs(cpu_class_probabilities - torch_gpu_class_probabilities)) =',
+          mean_abs_diff(cpu_class_probabilities, torch_gpu_class_probabilities))
+    print('mean(abs(cpu_class_probabilities - trt_gpu_class_probabilities)) =',
+          mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
+
+
 def test_voice_descriptor_extractor():
     print('----------test_voice_descriptor_extractor----------')
 
@@ -187,6 +209,7 @@ def main():
     launch_test(test_pose_estimator)
     launch_test(test_face_descriptor_extractor)
     launch_test(test_audio_descriptor_extractor)
+    launch_test(test_multiclass_audio_descriptor_extractor)
     launch_test(test_voice_descriptor_extractor)
     launch_test(test_ttop_keyword_spotter)
 
