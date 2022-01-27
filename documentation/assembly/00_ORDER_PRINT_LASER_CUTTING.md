@@ -17,8 +17,10 @@ In order to assemble the robot, you need to buy the following Items.
 | Intel RealSense D435i                | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/intel-realsense/82635D435IDK5P/9926004)            |
 | Standoff - M2x10mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/wurth-electronics-inc/971100244/9488622)           |
 | Standoff - M2x15mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/w%C3%BCrth-elektronik/971150244/9488640)           |
-| Standoff - M3x10mm                   | 12       | 1                    | 12               | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24337/1532138)                |
+| Standoff - M3x10mm                   | 8        | 1                    | 8                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24337/1532138)                |
 | Standoff - M3x25mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24342/1532143)                |
+| Standoff - M3x10mm - Plastic         | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/25501/1532180)                |
+| M3 Plastic Nuts                      | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/w%C3%BCrth-elektronik/709940300/9488341)           |
 | JST B2P-VH                           | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1-1123723-2/686925) |
 | JST VHR-2N                           | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1744416-2/4730260)  |
 | JST SVH-21T-1.1                      | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1744201-1/4021812)  |
