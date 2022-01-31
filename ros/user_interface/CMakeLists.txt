@@ -185,9 +185,15 @@ catkin_package(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_custom_target(
-    user_interface-install ALL
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/node_modules.md5
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/package.json
     COMMAND /usr/bin/npm install
+    COMMAND tar c ${CMAKE_CURRENT_SOURCE_DIR}/node_modules 2> /dev/null | md5sum > ${CMAKE_CURRENT_BINARY_DIR}/node_modules.md5
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_custom_target(
+    user_interface-install ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/node_modules.md5
+)
