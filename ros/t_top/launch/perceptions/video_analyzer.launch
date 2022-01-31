@@ -1,0 +1,24 @@
+<launch>
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+    <arg name="visualization" default="false"/>
+
+    <!-- Video Analyzer -->
+    <node pkg="video_analyzer" type="video_analyzer_node.py" name="video_analyzer_node">
+        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="confidence_threshold" value="0.70"/>
+        <param name="nms_threshold" value="0.5"/>
+        <param name="person_probability_threshold" value="0.75"/>
+        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="depth_mean_offset" value="2"/>
+
+        <remap from="color_image_raw" to="/camera/color/image_raw"/>
+        <remap from="depth_image_raw" to="/camera/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>
+    </node>
+    <node if="$(arg visualization)" pkg="video_analyzer" name="video_analysis_markers" type="video_analysis_markers_node.py"/>
+
+</launch>

@@ -1,0 +1,21 @@
+<launch>
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+
+    <!-- Robot Name Detector -->
+    <node pkg="robot_name_detector" type="robot_name_detector_node.py" name="robot_name_detector_node">
+        <param name="message_rate" value="10"/>
+        <param name="sound_rms_attack" value="0.05"/>
+        <param name="sound_rms_release" value="0.95"/>
+        <param name="sound_rms_presence_threshold" value="0.03"/>
+
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="robot_name_model_probability_threshold" value="0.1"/>
+        <param name="robot_name_model_interval" value="1600"/>
+        <param name="robot_name_model_analysis_delay" value="10000"/>
+        <param name="robot_name_model_analysis_count" value="3"/>
+
+        <remap from="audio_in" to="audio_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="robot_name_detector/filter_state"/>
+    </node>
+
+</launch>

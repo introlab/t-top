@@ -5,9 +5,7 @@
     <arg name="slam" default="true"/>
     <arg name="simulation" default="false"/>
 
-    <include file="$(find t_top)/launch/opencr.launch"/>
-    <include file="$(find t_top)/launch/actuators.launch"/>
-    <include file="$(find t_top)/launch/sensors.launch"/>
+    <include file="$(find t_top)/launch/platform.launch"/>
 
     <include file="$(find t_top)/launch/perceptions.launch">
         <arg name="language" value="$(arg language)"/>

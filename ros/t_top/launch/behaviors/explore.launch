@@ -1,0 +1,14 @@
+<launch>
+    <arg name="simulation"/>
+
+    <!-- Explore -->
+    <node pkg="explore" type="explore_node.py" name="explore_node">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="explore_frequency" value="0.00833333333"/>
+        <param name="torso_speed_rad_sec" value="0.5"/>
+        <param name="head_speed_rad_sec" value="0.5"/>
+
+        <remap from="pose/filter_state" to="explore/filter_state"/>
+    </node>
+
+</launch>

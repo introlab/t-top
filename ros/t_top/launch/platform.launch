@@ -1,0 +1,7 @@
+<launch>
+
+    <include file="$(find t_top)/launch/platform/opencr.launch"/>
+    <include file="$(find t_top)/launch/platform/actuators.launch"/>
+    <include file="$(find t_top)/launch/platform/sensors.launch"/>
+
+</launch>

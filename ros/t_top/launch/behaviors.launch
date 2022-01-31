@@ -7,81 +7,37 @@
 
     <!-- Emotions -->
     <!-- See user_interface -->
+    <include file="$(find t_top)/launch/behaviors/face.launch"/>
 
     <!-- Talk -->
-    <node pkg="talk" type="talk_node.py" name="talk_node">
-        <param name="language" value="$(arg language)"/>
-        <param name="mouth_signal_gain" value="0.03"/>
-        <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="2048"/>
-
-        <remap from="audio_out" to="audio_float_44100"/>
-        <remap from="audio_out/filter_state" to="talk/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/talk.launch">
+        <arg name="language" value="$(arg language)"/>
+    </include>
 
     <!-- Gesture -->
-    <node pkg="gesture" type="gesture_node.py" name="gesture_node">
-        <param name="simulation" value="$(arg simulation)"/>
-
-        <remap from="pose/filter_state" to="gesture/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/gesture.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
 
     <!-- Face Following -->
-    <node pkg="face_following" type="face_following_node.py" name="face_following_node">
-        <param name="simulation" value="$(arg simulation)"/>
-        <param name="control_frequency" value="30"/>
-        <param name="control_alpha" value="0.2"/>
-        <param name="nose_confidence_threshold" value="0.4"/>
-        <param name="head_enabled" value="true"/>
-        <param name="min_head_pitch_rad" value="-0.35"/>
-        <param name="max_head_pitch_rad" value="0.35"/>
-
-        <remap from="pose/filter_state" to="face_following/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/face_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
 
     <!-- Dance -->
-    <node pkg="dance" type="dance_node.py" name="head_dance_node">
-        <param name="movement_file" value="$(find dance)/head_movements.json"/>
-
-        <remap from="pose/filter_state" to="head_dance/filter_state"/>
-    </node>
-    <node pkg="dance" type="dance_node.py" name="torso_dance_node">
-        <param name="movement_file" value="$(find dance)/torso_movements.json"/>
-
-        <remap from="pose/filter_state" to="torso_dance/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/dance.launch"/>
 
     <!-- Explore -->
-    <node pkg="explore" type="explore_node.py" name="explore_node">
-        <param name="simulation" value="$(arg simulation)"/>
-        <param name="explore_frequency" value="0.00833333333"/>
-        <param name="torso_speed_rad_sec" value="0.5"/>
-        <param name="head_speed_rad_sec" value="0.5"/>
-
-        <remap from="pose/filter_state" to="explore/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/explore.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
 
     <!-- Sound Following -->
-    <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
-        <param name="simulation" value="$(arg simulation)"/>
-        <param name="control_frequency" value="30"/>
-        <param name="control_alpha" value="0.2"/>
-        <param name="head_enabled" value="false"/>
-        <param name="min_head_pitch_rad" value="-0.35"/>
-        <param name="max_head_pitch_rad" value="0.35"/>
-        <param name="min_activity" value="0.1"/>
-
-        <remap from="sst" to="audio_sst"/>
-        <remap from="pose/filter_state" to="sound_following/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/sound_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
 
     <!-- Sound Player -->
-    <node pkg="sound_player" type="sound_player_node.py" name="sound_player_node">
-        <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="2048"/>
-
-        <remap from="audio_out" to="audio_float_44100"/>
-        <remap from="audio_out/filter_state" to="sound_player/filter_state"/>
-    </node>
+    <include file="$(find t_top)/launch/behaviors/sound_player.launch"/>
 
 </launch>

@@ -1,0 +1,31 @@
+<launch>
+
+    <!-- RTAB-Map -->
+    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
+        <remap from="rgb/image" to="/camera/color/image_raw"/>
+        <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
+        <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+
+        <param name="approx_sync" value="true"/>
+    </node>
+    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="rtabmap_filter">
+        <remap from="in" to="rgbd_image"/>
+        <remap from="out" to="rgbd_image_filtered"/>
+        <remap from="filter_state" to="rtabmap/filter_state"/>
+    </node>
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
+        <param name="frame_id" type="string" value="camera_depth_optical_frame"/>
+        <param name="subscribe_depth" type="bool" value="false"/>
+        <param name="subscribe_rgbd" type="bool" value="true"/>
+
+        <param name="queue_size" type="int" value="10"/>
+
+        <param name="RGBD/AngularUpdate" type="string" value="0.01"/>
+        <param name="RGBD/LinearUpdate" type="string" value="0.01"/>
+        <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+
+        <remap from="odom" to="opencr/odom"/>
+        <remap from="rgbd_image" to="rgbd_image_filtered"/>
+    </node>
+
+</launch>
