@@ -97,15 +97,15 @@
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
 | `Speaker (Dayton Audio DMA45-8 1)`   | 4        | ![Fan](images/electronics/Dayton%20Audio%20DMA45-8%201.jpg)                                  |
-| `18 AWG Red Wire Spool`              | 1        | ![18 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `18 AWG Black Wire Spool`            | 1        | ![18 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
-| `18 AWG Ferrule`                     | 8        | ![18 AWG Ferrule](images/electronics/18%20AWG%20ferrule.jpg)                                 |
+| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
+| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
+| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20%20AWG%20ferrule.jpg)                                 |
 
 ### Steps
-1. Cut a `18 AWG red wire` of 15 cm long and a `18 AWG black wire` of 15 cm long.
-2. Cut a `18 AWG red wire` of 20 cm long and a `18 AWG black wire` of 20 cm long.
-3. Cut a `18 AWG red wire` of 40 cm long and a `18 AWG black wire` of 40 cm long.
-4. Cut a `18 AWG red wire` of 60 cm long and a `18 AWG black wire` of 60 cm long.
+1. Cut a `20 AWG red wire` of 15 cm long and a `20 AWG black wire` of 15 cm long.
+2. Cut a `20 AWG red wire` of 20 cm long and a `20 AWG black wire` of 20 cm long.
+3. Cut a `20 AWG red wire` of 35 cm long and a `20 AWG black wire` of 35 cm long.
+4. Cut a `20 AWG red wire` of 52 cm long and a `20 AWG black wire` of 52 cm long.
 5. For each pair, solder the black wire to the biggest tab of a speaker.
 6. For each pair, solder the red wire to the other tab of a speaker.
 
@@ -123,7 +123,7 @@
 
 ![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20speaker%20twist%20heat%20shrink%20tube.jpg)
 
-10. For each wire, crimp a `18 AWG ferrule`.
+10. For each wire, crimp a `20 AWG ferrule`.
 
 ![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20ferrule.jpg)
 
@@ -236,6 +236,7 @@
 
 ![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20JST%20XH.jpg)
 
+TODO power cables
 
 ## H. 19V Power Adapter
 ### Required Parts
@@ -261,7 +262,7 @@ TODO SMBus
 | `Robot Power Connector - Female`     | 1        | ![Robot Power Connector - Female](images/electronics/Robot%20Power%20Connector%20Female.jpg) |
 | `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
 | `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
-| `16 AWG Ferrule`                     | 4        | ![18 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
+| `16 AWG Ferrule`                     | 4        | ![16 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
 | `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST%20VHR-2N.jpg)                                 |
 | `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST%20SVH-21T-1.1.jpg)                   |
 | `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
