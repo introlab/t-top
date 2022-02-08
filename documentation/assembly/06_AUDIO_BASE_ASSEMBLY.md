@@ -10,7 +10,7 @@
 | `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled%20speaker.jpg)                                                   |
 | `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled%20fan.jpg)                                                           |
 | `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro%20usb%20connector.jpg)                                             |
-| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assenbled%20power%20switch.jpg)                                       |
+| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled%20power%20switch.jpg)                                       |
 | `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet%20connector.jpg)                                                 |
 | `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled%20robot%20power%20connector%20female.jpg) |
 | `Assembled LED`                            | 6        | ![Assembled LED](images/electronics/assembled%20LEDs.jpg)                                                          |
@@ -56,7 +56,7 @@
 
 ![Base Audio Power Connector](images/assemblies/06A%20power%20connector.jpg)
 
-9. Install the `assenbled LEDs` with epoxy glue, as shown in the following picture.
+9. Install the `assembled LEDs` with epoxy glue, as shown in the following picture.
 
 ![Base Audio LEDs](images/assemblies/06A%20LEDs.jpg)
 
