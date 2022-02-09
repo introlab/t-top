@@ -1,6 +1,5 @@
 #include "WeatherForecastState.h"
 #include "StateManager.h"
-#include "IdleState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -11,8 +10,10 @@ using namespace std;
 WeatherForecastState::WeatherForecastState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
+    ros::NodeHandle& nodeHandle,
+    std::type_index nextStateType) :
         State(language, stateManager, desireSet, nodeHandle),
+        m_nextStateType(nextStateType),
         m_talkDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
@@ -83,11 +84,6 @@ string WeatherForecastState::generateEnglishText(bool ok, const cloud_data::Loca
 
         ss << "Tomorrow, the humidity will be " << srv.response.humidity_percent << "%, ";
         ss << "the wind speed will be " << srv.response.wind_speed_kph << " kilometers per hour,";
-
-        if (srv.response.wind_gust_kph != -1)
-        {
-            ss << "and the wind gust speed will be " << srv.response.wind_gust_kph << " kilometers per hour. ";
-        }
     }
     else
     {
@@ -118,11 +114,6 @@ string WeatherForecastState::generateFrenchText(bool ok, const cloud_data::Local
 
         ss << "Demain, l'humidité sera de " << srv.response.humidity_percent << "%, ";
         ss << "la vitesse du vent sera de " << srv.response.wind_speed_kph << " kilomètres par heure, ";
-
-        if (srv.response.wind_gust_kph != -1)
-        {
-            ss << "et la vitesse des rafales de vent sera de " << srv.response.wind_gust_kph << " kilomètres par heure. ";
-        }
     }
     else
     {
@@ -139,5 +130,5 @@ void WeatherForecastState::talkDoneSubscriberCallback(const talk::Done::ConstPtr
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo(m_nextStateType);
 }

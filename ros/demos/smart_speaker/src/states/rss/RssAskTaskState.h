@@ -1,25 +1,25 @@
-#ifndef SMART_SPEAKER_STATES_ASK_TASK_STATE_H
-#define SMART_SPEAKER_STATES_ASK_TASK_STATE_H
+#ifndef SMART_SPEAKER_STATES_RSS_RSS_ASK_TASK_STATE_H
+#define SMART_SPEAKER_STATES_RSS_RSS_ASK_TASK_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <talk/Done.h>
 
-class AskTaskState : public State
+class RssAskTaskState : public State
 {
     ros::Subscriber m_talkDoneSubscriber;
 
     uint64_t m_talkDesireId;
 
 public:
-    AskTaskState(Language language,
+    RssAskTaskState(Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
-    ~AskTaskState() override = default;
+    ~RssAskTaskState() override = default;
 
-    DECLARE_NOT_COPYABLE(AskTaskState);
-    DECLARE_NOT_MOVABLE(AskTaskState);
+    DECLARE_NOT_COPYABLE(RssAskTaskState);
+    DECLARE_NOT_MOVABLE(RssAskTaskState);
 
 protected:
     std::type_index type() const override;
@@ -34,9 +34,9 @@ private:
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
 };
 
-inline std::type_index AskTaskState::type() const
+inline std::type_index RssAskTaskState::type() const
 {
-    return std::type_index(typeid(AskTaskState));
+    return std::type_index(typeid(RssAskTaskState));
 }
 
 #endif

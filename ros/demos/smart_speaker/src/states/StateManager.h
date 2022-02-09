@@ -26,10 +26,16 @@ public:
 
     template <class T>
     void switchTo(const std::string& parameter = "");
+    void switchTo(std::type_index type, const std::string& parameter = "");
 };
 
 template <class T>
 void StateManager::switchTo(const std::string& parameter)
+{
+    switchTo(std::type_index(typeid(T)), parameter);
+}
+
+inline void StateManager::switchTo(std::type_index stateType, const std::string& parameter)
 {
     if (m_currentState != nullptr)
     {
@@ -37,7 +43,7 @@ void StateManager::switchTo(const std::string& parameter)
         m_currentState->disable();
     }
 
-    m_currentState = m_states.at(std::type_index(typeid(T))).get();
+    m_currentState = m_states.at(stateType).get();
     ROS_INFO("Enabling %s (%s)", m_currentState->type().name(), parameter.c_str());
     m_currentState->enable(parameter);
 }

@@ -1,10 +1,5 @@
 #include "ValidTaskState.h"
 #include "StateManager.h"
-#include "CurrentWeatherState.h"
-#include "WeatherForecastState.h"
-#include "StoryState.h"
-#include "DanceState.h"
-#include "DancePlayedSongState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -81,7 +76,10 @@ void ValidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
     }
 
     m_talkDone = true;
-    switchState();
+    if (m_talkDone && m_gestureDone)
+    {
+        switchState(m_task);
+    }
 }
 
 void ValidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
@@ -92,32 +90,8 @@ void ValidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr
     }
 
     m_gestureDone = true;
-    switchState();
-}
-
-void ValidTaskState::switchState()
-{
     if (m_talkDone && m_gestureDone)
     {
-        if (m_task == CURRENT_WEATHER_TASK)
-        {
-            m_stateManager.switchTo<CurrentWeatherState>();
-        }
-        else if (m_task == WEATHER_FORECAST_TASK)
-        {
-            m_stateManager.switchTo<WeatherForecastState>();
-        }
-        else if (m_task == STORY_TASK)
-        {
-            m_stateManager.switchTo<StoryState>();
-        }
-        else if (m_task == DANCE_TASK)
-        {
-            m_stateManager.switchTo<DanceState>();
-        }
-        else if (m_task == DANCE_PLAYED_SONG_TASK)
-        {
-            m_stateManager.switchTo<DancePlayedSongState>();
-        }
+        switchState(m_task);
     }
 }

@@ -6,10 +6,10 @@ import numpy as np
 
 import rospy
 import tf
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, Point, Vector3
 from video_analyzer.msg import VideoAnalysis
 from audio_analyzer.msg import AudioAnalysis
-from person_identification.msg import PersonNames
+from person_identification.msg import PersonNames, PersonName
 
 import person_identification
 
@@ -20,17 +20,32 @@ PERSON_POSE_NOSE_INDEX = 0
 def calculate_distance(a, b):
     return np.linalg.norm(a - b)
 
+
 def calculate_angle(a, b):
     return np.arccos(np.clip(np.dot(a, b), -1.0, 1.0))
+
+
+class FaceDescriptorData:
+    def __init__(self, descriptor, position, direction):
+        self.descriptor = descriptor
+        self.position = position
+        self.direction = direction
+
+
+class VoiceDescriptorData:
+    def __init__(self, descriptor, direction):
+        self.descriptor = descriptor
+        self.direction = direction
+
 
 class PersonIdentificationNode:
     def __init__(self):
         self._face_descriptor_threshold = rospy.get_param('~face_descriptor_threshold')
         self._voice_descriptor_threshold = rospy.get_param('~voice_descriptor_threshold')
         self._face_voice_descriptor_threshold = rospy.get_param('~face_voice_descriptor_threshold')
-        self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold') # 0.4
-        self._direction_frame = rospy.get_param('~direction_frame') # odas
-        self._direction_angle_threshold_rad = rospy.get_param('~direction_angle_threshold_rad') #0.174533
+        self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
+        self._direction_frame = rospy.get_param('~direction_frame')
+        self._direction_angle_threshold_rad = rospy.get_param('~direction_angle_threshold_rad')
         self._ignore_direction_z = rospy.Rate(rospy.get_param('~ignore_direction_z'))
         self._rate = rospy.Rate(rospy.get_param('~search_frequency'))
 
@@ -40,8 +55,8 @@ class PersonIdentificationNode:
         self._load_descriptors()
 
         self._descriptors_lock = threading.Lock()
-        self._face_descriptors = []
-        self._voice_descriptor = None
+        self._face_descriptor_data = []
+        self._voice_descriptor_data = None
         self._person_name_pub = rospy.Publisher('person_names', PersonNames, queue_size=5)
 
         self._tf_listener = tf.TransformListener()
@@ -65,11 +80,11 @@ class PersonIdentificationNode:
                         or object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < self._nose_confidence_threshold:
                     continue
 
-                direction = self._get_face_direction(object.person_pose[PERSON_POSE_NOSE_INDEX], msg.header)
+                position, direction = self._get_face_position_and_direction(object.person_pose[PERSON_POSE_NOSE_INDEX], msg.header)
                 if np.isfinite(direction).all():
-                    self._face_descriptors.append((np.array(object.face_descriptor), direction))
+                    self._face_descriptor_data.append(FaceDescriptorData(np.array(object.face_descriptor), position, direction))
 
-    def _get_face_direction(self, point, header):
+    def _get_face_position_and_direction(self, point, header):
         temp_in_point = PointStamped()
         temp_in_point.header = header
         temp_in_point.point.x = point.x
@@ -78,12 +93,13 @@ class PersonIdentificationNode:
 
         odas_point = self._tf_listener.transformPoint(self._direction_frame, temp_in_point)
 
-        direction = np.array([odas_point.point.x, odas_point.point.y, odas_point.point.z])
+        position = np.array([odas_point.point.x, odas_point.point.y, odas_point.point.z])
+        direction = position.copy()
         if self._ignore_direction_z:
             direction[2] = 0
 
         direction /= np.linalg.norm(direction)
-        return direction
+        return position, direction
 
     def _audio_analysis_cb(self, msg):
         if msg.header.frame_id != self._direction_frame:
@@ -100,78 +116,105 @@ class PersonIdentificationNode:
         voice_direction /= np.linalg.norm(voice_direction)
         if np.isfinite(voice_direction).all():
             with self._descriptors_lock:
-                self._voice_descriptor = (np.array(msg.voice_descriptor), voice_direction)
+                self._voice_descriptor_data = VoiceDescriptorData(np.array(msg.voice_descriptor), voice_direction)
 
     def run(self):
         while not rospy.is_shutdown():
-            names = set()
             with self._descriptors_lock:
-                names = names.union(self._find_face_voice_descriptor_name())
-                names = names.union(self._find_face_descriptor_names())
-                names = names.union(self._find_voice_descriptor_name())
+                names = []
+                names.extend(self._find_face_voice_descriptor_name())
+                names.extend(self._find_voice_descriptor_name())
+                names.extend(self._find_face_descriptor_names())
 
-                self._face_descriptors.clear()
-                self._voice_descriptor = None
+                self._face_descriptor_data.clear()
+                self._voice_descriptor_data = None
 
-            self._publish_names(list(names))
+            self._publish_names(names)
             self._rate.sleep()
 
     def _find_face_voice_descriptor_name(self):
-        if self._voice_descriptor is None or len(self._face_descriptors) == 0 or \
+        if self._voice_descriptor_data is None or len(self._face_descriptor_data) == 0 or \
                 len(self._face_voice_descriptors_by_name) == 0:
-            return set()
+            return []
 
-        face_descriptor_index_angle_pairs = [(i, calculate_angle(x[1], self._voice_descriptor[1]))
-                                             for i, x in enumerate(self._face_descriptors)]
+        face_descriptor_index_angle_pairs = [(i, calculate_angle(x.direction, self._voice_descriptor_data.direction))
+                                             for i, x in enumerate(self._face_descriptor_data)]
         face_descriptor_index, angle = min(face_descriptor_index_angle_pairs, key=lambda x: x[1])
         if angle > self._direction_angle_threshold_rad:
-            return set()
+            return []
 
-        face_descriptor = self._face_descriptors[face_descriptor_index]
-        descriptor = np.concatenate([face_descriptor[0], self._voice_descriptor[0]])
+        face_descriptor_data = self._face_descriptor_data[face_descriptor_index]
+        descriptor = np.concatenate([face_descriptor_data.descriptor, self._voice_descriptor_data.descriptor])
 
         name_distance_pairs = [(x[0], calculate_distance(x[1], descriptor))
                                for x in self._face_voice_descriptors_by_name.items()]
         name, distance = min(name_distance_pairs, key=lambda x: x[1])
         if distance <= self._face_voice_descriptor_threshold:
-            self._voice_descriptor = None
-            del self._face_descriptors[face_descriptor_index]
-            return set([name])
+            self._voice_descriptor_data = None
+            del self._face_descriptor_data[face_descriptor_index]
+            return [self._create_person_name(name,
+                                             position=face_descriptor_data.position,
+                                             direction=face_descriptor_data.direction)]
         else:
-            return set()
+            return []
 
     def _find_face_descriptor_names(self):
         if len(self._face_descriptors_by_name) == 0:
-            return set()
+            return []
 
-        names = set()
-        for face_descriptor in self._face_descriptors:
-            name_distance_pairs = [(x[0], calculate_distance(x[1], face_descriptor[0]))
+        names = []
+        for face_descriptor_data in self._face_descriptor_data:
+            name_distance_pairs = [(x[0], calculate_distance(x[1], face_descriptor_data.descriptor))
                                    for x in self._face_descriptors_by_name.items()]
             name, distance = min(name_distance_pairs, key=lambda x: x[1])
 
             if distance <= self._face_descriptor_threshold:
-                names.add(name)
+                names.append(self._create_person_name(name,
+                                                      position=face_descriptor_data.position,
+                                                      direction=face_descriptor_data.direction))
 
-        return names
+        return names # filter names
 
     def _find_voice_descriptor_name(self):
-        if self._voice_descriptor is None or len(self._voice_descriptors_by_name) == 0:
-            return set()
+        if self._voice_descriptor_data is None or len(self._voice_descriptors_by_name) == 0:
+            return []
 
-        name_distance_pairs = [(x[0], calculate_distance(x[1], self._voice_descriptor[0]))
+        name_distance_pairs = [(x[0], calculate_distance(x[1], self._voice_descriptor_data.descriptor))
                                for x in self._voice_descriptors_by_name.items()]
         name, distance = min(name_distance_pairs, key=lambda x: x[1])
 
         if distance <= self._voice_descriptor_threshold:
-            return set([name])
+            return [self._create_person_name(name,
+                                             direction=self._voice_descriptor_data.direction)]
         else:
-            return set()
+            return []
+
+    def _create_person_name(self, name, position=None, direction=None):
+        person_name = PersonName()
+        person_name.name = name
+        person_name.frame_id = self._direction_frame
+        if position is not None:
+            person_name.position.append(Point(x=position[0], y=position[1], z=position[2]))
+        if direction is not None:
+            person_name.direction.append(Vector3(x=direction[0], y=direction[1], z=direction[2]))
+
+        return person_name
 
     def _publish_names(self, names):
         msg = PersonNames()
-        msg.names = names
+        msg.names = self._filter_names(names)
         self._person_name_pub.publish(msg)
+
+    def _filter_names(self, names):
+        inserted_names = set()
+        filtered_names = []
+
+        for name in reversed(names):
+            if name.name not in inserted_names:
+                filtered_names.append(name)
+                inserted_names.add(name.name)
+
+        return filtered_names
 
 
 def main():

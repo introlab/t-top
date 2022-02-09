@@ -1,6 +1,5 @@
 #include "DanceState.h"
 #include "StateManager.h"
-#include "IdleState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -9,8 +8,10 @@ using namespace std;
 DanceState::DanceState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle,
+    type_index nextStateType) :
+        State(language, stateManager, desireSet, nodeHandle),
+        m_nextStateType(nextStateType)
 {
 }
 
@@ -50,5 +51,5 @@ void DanceState::timeoutTimerCallback(const ros::TimerEvent& event)
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo(m_nextStateType);
 }

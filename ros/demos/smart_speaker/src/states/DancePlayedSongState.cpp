@@ -1,6 +1,5 @@
 #include "DancePlayedSongState.h"
 #include "StateManager.h"
-#include "IdleState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -10,8 +9,10 @@ DancePlayedSongState::DancePlayedSongState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
+    type_index nextStateType,
     string songPath) :
         State(language, stateManager, desireSet, nodeHandle),
+        m_nextStateType(nextStateType),
         m_songPath(move(songPath)),
         m_songDesireId(MAX_DESIRE_ID)
 {
@@ -62,5 +63,5 @@ void DancePlayedSongState::songDoneSubscriberCallback(const sound_player::Done::
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo(m_nextStateType);
 }

@@ -1,25 +1,26 @@
-#include "WaitPersonIdentificationState.h"
-#include "StateManager.h"
-#include "AskTaskState.h"
-#include "IdleState.h"
+#include "RssWaitPersonIdentificationState.h"
+#include "RssAskTaskState.h"
+#include "RssIdleState.h"
 
-#include "../StringUtils.h"
+#include "../StateManager.h"
+
+#include "../../StringUtils.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
 using namespace std;
 
-WaitPersonIdentificationState::WaitPersonIdentificationState(Language language,
+RssWaitPersonIdentificationState::RssWaitPersonIdentificationState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
         State(language, stateManager, desireSet, nodeHandle)
 {
     m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
-        &WaitPersonIdentificationState::personNamesSubscriberCallback, this);
+        &RssWaitPersonIdentificationState::personNamesSubscriberCallback, this);
 }
 
-void WaitPersonIdentificationState::enable(const string& parameter)
+void RssWaitPersonIdentificationState::enable(const string& parameter)
 {
     State::enable(parameter);
 
@@ -41,10 +42,10 @@ void WaitPersonIdentificationState::enable(const string& parameter)
 
     constexpr bool oneshot = true;
     m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S),
-        &WaitPersonIdentificationState::timeoutTimerCallback, this, oneshot);
+        &RssWaitPersonIdentificationState::timeoutTimerCallback, this, oneshot);
 }
 
-void WaitPersonIdentificationState::disable()
+void RssWaitPersonIdentificationState::disable()
 {
     State::disable();
 
@@ -54,7 +55,7 @@ void WaitPersonIdentificationState::disable()
     }
 }
 
-void WaitPersonIdentificationState::personNamesSubscriberCallback(
+void RssWaitPersonIdentificationState::personNamesSubscriberCallback(
     const person_identification::PersonNames::ConstPtr& msg)
 {
     if (!enabled() || msg->names.size() == 0)
@@ -62,16 +63,20 @@ void WaitPersonIdentificationState::personNamesSubscriberCallback(
         return;
     }
 
-    auto names = mergeStrings(msg->names, ", ");
-    m_stateManager.switchTo<AskTaskState>(names);
+    vector<string> names(msg->names.size());
+    transform(msg->names.begin(), msg->names.end(), back_inserter(names),
+        [](const person_identification::PersonName& name) { return name.name; });
+
+    auto mergedNames = mergeNames(names, getAndWord());
+    m_stateManager.switchTo<RssAskTaskState>(mergedNames);
 }
 
-void WaitPersonIdentificationState::timeoutTimerCallback(const ros::TimerEvent& event)
+void RssWaitPersonIdentificationState::timeoutTimerCallback(const ros::TimerEvent& event)
 {
     if (!enabled())
     {
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo<RssIdleState>();
 }

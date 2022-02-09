@@ -1,15 +1,15 @@
 #include "states/StateManager.h"
 
-#include "states/IdleState.h"
-#include "states/WaitPersonIdentificationState.h"
-#include "states/AskTaskState.h"
-#include "states/WaitAnswerState.h"
-#include "states/ValidTaskState.h"
+#include "states/rss/RssIdleState.h"
+#include "states/rss/RssWaitPersonIdentificationState.h"
+#include "states/rss/RssAskTaskState.h"
+#include "states/rss/RssWaitAnswerState.h"
+#include "states/rss/RssValidTaskState.h"
 #include "states/InvalidTaskState.h"
 
 #include "states/CurrentWeatherState.h"
 #include "states/WeatherForecastState.h"
-#include "states/StoryState.h"
+#include "states/rss/RssStoryState.h"
 #include "states/DanceState.h"
 #include "states/DancePlayedSongState.h"
 
@@ -55,21 +55,22 @@ void startNode(Language language,
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
     StateManager stateManager;
-    stateManager.addState(make_unique<IdleState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WaitPersonIdentificationState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<AskTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WaitAnswerState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<ValidTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle));
+    type_index idleStateType(typeid(RssIdleState));
 
-    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<StoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath,
-        frenchStoryPath));
-    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, songPath));
+    stateManager.addState(make_unique<RssIdleState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<RssWaitPersonIdentificationState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<RssAskTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<RssWaitAnswerState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<RssValidTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
 
-    stateManager.switchTo<IdleState>();
+    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
+    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, songPath));
+
+    stateManager.switchTo<RssIdleState>();
 
     ros::spin();
 }

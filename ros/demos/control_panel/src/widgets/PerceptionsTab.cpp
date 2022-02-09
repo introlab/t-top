@@ -118,10 +118,14 @@ void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::Empty::
 
 void PerceptionsTab::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
 {
-    QString names = mergeStdStrings(msg->names);
-    invokeLater([this, names]()
+    vector<string> names(msg->names.size());
+    transform(msg->names.begin(), msg->names.end(), back_inserter(names),
+        [](const person_identification::PersonName& name) { return name.name; });
+
+    QString mergedNames = mergeStdStrings(names);
+    invokeLater([this, mergedNames]()
     {
-        m_identifiedPersonsLineEdit->setText(names);
+        m_identifiedPersonsLineEdit->setText(mergedNames);
     });
 }
 

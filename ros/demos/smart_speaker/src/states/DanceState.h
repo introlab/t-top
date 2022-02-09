@@ -7,13 +7,16 @@ constexpr double DANCE_TIMEOUT_S = 60;
 
 class DanceState : public State
 {
+    std::type_index m_nextStateType;
+
     ros::Timer m_timeoutTimer;
 
 public:
     DanceState(Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        ros::NodeHandle& nodeHandle,
+        std::type_index nextStateType);
     ~DanceState() override = default;
 
     DECLARE_NOT_COPYABLE(DanceState);

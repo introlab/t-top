@@ -1,10 +1,11 @@
-#include "WaitAnswerState.h"
-#include "StateManager.h"
-#include "IdleState.h"
-#include "ValidTaskState.h"
-#include "InvalidTaskState.h"
+#include "RssWaitAnswerState.h"
+#include "RssIdleState.h"
+#include "RssValidTaskState.h"
 
-#include "../StringUtils.h"
+#include "../StateManager.h"
+#include "../InvalidTaskState.h"
+
+#include "../../StringUtils.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -24,14 +25,14 @@ static const string FRENCH_STORY_WORD = "histoire";
 static const string FRENCH_DANCE_WORD = "danses";
 static const string FRENCH_SONG_WORD = "chanson";
 
-WaitAnswerState::WaitAnswerState(Language language,
+RssWaitAnswerState::RssWaitAnswerState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
         State(language, stateManager, desireSet, nodeHandle)
 {
     m_speechToTextSubscriber = nodeHandle.subscribe("speech_to_text/transcript", 1,
-        &WaitAnswerState::speechToTextSubscriberCallback, this);
+        &RssWaitAnswerState::speechToTextSubscriberCallback, this);
 
     switch (language)
     {
@@ -52,7 +53,7 @@ WaitAnswerState::WaitAnswerState(Language language,
     }
 }
 
-void WaitAnswerState::enable(const string& parameter)
+void RssWaitAnswerState::enable(const string& parameter)
 {
     State::enable(parameter);
 
@@ -71,10 +72,10 @@ void WaitAnswerState::enable(const string& parameter)
 
     constexpr bool oneshot = true;
     m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S),
-        &WaitAnswerState::timeoutTimerCallback, this, oneshot);
+        &RssWaitAnswerState::timeoutTimerCallback, this, oneshot);
 }
 
-void WaitAnswerState::disable()
+void RssWaitAnswerState::disable()
 {
     State::disable();
 
@@ -84,7 +85,7 @@ void WaitAnswerState::disable()
     }
 }
 
-void WaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg)
+void RssWaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg)
 {
     if (!enabled())
     {
@@ -127,12 +128,12 @@ void WaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::Con
     }
 }
 
-void WaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
+void RssWaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
 {
     if (!enabled())
     {
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo<RssIdleState>();
 }

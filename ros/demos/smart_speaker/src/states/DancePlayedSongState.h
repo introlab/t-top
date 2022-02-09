@@ -8,6 +8,8 @@
 
 class DancePlayedSongState : public State
 {
+    std::type_index m_nextStateType;
+
     ros::Subscriber m_songStartedSubscriber;
     ros::Subscriber m_songDoneSubscriber;
 
@@ -19,6 +21,7 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
+        std::type_index nextStateType,
         std::string songPath);
     ~DancePlayedSongState() override = default;
 

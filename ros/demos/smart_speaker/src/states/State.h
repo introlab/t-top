@@ -53,6 +53,8 @@ protected:
     virtual void enable(const std::string& parameter);
     virtual void disable();
 
+    std::string getAndWord();
+
     friend StateManager;
 };
 
@@ -64,6 +66,19 @@ inline bool State::enabled() const
 inline Language State::language() const
 {
     return m_language;
+}
+
+inline std::string State::getAndWord()
+{
+    switch (language())
+    {
+    case Language::ENGLISH:
+        return "and";
+    case Language::FRENCH:
+        return "et";
+    }
+
+    return "";
 }
 
 #endif

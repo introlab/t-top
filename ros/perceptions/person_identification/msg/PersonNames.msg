@@ -1,1 +1,1 @@
-string[] names
+person_identification/PersonName[] names

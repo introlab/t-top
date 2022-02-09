@@ -8,6 +8,8 @@
 
 class InvalidTaskState : public State
 {
+    std::type_index m_nextStateType;
+
     ros::Subscriber m_talkDoneSubscriber;
     ros::Subscriber m_gestureDoneSubscriber;
 
@@ -20,7 +22,8 @@ public:
     InvalidTaskState(Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        ros::NodeHandle& nodeHandle,
+        std::type_index nextStateType);
     ~InvalidTaskState() override = default;
 
     DECLARE_NOT_COPYABLE(InvalidTaskState);

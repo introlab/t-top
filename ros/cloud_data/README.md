@@ -7,6 +7,7 @@ This node gets data location, the current local weather and the local weather fo
 
 #### Parameters
  - `language` (string): The language for the weather description (en or fr).
+ - `timeout_s` (double): The request timeout in seconds.
 
 #### Services
  - `cloud_data/location` ([cloud_data/Location](srv/Location.srv)): The service to get the location from the IP address.

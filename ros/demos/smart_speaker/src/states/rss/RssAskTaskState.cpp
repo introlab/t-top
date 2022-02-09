@@ -1,6 +1,7 @@
-#include "AskTaskState.h"
-#include "StateManager.h"
-#include "WaitAnswerState.h"
+#include "RssAskTaskState.h"
+#include "RssWaitAnswerState.h"
+
+#include "../StateManager.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -8,7 +9,7 @@
 
 using namespace std;
 
-AskTaskState::AskTaskState(Language language,
+RssAskTaskState::RssAskTaskState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
@@ -16,10 +17,10 @@ AskTaskState::AskTaskState(Language language,
         m_talkDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &AskTaskState::talkDoneSubscriberCallback, this);
+        &RssAskTaskState::talkDoneSubscriberCallback, this);
 }
 
-void AskTaskState::enable(const string& parameter)
+void RssAskTaskState::enable(const string& parameter)
 {
     State::enable(parameter);
 
@@ -38,13 +39,13 @@ void AskTaskState::enable(const string& parameter)
     m_desireSet->addDesire(move(talkDesire));
 }
 
-void AskTaskState::disable()
+void RssAskTaskState::disable()
 {
     State::disable();
     m_talkDesireId = MAX_DESIRE_ID;
 }
 
-string AskTaskState::generateText(const string& personName)
+string RssAskTaskState::generateText(const string& personName)
 {
     switch (language())
     {
@@ -57,7 +58,7 @@ string AskTaskState::generateText(const string& personName)
     return "";
 }
 
-string AskTaskState::generateEnglishText(const string& personName)
+string RssAskTaskState::generateEnglishText(const string& personName)
 {
     stringstream ss;
     ss << "Hi " << personName << ", what can I do for you? ";
@@ -67,7 +68,7 @@ string AskTaskState::generateEnglishText(const string& personName)
     return ss.str();
 }
 
-string AskTaskState::generateFrenchText(const string& personName)
+string RssAskTaskState::generateFrenchText(const string& personName)
 {
     stringstream ss;
     ss << "Bonjour " << personName << ", qu'est-ce que je peux faire pour vous? ";
@@ -77,12 +78,12 @@ string AskTaskState::generateFrenchText(const string& personName)
     return ss.str();
 }
 
-void AskTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+void RssAskTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 {
     if (!enabled() || msg->id != m_talkDesireId)
     {
         return;
     }
 
-    m_stateManager.switchTo<WaitAnswerState>();
+    m_stateManager.switchTo<RssWaitAnswerState>();
 }
