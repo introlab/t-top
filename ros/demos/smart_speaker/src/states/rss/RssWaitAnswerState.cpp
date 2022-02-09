@@ -104,23 +104,23 @@ void RssWaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::
 
     if (weather && !forecast && !story && !dance && !song)
     {
-        m_stateManager.switchTo<ValidTaskState>(CURRENT_WEATHER_TASK);
+        m_stateManager.switchTo<RssValidTaskState>(CURRENT_WEATHER_TASK);
     }
     else if (forecast && !story && !dance && !song)
     {
-        m_stateManager.switchTo<ValidTaskState>(WEATHER_FORECAST_TASK);
+        m_stateManager.switchTo<RssValidTaskState>(WEATHER_FORECAST_TASK);
     }
     else if (!weather && !forecast && story && !dance && !song)
     {
-        m_stateManager.switchTo<ValidTaskState>(STORY_TASK);
+        m_stateManager.switchTo<RssValidTaskState>(STORY_TASK);
     }
     else if (!weather && !forecast && !story && dance && !song)
     {
-        m_stateManager.switchTo<ValidTaskState>(DANCE_TASK);
+        m_stateManager.switchTo<RssValidTaskState>(DANCE_TASK);
     }
     else if (!weather && !forecast && !story && dance && song)
     {
-        m_stateManager.switchTo<ValidTaskState>(DANCE_PLAYED_SONG_TASK);
+        m_stateManager.switchTo<RssValidTaskState>(DANCE_PLAYED_SONG_TASK);
     }
     else
     {

@@ -68,7 +68,7 @@ void startNode(Language language,
     stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, idleStateType));
     stateManager.addState(make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
     stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, idleStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, songPath));
+    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, vector<string>{songPath}));
 
     stateManager.switchTo<RssIdleState>();
 

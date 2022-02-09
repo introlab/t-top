@@ -10,10 +10,10 @@ DancePlayedSongState::DancePlayedSongState(Language language,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     type_index nextStateType,
-    string songPath) :
+    vector<std::string> songPaths) :
         State(language, stateManager, desireSet, nodeHandle),
         m_nextStateType(nextStateType),
-        m_songPath(move(songPath)),
+        m_songPaths(move(songPaths)),
         m_songDesireId(MAX_DESIRE_ID)
 {
     m_songStartedSubscriber = nodeHandle.subscribe("sound_player/started", 1,
@@ -26,8 +26,10 @@ void DancePlayedSongState::enable(const string& parameter)
 {
     State::enable(parameter);
 
+    size_t songIndex = atoi(parameter.c_str());
+
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
-    auto songDesire = make_unique<PlaySoundDesire>(m_songPath);
+    auto songDesire = make_unique<PlaySoundDesire>(m_songPaths.at(songIndex));
     m_songDesireId = songDesire->id();
 
     m_desireIds.emplace_back(faceAnimationDesire->id());

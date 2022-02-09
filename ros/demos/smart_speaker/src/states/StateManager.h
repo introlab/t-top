@@ -43,8 +43,8 @@ inline void StateManager::switchTo(std::type_index stateType, const std::string&
         m_currentState->disable();
     }
 
+    ROS_INFO("Enabling %s (%s)", stateType.name(), parameter.c_str());
     m_currentState = m_states.at(stateType).get();
-    ROS_INFO("Enabling %s (%s)", m_currentState->type().name(), parameter.c_str());
     m_currentState->enable(parameter);
 }
 

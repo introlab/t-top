@@ -13,7 +13,7 @@ class DancePlayedSongState : public State
     ros::Subscriber m_songStartedSubscriber;
     ros::Subscriber m_songDoneSubscriber;
 
-    std::string m_songPath;
+    std::vector<std::string> m_songPaths;
     uint64_t m_songDesireId;
 
 public:
@@ -22,7 +22,7 @@ public:
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         std::type_index nextStateType,
-        std::string songPath);
+        std::vector<std::string> songPaths);
     ~DancePlayedSongState() override = default;
 
     DECLARE_NOT_COPYABLE(DancePlayedSongState);

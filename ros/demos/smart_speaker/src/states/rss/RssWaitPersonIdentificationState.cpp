@@ -63,7 +63,7 @@ void RssWaitPersonIdentificationState::personNamesSubscriberCallback(
         return;
     }
 
-    vector<string> names(msg->names.size());
+    vector<string> names;
     transform(msg->names.begin(), msg->names.end(), back_inserter(names),
         [](const person_identification::PersonName& name) { return name.name; });
 

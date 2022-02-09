@@ -41,6 +41,6 @@ void RssValidTaskState::switchState(const string& task)
     }
     else if (task == DANCE_PLAYED_SONG_TASK)
     {
-        m_stateManager.switchTo<DancePlayedSongState>();
+        m_stateManager.switchTo<DancePlayedSongState>("0"); // First song
     }
 }
