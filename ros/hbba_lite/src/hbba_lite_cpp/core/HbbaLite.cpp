@@ -71,9 +71,11 @@ void HbbaLite::run()
     {
         if (m_pendingDesiresSemaphore.tryAcquireFor(SEMAPHORE_WAIT_DURATION))
         {
-            lock_guard<mutex> lock(m_pendingDesiresMutex);
             vector<unique_ptr<Desire>> desires;
-            swap(m_pendingDesires, desires);
+            {
+                lock_guard<mutex> lock(m_pendingDesiresMutex);
+                swap(m_pendingDesires, desires);
+            }
             updateStrategies(move(desires));
         }
     }

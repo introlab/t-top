@@ -6,7 +6,8 @@
 
 using namespace std;
 
-RosFilterPool::RosFilterPool(ros::NodeHandle& nodeHandle) : m_nodeHandle(nodeHandle)
+RosFilterPool::RosFilterPool(ros::NodeHandle& nodeHandle, bool waitForService) :
+        m_nodeHandle(nodeHandle), m_waitForService(waitForService)
 {
 }
 
