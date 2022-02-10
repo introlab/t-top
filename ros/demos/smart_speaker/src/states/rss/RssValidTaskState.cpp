@@ -1,4 +1,5 @@
 #include "RssValidTaskState.h"
+#include "RssIdleState.h"
 #include "RssStoryState.h"
 
 #include "../StateManager.h"
@@ -42,5 +43,10 @@ void RssValidTaskState::switchState(const string& task)
     else if (task == DANCE_PLAYED_SONG_TASK)
     {
         m_stateManager.switchTo<DancePlayedSongState>("0"); // First song
+    }
+    else
+    {
+        ROS_ERROR_STREAM("Invalid task (" << task << ")");
+        m_stateManager.switchTo<RssIdleState>();
     }
 }

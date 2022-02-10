@@ -146,6 +146,8 @@ add_executable(${PROJECT_NAME}_rss_node
   src/StringUtils.cpp
   src/states/State.cpp
   src/states/StateManager.cpp
+  src/states/AskTaskState.cpp
+  src/states/WaitAnswerState.cpp
   src/states/ValidTaskState.cpp
   src/states/InvalidTaskState.cpp
   src/states/CurrentWeatherState.cpp

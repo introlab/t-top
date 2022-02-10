@@ -13,49 +13,8 @@ RssAskTaskState::RssAskTaskState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_talkDesireId(MAX_DESIRE_ID)
+        AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &RssAskTaskState::talkDoneSubscriberCallback, this);
-}
-
-void RssAskTaskState::enable(const string& parameter)
-{
-    State::enable(parameter);
-
-    auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
-    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
-    auto talkDesire = make_unique<TalkDesire>(generateText(parameter));
-    m_talkDesireId = talkDesire->id();
-
-    m_desireIds.emplace_back(faceFollowingDesire->id());
-    m_desireIds.emplace_back(faceAnimationDesire->id());
-    m_desireIds.emplace_back(talkDesire->id());
-
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->addDesire(move(faceFollowingDesire));
-    m_desireSet->addDesire(move(faceAnimationDesire));
-    m_desireSet->addDesire(move(talkDesire));
-}
-
-void RssAskTaskState::disable()
-{
-    State::disable();
-    m_talkDesireId = MAX_DESIRE_ID;
-}
-
-string RssAskTaskState::generateText(const string& personName)
-{
-    switch (language())
-    {
-    case Language::ENGLISH:
-        return generateEnglishText(personName);
-    case Language::FRENCH:
-        return generateFrenchText(personName);
-    }
-
-    return "";
 }
 
 string RssAskTaskState::generateEnglishText(const string& personName)
@@ -76,14 +35,4 @@ string RssAskTaskState::generateFrenchText(const string& personName)
     ss << "De plus, je peux danser sur la chanson ambiante ou sur une chanson que je fais jouer.";
 
     return ss.str();
-}
-
-void RssAskTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_talkDesireId)
-    {
-        return;
-    }
-
-    m_stateManager.switchTo<RssWaitAnswerState>();
 }

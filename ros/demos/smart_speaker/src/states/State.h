@@ -21,6 +21,24 @@ enum class Language // TODO Use a resource manager for the strings
     FRENCH
 };
 
+inline bool languageFromString(const std::string& str, Language& language)
+{
+    if (str == "en")
+    {
+        language = Language::ENGLISH;
+    }
+    else if (str == "fr")
+    {
+        language = Language::FRENCH;
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
+}
+
 class StateManager;
 
 class State

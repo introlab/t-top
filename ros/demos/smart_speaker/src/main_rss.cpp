@@ -77,22 +77,14 @@ void startNode(Language language,
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "smart_speaker_node");
+    ros::init(argc, argv, "smart_speaker_rss_node");
     ros::NodeHandle nodeHandle;
     ros::NodeHandle privateNodeHandle("~");
 
     string languageString;
     Language language;
     privateNodeHandle.param<std::string>("language", languageString, "");
-    if (languageString == "en")
-    {
-        language = Language::ENGLISH;
-    }
-    else if (languageString == "fr")
-    {
-        language = Language::FRENCH;
-    }
-    else
+    if (!languageFromString(languageString, language))
     {
         ROS_ERROR("Language must be English (language=en) or French (language=fr).");
         return -1;

@@ -16,6 +16,11 @@ DancePlayedSongState::DancePlayedSongState(Language language,
         m_songPaths(move(songPaths)),
         m_songDesireId(MAX_DESIRE_ID)
 {
+    if (m_songPaths.size() == 0)
+    {
+        throw runtime_error("songPaths must not be empty");
+    }
+
     m_songStartedSubscriber = nodeHandle.subscribe("sound_player/started", 1,
         &DancePlayedSongState::songStartedSubscriberCallback, this);
     m_songDoneSubscriber = nodeHandle.subscribe("sound_player/done", 1,
@@ -27,17 +32,24 @@ void DancePlayedSongState::enable(const string& parameter)
     State::enable(parameter);
 
     size_t songIndex = atoi(parameter.c_str());
+    if (songIndex >= m_songPaths.size())
+    {
+        ROS_ERROR("The song index is invalid.");
+        m_stateManager.switchTo(m_nextStateType);
+    }
+    else
+    {
+        auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
+        auto songDesire = make_unique<PlaySoundDesire>(m_songPaths[songIndex]);
+        m_songDesireId = songDesire->id();
 
-    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
-    auto songDesire = make_unique<PlaySoundDesire>(m_songPaths.at(songIndex));
-    m_songDesireId = songDesire->id();
+        m_desireIds.emplace_back(faceAnimationDesire->id());
+        m_desireIds.emplace_back(songDesire->id());
 
-    m_desireIds.emplace_back(faceAnimationDesire->id());
-    m_desireIds.emplace_back(songDesire->id());
-
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->addDesire(move(faceAnimationDesire));
-    m_desireSet->addDesire(move(songDesire));
+        auto transaction = m_desireSet->beginTransaction();
+        m_desireSet->addDesire(move(faceAnimationDesire));
+        m_desireSet->addDesire(move(songDesire));
+    }
 }
 
 void DancePlayedSongState::disable()

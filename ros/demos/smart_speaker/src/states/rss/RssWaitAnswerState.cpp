@@ -29,11 +29,8 @@ RssWaitAnswerState::RssWaitAnswerState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle)
+        WaitAnswerState(language, stateManager, desireSet, nodeHandle)
 {
-    m_speechToTextSubscriber = nodeHandle.subscribe("speech_to_text/transcript", 1,
-        &RssWaitAnswerState::speechToTextSubscriberCallback, this);
-
     switch (language)
     {
     case Language::ENGLISH:
@@ -53,46 +50,9 @@ RssWaitAnswerState::RssWaitAnswerState(Language language,
     }
 }
 
-void RssWaitAnswerState::enable(const string& parameter)
+void RssWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text)
 {
-    State::enable(parameter);
-
-    auto speechToTextDesire = make_unique<SpeechToTextDesire>();
-    auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
-    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
-
-    m_desireIds.emplace_back(speechToTextDesire->id());
-    m_desireIds.emplace_back(faceFollowingDesire->id());
-    m_desireIds.emplace_back(faceAnimationDesire->id());
-
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->addDesire(move(speechToTextDesire));
-    m_desireSet->addDesire(move(faceFollowingDesire));
-    m_desireSet->addDesire(move(faceAnimationDesire));
-
-    constexpr bool oneshot = true;
-    m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S),
-        &RssWaitAnswerState::timeoutTimerCallback, this, oneshot);
-}
-
-void RssWaitAnswerState::disable()
-{
-    State::disable();
-
-    if (m_timeoutTimer.isValid())
-    {
-        m_timeoutTimer.stop();
-    }
-}
-
-void RssWaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg)
-{
-    if (!enabled())
-    {
-        return;
-    }
-
-    auto words = splitStrings(toLowerString(msg->data), " \n.,!?");
+    auto words = splitStrings(toLowerString(text), " \n.,!?");
     unordered_set<string> wordSet(words.begin(), words.end());
 
     // TODO Improve the task classification
@@ -128,12 +88,7 @@ void RssWaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::
     }
 }
 
-void RssWaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
+void RssWaitAnswerState::switchStateAfterTimeout()
 {
-    if (!enabled())
-    {
-        return;
-    }
-
     m_stateManager.switchTo<RssIdleState>();
 }

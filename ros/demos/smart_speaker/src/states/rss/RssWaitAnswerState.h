@@ -1,15 +1,12 @@
 #ifndef SMART_SPEAKER_STATES_RSS_RSS_WAIT_ANSWER_STATE_H
 #define SMART_SPEAKER_STATES_RSS_RSS_WAIT_ANSWER_STATE_H
 
-#include "../State.h"
+#include "../WaitAnswerState.h"
 
 #include <std_msgs/String.h>
 
-class RssWaitAnswerState : public State
+class RssWaitAnswerState : public WaitAnswerState
 {
-    ros::Subscriber m_speechToTextSubscriber;
-    ros::Timer m_timeoutTimer;
-
     std::string m_weatherWord;
     std::string m_forecastWord;
     std::string m_storyWord;
@@ -29,12 +26,8 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
-    void disable() override;
-
-private:
-    void speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg);
-    void timeoutTimerCallback(const ros::TimerEvent& event);
+    void switchStateAfterTranscriptReceived(const std::string& text) override;
+    void switchStateAfterTimeout() override;
 };
 
 inline std::type_index RssWaitAnswerState::type() const
