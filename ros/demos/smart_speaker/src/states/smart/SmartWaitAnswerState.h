@@ -23,7 +23,7 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        vector<string> songNames);
+        std::vector<std::string> songNames);
     ~SmartWaitAnswerState() override = default;
 
     DECLARE_NOT_COPYABLE(SmartWaitAnswerState);

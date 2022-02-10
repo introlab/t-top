@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   talk
   video_analyzer
   t_top
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -162,6 +163,23 @@ add_executable(${PROJECT_NAME}_rss_node
   src/states/rss/RssStoryState.cpp
 )
 
+add_executable(${PROJECT_NAME}_smart_node
+  src/main_smart.cpp
+  src/StringUtils.cpp
+  src/states/State.cpp
+  src/states/StateManager.cpp
+  src/states/AskTaskState.cpp
+  src/states/WaitAnswerState.cpp
+  src/states/ValidTaskState.cpp
+  src/states/InvalidTaskState.cpp
+  src/states/CurrentWeatherState.cpp
+  src/states/DancePlayedSongState.cpp
+  src/states/smart/SmartIdleState.cpp
+  src/states/smart/SmartAskTaskState.cpp
+  src/states/smart/SmartWaitAnswerState.cpp
+  src/states/smart/SmartValidTaskState.cpp
+)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -174,6 +192,10 @@ add_executable(${PROJECT_NAME}_rss_node
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_rss_node
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(${PROJECT_NAME}_smart_node
   ${catkin_LIBRARIES}
 )
 

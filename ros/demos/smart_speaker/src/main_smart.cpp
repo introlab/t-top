@@ -24,8 +24,11 @@ using namespace std;
 
 void startNode(Language language,
     ros::NodeHandle& nodeHandle,
-    const string& englishStoryPath,
-    const string& frenchStoryPath,
+    double personDistanceThreshold,
+    const std::string& personDistanceFrame,
+    double noseConfidenceThreshold,
+    size_t videoAnalysisMessageCountThreshold,
+    size_t videoAnalysisMessageCountTolerance,
     const vector<string>& songNames,
     const vector<string>& songPaths)
 {
@@ -49,14 +52,16 @@ void startNode(Language language,
     StateManager stateManager;
     type_index idleStateType(typeid(SmartIdleState));
 
-    stateManager.addState(make_unique<SmartIdleState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<SmartIdleState>(language, stateManager, desireSet, nodeHandle,
+        personDistanceThreshold, personDistanceFrame, noseConfidenceThreshold,
+        videoAnalysisMessageCountThreshold, videoAnalysisMessageCountTolerance));
     stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songNames));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
 
     stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, idleStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, vector<string>{songPath}));
+    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, songPaths));
 
     stateManager.switchTo<SmartIdleState>();
 
@@ -78,17 +83,55 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    vector<string> songNames;
-    privateNodeHandle.param<std::string>("song_names", songNames, "");
-    if (songNames.size())
+    double personDistanceThreshold = -1.0;
+    if (!privateNodeHandle.getParam("person_distance_threshold", personDistanceThreshold) ||
+        personDistanceThreshold < 0.0)
     {
-        ROS_ERROR("At least one valid path must be set for the songs.");
+        ROS_ERROR("The parameter person_distance_threshold must be set and greater than 0.");
+        return -1;
+    }
+
+    std::string personDistanceFrame;
+    if (!privateNodeHandle.getParam("person_distance_frame", personDistanceFrame) ||
+        personDistanceFrame == "")
+    {
+        ROS_ERROR("The parameter person_distance_frame must be set and not empty.");
+        return -1;
+    }
+
+    double noseConfidenceThreshold = -1.0;
+    if (!privateNodeHandle.getParam("nose_confidence_threshold", noseConfidenceThreshold) ||
+        noseConfidenceThreshold < 0.0)
+    {
+        ROS_ERROR("The parameter nose_confidence_threshold must be set and not empty.");
+        return -1;
+    }
+
+    int videoAnalysisMessageCountThreshold = -1;
+    if (!privateNodeHandle.getParam("video_analysis_message_count_threshold", videoAnalysisMessageCountThreshold) ||
+        videoAnalysisMessageCountThreshold < 1)
+    {
+        ROS_ERROR("The parameter video_analysis_message_count_threshold must be set and greater than 0.");
+        return -1;
+    }
+
+    int videoAnalysisMessageCountTolerance = -1;
+    if (!privateNodeHandle.getParam("video_analysis_message_count_tolerance", videoAnalysisMessageCountTolerance) ||
+        videoAnalysisMessageCountTolerance < 0)
+    {
+        ROS_ERROR("The parameter video_analysis_message_count_tolerance must be set and greater than or equal to 0.");
+        return -1;
+    }
+
+    vector<string> songNames;
+    if (!privateNodeHandle.getParam("song_names", songNames) || songNames.size() == 0)
+    {
+        ROS_ERROR("At least one valid name must be set for the songs.");
         return -1;
     }
 
     vector<string> songPaths;
-    privateNodeHandle.param<std::string>("song_paths", songPaths, "");
-    if (songPaths.size())
+    if (!privateNodeHandle.getParam("song_paths", songPaths) || songPaths.size() == 0)
     {
         ROS_ERROR("At least one valid path must be set for the songs.");
         return -1;
@@ -100,7 +143,10 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songNames, songPaths);
+    startNode(language, nodeHandle,
+        personDistanceThreshold, personDistanceFrame, noseConfidenceThreshold,
+        videoAnalysisMessageCountThreshold, videoAnalysisMessageCountTolerance,
+        songNames, songPaths);
 
     return 0;
 }

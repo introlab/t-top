@@ -27,7 +27,7 @@ SmartWaitAnswerState::SmartWaitAnswerState(Language language,
         WaitAnswerState(language, stateManager, desireSet, nodeHandle),
         m_songNames(move(songNames)),
         m_randomGenerator(random_device()()),
-        m_songIndexDistribution(0, songNames.size())
+        m_songIndexDistribution(0, m_songNames.size() - 1)
 {
     if (m_songNames.size() == 0)
     {
@@ -49,12 +49,12 @@ SmartWaitAnswerState::SmartWaitAnswerState(Language language,
 
 void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text)
 {
-    text = toLowerString(text);
+    auto lowerCaseText = toLowerString(text);
 
     // TODO Improve the task classification
-    bool weather = text.find(m_weatherWord) != string::npos;
-    bool dance = text.find(m_danceWord) != string::npos;
-    size_t songIndex = getSongIndex(text);
+    bool weather = lowerCaseText.find(m_weatherWord) != string::npos;
+    bool dance = lowerCaseText.find(m_danceWord) != string::npos;
+    size_t songIndex = getSongIndex(lowerCaseText);
 
 
     if (weather && !dance)
@@ -63,7 +63,7 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
     }
     else if (!weather && dance && songIndex != string::npos)
     {
-        m_stateManager.switchTo<SmartValidTaskState>(DANCE_TASK + '|' + to_string(songIndex));
+        m_stateManager.switchTo<SmartValidTaskState>(string(DANCE_TASK) + '|' + to_string(songIndex));
     }
     else
     {

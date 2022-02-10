@@ -3,6 +3,8 @@
 
 #include "../State.h"
 
+#include <tf/transform_listener.h>
+
 #include <std_msgs/Empty.h>
 #include <person_identification/PersonNames.h>
 #include <video_analyzer/VideoAnalysis.h>
@@ -10,6 +12,15 @@
 class SmartIdleState : public State
 {
     double m_personDistanceThreshold;
+    std::string m_personDistanceFrame;
+    double m_noseConfidenceThreshold;
+    size_t m_videoAnalysisMessageCountThreshold;
+    size_t m_videoAnalysisMessageCountTolerance;
+
+    size_t m_videoAnalysisValidMessageCount;
+    size_t m_videoAnalysisInvalidMessageCount;
+
+    tf::TransformListener m_tfListener;
 
     ros::Subscriber m_personNamesSubscriber;
     ros::Subscriber m_videoAnalysisSubscriber;
@@ -19,7 +30,11 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        double personDistanceThreshold);
+        double personDistanceThreshold,
+        std::string personDistanceFrame,
+        double noseConfidenceThreshold,
+        size_t videoAnalysisMessageCountThreshold,
+        size_t videoAnalysisMessageCountTolerance);
     ~SmartIdleState() override = default;
 
     DECLARE_NOT_COPYABLE(SmartIdleState);
@@ -33,6 +48,9 @@ protected:
 private:
     void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
     void videoAnalysisSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+
+    double personNameDistance(const person_identification::PersonName& name);
+    double faceDistance(const video_analyzer::VideoAnalysisObject& object, const tf::StampedTransform& transform);
 };
 
 inline std::type_index SmartIdleState::type() const

@@ -8,6 +8,8 @@
 #include <t_top/hbba_lite/Desires.h>
 
 #include <algorithm>
+#include <limits>
+#include <cmath>
 
 using namespace std;
 
@@ -15,14 +17,24 @@ SmartIdleState::SmartIdleState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    double personDistanceThreshold) :
+    double personDistanceThreshold,
+    std::string personDistanceFrame,
+    double noseConfidenceThreshold,
+    size_t videoAnalysisMessageCountThreshold,
+    size_t videoAnalysisMessageCountTolerance) :
         State(language, stateManager, desireSet, nodeHandle),
-        m_personDistanceThreshold(personDistanceThreshold)
+        m_personDistanceThreshold(personDistanceThreshold),
+        m_personDistanceFrame(personDistanceFrame),
+        m_noseConfidenceThreshold(noseConfidenceThreshold),
+        m_videoAnalysisMessageCountThreshold(videoAnalysisMessageCountThreshold),
+        m_videoAnalysisMessageCountTolerance(videoAnalysisMessageCountTolerance),
+        m_videoAnalysisValidMessageCount(0),
+        m_videoAnalysisInvalidMessageCount(0)
 {
     m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
         &SmartIdleState::personNamesSubscriberCallback, this);
 
-    m_videoAnalysisSubscriber = nodeHandle.subscribe("audio_analysis", 1,
+    m_videoAnalysisSubscriber = nodeHandle.subscribe("video_analysis", 1,
         &SmartIdleState::videoAnalysisSubscriberCallback, this);
 }
 
@@ -51,11 +63,98 @@ void SmartIdleState::personNamesSubscriberCallback(const person_identification::
         return;
     }
 
-    // TODO check distance
-    //m_stateManager.switchTo<SmartAskTaskState>(mergedNames);
+    for (auto& name : msg->names)
+    {
+        double distance = personNameDistance(name);
+        if (distance <= m_personDistanceThreshold)
+        {
+            m_stateManager.switchTo<SmartAskTaskState>(name.name);
+            break;
+        }
+    }
 }
 
 void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg)
 {
-    // TODO check distance and wait for person identification
+    if (!enabled() || msg->objects.size() == 0)
+    {
+        return;
+    }
+
+    tf::StampedTransform transform;
+    try
+    {
+        m_tfListener.lookupTransform(m_personDistanceFrame, msg->header.frame_id, ros::Time(0), transform);
+    }
+    catch (tf::TransformException &ex)
+    {
+        ROS_ERROR("%s", ex.what());
+        return;
+    }
+
+    bool faceFound = false;
+    for (auto& object : msg->objects)
+    {
+        double distance = faceDistance(object, transform);
+        if (distance <= m_personDistanceThreshold)
+        {
+            m_videoAnalysisValidMessageCount++;
+            m_videoAnalysisInvalidMessageCount = 0;
+            faceFound = true;
+            break;
+        }
+    }
+
+    if (!faceFound)
+    {
+        m_videoAnalysisInvalidMessageCount++;
+    }
+    if (m_videoAnalysisInvalidMessageCount > m_videoAnalysisMessageCountTolerance)
+    {
+        m_videoAnalysisValidMessageCount = 0;
+    }
+    if (m_videoAnalysisValidMessageCount >= m_videoAnalysisMessageCountThreshold)
+    {
+        m_stateManager.switchTo<SmartAskTaskState>();
+    }
+}
+
+double SmartIdleState::personNameDistance(const person_identification::PersonName& name)
+{
+    if (name.position.size() == 0)
+    {
+        return numeric_limits<double>::infinity();
+    }
+
+    try
+    {
+        tf::StampedTransform transform;
+        m_tfListener.lookupTransform(m_personDistanceFrame, name.frame_id, ros::Time(0), transform);
+
+        tf::Vector3 p(name.position[0].x, name.position[0].y, name.position[0].z);
+        p = transform * p;
+        return p.length();
+    }
+    catch (tf::TransformException &ex)
+    {
+        ROS_ERROR("%s", ex.what());
+        return numeric_limits<double>::infinity();
+    }
+}
+
+double SmartIdleState::faceDistance(const video_analyzer::VideoAnalysisObject& object,
+    const tf::StampedTransform& transform)
+{
+    constexpr size_t PERSON_POSE_NOSE_INDEX = 0;
+
+    if (object.face_descriptor.size() == 0 ||
+        object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < m_noseConfidenceThreshold)
+    {
+        return numeric_limits<double>::infinity();
+    }
+
+    auto nosePoint = object.person_pose[PERSON_POSE_NOSE_INDEX];
+    tf::Vector3 p(nosePoint.x, nosePoint.y, nosePoint.z);
+    p = transform * p;
+    return p.length();
 }

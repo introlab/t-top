@@ -62,7 +62,7 @@ string ValidTaskState::generateText()
     case Language::ENGLISH:
         return "Yes, of course.";
     case Language::FRENCH:
-        return "Oui, biensûr.";
+        return "Oui, bien sûr.";
     }
 
     return "";
