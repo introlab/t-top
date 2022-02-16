@@ -41,6 +41,7 @@ void setup() {
   setupAudioPowerAmplifier();
   setupOpencrCommandHandler();
 
+  onStatusTicker();
   statusTicker.start();
 }
 

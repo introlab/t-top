@@ -107,7 +107,7 @@ bool RrcPmm240Charger::hasChargerError() {
 }
 
 bool RrcPmm240Charger::writeChargeCurrentLimit(float current, RrcPmm240ChargerMemoryLocation location, size_t trialCount) {
-  if (current < 0.256f || current > 6200.f) {
+  if (current < 0.256f || current > 6.2f) {
     return false;
   }
   uint16_t currentMa = static_cast<uint16_t>(current * 1000);
@@ -115,7 +115,7 @@ bool RrcPmm240Charger::writeChargeCurrentLimit(float current, RrcPmm240ChargerMe
 }
 
 bool RrcPmm240Charger::writeInputCurrentLimit(float current, RrcPmm240ChargerMemoryLocation location, size_t trialCount) {
-  if (current < 0.0f || current > 10000.f) {
+  if (current < 0.0f || current > 16.128f) {
     return false;
   }
   uint16_t currentMa = static_cast<uint16_t>(current * 1000);
@@ -142,7 +142,7 @@ bool RrcPmm240Charger::writeWord(uint8_t command, RrcPmm240ChargerMemoryLocation
   }
   m_wire.write(pec);
 
-  return m_wire.endTransmission(false) == 0;
+  return m_wire.endTransmission() == 0;
 }
 
 bool RrcPmm240Charger::writeWordTrials(uint8_t command, RrcPmm240ChargerMemoryLocation location, uint16_t value, size_t trialCount) {
