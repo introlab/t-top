@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   talk
   video_analyzer
   t_top
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -141,22 +142,42 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node
-  src/main.cpp
+add_executable(${PROJECT_NAME}_rss_node
+  src/main_rss.cpp
   src/StringUtils.cpp
   src/states/State.cpp
   src/states/StateManager.cpp
-  src/states/IdleState.cpp
-  src/states/WaitPersonIdentificationState.cpp
   src/states/AskTaskState.cpp
   src/states/WaitAnswerState.cpp
   src/states/ValidTaskState.cpp
   src/states/InvalidTaskState.cpp
   src/states/CurrentWeatherState.cpp
   src/states/WeatherForecastState.cpp
-  src/states/StoryState.cpp
   src/states/DanceState.cpp
   src/states/DancePlayedSongState.cpp
+  src/states/rss/RssIdleState.cpp
+  src/states/rss/RssWaitPersonIdentificationState.cpp
+  src/states/rss/RssAskTaskState.cpp
+  src/states/rss/RssWaitAnswerState.cpp
+  src/states/rss/RssValidTaskState.cpp
+  src/states/rss/RssStoryState.cpp
+)
+
+add_executable(${PROJECT_NAME}_smart_node
+  src/main_smart.cpp
+  src/StringUtils.cpp
+  src/states/State.cpp
+  src/states/StateManager.cpp
+  src/states/AskTaskState.cpp
+  src/states/WaitAnswerState.cpp
+  src/states/ValidTaskState.cpp
+  src/states/InvalidTaskState.cpp
+  src/states/CurrentWeatherState.cpp
+  src/states/DancePlayedSongState.cpp
+  src/states/smart/SmartIdleState.cpp
+  src/states/smart/SmartAskTaskState.cpp
+  src/states/smart/SmartWaitAnswerState.cpp
+  src/states/smart/SmartValidTaskState.cpp
 )
 
 ## Rename C++ executable without prefix
@@ -170,7 +191,11 @@ add_executable(${PROJECT_NAME}_node
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
+target_link_libraries(${PROJECT_NAME}_rss_node
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(${PROJECT_NAME}_smart_node
   ${catkin_LIBRARIES}
 )
 

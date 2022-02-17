@@ -1,7 +1,5 @@
 #include "InvalidTaskState.h"
 #include "StateManager.h"
-#include "IdleState.h"
-#include "WaitAnswerState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -12,8 +10,10 @@ using namespace std;
 InvalidTaskState::InvalidTaskState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
+    ros::NodeHandle& nodeHandle,
+    type_index nextStateType) :
         State(language, stateManager, desireSet, nodeHandle),
+        m_nextStateType(nextStateType),
         m_talkDesireId(MAX_DESIRE_ID),
         m_gestureDesireId(MAX_DESIRE_ID),
         m_talkDone(false),
@@ -95,6 +95,6 @@ void InvalidTaskState::switchState()
 {
     if (m_talkDone && m_gestureDone)
     {
-        m_stateManager.switchTo<IdleState>();
+        m_stateManager.switchTo(m_nextStateType);
     }
 }

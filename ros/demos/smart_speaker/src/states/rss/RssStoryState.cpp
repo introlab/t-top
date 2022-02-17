@@ -1,8 +1,9 @@
-#include "StoryState.h"
-#include "StateManager.h"
-#include "IdleState.h"
+#include "RssStoryState.h"
+#include "RssIdleState.h"
 
-#include "../StringUtils.h"
+#include "../StateManager.h"
+
+#include "../../StringUtils.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -15,7 +16,7 @@ StoryLine::StoryLine(std::string faceAnimation, std::string text) :
 {
 }
 
-StoryState::StoryState(Language language,
+RssStoryState::RssStoryState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
@@ -26,7 +27,7 @@ StoryState::StoryState(Language language,
         m_faceAnimationDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &StoryState::talkDoneSubscriberCallback, this);
+        &RssStoryState::talkDoneSubscriberCallback, this);
 
     switch (language)
     {
@@ -39,7 +40,7 @@ StoryState::StoryState(Language language,
     }
 }
 
-void StoryState::enable(const string& parameter)
+void RssStoryState::enable(const string& parameter)
 {
     State::enable(parameter);
 
@@ -56,14 +57,14 @@ void StoryState::enable(const string& parameter)
     setNextLineDesire();
 }
 
-void StoryState::disable()
+void RssStoryState::disable()
 {
     State::disable();
     m_talkDesireId = MAX_DESIRE_ID;
     m_faceAnimationDesireId = MAX_DESIRE_ID;
 }
 
-void StoryState::readStory(const std::string& storyPath)
+void RssStoryState::readStory(const std::string& storyPath)
 {
     ifstream storyFile(storyPath);
     string line;
@@ -85,7 +86,7 @@ void StoryState::readStory(const std::string& storyPath)
     m_storyLines.emplace("normal", "");
 }
 
-bool StoryState::setNextLineDesire()
+bool RssStoryState::setNextLineDesire()
 {
     if (m_storyLines.empty())
     {
@@ -119,7 +120,7 @@ bool StoryState::setNextLineDesire()
     return true;
 }
 
-void StoryState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+void RssStoryState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 {
     if (!enabled() || msg->id != m_talkDesireId)
     {
@@ -134,6 +135,6 @@ void StoryState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 
     if (finished)
     {
-        m_stateManager.switchTo<IdleState>();
+        m_stateManager.switchTo<RssIdleState>();
     }
 }

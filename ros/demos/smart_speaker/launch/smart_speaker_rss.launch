@@ -1,7 +1,7 @@
 <launch>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
 
-    <node pkg="smart_speaker" type="smart_speaker_node" name="smart_speaker_node" output="screen" launch-prefix="bash -c 'sleep 60; $0 $@' ">
+    <node pkg="smart_speaker" type="smart_speaker_rss_node" name="smart_speaker_rss_node" output="screen" launch-prefix="bash -c 'sleep 60; $0 $@' ">
         <param name="language" value="$(arg language)"/>
         <param name="story_path_en" value="$(find smart_speaker)/story_en.txt"/>
         <param name="story_path_fr" value="$(find smart_speaker)/story_fr.txt"/>

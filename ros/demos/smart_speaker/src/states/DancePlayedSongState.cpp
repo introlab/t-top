@@ -1,6 +1,5 @@
 #include "DancePlayedSongState.h"
 #include "StateManager.h"
-#include "IdleState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -10,11 +9,18 @@ DancePlayedSongState::DancePlayedSongState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    string songPath) :
+    type_index nextStateType,
+    vector<std::string> songPaths) :
         State(language, stateManager, desireSet, nodeHandle),
-        m_songPath(move(songPath)),
+        m_nextStateType(nextStateType),
+        m_songPaths(move(songPaths)),
         m_songDesireId(MAX_DESIRE_ID)
 {
+    if (m_songPaths.size() == 0)
+    {
+        throw runtime_error("songPaths must not be empty");
+    }
+
     m_songStartedSubscriber = nodeHandle.subscribe("sound_player/started", 1,
         &DancePlayedSongState::songStartedSubscriberCallback, this);
     m_songDoneSubscriber = nodeHandle.subscribe("sound_player/done", 1,
@@ -25,16 +31,25 @@ void DancePlayedSongState::enable(const string& parameter)
 {
     State::enable(parameter);
 
-    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
-    auto songDesire = make_unique<PlaySoundDesire>(m_songPath);
-    m_songDesireId = songDesire->id();
+    size_t songIndex = atoi(parameter.c_str());
+    if (songIndex >= m_songPaths.size())
+    {
+        ROS_ERROR("The song index is invalid.");
+        m_stateManager.switchTo(m_nextStateType);
+    }
+    else
+    {
+        auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
+        auto songDesire = make_unique<PlaySoundDesire>(m_songPaths[songIndex]);
+        m_songDesireId = songDesire->id();
 
-    m_desireIds.emplace_back(faceAnimationDesire->id());
-    m_desireIds.emplace_back(songDesire->id());
+        m_desireIds.emplace_back(faceAnimationDesire->id());
+        m_desireIds.emplace_back(songDesire->id());
 
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->addDesire(move(faceAnimationDesire));
-    m_desireSet->addDesire(move(songDesire));
+        auto transaction = m_desireSet->beginTransaction();
+        m_desireSet->addDesire(move(faceAnimationDesire));
+        m_desireSet->addDesire(move(songDesire));
+    }
 }
 
 void DancePlayedSongState::disable()
@@ -62,5 +77,5 @@ void DancePlayedSongState::songDoneSubscriberCallback(const sound_player::Done::
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo(m_nextStateType);
 }

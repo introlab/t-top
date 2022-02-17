@@ -10,12 +10,6 @@ class WaitAnswerState : public State
     ros::Subscriber m_speechToTextSubscriber;
     ros::Timer m_timeoutTimer;
 
-    std::string m_weatherWord;
-    std::string m_forecastWord;
-    std::string m_storyWord;
-    std::string m_danceWord;
-    std::string m_songWord;
-
 public:
     WaitAnswerState(Language language,
         StateManager& stateManager,
@@ -31,6 +25,9 @@ protected:
 
     void enable(const std::string& parameter) override;
     void disable() override;
+
+    virtual void switchStateAfterTranscriptReceived(const std::string& text) = 0;
+    virtual void switchStateAfterTimeout() = 0;
 
 private:
     void speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg);

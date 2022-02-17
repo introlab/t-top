@@ -1,10 +1,7 @@
 #include "WaitAnswerState.h"
-#include "StateManager.h"
-#include "IdleState.h"
-#include "ValidTaskState.h"
-#include "InvalidTaskState.h"
 
-#include "../StringUtils.h"
+#include "StateManager.h"
+#include "InvalidTaskState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -32,24 +29,6 @@ WaitAnswerState::WaitAnswerState(Language language,
 {
     m_speechToTextSubscriber = nodeHandle.subscribe("speech_to_text/transcript", 1,
         &WaitAnswerState::speechToTextSubscriberCallback, this);
-
-    switch (language)
-    {
-    case Language::ENGLISH:
-        m_weatherWord = ENGLISH_WEATHER_WORD;
-        m_forecastWord = ENGLISH_FORECAST_WORD;
-        m_storyWord = ENGLISH_STORY_WORD;
-        m_danceWord = ENGLISH_DANCE_WORD;
-        m_songWord = ENGLISH_SONG_WORD;
-        break;
-    case Language::FRENCH:
-        m_weatherWord = FRENCH_WEATHER_WORD;
-        m_forecastWord = FRENCH_FORECAST_WORD;
-        m_storyWord = FRENCH_STORY_WORD;
-        m_danceWord = FRENCH_DANCE_WORD;
-        m_songWord = FRENCH_SONG_WORD;
-        break;
-    }
 }
 
 void WaitAnswerState::enable(const string& parameter)
@@ -91,40 +70,7 @@ void WaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::Con
         return;
     }
 
-    auto words = splitStrings(toLowerString(msg->data), " \n.,!?");
-    unordered_set<string> wordSet(words.begin(), words.end());
-
-    // TODO Improve the task classification
-    bool weather = static_cast<bool>(wordSet.count(m_weatherWord));
-    bool forecast = static_cast<bool>(wordSet.count(m_forecastWord));
-    bool story = static_cast<bool>(wordSet.count(m_storyWord));
-    bool dance = static_cast<bool>(wordSet.count(m_danceWord));
-    bool song = static_cast<bool>(wordSet.count(m_songWord));
-
-    if (weather && !forecast && !story && !dance && !song)
-    {
-        m_stateManager.switchTo<ValidTaskState>(CURRENT_WEATHER_TASK);
-    }
-    else if (forecast && !story && !dance && !song)
-    {
-        m_stateManager.switchTo<ValidTaskState>(WEATHER_FORECAST_TASK);
-    }
-    else if (!weather && !forecast && story && !dance && !song)
-    {
-        m_stateManager.switchTo<ValidTaskState>(STORY_TASK);
-    }
-    else if (!weather && !forecast && !story && dance && !song)
-    {
-        m_stateManager.switchTo<ValidTaskState>(DANCE_TASK);
-    }
-    else if (!weather && !forecast && !story && dance && song)
-    {
-        m_stateManager.switchTo<ValidTaskState>(DANCE_PLAYED_SONG_TASK);
-    }
-    else
-    {
-        m_stateManager.switchTo<InvalidTaskState>();
-    }
+    switchStateAfterTranscriptReceived(msg->data);
 }
 
 void WaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
@@ -134,5 +80,5 @@ void WaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    switchStateAfterTimeout();
 }

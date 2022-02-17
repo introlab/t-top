@@ -20,6 +20,25 @@ string mergeStrings(const vector<string>& values, const string& separator)
     return ss.str();
 }
 
+string mergeNames(const vector<string>& values, const string& andWord)
+{
+    stringstream ss;
+    for (size_t i = 0; i < values.size(); i++)
+    {
+        ss << values[i];
+        if (i == values.size() - 2)
+        {
+            ss << " " << andWord << " ";
+        }
+        else if (i < values.size() - 1)
+        {
+            ss << ", ";
+        }
+    }
+
+    return ss.str();
+}
+
 // Inspired by https://stackoverflow.com/questions/49201654/splitting-a-string-with-multiple-delimiters-in-c/49201798
 vector<string> splitStrings(const string& str, const string& delimiters)
 {

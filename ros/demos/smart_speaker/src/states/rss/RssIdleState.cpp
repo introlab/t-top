@@ -1,27 +1,30 @@
-#include "IdleState.h"
-#include "StateManager.h"
-#include "WaitPersonIdentificationState.h"
-#include "AskTaskState.h"
+#include "RssIdleState.h"
+#include "RssWaitPersonIdentificationState.h"
+#include "RssAskTaskState.h"
 
-#include "../StringUtils.h"
+#include "../StateManager.h"
+
+#include "../../StringUtils.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
+#include <algorithm>
+
 using namespace std;
 
-IdleState::IdleState(Language language,
+RssIdleState::RssIdleState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle) :
         State(language, stateManager, desireSet, nodeHandle)
 {
     m_robotNameDetectedSubscriber = nodeHandle.subscribe("robot_name_detected", 1,
-        &IdleState::robotNameDetectedSubscriberCallback, this);
+        &RssIdleState::robotNameDetectedSubscriberCallback, this);
     m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
-        &IdleState::personNamesSubscriberCallback, this);
+        &RssIdleState::personNamesSubscriberCallback, this);
 }
 
-void IdleState::enable(const string& parameter)
+void RssIdleState::enable(const string& parameter)
 {
     State::enable(parameter);
 
@@ -42,23 +45,27 @@ void IdleState::enable(const string& parameter)
     m_desireSet->addDesire(move(faceAnimationDesire));
 }
 
-void IdleState::robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg)
+void RssIdleState::robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg)
 {
     if (!enabled())
     {
         return;
     }
 
-    m_stateManager.switchTo<WaitPersonIdentificationState>();
+    m_stateManager.switchTo<RssWaitPersonIdentificationState>();
 }
 
-void IdleState::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
+void RssIdleState::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
 {
     if (!enabled() || msg->names.size() == 0)
     {
         return;
     }
 
-    auto names = mergeStrings(msg->names, ", ");
-    m_stateManager.switchTo<AskTaskState>(names);
+    vector<string> names;
+    transform(msg->names.begin(), msg->names.end(), back_inserter(names),
+        [](const person_identification::PersonName& name) { return name.name; });
+
+    auto mergedNames = mergeNames(names, getAndWord());
+    m_stateManager.switchTo<RssAskTaskState>(mergedNames);
 }

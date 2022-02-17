@@ -1,9 +1,14 @@
 # smart_speaker
 This folder contains a node that makes T-Top a smart speaker that can tell the current weather, the weather forecast or a story. Also, it can dance to the ambiant music or play a song and dance.
 
-## How to Launch
+## How to Launch the RSS smart speaker node
 ```bash
-roslaunch smart_speaker smart_speaker.launch
+roslaunch smart_speaker smart_speaker_rss.launch
+```
+
+## How to Launch the SMART smart speaker node
+```bash
+roslaunch smart_speaker smart_speaker_smart.launch
 ```
 
 ## Acknowledgments

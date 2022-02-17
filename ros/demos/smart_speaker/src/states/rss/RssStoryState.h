@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_STORY_STATE_H
-#define SMART_SPEAKER_STATES_STORY_STATE_H
+#ifndef SMART_SPEAKER_STATES_RSS_RSS_STORY_STATE_H
+#define SMART_SPEAKER_STATES_RSS_RSS_STORY_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <talk/Done.h>
 
@@ -15,7 +15,7 @@ struct StoryLine
     StoryLine(std::string faceAnimation, std::string text);
 };
 
-class StoryState : public State
+class RssStoryState : public State
 {
     ros::Subscriber m_talkDoneSubscriber;
 
@@ -24,16 +24,16 @@ class StoryState : public State
     uint64_t m_faceAnimationDesireId;
 
 public:
-    StoryState(Language language,
+    RssStoryState(Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         const std::string& englishStoryPath,
         const std::string& frenchStoryPath);
-    ~StoryState() override = default;
+    ~RssStoryState() override = default;
 
-    DECLARE_NOT_COPYABLE(StoryState);
-    DECLARE_NOT_MOVABLE(StoryState);
+    DECLARE_NOT_COPYABLE(RssStoryState);
+    DECLARE_NOT_MOVABLE(RssStoryState);
 
 protected:
     std::type_index type() const override;
@@ -47,9 +47,9 @@ private:
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
 };
 
-inline std::type_index StoryState::type() const
+inline std::type_index RssStoryState::type() const
 {
-    return std::type_index(typeid(StoryState));
+    return std::type_index(typeid(RssStoryState));
 }
 
 #endif

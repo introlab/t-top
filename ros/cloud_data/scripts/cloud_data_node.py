@@ -20,6 +20,7 @@ OPEN_WEATHER_MAP_API_URL = 'https://api.openweathermap.org/data/2.5/onecall'
 class CloudDataNode:
     def __init__(self):
         self._language = rospy.get_param('~language')
+        self._timeout = rospy.get_param('~timeout_s')
 
         self._location_service = rospy.Service('cloud_data/location', Location, self._handle_location)
         self._current_local_weather_service = rospy.Service('cloud_data/current_local_weather',
@@ -127,7 +128,7 @@ class CloudDataNode:
             'lang': self._language,
             'appid': os.environ.get('OPEN_WEATHER_MAP_API_KEY')
         }
-        response = requests.get(OPEN_WEATHER_MAP_API_URL, params=params)
+        response = requests.get(OPEN_WEATHER_MAP_API_URL, params=params, timeout=self._timeout)
         return json.loads(response.text)
 
     def _hpa_to_kpa(self, hpa):

@@ -60,6 +60,7 @@
   <build_depend>talk</build_depend>
   <build_depend>video_analyzer</build_depend>
   <build_depend>t_top</build_depend>
+  <build_depend>tf</build_depend>
   <build_export_depend>audio_analyzer</build_export_depend>
   <build_export_depend>cloud_data</build_export_depend>
   <build_export_depend>gesture</build_export_depend>
@@ -71,6 +72,7 @@
   <build_export_depend>talk</build_export_depend>
   <build_export_depend>video_analyzer</build_export_depend>
   <build_export_depend>t_top</build_export_depend>
+  <build_export_depend>tf</build_export_depend>
   <exec_depend>audio_analyzer</exec_depend>
   <exec_depend>cloud_data</exec_depend>
   <exec_depend>gesture</exec_depend>
@@ -82,6 +84,7 @@
   <exec_depend>talk</exec_depend>
   <exec_depend>video_analyzer</exec_depend>
   <exec_depend>t_top</exec_depend>
+  <exec_depend>tf</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

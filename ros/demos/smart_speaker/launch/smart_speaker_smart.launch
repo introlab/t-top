@@ -1,0 +1,22 @@
+<launch>
+    <arg name="language" default="fr"/>  <!-- Options: fr or en -->
+
+    <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 60; $0 $@' ">
+        <param name="language" value="$(arg language)"/>
+
+        <param name="person_distance_threshold" value="1.5"/>
+        <param name="person_distance_frame" value="odas"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+
+        <param name="video_analysis_message_count_threshold" value="5"/>
+        <param name="video_analysis_message_count_tolerance" value="2"/>
+
+        <rosparam param="song_names">[wanderer, pommier]</rosparam>
+        <rosparam param="song_paths" subst_value="true">[$(find smart_speaker)/admiralbob_wanderer.mp3, $(find smart_speaker)/admiralbob_wanderer.mp3]</rosparam>
+    </node>
+
+    <include file="$(find t_top)/launch/bringup.launch">
+        <arg name="language" value="$(arg language)"/>
+        <arg name="slam" value="false"/>
+    </include>
+</launch>

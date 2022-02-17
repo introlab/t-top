@@ -1,6 +1,5 @@
 #include "CurrentWeatherState.h"
 #include "StateManager.h"
-#include "IdleState.h"
 
 #include <t_top/hbba_lite/Desires.h>
 
@@ -11,8 +10,10 @@ using namespace std;
 CurrentWeatherState::CurrentWeatherState(Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
+    ros::NodeHandle& nodeHandle,
+    type_index nextStateType) :
         State(language, stateManager, desireSet, nodeHandle),
+        m_nextStateType(nextStateType),
         m_talkDesireId(MAX_DESIRE_ID)
 {
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
@@ -92,11 +93,6 @@ string CurrentWeatherState::generateFrenchText(bool ok, const cloud_data::Curren
         ss << "La température courante ressentie est de " << srv.response.feels_like_temperature_celsius << "°C. ";
         ss << "L'humidité courante est de " << srv.response.humidity_percent << "%. ";
         ss << "La vitesse courante du vent est de " << srv.response.wind_speed_kph << " kilomètres par heure. ";
-
-        if (srv.response.wind_gust_kph != -1)
-        {
-            ss << "La vitesse courante des rafales de vent est de " << srv.response.wind_gust_kph << " kilomètres par heure. ";
-        }
     }
     else
     {
@@ -113,5 +109,5 @@ void CurrentWeatherState::talkDoneSubscriberCallback(const talk::Done::ConstPtr&
         return;
     }
 
-    m_stateManager.switchTo<IdleState>();
+    m_stateManager.switchTo(m_nextStateType);
 }

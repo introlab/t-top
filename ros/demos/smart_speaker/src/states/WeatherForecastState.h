@@ -8,6 +8,8 @@
 
 class WeatherForecastState : public State
 {
+    std::type_index m_nextStateType;
+
     ros::Subscriber m_talkDoneSubscriber;
 
     uint64_t m_talkDesireId;
@@ -16,7 +18,8 @@ public:
     WeatherForecastState(Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        ros::NodeHandle& nodeHandle,
+        std::type_index nextStateType);
     ~WeatherForecastState() override = default;
 
     DECLARE_NOT_COPYABLE(WeatherForecastState);
