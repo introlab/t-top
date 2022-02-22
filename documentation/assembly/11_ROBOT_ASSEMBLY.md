@@ -61,7 +61,6 @@
 | ---------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `Torso Bottom Assembly`      | 1        |                                                                                   |
 | `Stewart Platform Assembly`  | 1        |                                                                                   |
-| `90-Degree USB-C Adapter`    | 1        | ![90-Degree USB-C Adapter](images/electronics/USB-C%20adapter.jpg)                |
 | `M3x12mm Plastic Screw`      | 6        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                   |
 
 
