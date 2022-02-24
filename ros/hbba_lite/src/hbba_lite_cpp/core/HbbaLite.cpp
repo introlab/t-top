@@ -1,5 +1,4 @@
 #include <hbba_lite/core/HbbaLite.h>
-
 #include <hbba_lite/utils/HbbaLiteException.h>
 
 using namespace std;
@@ -52,13 +51,15 @@ void HbbaLite::checkStrategyResources(type_index desireType, const unordered_map
         auto it = m_resourcesByNames.find(pair.first);
         if (it == m_resourcesByNames.end())
         {
-            throw HbbaLiteException("A strategy for \"" + string(desireType.name()) +
-                "\" desires have an invalid resource (" + pair.first + ").");
+            throw HbbaLiteException("A strategy for \"" + string(desireType.name())
+                                    + "\" desires have an invalid resource (" + pair.first
+                                    + ").");
         }
         else if (pair.second > it->second)
         {
-            throw HbbaLiteException("A strategy for \"" + string(desireType.name()) +
-                "\" desires have an invalid resource count (" + pair.first + "=" + to_string(pair.second) + ").");
+            throw HbbaLiteException("A strategy for \"" + string(desireType.name())
+                                    + "\" desires have an invalid resource count ("
+                                    + pair.first + "=" + to_string(pair.second) + ").");
         }
     }
 }
@@ -71,9 +72,11 @@ void HbbaLite::run()
     {
         if (m_pendingDesiresSemaphore.tryAcquireFor(SEMAPHORE_WAIT_DURATION))
         {
-            lock_guard<mutex> lock(m_pendingDesiresMutex);
             vector<unique_ptr<Desire>> desires;
-            swap(m_pendingDesires, desires);
+            {
+                lock_guard<mutex> lock(m_pendingDesiresMutex);
+                swap(m_pendingDesires, desires);
+            }
             updateStrategies(move(desires));
         }
     }
@@ -122,4 +125,38 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
     {
         m_strategiesByDesireType[get<0>(s)][get<1>(s)]->enable(get<2>(s));
     }
+}
+
+std::vector<std::string> HbbaLite::getActiveStrategies() const
+{
+    vector<string> activeStrategies;
+
+    for (const auto& p : m_strategiesByDesireType)
+    {
+        for (const auto& i : p.second)
+        {
+            if (i->enabled())
+            {
+                for (const auto& p2: i->filterConfigurationsByName())
+                {
+                    activeStrategies.emplace_back(string(p.first.name()) + "::" + p2.first + "=" + to_string(i->enabled()));
+                }
+                break;
+            }
+        }
+    }
+
+    return activeStrategies;
+}
+
+std::vector<std::string> HbbaLite::getActiveDesires() const
+{
+    vector<string> activeDesires;
+
+    for (const auto& desire : m_desireSet->getEnabledDesires())
+    {
+        activeDesires.emplace_back(desire->type().name());
+    }
+
+    return activeDesires;
 }

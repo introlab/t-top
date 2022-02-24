@@ -1,0 +1,56 @@
+<launch>
+    <arg name="visualization" default="false"/>
+    <arg name="slam" default="true"/>
+    <arg name="simulation" default="false"/>
+    <arg name="use_echo_cancellation" default="true"/>
+    <arg name="echo_cancellation_source" default="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input" />
+    <arg name="echo_cancellation_dest" default="odas_echo_cancelled" />
+    <arg name="ec_volume_percent" default="90" />
+    <arg name="rviz" default="false"/>
+    <arg name="neural_network_inference_type" default="trt_gpu"/>
+
+
+    <!-- Sound interface echo cancellation -->
+    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg echo_cancellation_source) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
+
+
+    <!-- Platform nodes -->
+    <include file="$(find t_top)/launch/platform.launch"/>
+
+
+    <!-- Perceptions -->
+    <include file="$(find t_top)/launch/perceptions/odas.launch">
+        <arg if="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pa_echo_cancelled.cfg"/>
+        <arg unless="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pa.cfg"/>
+        <arg name="visualization" value="$(arg visualization)"/>
+        <arg name="rviz" value="$(arg rviz)"/>
+        <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
+    </include>
+
+    <include if="$(arg slam)" file="$(find t_top)/launch/perceptions/rtabmap.launch"/>
+
+    <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
+        <arg name="visualization" value="$(arg visualization)"/>
+        <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+    </include>
+
+
+    <!-- Behaviors -->
+    <include file="$(find t_top)/launch/behaviors/teleoperation.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
+
+    <include file="$(find t_top)/launch/behaviors/opentera.launch">
+        <arg name="database_path" value="~/.ros/opentera.yaml"/>
+    </include>
+
+    <include file="$(find t_top)/launch/behaviors/sound_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="min_activity" value="0.3"/>
+    </include>
+
+    <include file="$(find t_top)/launch/behaviors/face_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
+
+</launch>

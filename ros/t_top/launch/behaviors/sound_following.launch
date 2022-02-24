@@ -1,5 +1,6 @@
 <launch>
     <arg name="simulation"/>
+    <arg name="min_activity" default="0.1"/>
 
     <!-- Sound Following -->
     <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
@@ -9,7 +10,7 @@
         <param name="head_enabled" value="false"/>
         <param name="min_head_pitch_rad" value="-0.35"/>
         <param name="max_head_pitch_rad" value="0.35"/>
-        <param name="min_activity" value="0.1"/>
+        <param name="min_activity" value="$(arg min_activity)"/>
 
         <remap from="sst" to="audio_sst"/>
         <remap from="pose/filter_state" to="sound_following/filter_state"/>

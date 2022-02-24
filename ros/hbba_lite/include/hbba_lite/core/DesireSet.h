@@ -62,6 +62,7 @@ public:
 
     void enableAllDesires();
     void disableAllDesires();
+    std::vector<std::unique_ptr<Desire>> getEnabledDesires();
 
 private:
     void endTransaction(std::unique_lock<std::recursive_mutex> lock);

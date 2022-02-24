@@ -58,3 +58,11 @@ DanceDesire::DanceDesire(uint16_t intensity) : Desire(intensity)
 PlaySoundDesire::PlaySoundDesire(string path, uint16_t intensity) : Desire(intensity), m_path(move(path))
 {
 }
+
+TelepresenceDesire::TelepresenceDesire(uint16_t intensity) : Desire(intensity)
+{
+}
+
+TeleoperationDesire::TeleoperationDesire(uint16_t intensity) : Desire(intensity)
+{
+}

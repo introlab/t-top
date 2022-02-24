@@ -134,11 +134,12 @@ void DesireSet::endTransaction(unique_lock<recursive_mutex> lock)
     callObservers(move(lock));
 }
 
-void DesireSet::callObservers(unique_lock<recursive_mutex> desireLock)
+std::vector<std::unique_ptr<Desire>> DesireSet::getEnabledDesires()
 {
-    if (!m_hasChanged || m_isTransactionStarted)
+    unique_lock<recursive_mutex> lock(m_desireMutex);
+    if (m_isTransactionStarted)
     {
-        return;
+        return {};
     }
 
     vector<unique_ptr<Desire>> enabledDesires;
@@ -149,7 +150,18 @@ void DesireSet::callObservers(unique_lock<recursive_mutex> desireLock)
             enabledDesires.emplace_back(pair.second->clone());
         }
     }
+    return enabledDesires;
+}
 
+void DesireSet::callObservers(unique_lock<recursive_mutex> desireLock)
+{
+    if (!m_hasChanged || m_isTransactionStarted)
+    {
+        return;
+    }
+
+    vector<unique_ptr<Desire>> enabledDesires = getEnabledDesires();
+    
     desireLock.release();
 
     lock_guard<mutex> lock(m_observerMutex);
