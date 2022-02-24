@@ -18,7 +18,7 @@ In order to assemble the robot, you need to buy the following Items.
 | Standoff - M2x10mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/wurth-electronics-inc/971100244/9488622)           |
 | Standoff - M2x15mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/w%C3%BCrth-elektronik/971150244/9488640)           |
 | Standoff - M3x10mm                   | 8        | 1                    | 8                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24337/1532138)                |
-| Standoff - M3x25mm                   | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24342/1532143)                |
+| Standoff - M3x25mm                   | 3        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/24342/1532143)                |
 | Standoff - M3x10mm - Plastic         | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/keystone-electronics/25501/1532180)                |
 | M3 Plastic Nuts                      | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/w%C3%BCrth-elektronik/709940300/9488341)           |
 | JST B2P-VH                           | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/te-connectivity-amp-connectors/1-1123723-2/686925) |
@@ -71,7 +71,7 @@ In order to assemble the robot, you need to buy the following Items.
 | Micro-USB Cable - Right Angle        | 1        | 1                    | 1                | [Link](https://www.amazon.ca/-/fr/StarTech-Usbaub5cmd-Cordon-câble-micro/dp/B00EBGGXS2)                                 |
 | HDMI Cable                           | 1        | 1                    | 1                | [Link](https://www.amazon.ca/-/fr/Monoprice-113586-Ultra-Série-câble-vitesse/dp/B014ROO14U)                             |
 | 90-Degree USB-C Adapter              | 1        | 1                    | 1                | [Link](https://www.amazon.ca/-/fr/Adaptateur-femelle-extension-Chromebook-Pixelbook/dp/B07VN4SFWM)                      |
-| 1/8-Inch Stereo Jack Cable           | 2        | 1                    | 2                | [Link](https://www.amazon.ca/-/fr/StarTech-com-MU3MMS2RA-C%C3%A2ble-audio-st%C3%A9r%C3%A9o/dp/B004G7V5O8)               |
+| 1/8-Inch Stereo Jack Cable           | 2        | 1                    | 2                | [Link](https://www.amazon.ca/-/fr/UGREEN-C%C3%A2ble-audio-auxiliaire-st%C3%A9r%C3%A9o/dp/B00LM0U8I6/)               |
 | T-Connector                          | 1        | 3                    | 1                | [Link](https://www.amazon.ca/-/fr/ShareGoo-connecteurs-femelles-t%C3%A9l%C3%A9command%C3%A9-quadrirotor/dp/B08L1MY4YZ/) |
 | 605zz Bearing                        | 9        | 10                   | 1                | [Link](https://www.amazon.ca/-/fr/Generic-roulements-billes-miniatures-blindage/dp/B07VTKYF73)                          |
 | Fan - Noctua NF-A4x20                | 2        | 1                    | 2                | [Link](https://www.amazon.ca/Noctua-NF-A4x20-5V-Premium-Quality-Quiet/dp/B072Q3CMRW)                                    |

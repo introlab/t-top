@@ -135,15 +135,15 @@
 
 ![All Dynamixel](images/assemblies/09F%20all%20dynamixel.jpg)
 
-4. Connect the `Dynamixel with the ID 1` and the `Dynamixel with the ID 2` together with a `Dynamixel Cable`.
+4. Connect the `Dynamixel with the ID 1` and the `Dynamixel with the ID 2` together with a `Dynamixel cable`.
 
 ![Dynamixel Cable](images/assemblies/09F%20dynamixel%20cable.jpg)
 
-5. Connect the `Dynamixel with the ID 3` and the `Dynamixel with the ID 4` together with a `Dynamixel Cable`.
-6. Connect the `Dynamixel with the ID 5` and the `Dynamixel with the ID 6` together with a `Dynamixel Cable`.
-7. Connect the `Dynamixel with the ID 2` and the `Dynamixel with the ID 3` together with a `Dynamixel Cable`.
-8. Connect a `Dynamixel Cable` into the `Dynamixel with the ID 1`.
-9. Connect a `Dynamixel Cable` into the `Dynamixel with the ID 6`.
+5. Connect the `Dynamixel with the ID 3` and the `Dynamixel with the ID 4` together with a `Dynamixel cable`.
+6. Connect the `Dynamixel with the ID 5` and the `Dynamixel with the ID 6` together with a `Dynamixel cable`.
+7. Connect the `Dynamixel with the ID 2` and the `Dynamixel with the ID 3` together with a `Dynamixel cable`.
+8. Connect a `Dynamixel cable` into the `Dynamixel with the ID 1`.
+9. Connect a `Dynamixel cable` into the `Dynamixel with the ID 6`.
 10. Install the `Dynamixel XL430-W250-T cable covers` onto all `Dynamixel`.
 11. Install tie wraps to hold the cables, as shown in the following picture.
 
@@ -153,8 +153,8 @@
 
 ![USB Hub Supports](images/assemblies/09F%20USB%20hub%20supports.jpg)
 
-13. Connect the `Dynamixel Cable` of the `Dynamixel with the ID 1` to the OpenCR.
-14. Connect the `Dynamixel Cable` of the `Dynamixel with the ID 6` to the OpenCR.
+13. Connect the `Dynamixel cable` of the `Dynamixel with the ID 1` to the OpenCR.
+14. Connect the `Dynamixel cable` of the `Dynamixel with the ID 6` to the OpenCR.
 
 ![OpenCR Cables](images/assemblies/09F%20OpenCR%20cables.jpg)
 
@@ -183,3 +183,5 @@
 20. Connect the `OpenCR` to a `USB hub` with the `micro-USB cable`, as shown in the following picture.
 
 ![OpentCR Cable](images/assemblies/09F%20USB%20cable.jpg)
+
+21. Connect the `Dynamixel cables` to the `OpenCR`.
