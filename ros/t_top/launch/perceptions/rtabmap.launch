@@ -14,9 +14,10 @@
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
     <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
-        <param name="frame_id" type="string" value="camera_depth_optical_frame"/>
+        <param name="frame_id" type="string" value="base_link"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>
+        <param name="subscribe_rgb" type="bool" value="false"/>
 
         <param name="queue_size" type="int" value="10"/>
 

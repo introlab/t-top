@@ -1,0 +1,130 @@
+<launch>
+    <arg name="signaling_server_hostname" default="localhost"/>
+    <arg name="signaling_server_port" default="8080"/>
+    <arg name="signaling_server_password" default="abc"/>
+    <arg name="database_path" default="~/.ros/opentera.db"/>
+
+    <!-- Signaling server -->
+    <include file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
+        <arg name="signaling_server_port" value="$(arg signaling_server_port)" />
+        <arg name="signaling_server_password" value="$(arg signaling_server_password)" />
+        <arg name="signaling_server_robot_type" value="ttop" />
+        <arg name="python_executable" value="python3.8" />
+        <arg name="use_tls" value="true" />
+        <arg name="certificate" value="~/.ros/opentera/server-cert.pem" />
+        <arg name="key" value="~/.ros/opentera/server-key.pem" />
+    </include>
+
+    <!-- Map image generator -->
+    <include file="$(find map_image_generator)/launch/map_image_generator.launch" >
+        <arg name="refresh_rate_param" value="5"/>
+        <arg name="draw_goals" value="false"/>
+        <arg name="draw_global_path" value="false"/>
+        <arg name="centered_robot" value="true"/>
+        <arg name="robot_vertical_offset" value="0"/>
+        <arg name="input_sound_sources_topic" value="/audio_sst"/>
+        <arg name="input_occupancy_grid_topic" value="/grid_map"/>
+        <arg name="robot_frame_param" value="torso_base"/>
+    </include>
+
+    <!-- Front camera -->
+    <include file="$(find opentera_webrtc_ros)/launch/ros_stream_client.launch">
+        <arg name="name" value="topic_streamer1"/>
+        <arg name="is_stand_alone" value="true"/>
+        <arg name="can_send_audio_stream" value="true"/>
+        <arg name="can_receive_audio_stream" value="true"/>
+        <arg name="can_send_video_stream" value="true"/>
+        <arg name="can_receive_video_stream" value="true"/>
+        <arg name="is_screen_cast" value="false"/>
+        <arg name="needs_denoising" value="false"/>
+        <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
+        <arg name="client_name" value="Robot Camera"/>
+        <arg name="room_name" value="VideoConf"/>
+        <arg name="room_password" value="$(arg signaling_server_password)"/>
+        <arg name="input_camera_topic" value="/camera/color/image_raw"/>
+        <arg name="input_audio_topic" value="/audio_webrtc_outgoing_signed_16_48000"/>
+        <arg name="output_audio_mixed_topic" value="/audio_webrtc_incoming_signed_16_48000"/>
+        <arg name="verify_ssl" value="false"/>
+    </include>
+
+    <!-- Map image stream -->
+    <include file="$(find opentera_webrtc_ros)/launch/ros_stream_client.launch">
+        <arg name="name" value="topic_streamer3"/>
+        <arg name="is_stand_alone" value="true"/>
+        <arg name="can_send_audio_stream" value="false"/>
+        <arg name="can_receive_audio_stream" value="false"/>
+        <arg name="can_send_video_stream" value="true"/>
+        <arg name="can_receive_video_stream" value="true"/>
+        <arg name="is_screen_cast" value="true"/>
+        <arg name="needs_denoising" value="false"/>
+        <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
+        <arg name="client_name" value="Map image"/>
+        <arg name="room_name" value="Map"/>
+        <arg name="room_password" value="$(arg signaling_server_password)"/>
+        <arg name="input_camera_topic" value="/map_image_generator/image"/>
+        <arg name="verify_ssl" value="false"/>
+    </include>
+
+    <!-- Data Channel  -->
+    <include file="$(find opentera_webrtc_ros)/launch/ros_data_channel_client.launch">
+        <arg name="name" value="data_streamer"/>
+        <arg name="is_stand_alone" value="true"/>
+
+        <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
+        <arg name="client_name" value="Robot Data Channel"/>
+        <arg name="room_name" value="Teleop"/>
+        <arg name="room_password" value="$(arg signaling_server_password)"/>
+        <arg name="verify_ssl" value="false"/>
+    </include>
+
+    <!-- Json Message Handler -->
+    <include file="$(find opentera_webrtc_ros)/launch/ros_json_data_handler.launch">
+        <arg name="name" value="json_data_handler"/>
+        <arg name="input_topic" value="/webrtc_data_incoming"/>
+        <arg name="linear_multiplier" value="0.5"/>
+        <arg name="angular_multiplier" value="0.35"/>
+        <arg name="cmd_vel_topic" value="/teleoperation/cmd_vel"/>
+    </include>
+
+    <!-- Playback for audio coming from webrtc -->
+    <node pkg="audio_utils" type="alsa_playback_node" name="opentera_playback_node" respawn="true">
+        <param name="device" value="default"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="48000"/>
+        <param name="frame_sample_count" value="480"/>
+        <param name="latency_us" value="100000"/>
+
+        <remap from="audio_in" to="audio_webrtc_incoming_signed_16_48000"/>
+    </node>
+
+    <!-- Audio resampling for audio going to webrtc -->
+    <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
+        <param name="input_format" value="signed_16"/>
+        <param name="output_format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="input_sampling_frequency" value="44100"/>
+        <param name="output_sampling_frequency" value="48000"/>
+        <param name="input_frame_sample_count" value="2048"/>
+
+        <remap from="audio_in" to="audio_signed_16_44100"/>
+        <remap from="audio_out" to="audio_webrtc_outgoing_signed_16_48000"/>
+    </node>
+
+    <!-- Robot status -->
+    <node name="robot_status" type="robot_status.py" pkg="opentera_webrtc_demos" />
+
+    <!-- OpenTera Robot GUI -->
+    <node pkg="opentera_webrtc_robot_gui" type="opentera_webrtc_robot_gui_node" name="robot_gui" output="screen" respawn="true">
+        <remap from="/front_camera/image_raw" to="/camera/color/image_raw"/>
+    </node>
+
+    <!-- Labels -->
+    <node name="labels_manager" type="labels_manager.py" pkg="opentera_webrtc_ros" output="screen">
+        <param name="database_path" value="$(arg database_path)"/>
+
+        <remap from="waypoint_reached" to="webrtc_data_outgoing"/>
+        <remap from="stored_labels_text" to="webrtc_data_outgoing"/>
+    </node>
+
+</launch>
