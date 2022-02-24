@@ -5,7 +5,7 @@
 
 void callback(const std_msgs::Int8::ConstPtr& msg)
 {
-  ROS_INFO("Data received : %i", static_cast<int>(msg->data));
+    ROS_INFO("Data received : %i", static_cast<int>(msg->data));
 }
 
 int main(int argc, char** argv)
