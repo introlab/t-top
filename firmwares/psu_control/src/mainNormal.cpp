@@ -41,6 +41,7 @@ void setup() {
   setupAudioPowerAmplifier();
   setupOpencrCommandHandler();
 
+  onStatusTicker();
   statusTicker.start();
 }
 
@@ -102,6 +103,7 @@ void onStatusTicker() {
   DEBUG_SERIAL.print("externalTemperatureCelsius=");
   DEBUG_SERIAL.println(externalTemperatureCelsius);
   DEBUG_SERIAL.println("Send status");
+  DEBUG_SERIAL.println();
   opencrCommandSender.sendStatusCommand(isBatteryCharging, stateOfCharge, current, voltage);
 }
 

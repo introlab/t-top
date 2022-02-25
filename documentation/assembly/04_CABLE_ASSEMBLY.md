@@ -97,15 +97,15 @@
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
 | `Speaker (Dayton Audio DMA45-8 1)`   | 4        | ![Fan](images/electronics/Dayton%20Audio%20DMA45-8%201.jpg)                                  |
-| `18 AWG Red Wire Spool`              | 1        | ![18 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `18 AWG Black Wire Spool`            | 1        | ![18 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
-| `18 AWG Ferrule`                     | 8        | ![18 AWG Ferrule](images/electronics/18%20AWG%20ferrule.jpg)                                 |
+| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
+| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
+| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20%20AWG%20ferrule.jpg)                                 |
 
 ### Steps
-1. Cut a `18 AWG red wire` of 15 cm long and a `18 AWG black wire` of 15 cm long.
-2. Cut a `18 AWG red wire` of 20 cm long and a `18 AWG black wire` of 20 cm long.
-3. Cut a `18 AWG red wire` of 40 cm long and a `18 AWG black wire` of 40 cm long.
-4. Cut a `18 AWG red wire` of 60 cm long and a `18 AWG black wire` of 60 cm long.
+1. Cut a `20 AWG red wire` of 15 cm long and a `20 AWG black wire` of 15 cm long.
+2. Cut a `20 AWG red wire` of 20 cm long and a `20 AWG black wire` of 20 cm long.
+3. Cut a `20 AWG red wire` of 35 cm long and a `20 AWG black wire` of 35 cm long.
+4. Cut a `20 AWG red wire` of 52 cm long and a `20 AWG black wire` of 52 cm long.
 5. For each pair, solder the black wire to the biggest tab of a speaker.
 6. For each pair, solder the red wire to the other tab of a speaker.
 
@@ -123,7 +123,7 @@
 
 ![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20speaker%20twist%20heat%20shrink%20tube.jpg)
 
-10. For each wire, crimp a `18 AWG ferrule`.
+10. For each wire, crimp a `20 AWG ferrule`.
 
 ![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20ferrule.jpg)
 
@@ -140,7 +140,7 @@
 | `Heat Shrink Tube`                   | 4        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
-1. Cut 2 `22 AWG red wire` of 42 cm long.
+1. Cut 2 `22 AWG red wire` of 38 cm long.
 2. Solder the wires to the `power switch`.
 
 ![Power Switch Wires](images/assemblies/04E%20power%20switch%20wires.jpg)
@@ -208,6 +208,9 @@
 | `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
 | `3-Position Female JST XH Connector` | 2        | ![3-Position Female JST XH Connector](images/electronics/3-position%20female%20JST%20XH.jpg) |
 | `JST XH Crimp Contact`               | 6        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
+| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
+| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
+| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20%20AWG%20ferrule.jpg)                                 |
 | `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
@@ -236,6 +239,11 @@
 
 ![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20JST%20XH.jpg)
 
+11. Cut 2 `20 AWG red wires` of 24 cm long.
+12. Cut 2 `20 AWG black wires` of 24 cm long.
+13. For each wire, crimp a `20 AWG ferrule` on both ends.
+
+![Power Wires](images/assemblies/04G%20power%20wires.jpg)
 
 ## H. 19V Power Adapter
 ### Required Parts
@@ -254,21 +262,22 @@
 
 
 ## I. Battery Charger
-TODO SMBus
-
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
 | `Robot Power Connector - Female`     | 1        | ![Robot Power Connector - Female](images/electronics/Robot%20Power%20Connector%20Female.jpg) |
 | `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
 | `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
-| `16 AWG Ferrule`                     | 4        | ![18 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
+| `16 AWG Ferrule`                     | 4        | ![16 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
 | `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST%20VHR-2N.jpg)                                 |
 | `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST%20SVH-21T-1.1.jpg)                   |
+| `JST PHR-6 Cable`                    | 1        | ![JST PHR-6 Cable](images/electronics/JST%20PHR-6%20Cable.jpg)                               |
+| `6-Position Female JST XH Connector` | 1        | ![6-Position Female JST XH Connector](images/electronics/6-position%20female%20JST%20XH.jpg) |
+| `JST XH Crimp Contact`               | 5        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
 | `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
-1. Cut a `16 AWG red wire` of 8.5 cm long.
-2. Cut a `16 AWG black wire` of 8.5 cm long.
+1. Cut a `16 AWG red wire` of 8 cm long.
+2. Cut a `16 AWG black wire` of 8 cm long.
 3. For each wire, crimp a `16 AWG ferrule` on one end.
 
 ![Ferrules](images/assemblies/04I%20ferrule.jpg)
@@ -298,6 +307,20 @@ TODO SMBus
 11. Insert the wires into a `JST VHR-2N connector`, as shown in the following picture.
 
 ![JST VHR-2N Connector](images/assemblies/04I%20JST%20VHR-2N%20Connector.jpg)
+
+12. Remove the following wire from the `JST PHR-6 cable`.
+
+![JST PHR-6 Cable](images/assemblies/04I%20JST%20PHR-6%20Cable.jpg)
+
+13. Cut the `JST PHR-6 cable` wires to 11 cm.
+14. For each wire of the `JST PHR-6 cable`, crimp a `JST XH crimp contact`.
+
+![JST PHR-6 Cable Crimp](images/assemblies/04I%20JST%20PHR-6%20Cable%20Crimp.jpg)
+
+15. Insert the wires into a `6-Position female JST XH connector`, as shown in the following pictures.
+
+![JST PHR-6 Connector 1](images/assemblies/04I%20JST%20PHR-6%20Connector%201.jpg)
+![JST PHR-6 Connector 2](images/assemblies/04I%20JST%20PHR-6%20Connector%202.jpg)
 
 
 ## J. Slip Ring Cables
@@ -353,7 +376,7 @@ TODO SMBus
 6. Solder the red wire of the first `female power connector` to matching wires of the top side of the `slip ring`.
 7. Install the `big heat shrink tubes`.
 
-![Male Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+![Male Power Connector](images/assemblies/04K%20power%20connector%20male.jpg)
 ![Female Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
 
 8. Solder the black wire of the first `female power connector` to 5 wires of the bottom side of the `slip ring`.
@@ -362,7 +385,7 @@ TODO SMBus
 9. Solder the red wire of the first `male power connector` to matching wires of the top side of the `slip ring`.
 10. Install the `big heat shrink tubes`.
 
-![Male Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+![Male Power Connector](images/assemblies/04K%20power%20connector%20male.jpg)
 ![Female Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
 
 11. Crimp `JST XH crimp contacts` onto 4 wires of the bottom side of the `slip ring`.
@@ -419,3 +442,18 @@ TODO SMBus
 45. Install the `big heat shrink tube`.
 
 ![Ethernet](images/assemblies/04K%20ethernet.jpg)
+
+## L. Buck-Boost Wires
+### Required Parts
+| Part                                 | Quantity | Image                                                                                        |
+| ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
+| `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
+| `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
+| `16 AWG Ferrule`                     | 8        | ![16 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
+
+### Steps
+1. Cut a `16 AWG red wire` of 6 cm long.
+2. Cut a `16 AWG black wire` of 6 cm long.
+3. Cut a `16 AWG red wire` of 8 cm long.
+4. Cut a `16 AWG black wire` of 8 cm long.
+5. For each wire, crimp a `16 AWG ferrule` on both ends.

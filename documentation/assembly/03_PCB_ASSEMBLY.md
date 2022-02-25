@@ -41,11 +41,11 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 16. Solder all JST XH male connectors (D1, D2, D3, D4, D5, D6, SW1, J4, J6, J7, J8, J9, TH1, M1 and M2).
 17. Cut the trace between the pads to separate VIN from VUSB.
 
-![Soldered Adafruit MAX9744](images/assemblies/03B%20cut%20Teensy.jpg)
+![Teensy](images/assemblies/03B%20cut%20Teensy.jpg)
 
 18. Solder the male headers to the Teensy LC.
 
-![Soldered Adafruit MAX9744](images/assemblies/03B%20Teensy.jpg)
+![Teensy](images/assemblies/03B%20Teensy.jpg)
 
 19. Solder the female headers (U3) to the PCB.
 20. Solder the fuse holders (F1).
@@ -57,7 +57,7 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 26. Solder U2.
 27. Clip the Teensy LC onto the PCB.
 
-![Soldered Adafruit MAX9744](images/assemblies/03B%20all.jpg)
+![Soldered PSU Control PCB](images/assemblies/03B%20all.jpg)
 
 ## C. 12V Buck-Boost PCB
 ### Required Parts
@@ -93,6 +93,8 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 
 ![12V Buck-Boost PCB - All](images/assemblies/03C%20all.jpg)
 
+24. Adjust the output voltage to 11.5 V with RV2.
+
 ## D. 19V Buck-Boost PCB
 ### Required Parts
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
@@ -123,6 +125,8 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 20. Solder C19.
 
 ![19V Buck-Boost PCB - All](images/assemblies/03D%20all.jpg)
+
+21. Adjust the output voltage to 19 V with RV2.
 
 ## E. Battery Charger - RRC-PMM240
 

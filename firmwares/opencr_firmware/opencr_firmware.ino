@@ -66,6 +66,7 @@ DynamixelWorkbench dynamixelWorkbench;
 StewartPlatformControllerDyna stewartPlatformController(dynamixelWorkbench);
 TorsoControllerDyna torsoController(dynamixelWorkbench);
 
+const unsigned long PSU_CONTROL_BAUD_RATE = 9600;
 PsuControlCommandHandler psuControlCommandHandler;
 PsuControlCommandSender psuControlCommandSender;
 
@@ -118,6 +119,7 @@ void setupControllers() {
 }
 
 void setupPsuControlCommandHandler() {
+  Serial1.begin(PSU_CONTROL_BAUD_RATE);
   psuControlCommandHandler.setStatusCommandHandler(&onStatusCommand);
 }
 
@@ -151,7 +153,7 @@ void setAudioPowerAmplifierVolume(const std_msgs::Int8& msg) {
   psuControlCommandSender.sendVolumeCommand(msg.data);
 }
 
-void onRosTimer() {  
+void onRosTimer() {
   nh.spinOnce();
 }
 

@@ -67,6 +67,6 @@ constexpr float INA_SHUNT_RESISTOR = 0.004;
 constexpr float INA_MAX_CURRENT = 10;
 #define CURRENT_VOLTAGE_SENSOR_WIRE Wire1
 
-constexpr uint32_t STATUS_TICKER_INTERVAL_MS = 10000;
+constexpr uint32_t STATUS_TICKER_INTERVAL_MS = 1000;
 
 #endif

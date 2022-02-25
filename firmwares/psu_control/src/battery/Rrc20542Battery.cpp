@@ -25,7 +25,7 @@ bool Rrc20542Battery::readCurrent(float& current, size_t trialCount) {
   uint16_t value;
   if (!readWordTrials(0x0a, value, trialCount)) { return false; }
 
-  current = value;
+  current = static_cast<int16_t>(value);
   current /= 1000;
   return true;
 }
@@ -34,7 +34,7 @@ bool Rrc20542Battery::readAverageCurrent(float& current, size_t trialCount) {
   uint16_t value;
   if (!readWordTrials(0x0b, value, trialCount)) { return false; }
 
-  current = value;
+  current = static_cast<int16_t>(value);
   current /= 1000;
   return true;
 }

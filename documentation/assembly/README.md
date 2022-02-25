@@ -26,4 +26,5 @@
 8. [Torso Bottom Assembly](08_TORSO_BOTTOM_ASSEMBLY.md)
 9. [Stewart Platform Assembly](09_STEWART_PLATFORM_ASSEMBLY.md)
 10. [Head Assembly](10_HEAD_ASSEMBLY.md)
-11. [MCU Configuration](11_MCU_CONFIGURATION.md)
+11. [Robot Assembly](11_ROBOT_ASSEMBLY.md)
+12. [MCU Configuration](12_MCU_CONFIGURATION.md)

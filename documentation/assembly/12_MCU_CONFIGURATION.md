@@ -1,4 +1,4 @@
-# 11. MCU Configuration
+# 12. MCU Configuration
 
 ## Required Parts
 | Part                     | Quantity |
