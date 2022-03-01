@@ -32,9 +32,9 @@ class FaceDescriptorExtractor(DnnModel):
         return IMAGE_SIZE
 
     def __call__(self, image_tensor, pose_coordinates, pose_presence):
-        landmarks, theoretical_landmark = get_landmarks_from_pose(pose_coordinates, pose_presence
+        landmarks, theoretical_landmark = get_landmarks_from_pose(pose_coordinates, pose_presence)
         transform = cv2.getAffineTransform(landmarks.astype(np.float32),
-                                            (theoretical_landmark * np.array((IMAGE_SIZE[1], IMAGE_SIZE[0]))).astype(np.float32))
+                                           (theoretical_landmark * np.array((IMAGE_SIZE[1], IMAGE_SIZE[0]))).astype(np.float32))
         try:
             theta = cv2_transform_to_theta(transform, image_tensor.size(1), image_tensor.size(2), IMAGE_SIZE[0], IMAGE_SIZE[1])
         except np.linalg.LinAlgError:
