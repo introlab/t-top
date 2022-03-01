@@ -24,7 +24,7 @@ MM_TO_M = 0.001
 
 class Stopwatch:
     def __init__(self, prefix):
-        self._prefix = prefix
+        self._prefix = 'video_analyzer_node.py - ' + prefix
 
     def __enter__(self):
         self._start = time.time()
@@ -104,7 +104,8 @@ class VideoAnalyzerNode:
             else:
                 person_predictions.append(None)
 
-        self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header, object_corners)
+        with Stopwatch('self._publish_video_analysis'):
+            self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header, object_corners)
 
         if not self._analysed_image_hbba_filter_state.is_filtering_all_messages:
             self._publish_analysed_image(color_image, header, predictions, person_predictions)

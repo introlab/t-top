@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 import numpy as np
 
@@ -14,6 +15,16 @@ from pose_estimation.pose_estimator import get_coordinates
 
 
 IMAGE_SIZE = (256, 192)
+
+class Stopwatch:
+    def __init__(self, prefix):
+        self._prefix = 'pose_estimator.py' + prefix
+
+    def __enter__(self):
+        self._start = time.time()
+
+    def __exit__(self, *args):
+        print(self._prefix + ' - elapsed time', time.time() - self._start)
 
 
 class PoseEstimator(DnnModel):
@@ -73,17 +84,21 @@ class PoseEstimator(DnnModel):
         with torch.no_grad():
             height = image_tensor.size(1)
             width = image_tensor.size(2)
-            image_tensor = F.interpolate(image_tensor.to(self._device).unsqueeze(0), size=IMAGE_SIZE, mode='bilinear')
-            image_tensor = self._normalization(image_tensor.squeeze(0))
-            pose_heatmaps = super(PoseEstimator, self).__call__(image_tensor.unsqueeze(0))
+            with Stopwatch('transforms'):
+                image_tensor = F.interpolate(image_tensor.to(self._device).unsqueeze(0), size=IMAGE_SIZE, mode='bilinear')
+                image_tensor = self._normalization(image_tensor.squeeze(0))
+            with Stopwatch('dnn'):
+                pose_heatmaps = super(PoseEstimator, self).__call__(image_tensor.unsqueeze(0))
 
+            with Stopwatch('get_coordinates'):
             heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
             heatmap_coordinates = heatmap_coordinates.cpu()
             presence = presence.cpu()
 
-            scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
-            for i in range(heatmap_coordinates.size()[1]):
-                scaled_coordinates[i, 0] = heatmap_coordinates[0, i, 0] / pose_heatmaps.size()[3] * width
-                scaled_coordinates[i, 1] = heatmap_coordinates[0, i, 1] / pose_heatmaps.size()[2] * height
+            with Stopwatch('for'):
+                scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
+                for i in range(heatmap_coordinates.size()[1]):
+                    scaled_coordinates[i, 0] = heatmap_coordinates[0, i, 0] / pose_heatmaps.size()[3] * width
+                    scaled_coordinates[i, 1] = heatmap_coordinates[0, i, 1] / pose_heatmaps.size()[2] * height
 
             return scaled_coordinates, presence[0]
