@@ -43,28 +43,44 @@ class PoseEstimator(nn.Module):
 
         return nn.Sequential(*layers)
 
+import time
+
+class Stopwatch:
+    def __init__(self, prefix):
+        self._prefix = 'training/pose_estimator.py - ' + prefix
+
+    def __enter__(self):
+        self._start = time.time()
+
+    def __exit__(self, *args):
+        print(self._prefix + ' - elapsed time', time.time() - self._start)
+
 
 def get_coordinates(heatmaps):
     height = heatmaps.size()[2]
     width = heatmaps.size()[3]
 
-    coordinates = torch.zeros((heatmaps.size()[0], heatmaps.size()[1], 2), device=heatmaps.device)
-    heatmaps = heatmaps.reshape(heatmaps.size()[0], heatmaps.size()[1], heatmaps.size()[2] * heatmaps.size()[3])
-    heatmaps = heatmaps.permute(2, 0, 1)
+    with Stopwatch('init'):
+        coordinates = torch.zeros((heatmaps.size()[0], heatmaps.size()[1], 2), device=heatmaps.device)
+        heatmaps = heatmaps.reshape(heatmaps.size()[0], heatmaps.size()[1], heatmaps.size()[2] * heatmaps.size()[3])
+        heatmaps = heatmaps.permute(2, 0, 1)
 
-    indexes = torch.argmax(heatmaps, dim=0)
-    presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
-    heatmaps = heatmaps.permute(1, 2, 0)
+    with Stopwatch('argmax'):
+        indexes = torch.argmax(heatmaps, dim=0)
+        presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
+        heatmaps = heatmaps.permute(1, 2, 0)
 
-    indexes = indexes.cpu().detach().numpy()
-    y, x = np.unravel_index(indexes.flatten(), (height, width))
-    y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
-    x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
-    y = torch.from_numpy(y).to(heatmaps.device)
-    x = torch.from_numpy(x).to(heatmaps.device)
+    with Stopwatch('unravel_index'):
+        indexes = indexes.cpu().detach().numpy()
+        y, x = np.unravel_index(indexes.flatten(), (height, width))
+        y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
+        x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
+        y = torch.from_numpy(y).to(heatmaps.device)
+        x = torch.from_numpy(x).to(heatmaps.device)
 
-    for i in range(heatmaps.size()[1]):
-        coordinates[:, i, 0] = x[:, i]
-        coordinates[:, i, 1] = y[:, i]
+    with Stopwatch('for'):
+        for i in range(heatmaps.size()[1]):
+            coordinates[:, i, 0] = x[:, i]
+            coordinates[:, i, 1] = y[:, i]
 
     return coordinates, presence

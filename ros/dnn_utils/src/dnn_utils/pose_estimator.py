@@ -18,7 +18,7 @@ IMAGE_SIZE = (256, 192)
 
 class Stopwatch:
     def __init__(self, prefix):
-        self._prefix = 'pose_estimator.py' + prefix
+        self._prefix = 'pose_estimator.py - ' + prefix
 
     def __enter__(self):
         self._start = time.time()
