@@ -41,46 +41,31 @@ class PoseEstimator(nn.Module):
 
         return nn.Sequential(*layers)
 
-import time
-
-class Stopwatch:
-    def __init__(self, prefix):
-        self._prefix = 'training/pose_estimator.py - ' + prefix
-
-    def __enter__(self):
-        self._start = time.time()
-
-    def __exit__(self, *args):
-        print(self._prefix + ' - elapsed time', time.time() - self._start)
-
 
 def get_coordinates(heatmaps):
     height = heatmaps.size()[2]
     width = heatmaps.size()[3]
 
-    with Stopwatch('init'):
-        coordinates = torch.zeros((heatmaps.size()[0], heatmaps.size()[1], 2), device=heatmaps.device)
-        heatmaps = heatmaps.reshape(heatmaps.size()[0], heatmaps.size()[1], heatmaps.size()[2] * heatmaps.size()[3])
-        heatmaps = heatmaps.permute(2, 0, 1)
+    coordinates = torch.zeros((heatmaps.size()[0], heatmaps.size()[1], 2), device=heatmaps.device)
+    heatmaps = heatmaps.reshape(heatmaps.size()[0], heatmaps.size()[1], heatmaps.size()[2] * heatmaps.size()[3])
+    heatmaps = heatmaps.permute(2, 0, 1)
 
-    with Stopwatch('argmax'):
-        indexes = torch.argmax(heatmaps, dim=0)
-        presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
-        heatmaps = heatmaps.permute(1, 2, 0)
+    indexes = torch.argmax(heatmaps, dim=0)
+    presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
+    heatmaps = heatmaps.permute(1, 2, 0)
 
-    with Stopwatch('unravel_index'):
-        y, x = unravel_index(indexes.flatten(), (height, width))
-        y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
-        x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
+    y, x = unravel_index(indexes.flatten(), (height, width))
+    y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
+    x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
 
-    with Stopwatch('for'):
-        heatmaps_indexes = torch.arange(heatmaps.size()[1], device=heatmaps.device)
-        coordinates[:, heatmaps_indexes, 0] = x[:, heatmaps_indexes].float()
-        coordinates[:, heatmaps_indexes, 1] = y[:, heatmaps_indexes].float()
+    heatmaps_indexes = torch.arange(heatmaps.size()[1], device=heatmaps.device)
+    coordinates[:, heatmaps_indexes, 0] = x[:, heatmaps_indexes].float()
+    coordinates[:, heatmaps_indexes, 1] = y[:, heatmaps_indexes].float()
 
     return coordinates, presence
 
 
+# Based on https://discuss.pytorch.org/t/how-to-do-a-unravel-index-in-pytorch-just-like-in-numpy/12987/2
 def unravel_index(index, shape):
     out = []
     for dim in reversed(shape):
