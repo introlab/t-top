@@ -97,8 +97,7 @@ class PoseEstimator(DnnModel):
 
             with Stopwatch('for'):
                 scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
-                for i in range(heatmap_coordinates.size()[1]):
-                    scaled_coordinates[i, 0] = heatmap_coordinates[0, i, 0] / pose_heatmaps.size()[3] * width
-                    scaled_coordinates[i, 1] = heatmap_coordinates[0, i, 1] / pose_heatmaps.size()[2] * height
+                scaled_coordinates[:, 0] = heatmap_coordinates[0, :, 0] / pose_heatmaps.size()[3] * width
+                scaled_coordinates[:, 1] = heatmap_coordinates[0, :, 1] / pose_heatmaps.size()[2] * height
 
             return scaled_coordinates, presence[0]

@@ -74,9 +74,9 @@ def get_coordinates(heatmaps):
         x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
 
     with Stopwatch('for'):
-        for i in range(heatmaps.size()[1]):
-            coordinates[:, i, 0] = x[:, i]
-            coordinates[:, i, 1] = y[:, i]
+        heatmaps_indexes = torch.arange(heatmaps.size()[1], device=heatmaps.device)
+        coordinates[:, heatmaps_indexes, 0] = x[:, heatmaps_indexes].float()
+        coordinates[:, heatmaps_indexes, 1] = y[:, heatmaps_indexes].float()
 
     return coordinates, presence
 
