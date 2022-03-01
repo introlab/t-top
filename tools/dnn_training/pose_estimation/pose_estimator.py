@@ -70,11 +70,14 @@ def get_coordinates(heatmaps):
         presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
         heatmaps = heatmaps.permute(1, 2, 0)
 
-    with Stopwatch('unravel_index'):
+    with Stopwatch('indexes.cpu().detach().numpy()'):
         indexes = indexes.cpu().detach().numpy()
+    with Stopwatch('np.unravel_index(indexes.flatten(), (height, width))'):
         y, x = np.unravel_index(indexes.flatten(), (height, width))
+    with Stopwatch('reshape'):
         y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
         x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
+    with Stopwatch('torch.from_numpy(y).to(heatmaps.device)'):
         y = torch.from_numpy(y).to(heatmaps.device)
         x = torch.from_numpy(x).to(heatmaps.device)
 
