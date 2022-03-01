@@ -165,8 +165,9 @@ def inv_3x3(x):
 
 # Faster than np.linalg.det for 3x3 matrix (https://github.com/numpy/numpy/issues/17166)
 def det_3x3(x):
-    x00, x01, x02, x10, x11, x12, x20, x21, x22 = x.ravel()
     assert len(x.shape) == 2 and x.shape[0] == 3 and x.shape[1] == 3
+
+    x00, x01, x02, x10, x11, x12, x20, x21, x22 = x.ravel()
     return x00 * (x11 * x22 - x21 * x12) - \
            x01 * (x10 * x22 - x20 * x12) + \
            x02 * (x10 * x21 - x20 * x11)
