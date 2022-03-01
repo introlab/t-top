@@ -1,5 +1,3 @@
-import numpy as np
-
 import torch
 import torch.nn as nn
 
@@ -70,16 +68,10 @@ def get_coordinates(heatmaps):
         presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
         heatmaps = heatmaps.permute(1, 2, 0)
 
-    with Stopwatch('indexes.cpu().detach().numpy()'):
-        indexes = indexes.cpu().detach().numpy()
-    with Stopwatch('np.unravel_index(indexes.flatten(), (height, width))'):
-        y, x = np.unravel_index(indexes.flatten(), (height, width))
-    with Stopwatch('reshape'):
+    with Stopwatch('unravel_index'):
+        y, x = unravel_index(indexes.flatten(), (height, width))
         y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
         x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
-    with Stopwatch('torch.from_numpy(y).to(heatmaps.device)'):
-        y = torch.from_numpy(y).to(heatmaps.device)
-        x = torch.from_numpy(x).to(heatmaps.device)
 
     with Stopwatch('for'):
         for i in range(heatmaps.size()[1]):
@@ -87,3 +79,11 @@ def get_coordinates(heatmaps):
             coordinates[:, i, 1] = y[:, i]
 
     return coordinates, presence
+
+
+def unravel_index(index, shape):
+    out = []
+    for dim in reversed(shape):
+        out.append(index % dim)
+        index = index // dim
+    return tuple(reversed(out))
