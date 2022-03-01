@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import time
 import traceback
 
 import numpy as np
@@ -21,16 +20,6 @@ from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExt
 import hbba_lite
 
 MM_TO_M = 0.001
-
-class Stopwatch:
-    def __init__(self, prefix):
-        self._prefix = 'video_analyzer_node.py - ' + prefix
-
-    def __enter__(self):
-        self._start = time.time()
-
-    def __exit__(self, *args):
-        print(self._prefix + ' - elapsed time', time.time() - self._start)
 
 
 class VideoAnalyzerNode:
@@ -81,10 +70,8 @@ class VideoAnalyzerNode:
             rospy.logerr('Image analysis error: {} \n {}'.format(e, traceback.format_exc()))
 
     def _analyse(self, color_image, depth_image, depth_camera_info, header):
-        with Stopwatch('self._convert_color_image_to_tensor(color_image)'):
-            color_image_tensor = self._convert_color_image_to_tensor(color_image)
-        with Stopwatch('self._object_detector(color_image_tensor)'):
-            predictions = self._object_detector(color_image_tensor)
+        color_image_tensor = self._convert_color_image_to_tensor(color_image)
+        predictions = self._object_detector(color_image_tensor)
 
         person_predictions = []
         object_images = []
@@ -104,8 +91,7 @@ class VideoAnalyzerNode:
             else:
                 person_predictions.append(None)
 
-        with Stopwatch('self._publish_video_analysis'):
-            self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header, object_corners)
+        self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header, object_corners)
 
         if not self._analysed_image_hbba_filter_state.is_filtering_all_messages:
             self._publish_analysed_image(color_image, header, predictions, person_predictions)
@@ -114,15 +100,12 @@ class VideoAnalyzerNode:
         return torch.from_numpy(color_image).to(self._object_detector.device()).permute(2, 0, 1).float() / 255
 
     def _analyse_person(self, cv_color_image, color_image_tensor, x0, y0):
-        with Stopwatch('self._pose_estimator(color_image_tensor)'):
-            pose_coordinates, pose_confidence = self._pose_estimator(color_image_tensor)
+        pose_coordinates, pose_confidence = self._pose_estimator(color_image_tensor)
         pose_image = cv_color_image.copy()
-        with Stopwatch('self._draw_person_pose(pose_image, pose_coordinates, pose_confidence)'):
-            self._draw_person_pose(pose_image, pose_coordinates, pose_confidence)
+        self._draw_person_pose(pose_image, pose_coordinates, pose_confidence)
 
         try:
-            with Stopwatch('self._face_descriptor_extractor(color_image_tensor, pose_coordinates, pose_confidence)'):
-                face_descriptor, face_image = self._face_descriptor_extractor(color_image_tensor, pose_coordinates, pose_confidence)
+            face_descriptor, face_image = self._face_descriptor_extractor(color_image_tensor, pose_coordinates, pose_confidence)
         except ValueError:
             face_descriptor = torch.tensor([])
             face_image = np.zeros((1, 1, 3), np.uint8)
