@@ -92,12 +92,10 @@ class PoseEstimator(DnnModel):
 
             with Stopwatch('get_coordinates'):
                 heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
-                heatmap_coordinates = heatmap_coordinates.cpu()
-                presence = presence.cpu()
 
             with Stopwatch('for'):
-                scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
+                scaled_coordinates = torch.zeros(heatmap_coordinates.size()[1], 2, device=self._device)
                 scaled_coordinates[:, 0] = heatmap_coordinates[0, :, 0] / pose_heatmaps.size()[3] * width
                 scaled_coordinates[:, 1] = heatmap_coordinates[0, :, 1] / pose_heatmaps.size()[2] * height
 
-            return scaled_coordinates, presence[0]
+            return scaled_coordinates.cpu().numpy(), presence.cpu().numpy()[0]
