@@ -91,9 +91,9 @@ class PoseEstimator(DnnModel):
                 pose_heatmaps = super(PoseEstimator, self).__call__(image_tensor.unsqueeze(0))
 
             with Stopwatch('get_coordinates'):
-            heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
-            heatmap_coordinates = heatmap_coordinates.cpu()
-            presence = presence.cpu()
+                heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
+                heatmap_coordinates = heatmap_coordinates.cpu()
+                presence = presence.cpu()
 
             with Stopwatch('for'):
                 scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
