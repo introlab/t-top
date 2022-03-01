@@ -1,8 +1,6 @@
 import os
 import sys
 
-import numpy as np
-
 import torch
 import torch.nn.functional as F
 import torchvision.transforms as transforms
@@ -75,15 +73,12 @@ class PoseEstimator(DnnModel):
             width = image_tensor.size(2)
             image_tensor = F.interpolate(image_tensor.to(self._device).unsqueeze(0), size=IMAGE_SIZE, mode='bilinear')
             image_tensor = self._normalization(image_tensor.squeeze(0))
+
             pose_heatmaps = super(PoseEstimator, self).__call__(image_tensor.unsqueeze(0))
-
             heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
-            heatmap_coordinates = heatmap_coordinates.cpu()
-            presence = presence.cpu()
 
-            scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
-            for i in range(heatmap_coordinates.size()[1]):
-                scaled_coordinates[i, 0] = heatmap_coordinates[0, i, 0] / pose_heatmaps.size()[3] * width
-                scaled_coordinates[i, 1] = heatmap_coordinates[0, i, 1] / pose_heatmaps.size()[2] * height
+            scaled_coordinates = torch.zeros(heatmap_coordinates.size()[1], 2, device=self._device)
+            scaled_coordinates[:, 0] = heatmap_coordinates[0, :, 0] / pose_heatmaps.size()[3] * width
+            scaled_coordinates[:, 1] = heatmap_coordinates[0, :, 1] / pose_heatmaps.size()[2] * height
 
-            return scaled_coordinates, presence[0]
+            return scaled_coordinates.cpu().numpy(), presence.cpu().numpy()[0]

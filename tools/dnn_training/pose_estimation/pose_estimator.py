@@ -1,5 +1,3 @@
-import numpy as np
-
 import torch
 import torch.nn as nn
 
@@ -56,15 +54,21 @@ def get_coordinates(heatmaps):
     presence = heatmaps.gather(0, indexes.unsqueeze(0)).squeeze(0)
     heatmaps = heatmaps.permute(1, 2, 0)
 
-    indexes = indexes.cpu().detach().numpy()
-    y, x = np.unravel_index(indexes.flatten(), (height, width))
+    y, x = unravel_index(indexes.flatten(), (height, width))
     y = y.reshape((heatmaps.size()[0], heatmaps.size()[1]))
     x = x.reshape((heatmaps.size()[0], heatmaps.size()[1]))
-    y = torch.from_numpy(y).to(heatmaps.device)
-    x = torch.from_numpy(x).to(heatmaps.device)
 
-    for i in range(heatmaps.size()[1]):
-        coordinates[:, i, 0] = x[:, i]
-        coordinates[:, i, 1] = y[:, i]
+    heatmaps_indexes = torch.arange(heatmaps.size()[1], device=heatmaps.device)
+    coordinates[:, heatmaps_indexes, 0] = x[:, heatmaps_indexes].float()
+    coordinates[:, heatmaps_indexes, 1] = y[:, heatmaps_indexes].float()
 
     return coordinates, presence
+
+
+# Based on https://discuss.pytorch.org/t/how-to-do-a-unravel-index-in-pytorch-just-like-in-numpy/12987/2
+def unravel_index(index, shape):
+    out = []
+    for dim in reversed(shape):
+        out.append(index % dim)
+        index = index // dim
+    return tuple(reversed(out))

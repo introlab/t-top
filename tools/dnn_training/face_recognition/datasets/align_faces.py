@@ -1,5 +1,6 @@
 import os
 import argparse
+import math
 
 import numpy as np
 from PIL import Image
@@ -127,17 +128,48 @@ def get_landmarks_from_pose(pose, presence):
 
 def cv2_transform_to_theta(transform, source_height, source_width, destination_height, destination_width):
     transform = np.vstack([transform, [[0, 0, 1]]])
-    A = np.linalg.inv(_get_normalization_matrix(source_height, source_width))
+    A = inv_3x3(_get_normalization_matrix(source_height, source_width))
     B = _get_normalization_matrix(destination_height, destination_width)
 
     normalized_transform = np.dot(B, np.dot(transform, A))
-    theta = np.linalg.inv(normalized_transform)
+    theta = inv_3x3(normalized_transform)
 
     return torch.from_numpy(theta[:2, :]).unsqueeze(0).float()
 
 
 def _get_normalization_matrix(height, width, eps=1e-14):
     return np.array([[2.0 / (width - 1 + eps), 0.0, -1.0], [0.0, 2.0 / (height - 1 + eps), -1.0], [0.0, 0.0, 1.0]])
+
+
+# Faster than np.linalg.inv for 3x3 matrix (https://github.com/numpy/numpy/issues/17166)
+def inv_3x3(x):
+    det = det_3x3(x)
+    if abs(det) < 1e-6 or not math.isfinite(det):
+        raise np.linalg.LinAlgError()
+
+    adj = np.zeros_like(x)
+    x00, x01, x02, x10, x11, x12, x20, x21, x22 = x.ravel()
+
+    adj[0, 0] = x11 * x22 - x12 * x21
+    adj[0, 1] = x02 * x21 - x01 * x22
+    adj[0, 2] = x01 * x12 - x02 * x11
+    adj[1, 0] = x12 * x20 - x10 * x22
+    adj[1, 1] = x00 * x22 - x02 * x20
+    adj[1, 2] = x02 * x10 - x00 * x12
+    adj[2, 0] = x10 * x21 - x11 * x20
+    adj[2, 1] = x01 * x20 - x00 * x21
+    adj[2, 2] = x00 * x11 - x01 * x10
+
+    return adj / det
+
+
+# Faster than np.linalg.det for 3x3 matrix (https://github.com/numpy/numpy/issues/17166)
+def det_3x3(x):
+    x00, x01, x02, x10, x11, x12, x20, x21, x22 = x.ravel()
+    assert len(x.shape) == 2 and x.shape[0] == 3 and x.shape[1] == 3
+    return x00 * (x11 * x22 - x21 * x12) - \
+           x01 * (x10 * x22 - x20 * x12) + \
+           x02 * (x10 * x21 - x20 * x11)
 
 
 def main():
