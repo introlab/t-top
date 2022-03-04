@@ -1,6 +1,3 @@
-import torch.nn as nn
-
-
 def generate_kinematics_controller_parameters_code(parameters):
     opencr_parameters = _generate_global_controller_parameters_code(parameters)
     opencr_parameters += '\n\n\n\n'
@@ -11,6 +8,9 @@ def generate_kinematics_controller_parameters_code(parameters):
 
 def _generate_global_controller_parameters_code(parameters):
     opencr_parameters = 'static const int SERVO_COUNT 6;\n\n'
+
+    opencr_parameters += 'static const float SERVO_ANGLE_MIN = ' + _format_float(parameters['servo_angle_min']) + ';\n'
+    opencr_parameters += 'static const float SERVO_ANGLE_MAX = ' + _format_float(parameters['servo_angle_max']) + ';\n'
 
     opencr_parameters += 'static const float ROD_LENGTH = ' + _format_float(parameters['rod_length']) + ';\n'
     opencr_parameters += 'static const float HORN_LENGTH = ' + _format_float(parameters['horn_length']) + ';\n'
@@ -42,7 +42,7 @@ def _generate_global_controller_parameters_code(parameters):
 
 def _generate_forward_kinematics_controller_parameters_code(parameters):
     opencr_parameters = 'static const Eigen::Vector<float, ' + str(len(parameters['forward_kinematics_x0'])) + '> ' + \
-        'FORWARD_KINEMATICS_X0(' + _format_float_array(parameters['forward_kinematics_x0']) + ');\n\n'
+                        'FORWARD_KINEMATICS_X0(' + _format_float_array(parameters['forward_kinematics_x0']) + ');\n\n'
 
     min_bounds = parameters['forward_kinematics_bounds'][0]
     max_bounds = parameters['forward_kinematics_bounds'][1]
@@ -81,4 +81,3 @@ def _format_vector3_array(values, indent=''):
             string += '\n'
 
     return string
-

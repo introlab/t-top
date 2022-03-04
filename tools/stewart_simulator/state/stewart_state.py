@@ -97,6 +97,8 @@ class StewartState:
         is_horn_orientation_reversed = [self._configuration.bottom_configuration.servos[i].is_horn_orientation_reversed
                                         for i in range(len(self._configuration.bottom_configuration.servos))]
         return {
+            'servo_angle_min': self._configuration.servo_angle_min,
+            'servo_angle_max': self._configuration.servo_angle_max,
             'rod_length': self._configuration.rod_length,
             'horn_length': self._configuration.bottom_configuration.horn_length,
             'horn_orientation_angles': self._configuration_preprocessor.bottom_horn_orientation_angles,
