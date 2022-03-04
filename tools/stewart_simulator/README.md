@@ -1,5 +1,5 @@
 # Stewart Simulator
-This is a tool to design the Stewart platform and generate the controller code. The forward kinematics is done with a small neural network to simplify the development since the solution can have many solutions.
+This is a tool to design the Stewart platform and generate the controller code.
 
 ## Folder Structure
 - The [configuration](configuration), [controller_parameters](controller_parameters), [state](state) and [ui](ui) folders contain the Python code.
