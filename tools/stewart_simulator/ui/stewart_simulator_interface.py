@@ -235,18 +235,22 @@ class StewartSimulatorInterface(QWidget):
         self._disconnect_forward_kinematics_servo_slider_signals()
 
         servo_angles = self._stewart_state.bottom_state.get_servo_angles()
-        for servo_angle, slider in zip(servo_angles, self._forward_kinematics_servo_sliders):
-            slider.setValue(math.degrees(servo_angle))
+        for servo_angle, slider, label in zip(servo_angles,
+                                              self._forward_kinematics_servo_sliders,
+                                              self._forward_kinematics_servo_labels):
+            servo_angle = math.degrees(servo_angle)
+            slider.setValue(servo_angle * SERVO_ANGLE_SLIDER_SCALE)
+            label.setText(str(round(servo_angle, 1)))
 
         self._connect_forward_kinematics_servo_slider_signals()
-
-    def _connect_forward_kinematics_servo_slider_signals(self):
-        for slider in self._forward_kinematics_servo_sliders:
-            slider.valueChanged.connect(self._on_forward_kinematics_servo_slider_value_changed)
 
     def _disconnect_forward_kinematics_servo_slider_signals(self):
         for slider in self._forward_kinematics_servo_sliders:
             slider.valueChanged.disconnect(self._on_forward_kinematics_servo_slider_value_changed)
+
+    def _connect_forward_kinematics_servo_slider_signals(self):
+        for slider in self._forward_kinematics_servo_sliders:
+            slider.valueChanged.connect(self._on_forward_kinematics_servo_slider_value_changed)
 
     def _update_inverse_kinematics_from_state(self):
         self._disconnect_inverse_kinematics_spin_box_signals()
@@ -261,17 +265,17 @@ class StewartSimulatorInterface(QWidget):
         self._inverse_kinematics_orientation_x_spin_box.setValue(axis[0])
         self._inverse_kinematics_orientation_y_spin_box.setValue(axis[1])
         self._inverse_kinematics_orientation_z_spin_box.setValue(axis[2])
-        self._inverse_kinematics_orientation_angle_spin_box.setValue(angle)
+        self._inverse_kinematics_orientation_angle_spin_box.setValue(math.degrees(angle))
 
         self._connect_inverse_kinematics_spin_box_signals()
-
-    def _connect_inverse_kinematics_spin_box_signals(self):
-        for spin_box in self._get_inverse_kinematics_spin_boxes():
-            spin_box.valueChanged.connect(self._on_inverse_kinematics_spin_box_value_changed)
 
     def _disconnect_inverse_kinematics_spin_box_signals(self):
         for spin_box in self._get_inverse_kinematics_spin_boxes():
             spin_box.valueChanged.disconnect(self._on_inverse_kinematics_spin_box_value_changed)
+
+    def _connect_inverse_kinematics_spin_box_signals(self):
+        for spin_box in self._get_inverse_kinematics_spin_boxes():
+            spin_box.valueChanged.connect(self._on_inverse_kinematics_spin_box_value_changed)
 
     def _get_inverse_kinematics_spin_boxes(self):
         return [self._inverse_kinematics_position_x_spin_box,

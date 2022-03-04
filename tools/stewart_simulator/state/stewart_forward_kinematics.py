@@ -8,6 +8,8 @@ POSITION_BOUND_STEP = 0.001
 EULER_ANGLE_BOUND_STEP = 0.01
 EULER_ANGLE_SEQUENCE = 'XYZ'
 
+BOUND_SCALE = 2
+
 
 class StewartForwardKinematics:
     def __init__(self, configuration,
@@ -102,12 +104,13 @@ def _calculate_bounds(inverse_kinematics, x0, index, step):
 
 
 def _calculate_one_bound(inverse_kinematics, x, index, step):
+    offset = x[index]
     while True:
         try:
             x[index] += step
             inverse_kinematics.calculate_servo_angles(_x_to_position(x), _x_to_orientation(x))
         except ValueError:
-            return x[index]
+            return (x[index] - offset) * BOUND_SCALE + offset
 
 
 def _x_to_position(x):
