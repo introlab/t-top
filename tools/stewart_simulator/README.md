@@ -18,28 +18,9 @@ When controlling the platform with the position and the orientation, the green b
 ### State
 ![State](images/state.png)
 
-## Setup
-Steps 3 to 4 are only needed if [configuration.json](configuration.json) has changed.
-
-1. Setup the Python virtual environment.
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-2. Configure the Stewart platform ([configuration.json](configuration.json)).
-3. Create the forward kinematics dataset.
-```bash
-python create_stewart_forward_kinematics_dataset.py
-```
-
-4. Train the forward kinematics model.
-```bash
-python train_stewart_forward_kinematics_model.py
-```
-
-5. Run the simulator.
+## How to use?
+1. Configure the Stewart platform ([configuration.json](configuration.json)).
+2. Run the simulator.
 ```bash
 python stewart_simulator.py
 ```
