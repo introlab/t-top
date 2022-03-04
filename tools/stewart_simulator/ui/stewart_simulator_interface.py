@@ -189,7 +189,7 @@ class StewartSimulatorInterface(QWidget):
         self._forward_kinematics_servo_labels[i].setText(str(value / SERVO_ANGLE_SLIDER_SCALE))
 
         servo_angles = np.array([math.radians(slider.value() / SERVO_ANGLE_SLIDER_SCALE)
-                        for slider in self._forward_kinematics_servo_sliders])
+                                 for slider in self._forward_kinematics_servo_sliders])
 
         self._stewart_state.set_servo_angles(servo_angles)
         self._set_valid_position_status()
