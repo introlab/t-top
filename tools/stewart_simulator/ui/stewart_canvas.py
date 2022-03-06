@@ -12,10 +12,6 @@ class StewartCanvas(QWidget):
         self._fig = plt.figure()
         self._ax = self._fig.add_subplot(111, projection='3d')
 
-        self._ax.set_xlim(-0.2, 0.2)
-        self._ax.set_ylim(-0.2, 0.2)
-        self._ax.set_zlim(-0.2, 0.2)
-
         self._ax.set_xlabel('X (m)')
         self._ax.set_ylabel('Y (m)')
         self._ax.set_zlabel('Z (m)')
