@@ -3,15 +3,15 @@
 
 #include <DynamixelWorkbench.h>
 
-class TorsoControllerDyna {
+class TorsoController {
   DynamixelWorkbench& m_dynamixelWorkbench;
 
   bool m_isZeroOffsetFound;
   float m_zeroOffset;
 
 public:
-  TorsoControllerDyna(DynamixelWorkbench& dynamixelWorkbench);
-  ~TorsoControllerDyna();
+  TorsoController(DynamixelWorkbench& dynamixelWorkbench);
+  ~TorsoController();
 
   void init();
 
@@ -25,4 +25,3 @@ private:
 };
 
 #endif
-
