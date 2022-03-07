@@ -78,7 +78,7 @@ def _generate_forward_kinematics_controller_parameters_code(parameters):
     opencr_parameters += 'const Eigen::Matrix<float, ' + str(len(min_bounds)) + ', 1> ' + \
                          'STEWART_FORWARD_KINEMATICS_MIN_BOUNDS(STEWART_FORWARD_KINEMATICS_MIN_BOUNDS_DATA);\n\n'
     opencr_parameters += 'float STEWART_FORWARD_KINEMATICS_MAX_BOUNDS_DATA[' + str(len(max_bounds)) + '] = {\n' + \
-                         _format_float_array(min_bounds, indent='  ') + '\n};\n'
+                         _format_float_array(max_bounds, indent='  ') + '\n};\n'
     opencr_parameters += 'const Eigen::Matrix<float, ' + str(len(max_bounds)) + ', 1> ' + \
                          'STEWART_FORWARD_KINEMATICS_MAX_BOUNDS(STEWART_FORWARD_KINEMATICS_MAX_BOUNDS_DATA);\n\n'
 
@@ -94,7 +94,7 @@ def _format_bool(value):
 
 
 def _format_float_array(values, indent=''):
-    return (',\n' + indent).join((_format_float(v) for v in values))
+    return indent + (',\n' + indent).join((_format_float(v) for v in values))
 
 
 def _format_vector3_array(values, indent=''):
