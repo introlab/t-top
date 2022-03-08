@@ -19,8 +19,15 @@ When controlling the platform with the position and the orientation, the green b
 ![State](images/state.png)
 
 ## How to use?
-1. Configure the Stewart platform ([configuration.json](configuration.json)).
-2. Run the simulator.
+1. Setup the Python virtual environment.
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+2. Configure the Stewart platform ([configuration.json](configuration.json)).
+3Run the simulator.
 ```bash
 python stewart_simulator.py
 ```
