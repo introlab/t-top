@@ -227,6 +227,10 @@ TrustRegionReflectiveSolverResult<S> TrustRegionReflectiveSolver::solve(F fun,
 
     float theta = std::max(0.995f, 1 - gNorm);
     float actualReduction = -1.f;
+    Eigen::Matrix<float, S, 1> xNew = x;
+    Eigen::Matrix<float, S, 1> fNew = f;
+    Eigen::Matrix<float, S, S> JNew = J;
+    float costNew = cost;
     while (actualReduction <= 0 && nfev < m_parameters.maxNfev) {
       Eigen::Matrix<float, S, 1> pH;
       solveLsqTrustRegion(pH, alpha, s, V, uf, delta);
@@ -237,11 +241,8 @@ TrustRegionReflectiveSolverResult<S> TrustRegionReflectiveSolver::solve(F fun,
       float predictedReduction;
       selectStep(step, stepH, predictedReduction, x, Jh, diagH, gH, p, pH, d, delta, lowerBound, upperBound, theta);
 
-      Eigen::Matrix<float, S, 1> xNew = x + step;
+      xNew = x + step;
       makeStrictlyFeasible(xNew, lowerBound, upperBound);
-
-      Eigen::Matrix<float, S, 1> fNew;
-      Eigen::Matrix<float, S, S> JNew;
       fun(fNew, JNew, xNew);
       nfev++;
 
@@ -251,7 +252,7 @@ TrustRegionReflectiveSolverResult<S> TrustRegionReflectiveSolver::solve(F fun,
         continue;
       }
 
-      float costNew = loss(fNew);
+      costNew = loss(fNew);
       actualReduction = cost - costNew;
 
       float deltaNew, ratio;
@@ -265,14 +266,14 @@ TrustRegionReflectiveSolverResult<S> TrustRegionReflectiveSolver::solve(F fun,
 
       alpha *= delta / deltaNew;
       delta = deltaNew;
+    }
 
-      if (actualReduction > 0) {
-        x = xNew;
-        f = fNew;
-        cost = costNew;
-        J = JNew;
-        computeGrad(g, f, J);
-      }
+    if (actualReduction > 0) {
+      x = xNew;
+      f = fNew;
+      cost = costNew;
+      J = JNew;
+      computeGrad(g, f, J);
     }
   }
 
@@ -454,7 +455,7 @@ void TrustRegionReflectiveSolver::selectStep(Eigen::Matrix<float, S, 1>& step,
   Eigen::Matrix<float, S, 1> rH = pH;
   for (int i = 0; i < S; i++) {
     if (hits[i] != 0) {
-      rH[i] *= -1;
+      rH[i] *= -1.f;
     }
   }
 
