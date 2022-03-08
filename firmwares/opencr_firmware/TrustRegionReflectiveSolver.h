@@ -221,8 +221,8 @@ TrustRegionReflectiveSolverResult<S> TrustRegionReflectiveSolver::solve(F fun,
 
     Eigen::Matrix<float, S, S> Jh;
     Eigen::Matrix<float, S, 1> s;
-    Eigen::Matrix<float, S, S> V; //2nd col sign error
-    Eigen::Matrix<float, S, 1> uf; //2nd row sign error
+    Eigen::Matrix<float, S, S> V;
+    Eigen::Matrix<float, S, 1> uf;
     solveFAugmented(Jh, s, V, uf, f, J, d, diagH);
 
     float theta = std::max(0.995f, 1 - gNorm);
@@ -454,7 +454,7 @@ void TrustRegionReflectiveSolver::selectStep(Eigen::Matrix<float, S, 1>& step,
   Eigen::Matrix<float, S, 1> rH = pH;
   for (int i = 0; i < S; i++) {
     if (hits[i] != 0) {
-      rH[i] *= 1;
+      rH[i] *= -1;
     }
   }
 
