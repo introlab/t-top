@@ -204,5 +204,17 @@
   "servoAngleRange": {
     "min": -45,
     "max": 45
+  },
+  "ui": {
+    "relativePositionRange": {
+      "min": -0.1,
+      "max": 0.1
+    },
+    "orientationAngleRange": {
+      "min": -60,
+      "max": 60
+    },
+    "positionStep": 0.001,
+    "positionDecimals": 3
   }
 }

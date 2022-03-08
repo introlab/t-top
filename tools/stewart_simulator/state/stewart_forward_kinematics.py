@@ -1,85 +1,255 @@
-import os
+import math
 
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+from numba import jit
 from scipy.spatial.transform import Rotation
+from scipy.optimize import least_squares
+
+from state import Shape
+
+POSITION_BOUND_STEP = 0.001
+EULER_ANGLE_BOUND_STEP = 0.01
+EULER_ANGLE_SEQUENCE = 'XYZ'
+
+BOUND_SCALE = 2
 
 
-class StewartForwardKinematics:  # TODO use an analytic forward kinematics model
-    def __init__(self, inverse_kinematics, initial_z):
-        self._inverse_kinematics = inverse_kinematics
-        self._initial_z = initial_z
+class StewartForwardKinematics:
+    def __init__(self, configuration,
+                 initial_top_anchors,
+                 bottom_linear_actuator_anchors,
+                 bottom_horn_orientation_angles,
+                 inverse_kinematics):
+        self._configuration = configuration
+        self._initial_top_anchors = initial_top_anchors
+        self._bottom_linear_actuator_anchors = bottom_linear_actuator_anchors
+        self._bottom_horn_orientation_angles = bottom_horn_orientation_angles
 
-        self._model = StewartForwardKinematicsModel()
+        self._x0 = self._find_x0()
+        self._set_bounds(inverse_kinematics)
 
-        project_path = os.path.dirname(os.path.realpath(__file__))
-        state_dict = torch.load(os.path.join(project_path, '..', 'stewart_forward_kinematics_model.pth'))
-        self._model.load_state_dict(state_dict)
-        self._model.eval()
+    def _find_x0(self):
+        position, orientation = self.calculate_pose(np.zeros(len(self._configuration.bottom_configuration.servos)),
+                                                    x0=np.array([0.0, 0.0, 1, 0.0, 0.0, 0.0]),
+                                                    bounds=([-np.inf, -np.inf, 0, -math.pi, -math.pi, -math.pi],
+                                                            [np.inf, np.inf, np.inf, math.pi, math.pi, math.pi]))
+        euler_angles = orientation.as_euler(EULER_ANGLE_SEQUENCE)
+        return np.array([position[0], position[1], position[2], euler_angles[0], euler_angles[1], euler_angles[2]])
 
-    def calculate_pose(self, servo_angles):
-        pose = self._model(torch.tensor([servo_angles]))
+    def _set_bounds(self, inverse_kinematics):
+        self._position_x_bounds = _calculate_bounds(inverse_kinematics, self._x0, 0, POSITION_BOUND_STEP)
+        self._position_y_bounds = _calculate_bounds(inverse_kinematics, self._x0, 1, POSITION_BOUND_STEP)
+        self._position_z_bounds = _calculate_bounds(inverse_kinematics, self._x0, 2, POSITION_BOUND_STEP)
+        self._euler_angle_x_bounds = _calculate_bounds(inverse_kinematics, self._x0, 3, EULER_ANGLE_BOUND_STEP)
+        self._euler_angle_y_bounds = _calculate_bounds(inverse_kinematics, self._x0, 4, EULER_ANGLE_BOUND_STEP)
+        self._euler_angle_z_bounds = _calculate_bounds(inverse_kinematics, self._x0, 5, EULER_ANGLE_BOUND_STEP)
 
-        return np.array([pose[0, 0].item(), pose[0, 1].item(), pose[0, 2].item()]), \
-               Rotation.from_quat([pose[0, 3].item(), pose[0, 4].item(), pose[0, 5].item(), pose[0, 6].item()])
+    def get_x0(self):
+        return self._x0
 
-    def export_layers(self):
-        return self._model.position_model.layers, self._model.orientation_model.layers
+    def get_bounds(self):
+        return ([self._position_x_bounds[0], self._position_y_bounds[0], self._position_z_bounds[0],
+                 self._euler_angle_x_bounds[0], self._euler_angle_y_bounds[0], self._euler_angle_z_bounds[0]],
+                [self._position_x_bounds[1], self._position_y_bounds[1], self._position_z_bounds[1],
+                 self._euler_angle_x_bounds[1], self._euler_angle_y_bounds[1], self._euler_angle_z_bounds[1]])
+
+    def calculate_pose(self, servo_angles, bounds=None, x0=None):
+        if bounds is None:
+            bounds = self.get_bounds()
+        if x0 is None:
+            x0 = self._x0
+
+        bottom_anchors = self._calculate_bottom_anchors(servo_angles)
+
+        def func(x):
+            errors = np.zeros(len(servo_angles))
+            for i in range(len(errors)):
+                errors[i] = _calculate_rod_length_error(bottom_anchors.x[i],
+                                                        bottom_anchors.y[i],
+                                                        bottom_anchors.z[i],
+                                                        self._initial_top_anchors.x[i],
+                                                        self._initial_top_anchors.y[i],
+                                                        self._initial_top_anchors.z[i],
+                                                        tx=x[0],
+                                                        ty=x[1],
+                                                        tz=x[2],
+                                                        rx=x[3],
+                                                        ry=x[4],
+                                                        rz=x[5],
+                                                        d=self._configuration.rod_length)
+            return errors
+
+        def jac(x):
+            jacobian = np.zeros((len(servo_angles), len(x)))
+            for i in range(len(servo_angles)):
+                jacobian[i, :] = _calculate_rod_length_error_grad(bottom_anchors.x[i],
+                                                                      bottom_anchors.y[i],
+                                                                      bottom_anchors.z[i],
+                                                                      self._initial_top_anchors.x[i],
+                                                                      self._initial_top_anchors.y[i],
+                                                                      self._initial_top_anchors.z[i],
+                                                                      tx=x[0],
+                                                                      ty=x[1],
+                                                                      tz=x[2],
+                                                                      rx=x[3],
+                                                                      ry=x[4],
+                                                                      rz=x[5])
+
+            return jacobian
+
+        result = least_squares(func, x0=x0, jac=jac, bounds=bounds, method='trf')
+        return _x_to_position(result.x), _x_to_orientation(result.x)
+
+    def _calculate_bottom_anchors(self, servo_angles):
+        h = self._configuration.bottom_configuration.horn_length
+
+        x = np.zeros(len(servo_angles))
+        y = np.zeros(len(servo_angles))
+        z = np.zeros(len(servo_angles))
+
+        for i in range(len(servo_angles)):
+            servo_angle = servo_angles[i]
+            if self._configuration.bottom_configuration.servos[i].is_horn_orientation_reversed:
+                servo_angle = -servo_angle
+
+            x[i] = self._bottom_linear_actuator_anchors.x[i] + \
+                   h * math.cos(servo_angle) * math.cos(self._bottom_horn_orientation_angles[i])
+            y[i] = self._bottom_linear_actuator_anchors.y[i] + \
+                   h * math.cos(servo_angle) * math.sin(self._bottom_horn_orientation_angles[i])
+            z[i] = self._bottom_linear_actuator_anchors.z[i] + h * math.sin(servo_angle)
+
+        return Shape(x, y, z)
 
 
-class StewartForwardKinematicsModel(nn.Module):
-    def __init__(self):
-        super(StewartForwardKinematicsModel, self).__init__()
+def _calculate_bounds(inverse_kinematics, x0, index, step):
+    min_step = -step
+    max_step = step
+    if max_step < min_step:
+        min_step, max_step = max_step, min_step
 
-        self.position_model = StewartForwardKinematicsPositionModel()
-        self.orientation_model = StewartForwardKinematicsOrientationModel()
+    min_bound = _calculate_one_bound(inverse_kinematics, x0.copy(), index, min_step)
+    max_bound = _calculate_one_bound(inverse_kinematics, x0.copy(), index, max_step)
 
-    def forward(self, servo_angles):
-        position = self.position_model(servo_angles)
-        orientation = self.orientation_model(servo_angles)
-
-        return torch.cat([position, orientation], dim=1)
+    return min_bound, max_bound
 
 
-class StewartForwardKinematicsPositionModel(nn.Module):
-    def __init__(self):
-        super(StewartForwardKinematicsPositionModel, self).__init__()
-
-        self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(in_features=6, out_features=64))
-        self.layers.append(nn.ReLU(inplace=True))
-        self.layers.append(nn.Linear(in_features=64, out_features=32))
-        self.layers.append(nn.ReLU(inplace=True))
-        self.layers.append(nn.Linear(in_features=32, out_features=16))
-        self.layers.append(nn.ReLU(inplace=True))
-        self.layers.append(nn.Linear(in_features=16, out_features=3))
-
-    def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
-
-        return x
+def _calculate_one_bound(inverse_kinematics, x, index, step):
+    offset = x[index]
+    while True:
+        try:
+            x[index] += step
+            inverse_kinematics.calculate_servo_angles(_x_to_position(x), _x_to_orientation(x))
+        except ValueError:
+            return (x[index] - offset) * BOUND_SCALE + offset
 
 
-class StewartForwardKinematicsOrientationModel(nn.Module):
-    def __init__(self):
-        super(StewartForwardKinematicsOrientationModel, self).__init__()
+def _x_to_position(x):
+    return x[:3]
 
-        self.layers = nn.ModuleList()
-        self.layers.append(nn.Linear(in_features=6, out_features=64))
-        self.layers.append(nn.ReLU(inplace=True))
-        self.layers.append(nn.Linear(in_features=64, out_features=32))
-        self.layers.append(nn.ReLU(inplace=True))
-        self.layers.append(nn.Linear(in_features=32, out_features=16))
-        self.layers.append(nn.ReLU(inplace=True))
-        self.layers.append(nn.Linear(in_features=16, out_features=4))
 
-    def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
+def _x_to_orientation(x):
+    return Rotation.from_euler(EULER_ANGLE_SEQUENCE, x[3:])
 
-        x = F.normalize(x, dim=1, p=2.0)
 
-        return x
+@jit(nopython=True)
+def _calculate_rod_length_error(bax, bay, baz, itax, itay, itaz, tx, ty, tz, rx, ry, rz, d):
+    """
+    See forward_kinematics_jacobian.py
+    """
+    sin_rx = math.sin(rx)
+    cos_rx = math.cos(rx)
+    sin_ry = math.sin(ry)
+    cos_ry = math.cos(ry)
+    sin_rz = math.sin(rz)
+    cos_rz = math.cos(rz)
+
+    cos_ry_cos_rz = cos_ry * cos_rz
+    sin_rz_cos_ry = sin_rz * cos_ry
+    sin_rx_sin_ry_cos_rz = sin_rx * sin_ry * cos_rz
+    sin_rz_cos_rx = sin_rz * cos_rx
+    sin_rx_sin_ry_sin_rz = sin_rx * sin_ry * sin_rz
+    cos_rx_cos_rz = cos_rx * cos_rz
+    sin_rx_cos_ry = sin_rx * cos_ry
+    sin_rx_sin_rz = sin_rx * sin_rz
+    sin_ry_cos_rx_cos_rz = sin_ry * cos_rx_cos_rz
+    sin_rx_cos_rz = sin_rx * cos_rz
+    sin_ry_sin_rz_cos_rx = sin_ry * sin_rz_cos_rx
+    cos_rx_cos_ry = cos_rx * cos_ry
+
+    error = -d + math.sqrt((-bax + itax * cos_ry_cos_rz - itay * sin_rz_cos_ry + itaz * sin_ry + tx) ** 2 +
+                           (-bay + itax * (sin_rx_sin_ry_cos_rz + sin_rz_cos_rx) - itay * (
+                                       sin_rx_sin_ry_sin_rz - cos_rx_cos_rz) - itaz * sin_rx_cos_ry + ty) ** 2 +
+                           (-baz + itax * (sin_rx_sin_rz - sin_ry_cos_rx_cos_rz) + itay * (
+                                       sin_rx_cos_rz + sin_ry_sin_rz_cos_rx) + itaz * cos_rx_cos_ry + tz) ** 2)
+
+    return error
+
+
+@jit(nopython=True)
+def _calculate_rod_length_error_grad(bax, bay, baz, itax, itay, itaz, tx, ty, tz, rx, ry, rz):
+    """
+    See forward_kinematics_jacobian.py
+    """
+    sin_rx = math.sin(rx)
+    cos_rx = math.cos(rx)
+    sin_ry = math.sin(ry)
+    cos_ry = math.cos(ry)
+    sin_rz = math.sin(rz)
+    cos_rz = math.cos(rz)
+
+    cos_ry_cos_rz = cos_ry * cos_rz
+    sin_rz_cos_ry = sin_rz * cos_ry
+    sin_rx_sin_ry_cos_rz = sin_rx * sin_ry * cos_rz
+    sin_rz_cos_rx = sin_rz * cos_rx
+    sin_rx_sin_ry_sin_rz = sin_rx * sin_ry * sin_rz
+    cos_rx_cos_rz = cos_rx * cos_rz
+    sin_rx_cos_ry = sin_rx * cos_ry
+    sin_rx_sin_rz = sin_rx * sin_rz
+    sin_rx_cos_ry_cos_rz = sin_rx * cos_ry_cos_rz
+    sin_ry_cos_rx_cos_rz = sin_ry * cos_rx_cos_rz
+    sin_rx_cos_rz = sin_rx * cos_rz
+    sin_rx_sin_rz_cos_ry = sin_rx * sin_rz_cos_ry
+    sin_ry_sin_rz_cos_rx = sin_ry * sin_rz_cos_rx
+    cos_rx_cos_ry = cos_rx * cos_ry
+    sin_rz_cos_rx_cos_ry = sin_rz_cos_rx * cos_ry
+    cos_rx_cos_ry_cos_rz = cos_rx_cos_ry * cos_rz
+    sin_ry_cos_rz = sin_ry * cos_rz
+    sin_ry_sin_rz = sin_ry * sin_rz
+    sin_ry_cos_rx = sin_ry * cos_rx
+    sin_rx_sin_ry = sin_rx * sin_ry
+
+    denominator = math.sqrt((-bax + itax * cos_ry_cos_rz - itay * sin_rz_cos_ry + itaz * sin_ry + tx) ** 2 +
+                            (-bay + itax * (sin_rx_sin_ry_cos_rz + sin_rz_cos_rx) - itay * (
+                                        sin_rx_sin_ry_sin_rz - cos_rx_cos_rz) - itaz * sin_rx_cos_ry + ty) ** 2 +
+                            (-baz + itax * (sin_rx_sin_rz - sin_ry_cos_rx_cos_rz) + itay * (
+                                        sin_rx_cos_rz + sin_ry_sin_rz_cos_rx) + itaz * cos_rx_cos_ry + tz) ** 2)
+
+    dtx = (-bax + itax * cos_ry_cos_rz - itay * sin_rz_cos_ry + itaz * sin_ry + tx) / denominator
+    dty = (-bay + itax * (sin_rx_sin_ry_cos_rz + sin_rz_cos_rx) - itay * (
+                sin_rx_sin_ry_sin_rz - cos_rx_cos_rz) - itaz * sin_rx_cos_ry + ty) / denominator
+    dtz = (-baz + itax * (sin_rx_sin_rz - sin_ry_cos_rx_cos_rz) + itay * (
+                sin_rx_cos_rz + sin_ry_sin_rz_cos_rx) + itaz * cos_rx_cos_ry + tz) / denominator
+
+    drx = (-(itax * (sin_rx_sin_rz - sin_ry_cos_rx_cos_rz) + itay * (
+                sin_rx_cos_rz + sin_ry_sin_rz_cos_rx) + itaz * cos_rx_cos_ry) * (
+                      -bay + itax * (sin_rx_sin_ry_cos_rz + sin_rz_cos_rx) + itay * (
+                          -sin_rx_sin_ry_sin_rz + cos_rx_cos_rz) - itaz * sin_rx_cos_ry + ty) + (
+                      itax * (sin_rx_sin_ry_cos_rz + sin_rz_cos_rx) + itay * (
+                          -sin_rx_sin_ry_sin_rz + cos_rx_cos_rz) - itaz * sin_rx_cos_ry) * (
+                      -baz + itax * (sin_rx_sin_rz - sin_ry_cos_rx_cos_rz) + itay * (
+                          sin_rx_cos_rz + sin_ry_sin_rz_cos_rx) + itaz * cos_rx_cos_ry + tz)) / denominator
+    dry = (bax * itax * sin_ry_cos_rz - bax * itay * sin_ry_sin_rz - bax * itaz * cos_ry -
+           bay * itax * sin_rx_cos_ry_cos_rz + bay * itay * sin_rx_sin_rz_cos_ry - bay * itaz * sin_rx_sin_ry +
+           baz * itax * cos_rx_cos_ry_cos_rz - baz * itay * sin_rz_cos_rx_cos_ry + baz * itaz * sin_ry_cos_rx -
+           itax * tx * sin_ry_cos_rz + itax * ty * sin_rx_cos_ry_cos_rz - itax * tz * cos_rx_cos_ry_cos_rz +
+           itay * tx * sin_ry_sin_rz - itay * ty * sin_rx_sin_rz_cos_ry + itay * tz * sin_rz_cos_rx_cos_ry +
+           itaz * tx * cos_ry + itaz * ty * sin_rx_sin_ry - itaz * tz * sin_ry_cos_rx) / denominator
+    drz = (bax * itax * sin_rz_cos_ry + bax * itay * cos_ry_cos_rz + bay * itax * sin_rx_sin_ry_sin_rz -
+           bay * itax * cos_rx_cos_rz + bay * itay * sin_rx_sin_ry_cos_rz + bay * itay * sin_rz_cos_rx -
+           baz * itax * sin_rx_cos_rz - baz * itax * sin_ry_sin_rz_cos_rx + baz * itay * sin_rx_sin_rz -
+           baz * itay * sin_ry_cos_rx_cos_rz - itax * tx * sin_rz_cos_ry - itax * ty * sin_rx_sin_ry_sin_rz +
+           itax * ty * cos_rx_cos_rz + itax * tz * sin_rx_cos_rz + itax * tz * sin_ry_sin_rz_cos_rx -
+           itay * tx * cos_ry_cos_rz - itay * ty * sin_rx_sin_ry_cos_rz - itay * ty * sin_rz_cos_rx -
+           itay * tz * sin_rx_sin_rz + itay * tz * sin_ry_cos_rx * cos_rz) / denominator
+
+    return np.array([dtx, dty, dtz, drx, dry, drz])

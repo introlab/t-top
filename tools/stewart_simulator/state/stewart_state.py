@@ -15,24 +15,28 @@ CIRCLE_ANGLE_RESOLUTION = 2 * math.pi / 360
 class StewartState:
     def __init__(self, configuration):
         self._configuration = configuration
+        self._configuration_preprocessor = StewartConfigurationPreprocessor(configuration)
 
         self.top_state = TopState(configuration.top_configuration)
         self.bottom_state = BottomState(configuration.bottom_configuration)
-
-        self._configuration_preprocessor = StewartConfigurationPreprocessor(configuration,
-                                                                            self.top_state.get_initial_anchors(),
-                                                                            self.bottom_state.get_initial_anchors())
 
         self._inverse_kinematics = \
             StewartInverseKinematics(configuration,
                                      self.top_state.get_initial_anchors(),
                                      self._configuration_preprocessor.bottom_linear_actuator_anchors,
                                      self._configuration_preprocessor.bottom_horn_orientation_angles)
+        self._forward_kinematics = \
+            StewartForwardKinematics(configuration,
+                                     self.top_state.get_initial_anchors(),
+                                     self._configuration_preprocessor.bottom_linear_actuator_anchors,
+                                     self._configuration_preprocessor.bottom_horn_orientation_angles,
+                                     self._inverse_kinematics)
 
-        initial_top_z = self._configuration_preprocessor.initial_top_z
-        self._forward_kinematics = StewartForwardKinematics(self._inverse_kinematics, initial_top_z)
-
-        self.top_state._set_initial_z(initial_top_z)
+        zero_servo_angles = np.zeros(len(self._configuration.bottom_configuration.servos))
+        initial_position, initial_orientation = self._forward_kinematics.calculate_pose(zero_servo_angles)
+        self.top_state._set_initial_position(initial_position)
+        self.top_state._set_initial_orientation(initial_orientation)
+        self.set_servo_angles(zero_servo_angles)
 
     def set_top_pose(self, position, orientation):
         old_position = self.top_state.get_position()
@@ -93,21 +97,25 @@ class StewartState:
         is_horn_orientation_reversed = [self._configuration.bottom_configuration.servos[i].is_horn_orientation_reversed
                                         for i in range(len(self._configuration.bottom_configuration.servos))]
         return {
+            'servo_angle_min': self._configuration.servo_angle_min,
+            'servo_angle_max': self._configuration.servo_angle_max,
             'rod_length': self._configuration.rod_length,
             'horn_length': self._configuration.bottom_configuration.horn_length,
             'horn_orientation_angles': self._configuration_preprocessor.bottom_horn_orientation_angles,
             'is_horn_orientation_reversed': is_horn_orientation_reversed,
-            'top_initial_z': self._configuration_preprocessor.initial_top_z,
-            'top_anchors': self.top_state._anchors,
+            'top_anchors': self.top_state.get_initial_anchors(),
             'bottom_linear_actuator_anchors': self._configuration_preprocessor.bottom_linear_actuator_anchors,
-            'forward_kinematics_nn_layers': self._forward_kinematics.export_layers()
+            'forward_kinematics_x0': self._forward_kinematics.get_x0(),
+            'forward_kinematics_bounds': self._forward_kinematics.get_bounds()
         }
 
 
 class TopState:
     def __init__(self, configuration):
-        self._initial_z = 0
-        self._position = np.array([0.0, 0.0, 0.0])
+        self._initial_position = np.zeros(3)
+        self._initial_orientation = Rotation.from_euler('xyz', [0, 0, 0])
+
+        self._position = np.zeros(3)
         self._orientation = Rotation.from_euler('xyz', [0, 0, 0])
 
         self._shapes = [_generate_shape_from_configuration(shape) for shape in configuration.shapes]
@@ -123,12 +131,17 @@ class TopState:
 
         return Shape(x, y, z)
 
-    def get_initial_z(self):
-        return self._initial_z
+    def get_initial_position(self):
+        return self._initial_position
 
-    def _set_initial_z(self, z):
-        self._initial_z = z
-        self._position[2] = z
+    def _set_initial_position(self, position):
+        self._initial_position = position
+
+    def get_initial_orientation(self):
+        return self._initial_orientation
+
+    def _set_initial_orientation(self, orientation):
+        self._initial_orientation = orientation
 
     def get_position(self):
         return self._position

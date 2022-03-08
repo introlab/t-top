@@ -1,27 +1,27 @@
-#include "TorsoControllerDyna.h"
+#include "TorsoController.h"
 #include "IoMapping.h"
 
 #include <cmath>
 
-static const float ORIENTATION_OFFSET = 0.0;
-static const float GEAR_RATIO = 46.0 / 130.0;
+constexpr float ORIENTATION_OFFSET = 0.0;
+constexpr float GEAR_RATIO = 46.0 / 130.0;
 
-static const float MIN_DYNAMIXEL_POSITION = std::ceil(-255 * 2 * M_PI);
-static const float MAX_DYNAMIXEL_POSITION = std::floor(255 * 2 * M_PI);
+constexpr float MIN_DYNAMIXEL_POSITION = std::ceil(-255 * 2 * M_PI);
+constexpr float MAX_DYNAMIXEL_POSITION = std::floor(255 * 2 * M_PI);
 
-static const int32_t MAX_VELOCITY = 80; // unit : 0.229 rev/min
+constexpr int32_t MAX_VELOCITY = 80; // unit : 0.229 rev/min
 
 
-TorsoControllerDyna::TorsoControllerDyna(DynamixelWorkbench& dynamixelWorkbench) : 
+TorsoController::TorsoController(DynamixelWorkbench& dynamixelWorkbench) :
   m_dynamixelWorkbench(dynamixelWorkbench),
   m_isZeroOffsetFound(false) {
 }
 
-TorsoControllerDyna::~TorsoControllerDyna() {
-  
+TorsoController::~TorsoController() {
+
 }
 
-void TorsoControllerDyna::init() {
+void TorsoController::init() {
   m_dynamixelWorkbench.ping(TORSO_DYNAMIXEL_ID);
   m_dynamixelWorkbench.torqueOff(TORSO_DYNAMIXEL_ID);
   m_dynamixelWorkbench.setNormalDirection(TORSO_DYNAMIXEL_ID);
@@ -32,7 +32,7 @@ void TorsoControllerDyna::init() {
   findZeroOffset();
 }
 
-void TorsoControllerDyna::setOrientation(float orientation) {  
+void TorsoController::setOrientation(float orientation) {
   float dynamixelPosition = 0.f;
   m_dynamixelWorkbench.getRadian(TORSO_DYNAMIXEL_ID, &dynamixelPosition);
   float currentOrientation = getOrientationFromDynamixelPosition(dynamixelPosition);
@@ -43,7 +43,7 @@ void TorsoControllerDyna::setOrientation(float orientation) {
   m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, newDynamixelPosition);
 }
 
-float TorsoControllerDyna::readOrientation() {
+float TorsoController::readOrientation() {
   float dynamixelPosition = 0.f;
   m_dynamixelWorkbench.getRadian(TORSO_DYNAMIXEL_ID, &dynamixelPosition);
   return getOrientationFromDynamixelPosition(dynamixelPosition);
@@ -56,11 +56,11 @@ void onLimitSwitchInterrupt() {
   *isZeroOffsetFound = true;
 }
 
-void TorsoControllerDyna::findZeroOffset() {
+void TorsoController::findZeroOffset() {
   isZeroOffsetFound = &m_isZeroOffsetFound;
   pinMode(TORSO_LIMIT_SWITCH_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN), onLimitSwitchInterrupt, FALLING);
-  
+
   float goalPosition = 2.5 * M_PI / GEAR_RATIO;
   float dynamixelPosition = 0.f;
 
@@ -80,11 +80,11 @@ void TorsoControllerDyna::findZeroOffset() {
   }
 }
 
-float TorsoControllerDyna::getOrientationFromDynamixelPosition(float dynamixelPosition) {
+float TorsoController::getOrientationFromDynamixelPosition(float dynamixelPosition) {
   return std::fmod((dynamixelPosition - m_zeroOffset) * GEAR_RATIO, 2 * M_PI);
 }
 
-float TorsoControllerDyna::getNewDynamixelPositionFromOrientationDelta(float dynamixelPosition, float orientationDelta1) {
+float TorsoController::getNewDynamixelPositionFromOrientationDelta(float dynamixelPosition, float orientationDelta1) {
   float orientationDelta2 = 0.0;
   if (orientationDelta1 < 0.0) {
     orientationDelta2 = (2 * M_PI + orientationDelta1);

@@ -7,6 +7,9 @@ class Shape:
         self.y = y
         self.z = z
 
+    def __str__(self):
+        return 'x: ' + str(self.x) + ', y: ' + str(self.y) + ', z: ' + str(self.z)
+
     def rotate(self, rotation, center=np.array([0, 0, 0])):
         x = np.zeros(len(self.x))
         y = np.zeros(len(self.y))

@@ -10,14 +10,14 @@
 #include <geometry_msgs/PoseStamped.h>
 
 #include "MPU9250.h"
-#include "StewartPlatformControllerDyna.h"
-#include "TorsoControllerDyna.h"
+#include "StewartPlatformController.h"
+#include "TorsoController.h"
 #include "PsuControlCommandHandler.h"
 #include "PsuControlCommandSender.h"
 #include "Ticker.h"
 
 //ROS
-const unsigned long ROS_SERIAL_BAUD_RATE = 1000000;
+constexpr unsigned long ROS_SERIAL_BAUD_RATE = 1000000;
 ros::NodeHandle nh;
 
 void setTorsoOrientation(const std_msgs::Float32& msg);
@@ -33,7 +33,7 @@ ros::Subscriber<std_msgs::Int8> setAudioPowerAmplifierVolumeSub("opencr/audio_po
 std_msgs::Float32 currentTorsoOrientationMsg;
 ros::Publisher currentTorsoOrientationPub("opencr/current_torso_orientation", &currentTorsoOrientationMsg);
 
-const int CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH = 6;
+constexpr int CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH = 6;
 float currentHeadServoAnglesData[CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray currentHeadServoAnglesMsg;
 ros::Publisher currentHeadServoAnglesPub("opencr/current_head_servo_angles", &currentHeadServoAnglesMsg);
@@ -44,12 +44,12 @@ ros::Publisher currentHeadPosePub("opencr/current_head_pose", &currentHeadPoseMs
 std_msgs::Bool isHeadPoseReachableMsg;
 ros::Publisher isHeadPoseReachablePub("opencr/is_head_pose_reachable", &isHeadPoseReachableMsg);
 
-const int RAW_IMU_MSG_DATA_LENGTH = 9;
+constexpr int RAW_IMU_MSG_DATA_LENGTH = 9;
 float rawImuMsgData[RAW_IMU_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray rawImuMsg;
 ros::Publisher rawImuPub("opencr/raw_imu", &rawImuMsg);
 
-const int STATE_OF_CHARGE_VOLTAGE_CURRENT_MSG_DATA_LENGTH = 3;
+constexpr int STATE_OF_CHARGE_VOLTAGE_CURRENT_MSG_DATA_LENGTH = 3;
 float stateOfChargeVoltageCurrentMsgData[STATE_OF_CHARGE_VOLTAGE_CURRENT_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray stateOfChargeVoltageCurrentMsg;
 ros::Publisher stateOfChargeVoltageCurrentPub("opencr/state_of_charge_voltage_current", &stateOfChargeVoltageCurrentMsg);
@@ -61,20 +61,19 @@ ros::Publisher isBatteryChargingPub("opencr/is_battery_charging", &isBatteryChar
 MPU9250 imu(SPI_IMU, BDPIN_SPI_CS_IMU);
 
 const char* DYNAMIXEL_BUS_SERIAL = "/dev/ttyUSB0";
-const long DYNAMIXEL_BAUDRATE = 1000000;
+constexpr long DYNAMIXEL_BAUDRATE = 1000000;
 DynamixelWorkbench dynamixelWorkbench;
-StewartPlatformControllerDyna stewartPlatformController(dynamixelWorkbench);
-TorsoControllerDyna torsoController(dynamixelWorkbench);
+StewartPlatformController stewartPlatformController(dynamixelWorkbench);
+TorsoController torsoController(dynamixelWorkbench);
 
-const unsigned long PSU_CONTROL_BAUD_RATE = 9600;
+constexpr unsigned long PSU_CONTROL_BAUD_RATE = 9600;
 PsuControlCommandHandler psuControlCommandHandler;
 PsuControlCommandSender psuControlCommandSender;
 
 //Timers
-const long ROS_TIMER_PERIOD_MS = 1;
-const long SERVO_STATUS_TIMER_PERIOD_MS = 33;
-const long IMU_TIMER_PERIOD_MS = 10;
-const long VOLTAGE_CURRENT_SENSOR_TIMER_PERIOD_MS = 1000;
+constexpr long ROS_TIMER_PERIOD_MS = 1;
+constexpr long SERVO_STATUS_TIMER_PERIOD_MS = 33;
+constexpr long IMU_TIMER_PERIOD_MS = 10;
 
 void onRosTimer();
 Ticker rosTimer(onRosTimer, ROS_TIMER_PERIOD_MS);

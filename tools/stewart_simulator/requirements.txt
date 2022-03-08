@@ -4,3 +4,5 @@ matplotlib
 pyside2
 torch
 tqdm
+sympy
+numba

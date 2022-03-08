@@ -46,7 +46,7 @@ class MovementCommands:
         self._read_head = 6 * [0]
         self._min_speed_rad_sec = 0.001
         self._min_speed_meters_sec = 0.0001
-        self._np_head_tolerances = np.array(3 * [0.02] + 3 * [0.1])
+        self._np_head_tolerances = np.array(3 * [0.002] + 3 * [0.1])
 
         if simulation:
             self._np_head_tolerances = np.array(3 * [0.07] + 3 * [0.1])

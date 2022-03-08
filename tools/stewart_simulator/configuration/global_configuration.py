@@ -3,6 +3,7 @@ import math
 
 from configuration.bottom_configuration import BottomConfiguration
 from configuration.top_configuration import TopConfiguration
+from configuration.ui_configuration import UiConfiguration
 
 
 class GlobalConfiguration:
@@ -17,6 +18,8 @@ class GlobalConfiguration:
             self.rod_length = float(json_configuration['rodLength'])
             self.servo_angle_min = math.radians(float(json_configuration['servoAngleRange']['min']))
             self.servo_angle_max = math.radians(float(json_configuration['servoAngleRange']['max']))
+
+            self.ui = UiConfiguration(json_configuration['ui'])
 
             self._verify_anchor_servo_alignment()
 
