@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 
 2. Configure the Stewart platform ([configuration.json](configuration.json)).
-3Run the simulator.
+3. Run the simulator.
 ```bash
 python stewart_simulator.py
 ```
