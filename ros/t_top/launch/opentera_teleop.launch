@@ -20,8 +20,8 @@
 
     <!-- Perceptions -->
     <include file="$(find t_top)/launch/perceptions/odas.launch">
-        <arg if="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pa_echo_cancelled.cfg"/>
-        <arg unless="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pa.cfg"/>
+        <arg if="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pulseaudio_ec.cfg"/>
+        <arg unless="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pulseaudio.cfg"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="rviz" value="$(arg rviz)"/>
         <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
