@@ -124,11 +124,11 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         m_strategiesByDesireType[get<0>(s)][get<1>(s)]->enable(get<2>(s));
     }
 
-    std::lock_guard<std::mutex> lock(m_activeDesiresMutex);
-    m_activeDesires.clear();
+    std::lock_guard<std::mutex> lock(m_activeDesireNamesMutex);
+    m_activeDesireNames.clear();
     for (auto& s : strategiesToEnable)
     {
-        m_activeDesires.emplace(get<2>(s));
+        m_activeDesireNames.emplace(get<0>(s).name());
     }
 }
 
@@ -155,14 +155,7 @@ std::vector<std::string> HbbaLite::getActiveStrategies() const
     return activeStrategies;
 }
 
-std::vector<std::string> HbbaLite::getActiveDesireNames() const
+const std::set<std::string>& HbbaLite::getActiveDesireNames() const
 {
-    vector<string> activeDesires;
-
-    for (const auto& desire : m_activeDesires)
-    {
-        activeDesires.emplace_back(desire->type().name());
-    }
-
-    return activeDesires;
+    return m_activeDesireNames;
 }
