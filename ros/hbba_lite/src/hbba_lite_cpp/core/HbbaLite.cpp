@@ -155,7 +155,8 @@ std::vector<std::string> HbbaLite::getActiveStrategies() const
     return activeStrategies;
 }
 
-const std::set<std::string>& HbbaLite::getActiveDesireNames() const
+std::vector<std::string> HbbaLite::getActiveDesireNames() const
 {
-    return m_activeDesireNames;
+    std::lock_guard<std::mutex> lock(m_activeDesireNamesMutex);
+    return {std::begin(m_activeDesireNames), std::end(m_activeDesireNames)};
 }

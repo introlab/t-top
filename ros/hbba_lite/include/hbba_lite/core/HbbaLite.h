@@ -42,7 +42,7 @@ class HbbaLite : public DesireSetObserver
     std::atomic_bool m_stopped;
     std::unique_ptr<std::thread> m_thread;
 
-    std::mutex m_activeDesireNamesMutex;
+    mutable std::mutex m_activeDesireNamesMutex;
     std::set<std::string> m_activeDesireNames;
 
 public:
@@ -57,7 +57,7 @@ public:
 
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& enabledDesires) override;
     std::vector<std::string> getActiveStrategies() const;
-    const std::set<std::string>& getActiveDesireNames() const;
+    std::vector<std::string> getActiveDesireNames() const;
 
 private:
     void checkStrategyResources(std::type_index desireType, const std::unordered_map<std::string, uint16_t>& resourcesByNames);
