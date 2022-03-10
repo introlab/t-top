@@ -2,7 +2,6 @@
     <arg name="simulation"/>
     <arg name="min_activity" default="0.1"/>
 
-    <!-- Sound Following -->
     <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>

@@ -1,7 +1,6 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
 
-    <!-- Talk -->
     <node pkg="talk" type="talk_node.py" name="talk_node">
         <param name="language" value="$(arg language)"/>
         <param name="mouth_signal_gain" value="0.03"/>

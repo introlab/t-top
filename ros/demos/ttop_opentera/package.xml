@@ -55,18 +55,24 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>t_top</build_depend>
   <build_depend>opentera_webrtc_ros_msgs</build_depend>
+  <build_depend>opentera_webrtc_ros</build_depend>
+  <build_depend>map_image_generator</build_depend>
   <build_export_depend>hbba_lite</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>t_top</build_export_depend>
   <build_export_depend>opentera_webrtc_ros_msgs</build_export_depend>
+  <build_export_depend>opentera_webrtc_ros</build_export_depend>
+  <build_export_depend>map_image_generator</build_export_depend>
   <exec_depend>hbba_lite</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>t_top</exec_depend>
   <exec_depend>opentera_webrtc_ros_msgs</exec_depend>
+  <exec_depend>opentera_webrtc_ros</exec_depend>
+  <exec_depend>map_image_generator</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

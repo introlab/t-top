@@ -3,6 +3,5 @@
         <arg name="visualization" value="true"/>
     </include>
 
-    <node pkg="ttop_opentera" type="ttop_opentera_node" name="ttop_opentera_node" output="screen" launch-prefix="bash -c 'sleep 20; $0 $@' ">
-    </node>
+    <node pkg="ttop_opentera" type="ttop_opentera_node" name="ttop_opentera_node" output="screen" launch-prefix="bash -c 'sleep 20; $0 $@' "/>
 </launch>

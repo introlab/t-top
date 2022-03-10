@@ -188,7 +188,7 @@ catkin_package(
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/node_modules.md5
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/package.json
-    COMMAND /usr/bin/npm install
+    COMMAND npm install
     COMMAND tar c ${CMAKE_CURRENT_SOURCE_DIR}/node_modules 2> /dev/null | md5sum > ${CMAKE_CURRENT_BINARY_DIR}/node_modules.md5
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -197,3 +197,17 @@ add_custom_target(
     user_interface-install ALL
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/node_modules.md5
 )
+
+#######################
+## Required programs ##
+#######################
+function(assert_program_installed PROGRAM)
+    find_program(prog-${PROGRAM} ${PROGRAM})
+    if(${prog-${PROGRAM}} STREQUAL "prog-${PROGRAM}-NOTFOUND")
+        message(FATAL_ERROR "'${PROGRAM}' needs to be installed")
+    endif()
+endfunction()
+
+assert_program_installed("npm")
+assert_program_installed("tar")
+assert_program_installed("md5sum")

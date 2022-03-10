@@ -1,6 +1,5 @@
 <launch>
 
-    <!-- Audio Resampling -->
     <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
         <param name="input_format" value="signed_16"/>
         <param name="output_format" value="signed_16"/>

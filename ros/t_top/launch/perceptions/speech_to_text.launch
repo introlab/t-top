@@ -1,7 +1,6 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
 
-    <!-- Speech to Text -->
     <node pkg="speech_to_text" type="speech_to_text_node.py" name="speech_to_text_node">
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="743"/>

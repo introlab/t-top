@@ -1,7 +1,6 @@
 <launch>
     <arg name="simulation"/>
 
-    <!-- Gesture -->
     <node pkg="gesture" type="gesture_node.py" name="gesture_node">
         <param name="simulation" value="$(arg simulation)"/>
 

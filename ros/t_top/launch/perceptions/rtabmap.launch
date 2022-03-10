@@ -1,6 +1,5 @@
 <launch>
 
-    <!-- RTAB-Map -->
     <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
         <remap from="rgb/image" to="/camera/color/image_raw"/>
         <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>

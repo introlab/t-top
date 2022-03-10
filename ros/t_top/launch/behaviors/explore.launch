@@ -1,7 +1,6 @@
 <launch>
     <arg name="simulation"/>
 
-    <!-- Explore -->
     <node pkg="explore" type="explore_node.py" name="explore_node">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="explore_frequency" value="0.00833333333"/>

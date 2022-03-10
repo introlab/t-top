@@ -1,7 +1,6 @@
 <launch>
     <arg name="simulation"/>
 
-    <!-- Teleoperation -->
     <node pkg="teleoperation" type="teleoperation_node.py" name="teleoperation_node">
         <param name="simulation" value="$(arg simulation)"/>
 

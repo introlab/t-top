@@ -1,6 +1,5 @@
 <launch>
 
-    <!-- Dance -->
     <node pkg="dance" type="dance_node.py" name="head_dance_node">
         <param name="movement_file" value="$(find dance)/head_movements.json"/>
 
