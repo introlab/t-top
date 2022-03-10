@@ -4,14 +4,11 @@
 using namespace std;
 
 HbbaLite::HbbaLite(shared_ptr<DesireSet> desireSet,
-    vector<unique_ptr<BaseStrategy>> strategies,
-    unordered_map<string, uint16_t> resourcesByNames,
-    unique_ptr<Solver> solver) :
-        m_desireSet(move(desireSet)),
-        m_resourcesByNames(move(resourcesByNames)),
-        m_solver(move(solver)),
-        m_pendingDesiresSemaphore(false),
-        m_stopped(false)
+                   vector<unique_ptr<BaseStrategy>> strategies,
+                   unordered_map<string, uint16_t> resourcesByNames,
+                   unique_ptr<Solver> solver)
+    : m_desireSet(move(desireSet)), m_resourcesByNames(move(resourcesByNames)),
+      m_solver(move(solver)), m_pendingDesiresSemaphore(false), m_stopped(false)
 {
     for (auto& strategy : strategies)
     {
@@ -44,7 +41,8 @@ void HbbaLite::onDesireSetChanged(const vector<unique_ptr<Desire>>& enabledDesir
     m_pendingDesiresSemaphore.release();
 }
 
-void HbbaLite::checkStrategyResources(type_index desireType, const unordered_map<string, uint16_t>& resourcesByNames)
+void HbbaLite::checkStrategyResources(
+    type_index desireType, const unordered_map<string, uint16_t>& resourcesByNames)
 {
     for (auto& pair : resourcesByNames)
     {
@@ -125,6 +123,13 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
     {
         m_strategiesByDesireType[get<0>(s)][get<1>(s)]->enable(get<2>(s));
     }
+
+    std::lock_guard<std::mutex> lock(m_activeDesiresMutex);
+    m_activeDesires.clear();
+    for (auto& s : strategiesToEnable)
+    {
+        m_activeDesires.emplace(get<2>(s));
+    }
 }
 
 std::vector<std::string> HbbaLite::getActiveStrategies() const
@@ -137,9 +142,10 @@ std::vector<std::string> HbbaLite::getActiveStrategies() const
         {
             if (i->enabled())
             {
-                for (const auto& p2: i->filterConfigurationsByName())
+                for (const auto& p2 : i->filterConfigurationsByName())
                 {
-                    activeStrategies.emplace_back(string(p.first.name()) + "::" + p2.first + "=" + to_string(i->enabled()));
+                    activeStrategies.emplace_back(string(p.first.name()) + "::" + p2.first
+                                                  + "=" + to_string(i->enabled()));
                 }
                 break;
             }
@@ -149,11 +155,11 @@ std::vector<std::string> HbbaLite::getActiveStrategies() const
     return activeStrategies;
 }
 
-std::vector<std::string> HbbaLite::getActiveDesires() const
+std::vector<std::string> HbbaLite::getActiveDesireNames() const
 {
     vector<string> activeDesires;
 
-    for (const auto& desire : m_desireSet->getEnabledDesires())
+    for (const auto& desire : m_activeDesires)
     {
         activeDesires.emplace_back(desire->type().name());
     }

@@ -15,6 +15,7 @@
 #include <typeindex>
 #include <thread>
 #include <mutex>
+#include <set>
 
 template<>
 struct std::hash<std::pair<std::type_index, size_t>>
@@ -41,6 +42,9 @@ class HbbaLite : public DesireSetObserver
     std::atomic_bool m_stopped;
     std::unique_ptr<std::thread> m_thread;
 
+    std::mutex m_activeDesiresMutex;
+    std::set<std::unique_ptr<Desire>> m_activeDesires;
+
 public:
     HbbaLite(std::shared_ptr<DesireSet> desireSet,
         std::vector<std::unique_ptr<BaseStrategy>> strategies,
@@ -53,7 +57,7 @@ public:
 
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& enabledDesires) override;
     std::vector<std::string> getActiveStrategies() const;
-    std::vector<std::string> getActiveDesires() const;
+    std::vector<std::string> getActiveDesireNames() const;
 
 private:
     void checkStrategyResources(std::type_index desireType, const std::unordered_map<std::string, uint16_t>& resourcesByNames);

@@ -96,7 +96,7 @@ bool Node::listActiveDesiresCb(std_srvs::SetBool::Request& request,
     response.message = "";
     response.success = true;
 
-    for (const auto& desire : m_hbbaLite->getActiveDesires())
+    for (const auto& desire : m_hbbaLite->getActiveDesireNames())
     {
         response.message += desire + ";";
     }
