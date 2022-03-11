@@ -50,6 +50,7 @@ T-Top is a tabletop robot designed with advanced audio and vision sensors, deep 
 See [01_COMPUTER_CONFIGURATION.md](documentation/assembly/01_COMPUTER_CONFIGURATION.md#development-computer-ubuntu-2004)
 
 ## Papers
+- [M.-A. Maheux, C. Caya, D. L ́etourneau, and F. Michaud, “T-top, a sar experimental platform,” in Proceedings of the 2022 ACM/IEEE International Conference on Human-Robot Interaction, 2022, p. 904–908.](https://dl.acm.org/doi/abs/10.5555/3523760.3523902)
 
 ## Sponsor
 
