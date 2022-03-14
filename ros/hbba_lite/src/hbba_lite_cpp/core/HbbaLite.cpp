@@ -126,9 +126,9 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
 
     std::lock_guard<std::mutex> lock(m_activeDesireNamesMutex);
     m_activeDesireNames.clear();
-    for (auto& s : strategiesToEnable)
+    for (auto result : results)
     {
-        m_activeDesireNames.emplace(get<0>(s).name());
+        m_activeDesireNames.emplace(desires[result.desireIndex]->type().name());
     }
 }
 
