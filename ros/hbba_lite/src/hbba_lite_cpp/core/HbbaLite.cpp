@@ -83,8 +83,12 @@ void HbbaLite::run()
 void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
 {
     auto results = m_solver->solve(desires, m_strategiesByDesireType, m_resourcesByNames);
+    
+    // After the loop iterating the results, this set will contain the strategies that need to be disabled.
     unordered_set<pair<type_index, size_t>> enabledStrategies;
-    vector<tuple<type_index, size_t, unique_ptr<Desire>&>> strategiesToEnable;
+    
+    // After the loop iterating the results, this vector will contain the strategies that need to be enabled.
+    vector<pair<size_t, unique_ptr<Desire>&>> strategiesToEnable;
 
     for (auto& p : m_strategiesByDesireType)
     {
@@ -105,9 +109,14 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         bool toBeEnabled = enabledStrategies.count(p) == 0;
         auto& strategy = m_strategiesByDesireType[p.first][p.second];
 
-        if (toBeEnabled || strategy->enabled() && strategy->desireId() != desire->id())
+        if (
+                // The strategy must be enabled, but it is disabled
+                toBeEnabled ||
+                // The strategy is already enabled for another desire, so it must be disabled then enabled.
+                strategy->enabled() && strategy->desireId() != desire->id()
+            )
         {
-            strategiesToEnable.emplace_back(desireType, result.strategyIndex, desire);
+            strategiesToEnable.emplace_back(result.strategyIndex, desire);
         }
         else
         {
@@ -115,13 +124,13 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         }
     }
 
-    for (auto& p : enabledStrategies)
+    for (const auto& p : enabledStrategies)
     {
         m_strategiesByDesireType[p.first][p.second]->disable();
     }
-    for (auto& s : strategiesToEnable)
+    for (const auto& s : strategiesToEnable)
     {
-        m_strategiesByDesireType[get<0>(s)][get<1>(s)]->enable(get<2>(s));
+        m_strategiesByDesireType[s.second->type()][s.first]->enable(s.second);
     }
 
     updateActiveDesireNames(desires, results);
