@@ -16,6 +16,19 @@ enum class FilterType
     ON_OFF, THROTTLING
 };
 
+inline std::string filterTypeToString(FilterType filterType)
+{
+    switch (filterType)
+    {
+    case FilterType::ON_OFF:
+        return "ON_OFF";
+    case FilterType::THROTTLING:
+        return "THROTTLING";
+    default:
+        return "UNKNOWN";
+    }
+}
+
 class FilterConfiguration
 {
     FilterType m_type;
@@ -23,7 +36,7 @@ class FilterConfiguration
 
 public:
     FilterConfiguration();
-    FilterConfiguration(uint16_t rate);
+    explicit FilterConfiguration(uint16_t rate);
 
     FilterType type() const;
     uint16_t rate() const;

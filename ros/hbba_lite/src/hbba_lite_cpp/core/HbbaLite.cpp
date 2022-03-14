@@ -124,6 +124,14 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         m_strategiesByDesireType[get<0>(s)][get<1>(s)]->enable(get<2>(s));
     }
 
+    updateActiveDesireNames(desires, results);
+    updateActiveStrategies(desires, results);
+}
+
+void HbbaLite::updateActiveDesireNames(
+    const std::vector<std::unique_ptr<Desire>>& desires,
+    const std::unordered_set<SolverResult>& results)
+{
     std::lock_guard<std::mutex> lock(m_activeDesireNamesMutex);
     m_activeDesireNames.clear();
     for (auto result : results)
@@ -132,27 +140,76 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
     }
 }
 
-std::set<std::string> HbbaLite::getActiveStrategies() const
+void HbbaLite::updateActiveStrategies(const std::vector<std::unique_ptr<Desire>>& desires,
+                                      const std::unordered_set<SolverResult>& results)
 {
-    set<string> activeStrategies;
-
-    for (const auto& p : m_strategiesByDesireType)
+    std::lock_guard<std::mutex> lock(m_activeStrategiesMutex);
+    m_activeStrategies.clear();
+    for (auto result : results)
     {
-        for (const auto& i : p.second)
+        const auto& desire = desires[result.desireIndex];
+        const auto& strategy =
+            m_strategiesByDesireType[desire->type()][result.strategyIndex];
+        std::string desireName = desire->type().name();
+        std::string strategyUtility = std::to_string(strategy->utility());
+        std::string s = desireName.append("::(u:")
+                            .append(strategyUtility)
+                            .append("; ")
+                            .append("r:{");
+
+        size_t counter = strategy->resourcesByName().size();
+        for (const auto& resource : strategy->resourcesByName())
         {
-            if (i->enabled())
+            s.append(resource.first).append(":").append(std::to_string(resource.second));
+            if (--counter != 0)
             {
-                for (const auto& p2 : i->filterConfigurationsByName())
-                {
-                    activeStrategies.emplace(string(p.first.name()) + "::" + p2.first
-                                             + "=" + to_string(i->enabled()));
-                }
-                break;
+                s.append("; ");
             }
         }
-    }
 
-    return activeStrategies;
+        s.append("}; f:{");
+
+        counter = strategy->filterConfigurationsByName().size();
+        for (const auto& filter : strategy->filterConfigurationsByName())
+        {
+            s.append(filter.first).append(":").append(filterTypeToString(filter.second.type()));
+            if (filter.second.type() == FilterType::THROTTLING)
+            {
+                s.append("=").append(std::to_string(filter.second.rate()));
+            }                
+            if (--counter != 0)
+            {
+                s.append("; ");
+            }
+        }
+        s.append("})");
+        m_activeStrategies.emplace(std::move(s));
+    }
+}
+
+std::set<std::string> HbbaLite::getActiveStrategies() const
+{
+    std::lock_guard<std::mutex> lock(m_activeStrategiesMutex);
+    return m_activeStrategies;
+    // set<string> activeStrategies;
+
+    // for (const auto& p : m_strategiesByDesireType)
+    // {
+    //     for (const auto& i : p.second)
+    //     {
+    //         if (i->enabled())
+    //         {
+    //             for (const auto& p2 : i->filterConfigurationsByName())
+    //             {
+    //                 activeStrategies.emplace(string(p.first.name()) + "::" + p2.first
+    //                                          + "=" + to_string(i->enabled()));
+    //             }
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // return activeStrategies;
 }
 
 std::set<std::string> HbbaLite::getActiveDesireNames() const

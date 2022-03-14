@@ -9,6 +9,12 @@
 
 using namespace std;
 
+
+bool contains(const std::string& data, const std::string& substr)
+{
+    return data.find(substr) != std::string::npos;
+}
+
 class SolverMock : public Solver
 {
 public:
@@ -144,7 +150,7 @@ TEST(HbbaLiteTests, getActiveStrategies_shouldReturnActiveStrategies)
     this_thread::sleep_for(10ms);
 
     std::set<std::string> expectedStrategies = {
-        std::string(type_index(typeid(DesireC)).name()).append("::fa=1"),
+        std::string(type_index(typeid(DesireC)).name()).append("::(u:10; r:{ra:10}; f:{fa:THROTTLING=1})"),
     };
     EXPECT_EQ(testee.getActiveStrategies(), expectedStrategies);
 
@@ -159,10 +165,13 @@ TEST(HbbaLiteTests, getActiveStrategies_shouldReturnActiveStrategies)
 
     this_thread::sleep_for(10ms);
     std::set<std::string> expectedStrategies2 = {
-        std::string(type_index(typeid(DesireD)).name()).append("::fb=1"),
-        std::string(type_index(typeid(DesireD)).name()).append("::fc=1")
+        std::string(type_index(typeid(DesireD)).name()).append("::(u:10; r:{ra:10}; f:{fb:THROTTLING=1; fc:ON_OFF})"),
     };
-    EXPECT_EQ(testee.getActiveStrategies(), expectedStrategies2);
+    auto actualStrategies = testee.getActiveStrategies();
+    ASSERT_EQ(actualStrategies.size(), 1);
+    EXPECT_TRUE(contains(*actualStrategies.begin(), "::(u:10; r:{ra:10}; f:{"));
+    EXPECT_TRUE(contains(*actualStrategies.begin(), "fb:THROTTLING=1"));
+    EXPECT_TRUE(contains(*actualStrategies.begin(), "fc:ON_OFF"));
 }
 
 TEST(HbbaLiteTests, getActiveDesireNames_shouldReturnActiveDesireName)

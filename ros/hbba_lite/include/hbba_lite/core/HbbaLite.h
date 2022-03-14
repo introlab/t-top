@@ -44,6 +44,8 @@ class HbbaLite : public DesireSetObserver
 
     mutable std::mutex m_activeDesireNamesMutex;
     std::set<std::string> m_activeDesireNames;
+    mutable std::mutex m_activeStrategiesMutex;
+    std::set<std::string> m_activeStrategies;
 
 public:
     HbbaLite(std::shared_ptr<DesireSet> desireSet,
@@ -64,6 +66,10 @@ private:
 
     void run();
     void updateStrategies(std::vector<std::unique_ptr<Desire>> desires);
+    void updateActiveStrategies(const std::vector<std::unique_ptr<Desire>>& desires,
+                                const std::unordered_set<SolverResult>& results);
+    void updateActiveDesireNames(const std::vector<std::unique_ptr<Desire>>& desires,
+                                 const std::unordered_set<SolverResult>& results);
 };
 
 #endif
