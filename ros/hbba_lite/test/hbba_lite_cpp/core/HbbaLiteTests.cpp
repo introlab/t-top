@@ -1,5 +1,6 @@
 #include <hbba_lite/core/HbbaLite.h>
 #include <hbba_lite/utils/HbbaLiteException.h>
+#include <hbba_lite/core/GecodeSolver.h>
 
 #include "Desires.h"
 #include "FilterPoolMock.h"
@@ -112,4 +113,154 @@ TEST(HbbaLiteTests, onDesireSetChange_shouldEnableDisableStrategies)
     desireSet->removeDesire(id);
     this_thread::sleep_for(10ms);
     EXPECT_EQ(filterPool->counts["fa"], 0);
+}
+
+TEST(HbbaLiteTests, getActiveStrategies_shouldReturnActiveStrategies)
+{
+    auto desireSet = make_shared<DesireSet>();
+    auto filterPool = make_shared<FilterPoolMock>();
+    auto strategyC = make_unique<Strategy<DesireC>>(10,
+        unordered_map<string, uint16_t>{{"ra", 10}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
+        filterPool);
+    auto strategyD = make_unique<Strategy<DesireD>>(10,
+        unordered_map<string, uint16_t>{{"ra", 10}},
+        unordered_map<string, FilterConfiguration>{
+                {"fb", FilterConfiguration::throttling(1)},
+                {"fc", FilterConfiguration::onOff()}
+            },
+        filterPool);
+    auto solver = make_unique<GecodeSolver>();
+
+    vector<unique_ptr<BaseStrategy>> strategies;
+    strategies.emplace_back(move(strategyC));
+    strategies.emplace_back(move(strategyD));
+
+    HbbaLite testee(desireSet, move(strategies), {{"ra", 10}}, move(solver));
+
+    auto desire = make_unique<DesireC>();
+    auto id = desire->id();
+    desireSet->addDesire(move(desire));
+    this_thread::sleep_for(1s);
+
+    std::set<std::string> expectedStrategies = {
+        std::string(type_index(typeid(DesireC)).name()).append("::fa=1"),
+    };
+    EXPECT_EQ(testee.getActiveStrategies(), expectedStrategies);
+
+    {
+        desireSet->beginTransaction();
+        desireSet->removeDesire(id);
+
+        auto desire2 = make_unique<DesireD>();
+        auto id2 = desire2->id();
+        desireSet->addDesire(move(desire2));
+    }
+
+    this_thread::sleep_for(1s);
+    std::set<std::string> expectedStrategies2 = {
+        std::string(type_index(typeid(DesireD)).name()).append("::fb=1"),
+        std::string(type_index(typeid(DesireD)).name()).append("::fc=1")
+    };
+    EXPECT_EQ(testee.getActiveStrategies(), expectedStrategies2);
+}
+
+TEST(HbbaLiteTests, getActiveDesireNames_shouldReturnActiveDesireName)
+{
+    auto desireSet = make_shared<DesireSet>();
+    auto filterPool = make_shared<FilterPoolMock>();
+    auto strategyC = make_unique<Strategy<DesireC>>(10,
+        unordered_map<string, uint16_t>{{"ra", 10}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
+        filterPool);
+    auto strategyD = make_unique<Strategy<DesireD>>(10,
+        unordered_map<string, uint16_t>{{"ra", 10}},
+        unordered_map<string, FilterConfiguration>{
+                {"fb", FilterConfiguration::throttling(1)},
+                {"fc", FilterConfiguration::onOff()}
+            },
+        filterPool);
+    auto solver = make_unique<GecodeSolver>();
+
+    vector<unique_ptr<BaseStrategy>> strategies;
+    strategies.emplace_back(move(strategyC));
+    strategies.emplace_back(move(strategyD));
+
+    HbbaLite testee(desireSet, move(strategies), {{"ra", 10}}, move(solver));
+
+    auto desire = make_unique<DesireC>();
+    auto id = desire->id();
+    desireSet->addDesire(move(desire));
+    this_thread::sleep_for(1s);
+
+    std::set<std::string> expectedDesireNames = {
+        std::string(type_index(typeid(DesireC)).name()),
+    };
+    EXPECT_EQ(testee.getActiveDesireNames(), expectedDesireNames);
+
+    {
+        desireSet->beginTransaction();
+        desireSet->removeDesire(id);
+
+        auto desire2 = make_unique<DesireD>();
+        auto id2 = desire2->id();
+        desireSet->addDesire(move(desire2));
+    }
+
+    this_thread::sleep_for(1s);
+    std::set<std::string> expectedDesireNames2 = {
+        std::string(type_index(typeid(DesireD)).name()),
+    };
+    EXPECT_EQ(testee.getActiveDesireNames(), expectedDesireNames2);
+}
+
+TEST(HbbaLiteTests, getActiveDesireNames_shouldOnlyReturnDesireNameWithBiggestIntensity)
+{
+    auto desireSet = make_shared<DesireSet>();
+    auto filterPool = make_shared<FilterPoolMock>();
+    auto strategyB = make_unique<Strategy<DesireB>>(10,
+        unordered_map<string, uint16_t>{{"ra", 1}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
+        filterPool);
+    auto strategyC = make_unique<Strategy<DesireC>>(10,
+        unordered_map<string, uint16_t>{{"ra", 1}},
+        unordered_map<string, FilterConfiguration>{{"fd", FilterConfiguration::onOff()}},
+        filterPool);
+    auto strategyD = make_unique<Strategy<DesireD>>(10,
+        unordered_map<string, uint16_t>{{"ra", 1}},
+        unordered_map<string, FilterConfiguration>{
+                {"fb", FilterConfiguration::throttling(1)},
+                {"fc", FilterConfiguration::onOff()}
+            },
+        filterPool);
+    auto solver = make_unique<GecodeSolver>();
+
+    vector<unique_ptr<BaseStrategy>> strategies;
+    strategies.emplace_back(move(strategyB));
+    strategies.emplace_back(move(strategyC));
+    strategies.emplace_back(move(strategyD));
+
+    HbbaLite testee(desireSet, move(strategies), {{"ra", 1}}, move(solver));
+
+    {
+        desireSet->beginTransaction();
+
+        auto desireB = make_unique<DesireB>(2);
+        auto idB = desireB->id();
+        desireSet->addDesire(move(desireB));
+
+        auto desireC = make_unique<DesireC>();
+        auto idC = desireC->id();
+        desireSet->addDesire(move(desireC));
+
+        auto desireD = make_unique<DesireD>();
+        auto idD = desireD->id();
+        desireSet->addDesire(move(desireD));
+    }
+
+    this_thread::sleep_for(1s);
+    std::set<std::string> expectedDesireNames = {
+        std::string(type_index(typeid(DesireB)).name()),
+    };
+    EXPECT_EQ(testee.getActiveDesireNames(), expectedDesireNames);
 }
