@@ -149,7 +149,7 @@ TEST(HbbaLiteTests, getActiveStrategies_shouldReturnActiveStrategies)
     desireSet->addDesire(move(desire));
     this_thread::sleep_for(10ms);
 
-    std::set<std::string> expectedStrategies = {
+    std::vector<std::string> expectedStrategies = {
         std::string(type_index(typeid(DesireC)).name()).append("::(u:10; r:{ra:10}; f:{fa:THROTTLING=1})"),
     };
     EXPECT_EQ(testee.getActiveStrategies(), expectedStrategies);
@@ -164,14 +164,14 @@ TEST(HbbaLiteTests, getActiveStrategies_shouldReturnActiveStrategies)
     }
 
     this_thread::sleep_for(10ms);
-    std::set<std::string> expectedStrategies2 = {
+    std::vector<std::string> expectedStrategies2a = {
         std::string(type_index(typeid(DesireD)).name()).append("::(u:10; r:{ra:10}; f:{fb:THROTTLING=1; fc:ON_OFF})"),
     };
+    std::vector<std::string> expectedStrategies2b = {
+        std::string(type_index(typeid(DesireD)).name()).append("::(u:10; r:{ra:10}; f:{fc:ON_OFF; fb:THROTTLING=1})"),
+    };
     auto actualStrategies = testee.getActiveStrategies();
-    ASSERT_EQ(actualStrategies.size(), 1);
-    EXPECT_TRUE(contains(*actualStrategies.begin(), "::(u:10; r:{ra:10}; f:{"));
-    EXPECT_TRUE(contains(*actualStrategies.begin(), "fb:THROTTLING=1"));
-    EXPECT_TRUE(contains(*actualStrategies.begin(), "fc:ON_OFF"));
+    EXPECT_TRUE(actualStrategies == expectedStrategies2a || actualStrategies == expectedStrategies2b);
 }
 
 TEST(HbbaLiteTests, getActiveDesireNames_shouldReturnActiveDesireName)
@@ -202,7 +202,7 @@ TEST(HbbaLiteTests, getActiveDesireNames_shouldReturnActiveDesireName)
     desireSet->addDesire(move(desire));
     this_thread::sleep_for(10ms);
 
-    std::set<std::string> expectedDesireNames = {
+    std::vector<std::string> expectedDesireNames = {
         std::string(type_index(typeid(DesireC)).name()),
     };
     EXPECT_EQ(testee.getActiveDesireNames(), expectedDesireNames);
@@ -217,7 +217,7 @@ TEST(HbbaLiteTests, getActiveDesireNames_shouldReturnActiveDesireName)
     }
 
     this_thread::sleep_for(10ms);
-    std::set<std::string> expectedDesireNames2 = {
+    std::vector<std::string> expectedDesireNames2 = {
         std::string(type_index(typeid(DesireD)).name()),
     };
     EXPECT_EQ(testee.getActiveDesireNames(), expectedDesireNames2);
@@ -268,7 +268,7 @@ TEST(HbbaLiteTests, getActiveDesireNames_shouldOnlyReturnDesireNameWithBiggestIn
     }
 
     this_thread::sleep_for(10ms);
-    std::set<std::string> expectedDesireNames = {
+    std::vector<std::string> expectedDesireNames = {
         std::string(type_index(typeid(DesireB)).name()),
     };
     EXPECT_EQ(testee.getActiveDesireNames(), expectedDesireNames);

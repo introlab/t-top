@@ -58,8 +58,8 @@ public:
     DECLARE_NOT_MOVABLE(HbbaLite);
 
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& enabledDesires) override;
-    std::set<std::string> getActiveStrategies() const;
-    std::set<std::string> getActiveDesireNames() const;
+    std::vector<std::string> getActiveStrategies() const;
+    std::vector<std::string> getActiveDesireNames() const;
 
 private:
     void checkStrategyResources(std::type_index desireType, const std::unordered_map<std::string, uint16_t>& resourcesByNames);
