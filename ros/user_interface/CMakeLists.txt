@@ -211,4 +211,3 @@ function(assert_program_installed PROGRAM)
 endfunction()
 
 assert_program_installed("npm")
-assert_program_installed("tar")
