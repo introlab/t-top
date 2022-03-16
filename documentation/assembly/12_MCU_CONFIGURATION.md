@@ -32,4 +32,9 @@
     3. Comment out the `delay` line in `bool writeOnlyRegister(uint8_t, uint16_t, uint16_t, uint8_t*, const char**);`.
     4. Comment out the `delay` line in `bool writeOnlyRegister(uint8_t, const char*, int32_t, const char**);`.
 2. Open the [project](../../firmwares/opencr_firmware) in the Arduino IDE.
-3. Click on the upload button.
+3. Turn off the switch of the `OpenCR`.
+4. Disconnect the micro USB cable connected to the `OpenCR`.
+5. Connect the micro USB cable to the computer and the `OpenCR`.
+6. Click on the upload button.
+7. Reconnect the micro USB cable that was connected to the `OpenCR`.
+8. Turn on the switch of the `OpenCR`.
