@@ -2,7 +2,6 @@
 
 import rospy
 from geometry_msgs.msg import Twist
-from os import environ
 from contextlib import contextmanager
 
 from t_top import MovementCommands, HEAD_ZERO_Z
@@ -66,21 +65,13 @@ class TeleoperationNode:
             self._movement_commands.move_torso_speed(
                 speed_rad_sec_torso=self._state.current_speed.torso_angle, should_sleep=False)
 
-            # TODO: remove when the neural network is replaced by direct kinematics
-            # Prevent the head from going too high and getting stuck
-            speed = self._state.current_speed.head_angle
-            if self._movement_commands.current_head_pose[4] < -0.40 and speed < 0:
-                speed = 0
-            # END TODO
-
             self._movement_commands.move_head_speed(
                 speeds_head=[
                     0,
                     0,
                     0,
                     0,
-                    # TODO: replace 'speed' by 'self._state.current_speed.head_angle' when the neural network is replaced by direct kinematics
-                    speed,
+                    self._state.current_speed.head_angle,
                     0
                 ],
                 should_sleep=False,
