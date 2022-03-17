@@ -13,6 +13,8 @@
 #include "states/DanceState.h"
 #include "states/DancePlayedSongState.h"
 
+#include "states/AfterTaskDelayState.h"
+
 #include <ros/ros.h>
 
 #include <hbba_lite/core/DesireSet.h>
@@ -30,7 +32,8 @@ void startNode(Language language,
     ros::NodeHandle& nodeHandle,
     const string& englishStoryPath,
     const string& frenchStoryPath,
-    const string& songPath)
+    const string& songPath,
+    const ros::Duration& afterTaskStateDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle);
@@ -56,6 +59,7 @@ void startNode(Language language,
 
     StateManager stateManager;
     type_index idleStateType(typeid(RssIdleState));
+    type_index afterTaskDelayStateType(typeid(AfterTaskDelayState));
 
     stateManager.addState(make_unique<RssIdleState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<RssWaitPersonIdentificationState>(language, stateManager, desireSet, nodeHandle));
@@ -63,12 +67,13 @@ void startNode(Language language,
     stateManager.addState(make_unique<RssWaitAnswerState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<RssValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
-
-    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, idleStateType));
-    stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
     stateManager.addState(make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
-    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, idleStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, vector<string>{songPath}));
+    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType, vector<string>{songPath}));
+
+    stateManager.addState(make_unique<AfterTaskDelayState>(language, stateManager, desireSet, nodeHandle, idleStateType, afterTaskStateDelayDuration));
 
     stateManager.switchTo<RssIdleState>();
 
@@ -114,7 +119,11 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath);
+    double afterTaskStateDelayDurationS;
+    privateNodeHandle.param("after_task_state_delay_duration_s", afterTaskStateDelayDurationS, 0.0);
+    ros::Duration afterTaskStateDelayDuration(afterTaskStateDelayDurationS);
+
+    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath, afterTaskStateDelayDuration);
 
     return 0;
 }

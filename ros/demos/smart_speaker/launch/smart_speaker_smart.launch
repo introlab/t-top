@@ -13,6 +13,8 @@
 
         <rosparam param="song_names">[wanderer, pommier]</rosparam>
         <rosparam param="song_paths" subst_value="true">[$(find smart_speaker)/admiralbob_wanderer.mp3, $(find smart_speaker)/admiralbob_wanderer.mp3]</rosparam>
+
+        <param name="after_task_state_delay_duration_s" value="5"/>
     </node>
 
     <include file="$(find t_top)/launch/bringup.launch">

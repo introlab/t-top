@@ -1,7 +1,7 @@
 #include "RssStoryState.h"
-#include "RssIdleState.h"
 
 #include "../StateManager.h"
+#include "../AfterTaskDelayState.h"
 
 #include "../../StringUtils.h"
 
@@ -135,6 +135,6 @@ void RssStoryState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 
     if (finished)
     {
-        m_stateManager.switchTo<RssIdleState>();
+        m_stateManager.switchTo<AfterTaskDelayState>();
     }
 }

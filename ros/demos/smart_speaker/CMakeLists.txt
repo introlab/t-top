@@ -155,6 +155,7 @@ add_executable(${PROJECT_NAME}_rss_node
   src/states/WeatherForecastState.cpp
   src/states/DanceState.cpp
   src/states/DancePlayedSongState.cpp
+  src/states/AfterTaskDelayState.cpp
   src/states/rss/RssIdleState.cpp
   src/states/rss/RssWaitPersonIdentificationState.cpp
   src/states/rss/RssAskTaskState.cpp
@@ -174,6 +175,7 @@ add_executable(${PROJECT_NAME}_smart_node
   src/states/InvalidTaskState.cpp
   src/states/CurrentWeatherState.cpp
   src/states/DancePlayedSongState.cpp
+  src/states/AfterTaskDelayState.cpp
   src/states/smart/SmartIdleState.cpp
   src/states/smart/SmartAskTaskState.cpp
   src/states/smart/SmartWaitAnswerState.cpp
