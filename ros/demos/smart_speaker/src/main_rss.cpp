@@ -67,6 +67,7 @@ void startNode(Language language,
     stateManager.addState(make_unique<RssWaitAnswerState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<RssValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+
     stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
     stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
     stateManager.addState(make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
