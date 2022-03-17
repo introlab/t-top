@@ -33,7 +33,7 @@ void startNode(Language language,
     const string& englishStoryPath,
     const string& frenchStoryPath,
     const string& songPath,
-    const ros::Duration& afterTaskStateDelayDuration)
+    const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle);
@@ -74,7 +74,7 @@ void startNode(Language language,
     stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
     stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType, vector<string>{songPath}));
 
-    stateManager.addState(make_unique<AfterTaskDelayState>(language, stateManager, desireSet, nodeHandle, idleStateType, afterTaskStateDelayDuration));
+    stateManager.addState(make_unique<AfterTaskDelayState>(language, stateManager, desireSet, nodeHandle, idleStateType, afterTaskDelayDuration));
 
     stateManager.switchTo<RssIdleState>();
 
@@ -120,11 +120,11 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    double afterTaskStateDelayDurationS;
-    privateNodeHandle.param("after_task_state_delay_duration_s", afterTaskStateDelayDurationS, 0.0);
-    ros::Duration afterTaskStateDelayDuration(afterTaskStateDelayDurationS);
+    double afterTaskDelayDurationS;
+    privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
+    ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
 
-    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath, afterTaskStateDelayDuration);
+    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath, afterTaskDelayDuration);
 
     return 0;
 }

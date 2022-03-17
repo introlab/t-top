@@ -6,7 +6,7 @@
         <param name="story_path_en" value="$(find smart_speaker)/story_en.txt"/>
         <param name="story_path_fr" value="$(find smart_speaker)/story_fr.txt"/>
         <param name="song_path" value="$(find smart_speaker)/admiralbob_wanderer.mp3"/>
-        <param name="after_task_state_delay_duration_s" value="5"/>
+        <param name="after_task_delay_duration_s" value="5"/>
     </node>
 
     <include file="$(find t_top)/launch/bringup.launch">
