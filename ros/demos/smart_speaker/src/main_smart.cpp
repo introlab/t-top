@@ -9,6 +9,8 @@
 #include "states/CurrentWeatherState.h"
 #include "states/DancePlayedSongState.h"
 
+#include "states/AfterTaskDelayState.h"
+
 #include <ros/ros.h>
 
 #include <hbba_lite/core/DesireSet.h>
@@ -30,7 +32,8 @@ void startNode(Language language,
     size_t videoAnalysisMessageCountThreshold,
     size_t videoAnalysisMessageCountTolerance,
     const vector<string>& songNames,
-    const vector<string>& songPaths)
+    const vector<string>& songPaths,
+    const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle);
@@ -51,6 +54,7 @@ void startNode(Language language,
 
     StateManager stateManager;
     type_index idleStateType(typeid(SmartIdleState));
+    type_index afterTaskDelayStateType(typeid(AfterTaskDelayState));
 
     stateManager.addState(make_unique<SmartIdleState>(language, stateManager, desireSet, nodeHandle,
         personDistanceThreshold, personDistanceFrame, noseConfidenceThreshold,
@@ -60,8 +64,10 @@ void startNode(Language language,
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
 
-    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, idleStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, idleStateType, songPaths));
+    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType, songPaths));
+
+    stateManager.addState(make_unique<AfterTaskDelayState>(language, stateManager, desireSet, nodeHandle, idleStateType, afterTaskDelayDuration));
 
     stateManager.switchTo<SmartIdleState>();
 
@@ -143,10 +149,14 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    double afterTaskDelayDurationS;
+    privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
+    ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
+
     startNode(language, nodeHandle,
         personDistanceThreshold, personDistanceFrame, noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold, videoAnalysisMessageCountTolerance,
-        songNames, songPaths);
+        songNames, songPaths, afterTaskDelayDuration);
 
     return 0;
 }

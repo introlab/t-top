@@ -67,6 +67,7 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
     }
     else
     {
+        ROS_WARN_STREAM("Invalid task (" << text << ")");
         m_stateManager.switchTo<InvalidTaskState>();
     }
 }
