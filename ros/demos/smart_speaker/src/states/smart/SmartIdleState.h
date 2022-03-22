@@ -12,7 +12,7 @@
 class SmartIdleState : public State
 {
     double m_personDistanceThreshold;
-    std::string m_personDistanceFrame;
+    std::string m_personDistanceFrameId;
     double m_noseConfidenceThreshold;
     size_t m_videoAnalysisMessageCountThreshold;
     size_t m_videoAnalysisMessageCountTolerance;
@@ -32,7 +32,7 @@ public:
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         double personDistanceThreshold,
-        std::string personDistanceFrame,
+        std::string personDistanceFrameId,
         double noseConfidenceThreshold,
         size_t videoAnalysisMessageCountThreshold,
         size_t videoAnalysisMessageCountTolerance);
