@@ -88,3 +88,5 @@ StatementMacros: [Q_UNUSED, Q_OBJECT]
 TabWidth: 4
 UseCRLF: false
 UseTab: Never
+MacroBlockBegin: "^QT_BEGIN_NAMESPACE"
+MacroBlockEnd: "QT_END_NAMESPACE$"
