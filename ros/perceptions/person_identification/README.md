@@ -42,7 +42,7 @@ This node performs person identification. The people must be already added to `p
  - `voice_descriptor_threshold` (double): The maximum distance between two voice descriptors to be considered the same person.
  - `face_voice_descriptor_threshold` (double): The maximum distance between two merged descriptors to be considered the same person.
  - `nose_confidence_threshold` (double): The confidence threshold for the nose keypoint.
- - `direction_frame` (string): The audio analysis frame.
+ - `direction_frame_id` (string): The audio analysis frame id.
  - `direction_angle_threshold_rad` (double): The maximum angle between the face and voice directions to be considered the same person.
  - `ignore_direction_z` (bool): Indicates if the angle between between the face and voice directions ignores the z-axis.
  - `search_frequency` (double): The frequency at which the search occurs.

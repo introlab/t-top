@@ -121,9 +121,9 @@ int main(int argc, char** argv)
     }
 
     std::string personDistanceFrame;
-    if (!privateNodeHandle.getParam("person_distance_frame", personDistanceFrame) || personDistanceFrame == "")
+    if (!privateNodeHandle.getParam("person_distance_frame_id", personDistanceFrame) || personDistanceFrame == "")
     {
-        ROS_ERROR("The parameter person_distance_frame must be set and not empty.");
+        ROS_ERROR("The parameter person_distance_frame_id must be set and not empty.");
         return -1;
     }
 

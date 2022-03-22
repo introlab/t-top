@@ -5,7 +5,7 @@
         <param name="voice_descriptor_threshold" value="1.266"/>
         <param name="face_voice_descriptor_threshold" value="1.5092"/>
         <param name="nose_confidence_threshold" value="0.4"/>
-        <param name="direction_frame" value="odas"/>
+        <param name="direction_frame_id" value="odas"/>
         <param name="direction_angle_threshold_rad" value="0.15"/>
         <param name="ignore_direction_z" value="true"/>
         <param name="search_frequency" value="1"/>

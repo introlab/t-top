@@ -44,7 +44,7 @@ class PersonIdentificationNode:
         self._voice_descriptor_threshold = rospy.get_param('~voice_descriptor_threshold')
         self._face_voice_descriptor_threshold = rospy.get_param('~face_voice_descriptor_threshold')
         self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
-        self._direction_frame = rospy.get_param('~direction_frame')
+        self._direction_frame_id = rospy.get_param('~direction_frame_id')
         self._direction_angle_threshold_rad = rospy.get_param('~direction_angle_threshold_rad')
         self._ignore_direction_z = rospy.Rate(rospy.get_param('~ignore_direction_z'))
         self._rate = rospy.Rate(rospy.get_param('~search_frequency'))
@@ -91,7 +91,7 @@ class PersonIdentificationNode:
         temp_in_point.point.y = point.y
         temp_in_point.point.z = point.z
 
-        odas_point = self._tf_listener.transformPoint(self._direction_frame, temp_in_point)
+        odas_point = self._tf_listener.transformPoint(self._direction_frame_id, temp_in_point)
 
         position = np.array([odas_point.point.x, odas_point.point.y, odas_point.point.z])
         direction = position.copy()
@@ -102,8 +102,8 @@ class PersonIdentificationNode:
         return position, direction
 
     def _audio_analysis_cb(self, msg):
-        if msg.header.frame_id != self._direction_frame:
-            rospy.logerr('Invalid frame id ({} != {})'.format(msg.header.frame_id, self._direction_frame))
+        if msg.header.frame_id != self._direction_frame_id:
+            rospy.logerr('Invalid frame id ({} != {})'.format(msg.header.frame_id, self._direction_frame_id))
             return
 
         if len(msg.voice_descriptor) == 0:
@@ -192,7 +192,7 @@ class PersonIdentificationNode:
     def _create_person_name(self, name, position=None, direction=None):
         person_name = PersonName()
         person_name.name = name
-        person_name.frame_id = self._direction_frame
+        person_name.frame_id = self._direction_frame_id
         if position is not None:
             person_name.position.append(Point(x=position[0], y=position[1], z=position[2]))
         if direction is not None:
