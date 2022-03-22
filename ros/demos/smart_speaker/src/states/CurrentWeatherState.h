@@ -15,7 +15,8 @@ class CurrentWeatherState : public State
     uint64_t m_talkDesireId;
 
 public:
-    CurrentWeatherState(Language language,
+    CurrentWeatherState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

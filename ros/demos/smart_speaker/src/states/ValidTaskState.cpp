@@ -7,20 +7,20 @@
 
 using namespace std;
 
-ValidTaskState::ValidTaskState(Language language,
+ValidTaskState::ValidTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_talkDesireId(MAX_DESIRE_ID),
-        m_gestureDesireId(MAX_DESIRE_ID),
-        m_talkDone(false),
-        m_gestureDone(false)
+    ros::NodeHandle& nodeHandle)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_talkDesireId(MAX_DESIRE_ID),
+      m_gestureDesireId(MAX_DESIRE_ID),
+      m_talkDone(false),
+      m_gestureDone(false)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &ValidTaskState::talkDoneSubscriberCallback, this);
-    m_gestureDoneSubscriber = nodeHandle.subscribe("gesture/done", 1,
-        &ValidTaskState::gestureDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &ValidTaskState::talkDoneSubscriberCallback, this);
+    m_gestureDoneSubscriber =
+        nodeHandle.subscribe("gesture/done", 1, &ValidTaskState::gestureDoneSubscriberCallback, this);
 }
 
 void ValidTaskState::enable(const string& parameter)
@@ -59,10 +59,10 @@ string ValidTaskState::generateText()
 {
     switch (language())
     {
-    case Language::ENGLISH:
-        return "Yes, of course.";
-    case Language::FRENCH:
-        return "Oui, bien sûr.";
+        case Language::ENGLISH:
+            return "Yes, of course.";
+        case Language::FRENCH:
+            return "Oui, bien sûr.";
     }
 
     return "";

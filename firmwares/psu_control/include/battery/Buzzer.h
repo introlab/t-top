@@ -3,17 +3,18 @@
 
 #include <Arduino.h>
 
-class Buzzer {
-  volatile bool m_enabled;
-  volatile int m_value;
-  IntervalTimer m_timer;
+class Buzzer
+{
+    volatile bool m_enabled;
+    volatile int m_value;
+    IntervalTimer m_timer;
 
 public:
-  Buzzer();
-  bool begin();
+    Buzzer();
+    bool begin();
 
-  void enable();
-  void disable();
+    void enable();
+    void disable();
 };
 
 #endif

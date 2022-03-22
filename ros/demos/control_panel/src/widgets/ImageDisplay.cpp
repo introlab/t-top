@@ -6,9 +6,7 @@
 
 using namespace std;
 
-ImageDisplay::ImageDisplay(QWidget* parent) : QWidget(parent)
-{
-}
+ImageDisplay::ImageDisplay(QWidget* parent) : QWidget(parent) {}
 
 void ImageDisplay::paintEvent(QPaintEvent* event)
 {
@@ -22,8 +20,9 @@ void ImageDisplay::paintEvent(QPaintEvent* event)
         return;
     }
 
-    float scale = min(static_cast<float>(width()) / static_cast<float>(m_image.width()),
-        static_cast<float>(height()) / static_cast<float>(m_image.height()));
+    float scale =
+        min(static_cast<float>(width()) / static_cast<float>(m_image.width()),
+            static_cast<float>(height()) / static_cast<float>(m_image.height()));
     int scaledWidth = static_cast<int>(scale * m_image.width());
     int scaledHeight = static_cast<int>(scale * m_image.height());
     int offsetX = max(0, (width() - scaledWidth) / 2);

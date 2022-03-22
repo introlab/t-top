@@ -4,17 +4,16 @@
 
 using namespace std;
 
-SolverResult::SolverResult(size_t desireIndex, size_t strategyIndex) :
-        desireIndex(desireIndex),
-        strategyIndex(strategyIndex)
+SolverResult::SolverResult(size_t desireIndex, size_t strategyIndex)
+    : desireIndex(desireIndex),
+      strategyIndex(strategyIndex)
 {
 }
 
-Solver::Solver()
-{
-}
+Solver::Solver() {}
 
-void checkDesireStrategies(const vector<unique_ptr<Desire>>& desires,
+void checkDesireStrategies(
+    const vector<unique_ptr<Desire>>& desires,
     const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType)
 {
     for (auto& desire : desires)
@@ -27,7 +26,8 @@ void checkDesireStrategies(const vector<unique_ptr<Desire>>& desires,
     }
 }
 
-void checkStrategyResources(const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
+void checkStrategyResources(
+    const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
     const unordered_map<string, uint16_t>& systemResourcesByName)
 {
     for (auto& strategiesPair : strategiesByDesireType)

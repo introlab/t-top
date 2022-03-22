@@ -1,7 +1,9 @@
 # 9. Stewart Platform Assembly
 
 ## A. Dynamixel Centering
+
 ### Required Parts
+
 | Part                                             | Quantity | Image                                                          |
 | ------------------------------------------------ | -------- | ---------------------------------------------------------------|
 | `Dynamixel XL430-W250-T (ID 1, 2 3, 4, 5 and 6)` | 6        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T.jpg) |
@@ -12,6 +14,7 @@
 | `Computer`                                       | 1        |                                                                |
 
 ### Steps
+
 1. Open the Arduino IDE.
 2. Connect the `12V power supply` to the OpenCR.
 3. Connect the `OpenCR` to the computer with the `micro USB cable`.
@@ -33,7 +36,9 @@
 14. Repeat steps 4 to 13 for each `Dynamixel XL430-W250-T`.
 
 ## B. Odd-Id Dynamixel Pre-Assembly
+
 ### Required Parts
+
 | Part                                     | Quantity | Image                                                                             |
 | ---------------------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `Dynamixel XL430-W250-T (ID 1, 3 and 5)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID1.jpg)              |
@@ -42,7 +47,9 @@
 | `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                     |
 
 ### Steps
-1. Install the `stewart horn (right)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in the following picture.
+
+1. Install the `stewart horn (right)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in
+   the following picture.
 
 ![Dynamixel Right](images/assemblies/09B%20dynamixel%20right.jpg)
 
@@ -51,7 +58,9 @@
 ![Dynamixel ID 1, 3 and 5](images/assemblies/09B%20dynamixel%201%203%205.jpg)
 
 ## C. Even-Id Dynamixel Pre-Assembly
+
 ### Required Parts
+
 | Part                                     | Quantity | Image                                                                             |
 | ---------------------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `Dynamixel XL430-W250-T (ID 2, 4 and 6)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID2.jpg)              |
@@ -60,7 +69,9 @@
 | `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                     |
 
 ### Steps
-1. Install the `stewart horn (left)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in the following picture.
+
+1. Install the `stewart horn (left)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in the
+   following picture.
 
 ![Dynamixel Left](images/assemblies/09C%20dynamixel%20left.jpg)
 
@@ -68,23 +79,28 @@
 
 ![Dynamixel ID 2, 4 and 6](images/assemblies/09C%20dynamixel%202%204%206.jpg)
 
-
 ## D. Stewart Platform Rod Pre-Assembly
+
 ### Required Parts
+
 | Part                           | Quantity | Image                                                              |
 | ------------------------------ | -------- | ------------------------------------------------------------------ |
 | `Ball Joint - M3xL26mm Silver` | 12       | ![Ball joint - M3xL26mm Silver](images/hardware/ball%20joint.jpg)  |
 | `Threaded Rod - M3x170mm`      | 6        | ![Threaded Rod - M3x170mm](images/hardware/stewart%20rod.jpg)      |
 
 ### Steps
+
 1. Apply threadlocker the ends of a `threaded rod`.
-2. Screw a ball joint to each ends of the `threaded rod` until the distance between the centers of the ball joint holes is 181 mm.
+2. Screw a ball joint to each ends of the `threaded rod` until the distance between the centers of the ball joint holes
+   is 181 mm.
 3. Repeat steps 1 to 2 for each `threaded rod`.
 
 ![Threaded Rod](images/assemblies/09D%20stewart%20rod.jpg)
 
 ## E. OpenCR Pre-Assembly
+
 ### Required Parts
+
 | Part                 | Quantity | Image                                                                     |
 | -------------------- | -------- | ------------------------------------------------------------------------- |
 | `OpenCR`             | 1        | ![OpenCR](images/electronics/OpenCR.jpg)                                  |
@@ -94,6 +110,7 @@
 | `M3x8 Plastic Screw` | 4        | ![M3x8 Plastic Screw](images/hardware/M3x8mm%20plastic.jpg)              |
 
 ### Steps
+
 1. Install the `Grove Base Shield` onto the `OpenCR`.
 
 ![OpenCR + Grove Base Shield](images/assemblies/09E%20OpenCR.jpg)
@@ -102,9 +119,10 @@
 
 ![OpenCR Supports](images/assemblies/09E%20OpenCR%20supports.jpg)
 
-
 ## F. Stewart Platform
+
 ### Required Parts
+
 | Part                                                       | Quantity | Image                                                                                      |
 | ---------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------ |
 | `Stewart Bottom`                                           | 1        | ![Stewart Bottom](images/3d%20printed%20parts/stewart%20bottom.jpg)                        |
@@ -121,7 +139,9 @@
 | `M3x12 Plastic Screw`                                      | 24       | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                              |
 
 ### Steps
-1. Place the `Assembled Dynamixel XL430-W250-T with the ID 1` under the `Stewart bottom`, according to the following picture.
+
+1. Place the `Assembled Dynamixel XL430-W250-T with the ID 1` under the `Stewart bottom`, according to the following
+   picture.
 
 ![Dynamixel IDS](images/assemblies/09F%20ids.jpg)
 
@@ -167,7 +187,8 @@
 
 ![USB Hubs](images/assemblies/09F%20USB%20hubs.jpg)
 
-17. Install an `assembled Stewart platform rod` onto each `Stewart horn` with a `M3x12 plastic screw`, as shown in the following picture.
+17. Install an `assembled Stewart platform rod` onto each `Stewart horn` with a `M3x12 plastic screw`, as shown in the
+    following picture.
 
 ![Bottom Rod](images/assemblies/09F%20bottom%20rod.jpg)
 
@@ -175,7 +196,8 @@
 
 ![Ball Joint](images/assemblies/09F%20ball%20joint.jpg)
 
-19. Install the `Stewart top` onto the top `ball joints` with `M3x12 plastic screws`, as shown in the following pictures.
+19. Install the `Stewart top` onto the top `ball joints` with `M3x12 plastic screws`, as shown in the following
+    pictures.
 
 ![Stewart Top](images/assemblies/09F%20stewart%20top%201.jpg)
 ![Stewart Top](images/assemblies/09F%20stewart%20top%202.jpg)

@@ -70,40 +70,35 @@ protected:
 };
 
 
-std::unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createSlowVideoAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createFastVideoAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createFastVideoAnalyzerWithAnalyzedImageStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createRobotNameDetectorStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createSlowVideoAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createFastVideoAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createFastVideoAnalyzerWithAnalyzedImageStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
-std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool,
+std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    ros::NodeHandle& nodeHandle,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(std::shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createSoundFollowingStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createFaceFollowingStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createTalkStrategy(std::shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createGestureStrategy(std::shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createDanceStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createPlaySoundStrategy(std::shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createSoundFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createFaceFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createTalkStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createGestureStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createDanceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createPlaySoundStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
 
-std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool,
-    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
 
 #endif

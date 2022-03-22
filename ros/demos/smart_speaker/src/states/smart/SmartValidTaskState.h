@@ -11,9 +11,9 @@ constexpr const char* DANCE_TASK = "DANCE";
 
 class SmartValidTaskState : public ValidTaskState
 {
-
 public:
-    SmartValidTaskState(Language language,
+    SmartValidTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

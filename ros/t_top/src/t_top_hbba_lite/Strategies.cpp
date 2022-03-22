@@ -7,11 +7,12 @@
 
 using namespace std;
 
-FaceAnimationStrategy::FaceAnimationStrategy(uint16_t utility,
+FaceAnimationStrategy::FaceAnimationStrategy(
+    uint16_t utility,
     shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle) :
-        Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
-        m_nodeHandle(nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
+      m_nodeHandle(nodeHandle)
 {
     m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1);
 }
@@ -29,14 +30,13 @@ void FaceAnimationStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
-TalkStrategy::TalkStrategy(uint16_t utility,
-    shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle) :
-        Strategy<TalkDesire>(utility,
-            {{"sound", 1}},
-            {{"talk/filter_state", FilterConfiguration::onOff()}},
-            move(filterPool)),
-        m_nodeHandle(nodeHandle)
+TalkStrategy::TalkStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+    : Strategy<TalkDesire>(
+          utility,
+          {{"sound", 1}},
+          {{"talk/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_nodeHandle(nodeHandle)
 {
     m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1);
 }
@@ -55,14 +55,13 @@ void TalkStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
-GestureStrategy::GestureStrategy(uint16_t utility,
-    shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle) :
-        Strategy<GestureDesire>(utility,
-            {{"motor", 1}},
-            {{"gesture/filter_state", FilterConfiguration::onOff()}},
-            move(filterPool)),
-        m_nodeHandle(nodeHandle)
+GestureStrategy::GestureStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+    : Strategy<GestureDesire>(
+          utility,
+          {{"motor", 1}},
+          {{"gesture/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_nodeHandle(nodeHandle)
 {
     m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1);
 }
@@ -81,14 +80,13 @@ void GestureStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
-PlaySoundStrategy::PlaySoundStrategy(uint16_t utility,
-    shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle) :
-        Strategy<PlaySoundDesire>(utility,
-            {{"sound", 1}},
-            {{"sound_player/filter_state", FilterConfiguration::onOff()}},
-            move(filterPool)),
-        m_nodeHandle(nodeHandle)
+PlaySoundStrategy::PlaySoundStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+    : Strategy<PlaySoundDesire>(
+          utility,
+          {{"sound", 1}},
+          {{"sound_player/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_nodeHandle(nodeHandle)
 {
     m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1);
 }
@@ -110,7 +108,8 @@ void PlaySoundStrategy::onEnabling(const unique_ptr<Desire>& desire)
 
 unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<RobotNameDetectorDesire>>(utility,
+    return make_unique<Strategy<RobotNameDetectorDesire>>(
+        utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"robot_name_detector/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
@@ -118,10 +117,10 @@ unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> 
 
 unique_ptr<BaseStrategy> createSlowVideoAnalyzerStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<SlowVideoAnalyzerDesire>>(utility,
+    return make_unique<Strategy<SlowVideoAnalyzerDesire>>(
+        utility,
         unordered_map<string, uint16_t>{},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(15)},
         },
         move(filterPool));
@@ -129,21 +128,22 @@ unique_ptr<BaseStrategy> createSlowVideoAnalyzerStrategy(shared_ptr<FilterPool> 
 
 unique_ptr<BaseStrategy> createFastVideoAnalyzerStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<FastVideoAnalyzerDesire>>(utility,
+    return make_unique<Strategy<FastVideoAnalyzerDesire>>(
+        utility,
         unordered_map<string, uint16_t>{},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
         },
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createFastVideoAnalyzerWithAnalyzedImageStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+unique_ptr<BaseStrategy>
+    createFastVideoAnalyzerWithAnalyzedImageStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<FastVideoAnalyzerWithAnalyzedImageDesire>>(utility,
+    return make_unique<Strategy<FastVideoAnalyzerWithAnalyzedImageDesire>>(
+        utility,
         unordered_map<string, uint16_t>{},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"video_analyzer/analysed_image/filter_state", FilterConfiguration::onOff()},
         },
@@ -152,7 +152,8 @@ unique_ptr<BaseStrategy> createFastVideoAnalyzerWithAnalyzedImageStrategy(shared
 
 unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<AudioAnalyzerDesire>>(utility,
+    return make_unique<Strategy<AudioAnalyzerDesire>>(
+        utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"audio_analyzer/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
@@ -160,7 +161,8 @@ unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(shared_ptr<FilterPool> filt
 
 unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<SpeechToTextDesire>>(utility,
+    return make_unique<Strategy<SpeechToTextDesire>>(
+        utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"speech_to_text/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
@@ -169,21 +171,23 @@ unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filte
 
 unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<ExploreDesire>>(utility,
+    return make_unique<Strategy<ExploreDesire>>(
+        utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
         unordered_map<string, FilterConfiguration>{{"explore/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createFaceAnimationStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle,
-    uint16_t utility)
+unique_ptr<BaseStrategy>
+    createFaceAnimationStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
 {
     return make_unique<FaceAnimationStrategy>(utility, move(filterPool), nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<SoundFollowingDesire>>(utility,
+    return make_unique<Strategy<SoundFollowingDesire>>(
+        utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
         unordered_map<string, FilterConfiguration>{{"sound_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
@@ -191,34 +195,33 @@ unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> fil
 
 unique_ptr<BaseStrategy> createFaceFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<FaceFollowingDesire>>(utility,
+    return make_unique<Strategy<FaceFollowingDesire>>(
+        utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
-            {"face_following/filter_state", FilterConfiguration::onOff()}
-        },
+            {"face_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createTalkStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle,
-    uint16_t utility)
+unique_ptr<BaseStrategy>
+    createTalkStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
 {
     return make_unique<TalkStrategy>(utility, move(filterPool), nodeHandle);
 }
 
-unique_ptr<BaseStrategy> createGestureStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle,
-    uint16_t utility)
+unique_ptr<BaseStrategy>
+    createGestureStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
 {
     return make_unique<GestureStrategy>(utility, move(filterPool), nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<DanceDesire>>(utility,
+    return make_unique<Strategy<DanceDesire>>(
+        utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"beat_detector/filter_state", FilterConfiguration::onOff()},
             {"head_dance/filter_state", FilterConfiguration::onOff()},
             {"torso_dance/filter_state", FilterConfiguration::onOff()},
@@ -226,17 +229,18 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createPlaySoundStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+unique_ptr<BaseStrategy>
+    createPlaySoundStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
 {
     return make_unique<PlaySoundStrategy>(utility, move(filterPool), nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<TelepresenceDesire>>(utility,
+    return make_unique<Strategy<TelepresenceDesire>>(
+        utility,
         unordered_map<string, uint16_t>{{"sound", 1}},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"rtabmap/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));
@@ -244,10 +248,10 @@ unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> 
 
 unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<TeleoperationDesire>>(utility,
+    return make_unique<Strategy<TeleoperationDesire>>(
+        utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
-        unordered_map<string, FilterConfiguration>
-        {
+        unordered_map<string, FilterConfiguration>{
             {"teleoperation/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));

@@ -1,7 +1,9 @@
 # 10. Head Assembly
 
 ## A. Parts Pre-Assembly
+
 ### Required Parts
+
 | Part                                         | Quantity | Image                                                                      |
 | -------------------------------------------- | -------- | -------------------------------------------------------------------------- |
 | `HDMI Cable (1.5 ft)`                        | 1        | ![HDMI Cable 1.5 ft](images/electronics/HDMI%20cable.jpg)                  |
@@ -12,6 +14,7 @@
 | `Intel RealSense D435i`                      | 1        | ![Intel RealSense D435i](images/electronics/Intel%20RealSense%20D435i.jpg) |
 
 ### Steps
+
 1. Connect a `270-degree HDMI adapter` to both end of the `HDMI cable`, as shown in the following picture.
 
 ![HDMI Cable](images/assemblies/10A%20HDMI.jpg)
@@ -25,9 +28,10 @@
 
 ![Intel RealSense D435i](images/assemblies/10A%20Intel%20RealSense%20D435i.jpg)
 
-
 ## B. Head
+
 ### Required Parts
+
 | Part                                                  | Quantity | Image                                                                              |
 | ----------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
 | `Head`                                                | 1        | ![Head](images/3d%20printed%20parts/head.jpg)                                      |
@@ -42,6 +46,7 @@
 | `M3x10mm Socket Screw`                                | 6        | ![M3x10mm Socket Screw](images/hardware/M3x10mm%20socket.jpg)                      |
 
 ### Steps
+
 1. Install the `head` onto the `Stewart top` with `M3x12 plastic screws`, as shown in the following pictures.
 
 ![Head](images/assemblies/10B%20head%201.jpg)
@@ -69,6 +74,7 @@
 
 7. Connect the `90-degree USB-C adapter` to the `Intel RealSense D435i`.
 8. Connect the `USB-C cable` to the `90-degree USB-C adapter`.
-9. Roll the USB cables to the `Stewart top`, attach them with a tie wrap and connect them to a `USB hub`, as shown in the following picture.
+9. Roll the USB cables to the `Stewart top`, attach them with a tie wrap and connect them to a `USB hub`, as shown in
+   the following picture.
 
 ![Cable Rolling](images/assemblies/10B%20cable%20rolling.jpg)

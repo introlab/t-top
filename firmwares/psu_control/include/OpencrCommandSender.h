@@ -3,16 +3,17 @@
 
 #include <cstdint>
 
-class OpencrCommandSender {
-  uint8_t m_buffer[UINT8_MAX];
+class OpencrCommandSender
+{
+    uint8_t m_buffer[UINT8_MAX];
 
 public:
-  OpencrCommandSender();
+    OpencrCommandSender();
 
-  void sendStatusCommand(bool isBatteryCharging, float stateOfCharge, float current, float voltage);
+    void sendStatusCommand(bool isBatteryCharging, float stateOfCharge, float current, float voltage);
 
 private:
-  void sendCommand();
+    void sendCommand();
 };
 
 #endif

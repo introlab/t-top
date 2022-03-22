@@ -17,7 +17,8 @@ TEST(SolverTests, checkDesireStrategies_missingStrategy_shouldThrowHbbaLiteExcep
     desires.emplace_back(make_unique<DesireA>(1));
     desires.emplace_back(make_unique<DesireB>(1));
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -36,7 +37,8 @@ TEST(SolverTests, checkDesireStrategies_emptyStrategies_shouldThrowHbbaLiteExcep
     desires.emplace_back(make_unique<DesireA>(1));
     desires.emplace_back(make_unique<DesireB>(1));
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -56,11 +58,13 @@ TEST(SolverTests, checkDesireStrategies_shouldNotThrowHbbaLiteException)
     desires.emplace_back(make_unique<DesireA>(1));
     desires.emplace_back(make_unique<DesireB>(1));
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB = make_unique<Strategy<DesireB>>(10,
+    auto strategyB = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -76,11 +80,13 @@ TEST(SolverTests, checkStrategyResources_missingRessource_shouldThrowHbbaLiteExc
 {
     auto filterPool = make_shared<FilterPoolMock>();
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB = make_unique<Strategy<DesireB>>(10,
+    auto strategyB = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -98,11 +104,13 @@ TEST(SolverTests, checkStrategyResources_shouldNotThrowHbbaLiteException)
 {
     auto filterPool = make_shared<FilterPoolMock>();
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB = make_unique<Strategy<DesireB>>(10,
+    auto strategyB = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);

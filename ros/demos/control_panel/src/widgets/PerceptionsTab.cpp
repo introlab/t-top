@@ -25,19 +25,21 @@ QString mergeStdStrings(const vector<string> values)
     return mergedValues;
 }
 
-PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent) :
-        QWidget(parent), m_nodeHandle(nodeHandle), m_desireSet(std::move(desireSet))
+PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+    : QWidget(parent),
+      m_nodeHandle(nodeHandle),
+      m_desireSet(std::move(desireSet))
 {
     createUi();
 
-    m_analyzedImageSubscriber = nodeHandle.subscribe("analysed_image", 1,
-        &PerceptionsTab::analyzedImageSubscriberCallback, this);
-    m_audioAnalysisSubscriber = nodeHandle.subscribe("audio_analysis", 1,
-        &PerceptionsTab::audioAnalysisSubscriberCallback, this);
-    m_robotNameDetectedSubscriber = nodeHandle.subscribe("robot_name_detected", 1,
-        &PerceptionsTab::robotNameDetectedSubscriberCallback, this);
-    m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
-        &PerceptionsTab::personNamesSubscriberCallback, this);
+    m_analyzedImageSubscriber =
+        nodeHandle.subscribe("analysed_image", 1, &PerceptionsTab::analyzedImageSubscriberCallback, this);
+    m_audioAnalysisSubscriber =
+        nodeHandle.subscribe("audio_analysis", 1, &PerceptionsTab::audioAnalysisSubscriberCallback, this);
+    m_robotNameDetectedSubscriber =
+        nodeHandle.subscribe("robot_name_detected", 1, &PerceptionsTab::robotNameDetectedSubscriberCallback, this);
+    m_personNamesSubscriber =
+        nodeHandle.subscribe("person_names", 1, &PerceptionsTab::personNamesSubscriberCallback, this);
 }
 
 void PerceptionsTab::onVideoAnalyzerButtonToggled(bool checked)
@@ -92,41 +94,36 @@ void PerceptionsTab::analyzedImageSubscriberCallback(const sensor_msgs::Image::C
         return;
     }
 
-    invokeLater([this, msg]()
-    {
-        m_videoAnalyzerImageDisplay->setImage(QImage(msg->data.data(), msg->width, msg->height, QImage::Format_RGB888));
-    });
+    invokeLater(
+        [this, msg]() {
+            m_videoAnalyzerImageDisplay->setImage(
+                QImage(msg->data.data(), msg->width, msg->height, QImage::Format_RGB888));
+        });
 }
 
 void PerceptionsTab::audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
 {
     QString classes = mergeStdStrings(msg->audio_classes);
-    invokeLater([this, classes]()
-    {
-        m_soundClassesLineEdit->setText(classes);
-    });
+    invokeLater([this, classes]() { m_soundClassesLineEdit->setText(classes); });
 }
 
 void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg)
 {
     auto currentTime = QDateTime::currentDateTime();
-    invokeLater([this, currentTime]()
-    {
-        m_robotNameDetectionTimeLineEdit->setText(currentTime.toString());
-    });
+    invokeLater([this, currentTime]() { m_robotNameDetectionTimeLineEdit->setText(currentTime.toString()); });
 }
 
 void PerceptionsTab::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
 {
     vector<string> names(msg->names.size());
-    transform(msg->names.begin(), msg->names.end(), back_inserter(names),
+    transform(
+        msg->names.begin(),
+        msg->names.end(),
+        back_inserter(names),
         [](const person_identification::PersonName& name) { return name.name; });
 
     QString mergedNames = mergeStdStrings(names);
-    invokeLater([this, mergedNames]()
-    {
-        m_identifiedPersonsLineEdit->setText(mergedNames);
-    });
+    invokeLater([this, mergedNames]() { m_identifiedPersonsLineEdit->setText(mergedNames); });
 }
 
 void PerceptionsTab::createUi()

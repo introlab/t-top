@@ -7,7 +7,7 @@
 #include <hbba_lite/filters/FilterState.h>
 
 // Inspired by https://github.com/ros/ros_comm/blob/indigo-devel/tools/topic_tools/src/relay.cpp
-template <class FilterState>
+template<class FilterState>
 class HbbaFilterNode
 {
     ros::NodeHandle& m_nodeHandle;
@@ -24,25 +24,25 @@ private:
     void callback(const ros::MessageEvent<topic_tools::ShapeShifter>& msg_event);
 };
 
-template <class FilterState>
-inline HbbaFilterNode<FilterState>::HbbaFilterNode(ros::NodeHandle& nodeHandle) :
-    m_nodeHandle(nodeHandle),
-    m_filterState(nodeHandle, "filter_state"),
-    m_hasAdvertised(false)
+template<class FilterState>
+inline HbbaFilterNode<FilterState>::HbbaFilterNode(ros::NodeHandle& nodeHandle)
+    : m_nodeHandle(nodeHandle),
+      m_filterState(nodeHandle, "filter_state"),
+      m_hasAdvertised(false)
 {
     m_subscriber = nodeHandle.subscribe("in", 10, &HbbaFilterNode<FilterState>::callback, this);
 }
 
-template <class FilterState>
+template<class FilterState>
 inline void HbbaFilterNode<FilterState>::run()
 {
     ros::spin();
 }
 
-template <class FilterState>
+template<class FilterState>
 void HbbaFilterNode<FilterState>::callback(const ros::MessageEvent<topic_tools::ShapeShifter>& msg_event)
 {
-    boost::shared_ptr<topic_tools::ShapeShifter const> const &msg = msg_event.getConstMessage();
+    boost::shared_ptr<topic_tools::ShapeShifter const> const& msg = msg_event.getConstMessage();
 
     if (!m_hasAdvertised)
     {
@@ -51,7 +51,7 @@ void HbbaFilterNode<FilterState>::callback(const ros::MessageEvent<topic_tools::
         if (connectionHeader)
         {
             auto it = connectionHeader->find("latching");
-            if(it != connectionHeader->end() && it->second == "1")
+            if (it != connectionHeader->end() && it->second == "1")
             {
                 latch = true;
             }

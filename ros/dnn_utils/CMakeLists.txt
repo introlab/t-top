@@ -8,8 +8,8 @@ project(dnn_utils)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  rospy
-)
+        rospy
+        )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -101,10 +101,10 @@ catkin_python_setup()
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dnn_utils
-#  CATKIN_DEPENDS rospy
-#  DEPENDS system_lib
+        #  INCLUDE_DIRS include
+        #  LIBRARIES dnn_utils
+        #  CATKIN_DEPENDS rospy
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -114,8 +114,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+        # include
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -205,7 +205,7 @@ include_directories(
 
 
 add_custom_target(
-    dnn_utils_export_models ALL
-    COMMAND scripts/export_models.bash
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        dnn_utils_export_models ALL
+        COMMAND scripts/export_models.bash
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )

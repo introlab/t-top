@@ -24,12 +24,12 @@ public:
 
     void addState(std::unique_ptr<State> state);
 
-    template <class T>
+    template<class T>
     void switchTo(const std::string& parameter = "");
     void switchTo(std::type_index type, const std::string& parameter = "");
 };
 
-template <class T>
+template<class T>
 void StateManager::switchTo(const std::string& parameter)
 {
     switchTo(std::type_index(typeid(T)), parameter);

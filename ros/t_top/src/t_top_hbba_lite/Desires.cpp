@@ -2,67 +2,38 @@
 
 using namespace std;
 
-RobotNameDetectorDesire::RobotNameDetectorDesire(uint16_t intensity) : Desire(intensity)
+RobotNameDetectorDesire::RobotNameDetectorDesire(uint16_t intensity) : Desire(intensity) {}
+
+SlowVideoAnalyzerDesire::SlowVideoAnalyzerDesire(uint16_t intensity) : Desire(intensity) {}
+
+FastVideoAnalyzerDesire::FastVideoAnalyzerDesire(uint16_t intensity) : Desire(intensity) {}
+
+FastVideoAnalyzerWithAnalyzedImageDesire::FastVideoAnalyzerWithAnalyzedImageDesire(uint16_t intensity)
+    : Desire(intensity)
 {
 }
 
-SlowVideoAnalyzerDesire::SlowVideoAnalyzerDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+AudioAnalyzerDesire::AudioAnalyzerDesire(uint16_t intensity) : Desire(intensity) {}
 
-FastVideoAnalyzerDesire::FastVideoAnalyzerDesire(uint16_t intensity) : Desire(intensity)
-{
-}
-
-FastVideoAnalyzerWithAnalyzedImageDesire::FastVideoAnalyzerWithAnalyzedImageDesire(uint16_t intensity) : Desire(intensity)
-{
-}
-
-AudioAnalyzerDesire::AudioAnalyzerDesire(uint16_t intensity) : Desire(intensity)
-{
-}
-
-SpeechToTextDesire::SpeechToTextDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+SpeechToTextDesire::SpeechToTextDesire(uint16_t intensity) : Desire(intensity) {}
 
 
-ExploreDesire::ExploreDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+ExploreDesire::ExploreDesire(uint16_t intensity) : Desire(intensity) {}
 
-FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name))
-{
-}
+FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
 
-SoundFollowingDesire::SoundFollowingDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+SoundFollowingDesire::SoundFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
-FaceFollowingDesire::FaceFollowingDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+FaceFollowingDesire::FaceFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
-TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(move(text))
-{
-}
+TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(move(text)) {}
 
-GestureDesire::GestureDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name))
-{
-}
+GestureDesire::GestureDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
 
-DanceDesire::DanceDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+DanceDesire::DanceDesire(uint16_t intensity) : Desire(intensity) {}
 
-PlaySoundDesire::PlaySoundDesire(string path, uint16_t intensity) : Desire(intensity), m_path(move(path))
-{
-}
+PlaySoundDesire::PlaySoundDesire(string path, uint16_t intensity) : Desire(intensity), m_path(move(path)) {}
 
-TelepresenceDesire::TelepresenceDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+TelepresenceDesire::TelepresenceDesire(uint16_t intensity) : Desire(intensity) {}
 
-TeleoperationDesire::TeleoperationDesire(uint16_t intensity) : Desire(intensity)
-{
-}
+TeleoperationDesire::TeleoperationDesire(uint16_t intensity) : Desire(intensity) {}

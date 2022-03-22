@@ -12,11 +12,12 @@ TEST(BinarySemaphoreTests, releaseAcquire_shouldReleaseAcquireTheSemaphore)
     BinarySemaphore semaphore(false);
     bool finished = false;
 
-    thread t([&]()
-    {
-        semaphore.acquire();
-        finished = true;
-    });
+    thread t(
+        [&]()
+        {
+            semaphore.acquire();
+            finished = true;
+        });
 
     this_thread::sleep_for(10ms);
     semaphore.release();

@@ -1,7 +1,9 @@
 # 8. Torso Bottom Assembly
 
 ## A. Dynamixel Pre-Assembly
+
 ### Required Parts
+
 | Part                                 | Quantity | Image                                                                                      |
 | ------------------------------------ | -------- | ------------------------------------------------------------------------------------------ |
 | `Dynamixel XL430-W250-T (ID7)`       | 1        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID7.jpg)                       |
@@ -12,11 +14,13 @@
 | `M2x12mm Socket Screw`               | 4        | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                              |
 
 ### Steps
+
 1. Install the `Dynamixel XL430-W250-T screw` as shown in the following picture.
 
 ![Dynamixel Screw](images/assemblies/08A%20dynamixel%20screw.jpg)
 
-2. Install the `torso bottom gear` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in the following picture.
+2. Install the `torso bottom gear` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in the
+   following picture.
 
 ![Dynamixel Gear](images/assemblies/08A%20dynamixel%20gear.jpg)
 
@@ -26,7 +30,9 @@
 ![Dynamixel Cable](images/assemblies/08A%20dynamixel%20cable.jpg)
 
 ## B. Torso Bottom Holder
+
 ### Required Parts
+
 | Part                  | Quantity | Image                                                                           |
 | --------------------- | -------- | ------------------------------------------------------------------------------- |
 | `Torso Bottom Holder` | 3        | ![Torso Bottom Holder](images/3d%20printed%20parts/torso%20bottom%20holder.jpg) |
@@ -35,15 +41,19 @@
 | `M5 Washer`           | 6        | ![M5 Washer](images/hardware/M5%20washer.jpg)                                   |
 
 ### Steps
+
 1. Place a `M5 washer` on either side of a `605zz` bearing.
-2. Install the `605zz` bearing and the `M5 washers` into the `torso bottom holder` with a `M5x16mm socket screw`, as shown in the following picture.
+2. Install the `605zz` bearing and the `M5 washers` into the `torso bottom holder` with a `M5x16mm socket screw`, as
+   shown in the following picture.
 
 ![Assembled Torso Bottom Holder](images/assemblies/08B%20torso%20bottom%20holder.jpg)
 
 2. Repeat steps 1 to 2 for the remaining parts.
 
 ## C. Torso Bottom - 3D Printed Parts
+
 ### Required Parts
+
 | Part                                  | Quantity | Image                                                                                   |
 | ------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
 | `Torso Bottom (External)`             | 1        | ![Torso Bottom (External)](images/3d%20printed%20parts/torso%20bottom%20(external).jpg) |
@@ -59,7 +69,11 @@
 | `M3x12 Plastic Screw`                 | 12       | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                           |
 
 ### Steps
-1. Place the `torso bottom (external)` and the `torso bottom (internal)`, as shown in the first following picture. Make sure the small holes in the `torso bottom (external)` are aligned with the `Jetson AGX Xavier` support. The holes for screws holding the `605zz` bearings must be closer to the bottom (`slip ring` hole), as shown in the second following picture.
+
+1. Place the `torso bottom (external)` and the `torso bottom (internal)`, as shown in the first following picture. Make
+   sure the small holes in the `torso bottom (external)` are aligned with the `Jetson AGX Xavier` support. The holes for
+   screws holding the `605zz` bearings must be closer to the bottom (`slip ring` hole), as shown in the second following
+   picture.
 
 ![Torso Bottom Placement](images/assemblies/08C%20torso%20bottom%20placement.jpg)
 ![Hole Placement](images/assemblies/08C%20hole%20placement.jpg)
@@ -69,7 +83,8 @@
 ![Torso Bottom Screws](images/assemblies/08C%20torso%20bottom%20screws.jpg)
 
 3. Place a `M5 washer` on either side of a `605zz` bearing.
-4. Install the `605zz` bearing and the `M5 washers` into a hole between the branches with a `M5x16mm socket screw`, as shown in the following picture.
+4. Install the `605zz` bearing and the `M5 washers` into a hole between the branches with a `M5x16mm socket screw`, as
+   shown in the following picture.
 
 ![605zz 1](images/assemblies/08C%20605zz%201.jpg)
 
@@ -82,7 +97,8 @@
 ![M5 Washer](images/assemblies/08C%20M5x30%20washer.jpg)
 
 7. Place a `M5 washer` on either side of a `605zz` bearing.
-8. Install the `605zz` bearing and the `M5 washers` into a hole aligned with the branches with a `M5x16mm socket screw`, as shown in the following picture.
+8. Install the `605zz` bearing and the `M5 washers` into a hole aligned with the branches with a `M5x16mm socket screw`,
+   as shown in the following picture.
 
 ![605zz 3](images/assemblies/08C%20605zz%203.jpg)
 
@@ -108,15 +124,17 @@
 
 ![Gear Servo Support](images/assemblies/08C%20gear%20servo%20support.jpg)
 
-
 ## D. Torso Bottom - Antennas
+
 ### Required Parts
+
 | Part                                  | Quantity | Image                                                                                   |
 | ------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
 | `Stewart Support`                     | 2        | ![Stewart Support](images/3d%20printed%20parts/stewart%20support.jpg)                   |
 | `WiFi Antenna`                        | 2        | ![WiFi Antenna](images/electronics/wifi%20antenna.jpg)                                  |
 
 ### Steps
+
 1. Install a `WiFi antenna` to a `Stewart support`, as shown in the following picture.
 
 ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)
@@ -125,9 +143,10 @@
 
 ![Antenna 2](images/assemblies/08D%20antenna%202.jpg)
 
-
 ## E. Torso Bottom - Electronics
+
 ### Required Parts
+
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
 | `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson%20agx%20xavier.jpg)                    |
@@ -142,6 +161,7 @@
 | `M2.5x12 Plastic Screw`               | 2        | ![M2.5x12 Plastic Screw](images/hardware/M2.5x12mm%20plastic.jpg)                            |
 
 ### Steps
+
 1. Install the `WiFi card` into the `Nvidia Jetson AGX Xavier`.
 
 ![WiFi Card](images/assemblies/08E%20wifi%20card.jpg)

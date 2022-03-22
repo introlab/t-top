@@ -15,7 +15,7 @@ public:
     explicit ImageDisplay(QWidget* parent = nullptr);
 
 public slots:
-    void setImage(const QImage &image);
+    void setImage(const QImage& image);
 
 protected:
     void paintEvent(QPaintEvent* event) override;

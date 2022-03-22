@@ -15,7 +15,8 @@ class WeatherForecastState : public State
     uint64_t m_talkDesireId;
 
 public:
-    WeatherForecastState(Language language,
+    WeatherForecastState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

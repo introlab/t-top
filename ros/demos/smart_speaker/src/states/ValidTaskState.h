@@ -19,7 +19,8 @@ class ValidTaskState : public State
     bool m_gestureDone;
 
 public:
-    ValidTaskState(Language language,
+    ValidTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

@@ -8,8 +8,9 @@
 
 using namespace std;
 
-BehaviorsTab::BehaviorsTab(shared_ptr<DesireSet> desireSet, QWidget* parent) :
-        QWidget(parent), m_desireSet(std::move(desireSet))
+BehaviorsTab::BehaviorsTab(shared_ptr<DesireSet> desireSet, QWidget* parent)
+    : QWidget(parent),
+      m_desireSet(std::move(desireSet))
 {
     createUi();
     m_desireSet->addObserver(this);
@@ -22,17 +23,18 @@ BehaviorsTab::~BehaviorsTab()
 
 void BehaviorsTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
 {
-    invokeLater([=]()
-    {
-        if (m_desireId.isValid() && !m_desireSet->contains(m_desireId.toULongLong()))
+    invokeLater(
+        [=]()
         {
-            m_desireId.clear();
-            m_faceFollowingButton->setChecked(false);
-            m_soundFollowingButton->setChecked(false);
-            m_danceButton->setChecked(false);
-            m_exploreAllButton->setChecked(false);
-        }
-    });
+            if (m_desireId.isValid() && !m_desireSet->contains(m_desireId.toULongLong()))
+            {
+                m_desireId.clear();
+                m_faceFollowingButton->setChecked(false);
+                m_soundFollowingButton->setChecked(false);
+                m_danceButton->setChecked(false);
+                m_exploreAllButton->setChecked(false);
+            }
+        });
 }
 
 void BehaviorsTab::onFaceFollowingButtonToggled(bool checked)

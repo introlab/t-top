@@ -1,13 +1,17 @@
 # 3. PCB Assembly
 
 ## A. Adafruit MAX
+
 ### Required Parts
+
 | Part                   | Quantity | Image                                                                          |
 | ---------------------- | -------- | -------------------------------------------------------------------------------|
 | `Adafruit MAX9744 kit` | 2        | ![Adafruit MAX9744 Kit](images/electronics/Adafruit%20MAX9744.jpg)             |
 
 ### Steps
-1. Solder the two `Adafruit MAX9744 kits` for digital control, but do not solder the headers ([instructions](https://learn.adafruit.com/adafruit-20w-stereo-audio-amplifier-class-d-max9744/assembly)).
+
+1. Solder the two `Adafruit MAX9744 kits` for digital control, but do not solder the
+   headers ([instructions](https://learn.adafruit.com/adafruit-20w-stereo-audio-amplifier-class-d-max9744/assembly)).
 
 ![Soldered Adafruit MAX9744](images/assemblies/03A%20Adafruit%20MAX9744%201.jpg)
 
@@ -16,10 +20,13 @@
 ![Soldered Adafruit MAX9744](images/assemblies/03A%20Adafruit%20MAX9744%202.jpg)
 
 ## B. PSU Control PCB
+
 ### Required Parts
+
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 
 ### Steps
+
 1. Solder U2.
 2. Solder R3, R4, C2, C5, C3, R7, R8 and R9.
 3. Solder R17, R16.
@@ -60,10 +67,13 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 ![Soldered PSU Control PCB](images/assemblies/03B%20all.jpg)
 
 ## C. 12V Buck-Boost PCB
+
 ### Required Parts
+
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 
 ### Steps
+
 1. Solder U2.
 2. Solder D2 and D3.
 3. Solder C12 and C16.
@@ -96,10 +106,13 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 24. Adjust the output voltage to 11.5 V with RV2.
 
 ## D. 19V Buck-Boost PCB
+
 ### Required Parts
+
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 
 ### Steps
+
 1. Solder U2.
 2. Solder D2 and D3.
 3. Solder C12 and C16.
@@ -131,12 +144,14 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 ## E. Battery Charger - RRC-PMM240
 
 ### Required Parts
+
 | Part                           | Quantity | Image                                                              |
 | ------------------------------ | -------- | ------------------------------------------------------------------ |
 | `Battery Charger - RRC-PMM240` | 1        | ![Battery Charger - RRC-PMM240](images/electronics/RRC-PMM240.jpg) |
 | `JST B2P-VH Connector`         | 2        | ![JST B2P-VH Connector](images/electronics/JST%20B2P-VH.jpg)       |
 
 ### Steps
+
 1. Desolder the following connectors.
 
 ![Battery Charger - Desolder](images/assemblies/03E%20RRC-PMM240%20horizontal.jpg)

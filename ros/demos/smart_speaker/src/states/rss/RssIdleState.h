@@ -12,7 +12,8 @@ class RssIdleState : public State
     ros::Subscriber m_personNamesSubscriber;
 
 public:
-    RssIdleState(Language language,
+    RssIdleState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

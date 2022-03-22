@@ -18,13 +18,12 @@ bool contains(const std::string& data, const std::string& substr)
 class SolverMock : public Solver
 {
 public:
-    SolverMock()
-    {
-    }
+    SolverMock() {}
     ~SolverMock() override = default;
 
     // Return the strategy to activate (Desire Type, strategy index)
-    virtual unordered_set<SolverResult> solve(const vector<unique_ptr<Desire>>& desires,
+    virtual unordered_set<SolverResult> solve(
+        const vector<unique_ptr<Desire>>& desires,
         const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
         const unordered_map<string, uint16_t>& systemResourcesByName)
     {
@@ -65,7 +64,8 @@ TEST(HbbaLiteTests, constructor_invalidResourceName_shouldThrowHbbaLiteException
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<FilterPoolMock>();
-    auto strategy = make_unique<Strategy<DesireD>>(10,
+    auto strategy = make_unique<Strategy<DesireD>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -82,7 +82,8 @@ TEST(HbbaLiteTests, constructor_invalidResourceCount_shouldThrowHbbaLiteExceptio
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<FilterPoolMock>();
-    auto strategy = make_unique<Strategy<DesireD>>(10,
+    auto strategy = make_unique<Strategy<DesireD>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -99,7 +100,8 @@ TEST(HbbaLiteTests, onDesireSetChange_shouldEnableDisableStrategies)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<FilterPoolMock>();
-    auto strategy = make_unique<Strategy<DesireD>>(10,
+    auto strategy = make_unique<Strategy<DesireD>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -125,16 +127,17 @@ TEST(HbbaLiteTests, getActiveStrategies_shouldReturnActiveStrategies)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<FilterPoolMock>();
-    auto strategyC = make_unique<Strategy<DesireC>>(10,
+    auto strategyC = make_unique<Strategy<DesireC>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyD = make_unique<Strategy<DesireD>>(10,
+    auto strategyD = make_unique<Strategy<DesireD>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{
-                {"fb", FilterConfiguration::throttling(1)},
-                {"fc", FilterConfiguration::onOff()}
-            },
+            {"fb", FilterConfiguration::throttling(1)},
+            {"fc", FilterConfiguration::onOff()}},
         filterPool);
     auto solver = make_unique<GecodeSolver>();
 
@@ -178,16 +181,17 @@ TEST(HbbaLiteTests, getActiveDesireNames_shouldReturnActiveDesireName)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<FilterPoolMock>();
-    auto strategyC = make_unique<Strategy<DesireC>>(10,
+    auto strategyC = make_unique<Strategy<DesireC>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyD = make_unique<Strategy<DesireD>>(10,
+    auto strategyD = make_unique<Strategy<DesireD>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{
-                {"fb", FilterConfiguration::throttling(1)},
-                {"fc", FilterConfiguration::onOff()}
-            },
+            {"fb", FilterConfiguration::throttling(1)},
+            {"fc", FilterConfiguration::onOff()}},
         filterPool);
     auto solver = make_unique<GecodeSolver>();
 
@@ -227,20 +231,22 @@ TEST(HbbaLiteTests, getActiveDesireNames_shouldOnlyReturnDesireNameWithBiggestIn
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<FilterPoolMock>();
-    auto strategyB = make_unique<Strategy<DesireB>>(10,
+    auto strategyB = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 1}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyC = make_unique<Strategy<DesireC>>(10,
+    auto strategyC = make_unique<Strategy<DesireC>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 1}},
         unordered_map<string, FilterConfiguration>{{"fd", FilterConfiguration::onOff()}},
         filterPool);
-    auto strategyD = make_unique<Strategy<DesireD>>(10,
+    auto strategyD = make_unique<Strategy<DesireD>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 1}},
         unordered_map<string, FilterConfiguration>{
-                {"fb", FilterConfiguration::throttling(1)},
-                {"fc", FilterConfiguration::onOff()}
-            },
+            {"fb", FilterConfiguration::throttling(1)},
+            {"fc", FilterConfiguration::onOff()}},
         filterPool);
     auto solver = make_unique<GecodeSolver>();
 

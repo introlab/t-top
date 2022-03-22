@@ -8,14 +8,15 @@
 
 using namespace std;
 
-GestureTab::GestureTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent) :
-        QWidget(parent), m_nodeHandle(nodeHandle), m_desireSet(std::move(desireSet))
+GestureTab::GestureTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+    : QWidget(parent),
+      m_nodeHandle(nodeHandle),
+      m_desireSet(std::move(desireSet))
 {
     createUi();
     m_desireSet->addObserver(this);
 
-    m_gestureDoneSubscriber = nodeHandle.subscribe("gesture/done", 1,
-        &GestureTab::gestureDoneSubscriberCallback, this);
+    m_gestureDoneSubscriber = nodeHandle.subscribe("gesture/done", 1, &GestureTab::gestureDoneSubscriberCallback, this);
 }
 
 GestureTab::~GestureTab()
@@ -25,14 +26,15 @@ GestureTab::~GestureTab()
 
 void GestureTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
 {
-    invokeLater([=]()
-    {
-        if (m_gestureDesireId.isValid() && !m_desireSet->contains(m_gestureDesireId.toULongLong()))
+    invokeLater(
+        [=]()
         {
-            m_gestureDesireId.clear();
-            setEnabledAllButtons(true);
-        }
-    });
+            if (m_gestureDesireId.isValid() && !m_desireSet->contains(m_gestureDesireId.toULongLong()))
+            {
+                m_gestureDesireId.clear();
+                setEnabledAllButtons(true);
+            }
+        });
 }
 
 void GestureTab::onGestureButtonClicked(const QString& name)
@@ -48,16 +50,17 @@ void GestureTab::onGestureButtonClicked(const QString& name)
 
 void GestureTab::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
 {
-    invokeLater([=]()
-    {
-        if (m_gestureDesireId.isValid() && m_gestureDesireId.toULongLong() == msg->id)
+    invokeLater(
+        [=]()
         {
-            m_desireSet->removeDesire(m_gestureDesireId.toULongLong());
-            m_gestureDesireId.clear();
+            if (m_gestureDesireId.isValid() && m_gestureDesireId.toULongLong() == msg->id)
+            {
+                m_desireSet->removeDesire(m_gestureDesireId.toULongLong());
+                m_gestureDesireId.clear();
 
-            setEnabledAllButtons(true);
-        }
-    });
+                setEnabledAllButtons(true);
+            }
+        });
 }
 
 void GestureTab::setEnabledAllButtons(bool enabled)

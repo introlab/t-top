@@ -21,14 +21,15 @@ static const string FRENCH_STORY_WORD = "histoire";
 static const string FRENCH_DANCE_WORD = "danses";
 static const string FRENCH_SONG_WORD = "chanson";
 
-WaitAnswerState::WaitAnswerState(Language language,
+WaitAnswerState::WaitAnswerState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : State(language, stateManager, desireSet, nodeHandle)
 {
-    m_speechToTextSubscriber = nodeHandle.subscribe("speech_to_text/transcript", 1,
-        &WaitAnswerState::speechToTextSubscriberCallback, this);
+    m_speechToTextSubscriber =
+        nodeHandle.subscribe("speech_to_text/transcript", 1, &WaitAnswerState::speechToTextSubscriberCallback, this);
 }
 
 void WaitAnswerState::enable(const string& parameter)
@@ -49,8 +50,8 @@ void WaitAnswerState::enable(const string& parameter)
     m_desireSet->addDesire(move(faceAnimationDesire));
 
     constexpr bool oneshot = true;
-    m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S),
-        &WaitAnswerState::timeoutTimerCallback, this, oneshot);
+    m_timeoutTimer =
+        m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S), &WaitAnswerState::timeoutTimerCallback, this, oneshot);
 }
 
 void WaitAnswerState::disable()

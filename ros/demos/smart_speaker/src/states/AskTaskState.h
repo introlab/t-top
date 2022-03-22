@@ -14,7 +14,8 @@ class AskTaskState : public State
     uint64_t m_talkDesireId;
 
 public:
-    AskTaskState(Language language,
+    AskTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

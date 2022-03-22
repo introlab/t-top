@@ -11,32 +11,29 @@
 
 using namespace std;
 
-StoryLine::StoryLine(std::string faceAnimation, std::string text) :
-        faceAnimation(faceAnimation), text(text)
-{
-}
+StoryLine::StoryLine(std::string faceAnimation, std::string text) : faceAnimation(faceAnimation), text(text) {}
 
-RssStoryState::RssStoryState(Language language,
+RssStoryState::RssStoryState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     const std::string& englishStoryPath,
-    const std::string& frenchStoryPath) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_talkDesireId(MAX_DESIRE_ID),
-        m_faceAnimationDesireId(MAX_DESIRE_ID)
+    const std::string& frenchStoryPath)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_talkDesireId(MAX_DESIRE_ID),
+      m_faceAnimationDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &RssStoryState::talkDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &RssStoryState::talkDoneSubscriberCallback, this);
 
     switch (language)
     {
-    case Language::ENGLISH:
-        readStory(englishStoryPath);
-        break;
-    case Language::FRENCH:
-        readStory(frenchStoryPath);
-        break;
+        case Language::ENGLISH:
+            readStory(englishStoryPath);
+            break;
+        case Language::FRENCH:
+            readStory(frenchStoryPath);
+            break;
     }
 }
 

@@ -13,7 +13,8 @@
 
 using namespace std;
 
-SmartIdleState::SmartIdleState(Language language,
+SmartIdleState::SmartIdleState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
@@ -21,21 +22,21 @@ SmartIdleState::SmartIdleState(Language language,
     std::string personDistanceFrame,
     double noseConfidenceThreshold,
     size_t videoAnalysisMessageCountThreshold,
-    size_t videoAnalysisMessageCountTolerance) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_personDistanceThreshold(personDistanceThreshold),
-        m_personDistanceFrame(personDistanceFrame),
-        m_noseConfidenceThreshold(noseConfidenceThreshold),
-        m_videoAnalysisMessageCountThreshold(videoAnalysisMessageCountThreshold),
-        m_videoAnalysisMessageCountTolerance(videoAnalysisMessageCountTolerance),
-        m_videoAnalysisValidMessageCount(0),
-        m_videoAnalysisInvalidMessageCount(0)
+    size_t videoAnalysisMessageCountTolerance)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_personDistanceThreshold(personDistanceThreshold),
+      m_personDistanceFrame(personDistanceFrame),
+      m_noseConfidenceThreshold(noseConfidenceThreshold),
+      m_videoAnalysisMessageCountThreshold(videoAnalysisMessageCountThreshold),
+      m_videoAnalysisMessageCountTolerance(videoAnalysisMessageCountTolerance),
+      m_videoAnalysisValidMessageCount(0),
+      m_videoAnalysisInvalidMessageCount(0)
 {
-    m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
-        &SmartIdleState::personNamesSubscriberCallback, this);
+    m_personNamesSubscriber =
+        nodeHandle.subscribe("person_names", 1, &SmartIdleState::personNamesSubscriberCallback, this);
 
-    m_videoAnalysisSubscriber = nodeHandle.subscribe("video_analysis", 1,
-        &SmartIdleState::videoAnalysisSubscriberCallback, this);
+    m_videoAnalysisSubscriber =
+        nodeHandle.subscribe("video_analysis", 1, &SmartIdleState::videoAnalysisSubscriberCallback, this);
 }
 
 void SmartIdleState::enable(const string& parameter)
@@ -86,7 +87,7 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
     {
         m_tfListener.lookupTransform(m_personDistanceFrame, msg->header.frame_id, ros::Time(0), transform);
     }
-    catch (tf::TransformException &ex)
+    catch (tf::TransformException& ex)
     {
         ROS_ERROR("%s", ex.what());
         return;
@@ -135,14 +136,15 @@ double SmartIdleState::personNameDistance(const person_identification::PersonNam
         p = transform * p;
         return p.length();
     }
-    catch (tf::TransformException &ex)
+    catch (tf::TransformException& ex)
     {
         ROS_ERROR("%s", ex.what());
         return numeric_limits<double>::infinity();
     }
 }
 
-double SmartIdleState::faceDistance(const video_analyzer::VideoAnalysisObject& object,
+double SmartIdleState::faceDistance(
+    const video_analyzer::VideoAnalysisObject& object,
     const tf::StampedTransform& transform)
 {
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;

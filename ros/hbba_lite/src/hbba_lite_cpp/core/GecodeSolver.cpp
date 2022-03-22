@@ -9,7 +9,8 @@ using namespace Gecode;
 
 constexpr int MAX_INT_VAR_VALUE = 1000000;
 
-class GecodeSolverSpace : public IntMaximizeSpace {
+class GecodeSolverSpace : public IntMaximizeSpace
+{
     const vector<unique_ptr<Desire>>& m_desires;
     const vector<size_t>& m_mostIntenseDesiresIndexes;
     const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& m_strategiesByDesireType;
@@ -29,7 +30,8 @@ class GecodeSolverSpace : public IntMaximizeSpace {
     IntVar m_costValue;
 
 public:
-    GecodeSolverSpace(const vector<unique_ptr<Desire>>& desires,
+    GecodeSolverSpace(
+        const vector<unique_ptr<Desire>>& desires,
         const vector<size_t>& mostIntenseDesiresIndexes,
         const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
         const unordered_map<string, uint16_t>& systemResourcesByName);
@@ -53,19 +55,20 @@ private:
     IntArgs getFilterRateIntArgs(const string& name, const vector<unique_ptr<BaseStrategy>>& strategies);
 };
 
-GecodeSolverSpace::GecodeSolverSpace(const vector<unique_ptr<Desire>>& desires,
+GecodeSolverSpace::GecodeSolverSpace(
+    const vector<unique_ptr<Desire>>& desires,
     const vector<size_t>& mostIntenseDesiresIndexes,
     const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
-    const unordered_map<string, uint16_t>& systemResourcesByName) :
-        m_desires(desires),
-        m_mostIntenseDesiresIndexes(mostIntenseDesiresIndexes),
-        m_strategiesByDesireType(strategiesByDesireType),
-        m_systemResourcesByName(systemResourcesByName),
-        m_isDesireEnabled(*this, mostIntenseDesiresIndexes.size(), 0, 1),
-        m_strategyIndexes(*this, mostIntenseDesiresIndexes.size(), 0, MAX_INT_VAR_VALUE),
-        m_zero(*this, IntSet({0})),
-        m_minusOne(*this, IntSet({-1})),
-        m_costValue(*this, 0, MAX_INT_VAR_VALUE)
+    const unordered_map<string, uint16_t>& systemResourcesByName)
+    : m_desires(desires),
+      m_mostIntenseDesiresIndexes(mostIntenseDesiresIndexes),
+      m_strategiesByDesireType(strategiesByDesireType),
+      m_systemResourcesByName(systemResourcesByName),
+      m_isDesireEnabled(*this, mostIntenseDesiresIndexes.size(), 0, 1),
+      m_strategyIndexes(*this, mostIntenseDesiresIndexes.size(), 0, MAX_INT_VAR_VALUE),
+      m_zero(*this, IntSet({0})),
+      m_minusOne(*this, IntSet({-1})),
+      m_costValue(*this, 0, MAX_INT_VAR_VALUE)
 {
     setupStrategyIndexDomains();
     setupResourceContraints();
@@ -76,11 +79,12 @@ GecodeSolverSpace::GecodeSolverSpace(const vector<unique_ptr<Desire>>& desires,
     branch(*this, m_strategyIndexes, INT_VAR_SIZE_MIN(), INT_VAL_MIN());
 }
 
-GecodeSolverSpace::GecodeSolverSpace(GecodeSolverSpace& other) : IntMaximizeSpace(other),
-        m_desires(other.m_desires),
-        m_mostIntenseDesiresIndexes(other.m_mostIntenseDesiresIndexes),
-        m_strategiesByDesireType(other.m_strategiesByDesireType),
-        m_systemResourcesByName(other.m_systemResourcesByName)
+GecodeSolverSpace::GecodeSolverSpace(GecodeSolverSpace& other)
+    : IntMaximizeSpace(other),
+      m_desires(other.m_desires),
+      m_mostIntenseDesiresIndexes(other.m_mostIntenseDesiresIndexes),
+      m_strategiesByDesireType(other.m_strategiesByDesireType),
+      m_systemResourcesByName(other.m_systemResourcesByName)
 {
     m_isDesireEnabled.update(*this, other.m_isDesireEnabled);
     m_strategyIndexes.update(*this, other.m_strategyIndexes);
@@ -194,8 +198,9 @@ void GecodeSolverSpace::setupFilterRateContraints()
         count(*this, pair.second, -1, IRT_EQ, minusOneCount);
         count(*this, pair.second, m_filterRatesByName[pair.first], IRT_EQ, maxCount);
 
-        rel(*this, filterRatesByName[pair.first].size() == minusOneCount + maxCount ||
-            2 * filterRatesByName[pair.first].size() == minusOneCount + maxCount);
+        rel(*this,
+            filterRatesByName[pair.first].size() == minusOneCount + maxCount ||
+                2 * filterRatesByName[pair.first].size() == minusOneCount + maxCount);
     }
 }
 
@@ -243,7 +248,6 @@ IntArgs GecodeSolverSpace::getResourcesIntArgs(const string& name, const vector<
         {
             resources[i] = it->second;
         }
-
     }
     return resources;
 }
@@ -281,18 +285,16 @@ IntArgs GecodeSolverSpace::getFilterRateIntArgs(const string& name, const vector
         {
             filterRates[i] = it->second.rate();
         }
-
     }
 
     return filterRates;
 }
 
 
-GecodeSolver::GecodeSolver()
-{
-}
+GecodeSolver::GecodeSolver() {}
 
-unordered_set<SolverResult> GecodeSolver::solve(const vector<unique_ptr<Desire>>& desires,
+unordered_set<SolverResult> GecodeSolver::solve(
+    const vector<unique_ptr<Desire>>& desires,
     const unordered_map<type_index, vector<unique_ptr<BaseStrategy>>>& strategiesByDesireType,
     const unordered_map<string, uint16_t>& systemResourcesByName)
 {

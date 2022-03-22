@@ -36,20 +36,20 @@ private:
     ros::ServiceServer m_listActiveStrategiesService;
     ros::ServiceServer m_listActiveDesiresService;
 
-    bool listActiveStrategiesCb(std_srvs::SetBool::Request& request,
-                                std_srvs::SetBool::Response& response);
-    bool listActiveDesiresCb(std_srvs::SetBool::Request& request,
-                             std_srvs::SetBool::Response& response);
+    bool listActiveStrategiesCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response);
+    bool listActiveDesiresCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response);
 
-    bool setMovementModeCb(opentera_webrtc_ros_msgs::SetString::Request& request,
-                           opentera_webrtc_ros_msgs::SetString::Response& response);
+    bool setMovementModeCb(
+        opentera_webrtc_ros_msgs::SetString::Request& request,
+        opentera_webrtc_ros_msgs::SetString::Response& response);
 
-    template <typename MovementMode>
+    template<typename MovementMode>
     void setMovementModeDesire();
 };
 
 Node::Node(ros::NodeHandle& nodeHandle)
-    : m_nodeHandle{nodeHandle}, m_desireSet{make_shared<DesireSet>()},
+    : m_nodeHandle{nodeHandle},
+      m_desireSet{make_shared<DesireSet>()},
       m_filterPool{make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE)}
 {
     vector<unique_ptr<BaseStrategy>> strategies;
@@ -59,7 +59,8 @@ Node::Node(ros::NodeHandle& nodeHandle)
     strategies.emplace_back(createFaceFollowingStrategy(m_filterPool));
 
     m_hbbaLite = make_unique<HbbaLite>(
-        m_desireSet, move(strategies),
+        m_desireSet,
+        move(strategies),
         std::unordered_map<std::string, uint16_t>{{"motor", 1}, {"sound", 1}},
         make_unique<GecodeSolver>());
 
@@ -68,17 +69,15 @@ Node::Node(ros::NodeHandle& nodeHandle)
 
     setMovementModeDesire<TeleoperationDesire>();
 
-    m_setMovementModeService = m_nodeHandle.advertiseService(
-        "set_movement_mode", &Node::setMovementModeCb, this);
+    m_setMovementModeService = m_nodeHandle.advertiseService("set_movement_mode", &Node::setMovementModeCb, this);
 
-    m_listActiveStrategiesService = m_nodeHandle.advertiseService(
-        "hbba/list_active_strategies", &Node::listActiveStrategiesCb, this);
-    m_listActiveDesiresService = m_nodeHandle.advertiseService(
-        "hbba/list_active_desires", &Node::listActiveDesiresCb, this);
+    m_listActiveStrategiesService =
+        m_nodeHandle.advertiseService("hbba/list_active_strategies", &Node::listActiveStrategiesCb, this);
+    m_listActiveDesiresService =
+        m_nodeHandle.advertiseService("hbba/list_active_desires", &Node::listActiveDesiresCb, this);
 };
 
-bool Node::listActiveStrategiesCb(std_srvs::SetBool::Request& request,
-                                  std_srvs::SetBool::Response& response)
+bool Node::listActiveStrategiesCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response)
 {
     response.message = "";
     response.success = true;
@@ -90,8 +89,7 @@ bool Node::listActiveStrategiesCb(std_srvs::SetBool::Request& request,
 
     return true;
 }
-bool Node::listActiveDesiresCb(std_srvs::SetBool::Request& request,
-                               std_srvs::SetBool::Response& response)
+bool Node::listActiveDesiresCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response)
 {
     response.message = "";
     response.success = true;
@@ -104,8 +102,9 @@ bool Node::listActiveDesiresCb(std_srvs::SetBool::Request& request,
     return true;
 }
 
-bool Node::setMovementModeCb(opentera_webrtc_ros_msgs::SetString::Request& request,
-                             opentera_webrtc_ros_msgs::SetString::Response& response)
+bool Node::setMovementModeCb(
+    opentera_webrtc_ros_msgs::SetString::Request& request,
+    opentera_webrtc_ros_msgs::SetString::Response& response)
 {
     response.message = "";
     response.success = true;
@@ -131,7 +130,7 @@ bool Node::setMovementModeCb(opentera_webrtc_ros_msgs::SetString::Request& reque
     return true;
 }
 
-template <typename MovementMode>
+template<typename MovementMode>
 void Node::setMovementModeDesire()
 {
     auto transaction = m_desireSet->beginTransaction();

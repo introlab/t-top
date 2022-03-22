@@ -12,8 +12,9 @@ using namespace std;
 constexpr const char* URL = "http://localhost:8080/face";
 constexpr int RELOAD_INTERVAL_MS = 10000;
 
-AvatarTab::AvatarTab(shared_ptr<DesireSet> desireSet, QWidget* parent) :
-        QWidget(parent), m_desireSet(std::move(desireSet))
+AvatarTab::AvatarTab(shared_ptr<DesireSet> desireSet, QWidget* parent)
+    : QWidget(parent),
+      m_desireSet(std::move(desireSet))
 {
     createUi();
     onAnimationChanged(m_animationComboBox->currentText());

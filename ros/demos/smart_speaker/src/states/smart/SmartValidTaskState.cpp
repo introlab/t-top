@@ -13,11 +13,12 @@
 
 using namespace std;
 
-SmartValidTaskState::SmartValidTaskState(Language language,
+SmartValidTaskState::SmartValidTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        ValidTaskState(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : ValidTaskState(language, stateManager, desireSet, nodeHandle)
 {
 }
 

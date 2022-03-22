@@ -3,6 +3,7 @@
 ## A. Audio Base Pre-Assembly
 
 ### Required Parts
+
 | Part                                       | Quantity | Image                                                                                                              |
 | ------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
 | `Base Audio 1`                             | 1        | ![Base Audio 1](images/3d%20printed%20parts/base%20audio%201.jpg)                                                  |
@@ -19,6 +20,7 @@
 | `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan%20screw.jpg)                                                                      |
 
 ### Steps
+
 1. Insert the `base audio 1` part into the `base audio 2` part, as shown in the following picture.
 
 ![Base Audio Parts](images/assemblies/06A%20base%20audio.jpg)
@@ -29,13 +31,15 @@
 
 ![Base Audio Screw 1](images/assemblies/06A%20base%20audio%20screw%202.jpg)
 
-3. Install the `assembled speakers` with `M3x8 plastic screws`, as shown in the following pictures. The wire lengths are shown in the picture.
+3. Install the `assembled speakers` with `M3x8 plastic screws`, as shown in the following pictures. The wire lengths are
+   shown in the picture.
 
 ![Base Audio Speaker 1](images/assemblies/06A%20speaker%201.jpg)
 
 ![Base Audio Speaker 2](images/assemblies/06A%20speaker%202.jpg)
 
-4. Install the `assembled fans` with `fan screws`, as shown in the following pictures. The wire lengths are shown in the picture.
+4. Install the `assembled fans` with `fan screws`, as shown in the following pictures. The wire lengths are shown in the
+   picture.
 
 ![Base Audio Fan 1](images/assemblies/06A%20fan%201.jpg)
 ![Base Audio Fan 2](images/assemblies/06A%20fan%202.jpg)
@@ -82,7 +86,9 @@
 | `Male Power Connector with Ferrules`       | 1        | ![Power Connector - Male](images/electronics/Power%20Connector%20Male.jpg)      |
 
 ### Steps
-1. Install the `base disk pre-assembly` onto the `audio base pre-assembly` with `M3x5mm plastic screws` (orange circles) and `M3x8mm plastic screws` (red circles), as shown in the following picture.
+
+1. Install the `base disk pre-assembly` onto the `audio base pre-assembly` with `M3x5mm plastic screws` (orange circles)
+   and `M3x8mm plastic screws` (red circles), as shown in the following picture.
 
 ![Base Disk](images/assemblies/06B%20base%20disk.jpg)
 
@@ -114,7 +120,8 @@
 
 ![Adafruit MAX9744 Wires 3](images/assemblies/06B%20amplifier%20wires%203.jpg)
 
-9. Install the second `Adafruit MAX9744` onto the top of the first one with `M2 nuts`, as shown in the following picture.
+9. Install the second `Adafruit MAX9744` onto the top of the first one with `M2 nuts`, as shown in the following
+   picture.
 
 ![Adafruit MAX9744](images/assemblies/06B%20amplifier.jpg)
 
@@ -130,11 +137,13 @@
 
 ![Adafruit MAX9744 Wires 6](images/assemblies/06B%20amplifier%20wires%206.jpg)
 
-13. Connect the `PSU control PCB` to the `battery charger` with the `assembled JST PHR-6 cable`, as shown in the following picture.
+13. Connect the `PSU control PCB` to the `battery charger` with the `assembled JST PHR-6 cable`, as shown in the
+    following picture.
 
 ![JST PHR-6 Cable](images/assemblies/06B%20HST%20PHR-6%20cable.jpg)
 
-14. Connect the `female power connector with ferrules` to a `12V Buck-Boost PCB` output, as shown in the following picture.
+14. Connect the `female power connector with ferrules` to a `12V Buck-Boost PCB` output, as shown in the following
+    picture.
 
 ![12V](images/assemblies/06B%2012V.jpg)
 
@@ -142,25 +151,30 @@
 
 ![19V Buck-Boost PCB](images/assemblies/06B%2019V%20buck-boost%20pcb.jpg)
 
-16. Connect the `19V Buck-Boost PCB` input to a `PSU control PCB` output with `8-cm-long 16 AWG wires`, as shown in the following picture.
+16. Connect the `19V Buck-Boost PCB` input to a `PSU control PCB` output with `8-cm-long 16 AWG wires`, as shown in the
+    following picture.
 
 ![19V Buck-Boost PCB Wires](images/assemblies/06B%2019V%20buck-boost%20pcb%20wires.jpg)
 
-17. Connect the `male power connector with ferrules` to a `19V Buck-Boost PCB` output, as shown in the following picture.
+17. Connect the `male power connector with ferrules` to a `19V Buck-Boost PCB` output, as shown in the following
+    picture.
 
 ![19V](images/assemblies/06B%2019V.jpg)
 
 ## C. Setup the Battery Charger
 
 ### Required Parts
+
 | Part                     | Quantity | Image                                                          |
 | ------------------------ | -------- | -------------------------------------------------------------- |
 | `Micro USB Cable`        | 1        |                                                                |
 | `19V Power Adapter`      | 1        |                                                                |
 
 ### Steps
+
 1. Open the [project](../../firmwares/psu_control) in PlatformIO.
-2. Change the value `FIRMWARE_MODE` in [config.h](../../firmwares/psu_controlinclude/config.h) to `FIRMWARE_MODE_SETUP_BATTERY_CHARGER`.
+2. Change the value `FIRMWARE_MODE` in [config.h](../../firmwares/psu_controlinclude/config.h)
+   to `FIRMWARE_MODE_SETUP_BATTERY_CHARGER`.
 3. Make sure the battery is removed.
 4. Connect the micro USB cable to the computer and the Teensy LC.
 5. Turn off the robot.
@@ -171,6 +185,7 @@
 ## D. Finish the Audio Base Assembly
 
 ### Required Parts
+
 | Part                         | Quantity | Image                                                                                  |
 | ---------------------------- | -------- | -------------------------------------------------------------------------------------- |
 | `Battery - RRC2054-2`        | 1        | ![Battery - RRC2054-2](images/electronics/RRC2054-2.jpg)                               |

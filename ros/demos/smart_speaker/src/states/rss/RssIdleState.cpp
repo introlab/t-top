@@ -12,16 +12,17 @@
 
 using namespace std;
 
-RssIdleState::RssIdleState(Language language,
+RssIdleState::RssIdleState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : State(language, stateManager, desireSet, nodeHandle)
 {
-    m_robotNameDetectedSubscriber = nodeHandle.subscribe("robot_name_detected", 1,
-        &RssIdleState::robotNameDetectedSubscriberCallback, this);
-    m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
-        &RssIdleState::personNamesSubscriberCallback, this);
+    m_robotNameDetectedSubscriber =
+        nodeHandle.subscribe("robot_name_detected", 1, &RssIdleState::robotNameDetectedSubscriberCallback, this);
+    m_personNamesSubscriber =
+        nodeHandle.subscribe("person_names", 1, &RssIdleState::personNamesSubscriberCallback, this);
 }
 
 void RssIdleState::enable(const string& parameter)
@@ -63,7 +64,10 @@ void RssIdleState::personNamesSubscriberCallback(const person_identification::Pe
     }
 
     vector<string> names;
-    transform(msg->names.begin(), msg->names.end(), back_inserter(names),
+    transform(
+        msg->names.begin(),
+        msg->names.end(),
+        back_inserter(names),
         [](const person_identification::PersonName& name) { return name.name; });
 
     auto mergedNames = mergeNames(names, getAndWord());

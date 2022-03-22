@@ -3,16 +3,17 @@
 
 #include <cstdint>
 
-class PsuControlCommandSender {
-  uint8_t m_buffer[UINT8_MAX];
+class PsuControlCommandSender
+{
+    uint8_t m_buffer[UINT8_MAX];
 
 public:
-  PsuControlCommandSender();
+    PsuControlCommandSender();
 
-  void sendVolumeCommand(uint8_t volume);
+    void sendVolumeCommand(uint8_t volume);
 
 private:
-  void sendCommand();
+    void sendCommand();
 };
 
 #endif

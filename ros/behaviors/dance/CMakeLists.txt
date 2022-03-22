@@ -8,12 +8,12 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  rospy
-  roscpp
-  std_msgs
-  hbba_lite
-  t_top
-)
+        rospy
+        roscpp
+        std_msgs
+        hbba_lite
+        t_top
+        )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -105,10 +105,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dance
-  CATKIN_DEPENDS rospy roscpp std_msgs
-#  DEPENDS system_lib
+        #  INCLUDE_DIRS include
+        #  LIBRARIES dance
+        CATKIN_DEPENDS rospy roscpp std_msgs
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -118,8 +118,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+        # include
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -160,9 +160,9 @@ include_directories(
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
 catkin_install_python(PROGRAMS
-  scripts/dance_node.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+        scripts/dance_node.py
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+        )
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination

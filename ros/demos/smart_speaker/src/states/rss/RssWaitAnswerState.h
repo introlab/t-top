@@ -14,7 +14,8 @@ class RssWaitAnswerState : public WaitAnswerState
     std::string m_songWord;
 
 public:
-    RssWaitAnswerState(Language language,
+    RssWaitAnswerState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

@@ -19,15 +19,16 @@ static const string ENGLISH_DANCE_WORD = "dance";
 static const string FRENCH_WEATHER_WORD = "météo";
 static const string FRENCH_DANCE_WORD = "danse";
 
-SmartWaitAnswerState::SmartWaitAnswerState(Language language,
+SmartWaitAnswerState::SmartWaitAnswerState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    vector<string> songNames) :
-        WaitAnswerState(language, stateManager, desireSet, nodeHandle),
-        m_songNames(move(songNames)),
-        m_randomGenerator(random_device()()),
-        m_songIndexDistribution(0, m_songNames.size() - 1)
+    vector<string> songNames)
+    : WaitAnswerState(language, stateManager, desireSet, nodeHandle),
+      m_songNames(move(songNames)),
+      m_randomGenerator(random_device()()),
+      m_songIndexDistribution(0, m_songNames.size() - 1)
 {
     if (m_songNames.size() == 0)
     {
@@ -36,14 +37,14 @@ SmartWaitAnswerState::SmartWaitAnswerState(Language language,
 
     switch (language)
     {
-    case Language::ENGLISH:
-        m_weatherWord = ENGLISH_WEATHER_WORD;
-        m_danceWord = ENGLISH_DANCE_WORD;
-        break;
-    case Language::FRENCH:
-        m_weatherWord = FRENCH_WEATHER_WORD;
-        m_danceWord = FRENCH_DANCE_WORD;
-        break;
+        case Language::ENGLISH:
+            m_weatherWord = ENGLISH_WEATHER_WORD;
+            m_danceWord = ENGLISH_DANCE_WORD;
+            break;
+        case Language::FRENCH:
+            m_weatherWord = FRENCH_WEATHER_WORD;
+            m_danceWord = FRENCH_DANCE_WORD;
+            break;
     }
 }
 

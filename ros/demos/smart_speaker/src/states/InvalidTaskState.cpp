@@ -7,22 +7,22 @@
 
 using namespace std;
 
-InvalidTaskState::InvalidTaskState(Language language,
+InvalidTaskState::InvalidTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    type_index nextStateType) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType),
-        m_talkDesireId(MAX_DESIRE_ID),
-        m_gestureDesireId(MAX_DESIRE_ID),
-        m_talkDone(false),
-        m_gestureDone(false)
+    type_index nextStateType)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
+      m_talkDesireId(MAX_DESIRE_ID),
+      m_gestureDesireId(MAX_DESIRE_ID),
+      m_talkDone(false),
+      m_gestureDone(false)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &InvalidTaskState::talkDoneSubscriberCallback, this);
-    m_gestureDoneSubscriber = nodeHandle.subscribe("gesture/done", 1,
-        &InvalidTaskState::gestureDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &InvalidTaskState::talkDoneSubscriberCallback, this);
+    m_gestureDoneSubscriber =
+        nodeHandle.subscribe("gesture/done", 1, &InvalidTaskState::gestureDoneSubscriberCallback, this);
 }
 
 void InvalidTaskState::enable(const string& parameter)
@@ -60,10 +60,10 @@ string InvalidTaskState::generateText()
 {
     switch (language())
     {
-    case Language::ENGLISH:
-        return "I cannot do that.";
-    case Language::FRENCH:
-        return "Je ne peux pas faire cela.";
+        case Language::ENGLISH:
+            return "I cannot do that.";
+        case Language::FRENCH:
+            return "Je ne peux pas faire cela.";
     }
 
     return "";

@@ -11,7 +11,8 @@ class WaitAnswerState : public State
     ros::Timer m_timeoutTimer;
 
 public:
-    WaitAnswerState(Language language,
+    WaitAnswerState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

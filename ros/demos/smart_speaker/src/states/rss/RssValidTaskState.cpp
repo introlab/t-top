@@ -14,11 +14,12 @@
 
 using namespace std;
 
-RssValidTaskState::RssValidTaskState(Language language,
+RssValidTaskState::RssValidTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        ValidTaskState(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : ValidTaskState(language, stateManager, desireSet, nodeHandle)
 {
 }
 
@@ -42,7 +43,7 @@ void RssValidTaskState::switchState(const string& task)
     }
     else if (task == DANCE_PLAYED_SONG_TASK)
     {
-        m_stateManager.switchTo<DancePlayedSongState>("0"); // First song
+        m_stateManager.switchTo<DancePlayedSongState>("0");  // First song
     }
     else
     {

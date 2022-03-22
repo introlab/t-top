@@ -5,9 +5,9 @@
 
 
 #define FIRMWARE_MODE_SETUP_BATTERY_CHARGER 1
-#define FIRMWARE_MODE_NORMAL 2
-#define FIRMWARE_MODE_TEST 3
-#define FIRMWARE_MODE FIRMWARE_MODE_NORMAL
+#define FIRMWARE_MODE_NORMAL                2
+#define FIRMWARE_MODE_TEST                  3
+#define FIRMWARE_MODE                       FIRMWARE_MODE_NORMAL
 
 #define DEBUG_SERIAL Serial
 constexpr long DEBUG_SERIAL_BAUD_RATE = 9600;
@@ -41,11 +41,11 @@ constexpr uint32_t BUZZER_ON_OFF_INTERVAL_US = 1000000;
 constexpr float BUZZER_STATE_OF_CHARGE_LIMIT = 5;
 
 constexpr uint8_t ONBOARD_TEMPERATURE_ADC_CHANNEL = 0;
-constexpr float ONBOARD_TEMPERATURE_NTC_R = 10000; // @ 25°C
+constexpr float ONBOARD_TEMPERATURE_NTC_R = 10000;  // @ 25°C
 constexpr float ONBOARD_TEMPERATURE_NTC_BETA = 3940;
 constexpr float ONBOARD_TEMPERATURE_R = 10000;
 constexpr uint8_t EXTERNAL_TEMPERATURE_ADC_CHANNEL = 1;
-constexpr float EXTERNAL_TEMPERATURE_NTC_R = 10000; // @ 25°C
+constexpr float EXTERNAL_TEMPERATURE_NTC_R = 10000;  // @ 25°C
 constexpr float EXTERNAL_TEMPERATURE_NTC_BETA = 3936;
 constexpr float EXTERNAL_TEMPERATURE_R = 10000;
 
@@ -61,7 +61,7 @@ constexpr int AUDIO_POWER_AMPLIFIER_I2C_ADDRESSES[AUDIO_POWER_AMPLIFIER_COUNT] =
 
 #define INA220_TYPE 1
 #define INA226_TYPE 2
-#define INA_TYPE INA220_TYPE
+#define INA_TYPE    INA220_TYPE
 constexpr uint8_t INA_ADDRESS = 0x40;
 constexpr float INA_SHUNT_RESISTOR = 0.004;
 constexpr float INA_MAX_CURRENT = 10;

@@ -17,7 +17,8 @@ class DancePlayedSongState : public State
     uint64_t m_songDesireId;
 
 public:
-    DancePlayedSongState(Language language,
+    DancePlayedSongState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

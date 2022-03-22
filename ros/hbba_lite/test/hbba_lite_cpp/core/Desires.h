@@ -6,9 +6,7 @@
 class DesireA : public Desire
 {
 public:
-    DesireA(uint16_t intensity) : Desire(intensity)
-    {
-    }
+    DesireA(uint16_t intensity) : Desire(intensity) {}
 
     ~DesireA() override = default;
 
@@ -18,9 +16,7 @@ public:
 class DesireB : public Desire
 {
 public:
-    DesireB(uint16_t intensity) : Desire(intensity)
-    {
-    }
+    DesireB(uint16_t intensity) : Desire(intensity) {}
 
     ~DesireB() override = default;
 
@@ -30,9 +26,7 @@ public:
 class DesireC : public Desire
 {
 public:
-    DesireC() : Desire(1)
-    {
-    }
+    DesireC() : Desire(1) {}
 
     ~DesireC() override = default;
 
@@ -42,9 +36,7 @@ public:
 class DesireD : public Desire
 {
 public:
-    DesireD() : Desire(1)
-    {
-    }
+    DesireD() : Desire(1) {}
 
     ~DesireD() override = default;
 

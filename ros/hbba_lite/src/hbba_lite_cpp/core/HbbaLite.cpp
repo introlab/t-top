@@ -3,12 +3,16 @@
 
 using namespace std;
 
-HbbaLite::HbbaLite(shared_ptr<DesireSet> desireSet,
-                   vector<unique_ptr<BaseStrategy>> strategies,
-                   unordered_map<string, uint16_t> resourcesByNames,
-                   unique_ptr<Solver> solver)
-    : m_desireSet(move(desireSet)), m_resourcesByNames(move(resourcesByNames)),
-      m_solver(move(solver)), m_pendingDesiresSemaphore(false), m_stopped(false)
+HbbaLite::HbbaLite(
+    shared_ptr<DesireSet> desireSet,
+    vector<unique_ptr<BaseStrategy>> strategies,
+    unordered_map<string, uint16_t> resourcesByNames,
+    unique_ptr<Solver> solver)
+    : m_desireSet(move(desireSet)),
+      m_resourcesByNames(move(resourcesByNames)),
+      m_solver(move(solver)),
+      m_pendingDesiresSemaphore(false),
+      m_stopped(false)
 {
     for (auto& strategy : strategies)
     {
@@ -41,23 +45,22 @@ void HbbaLite::onDesireSetChanged(const vector<unique_ptr<Desire>>& enabledDesir
     m_pendingDesiresSemaphore.release();
 }
 
-void HbbaLite::checkStrategyResources(
-    type_index desireType, const unordered_map<string, uint16_t>& resourcesByNames)
+void HbbaLite::checkStrategyResources(type_index desireType, const unordered_map<string, uint16_t>& resourcesByNames)
 {
     for (auto& pair : resourcesByNames)
     {
         auto it = m_resourcesByNames.find(pair.first);
         if (it == m_resourcesByNames.end())
         {
-            throw HbbaLiteException("A strategy for \"" + string(desireType.name())
-                                    + "\" desires have an invalid resource (" + pair.first
-                                    + ").");
+            throw HbbaLiteException(
+                "A strategy for \"" + string(desireType.name()) + "\" desires have an invalid resource (" + pair.first +
+                ").");
         }
         else if (pair.second > it->second)
         {
-            throw HbbaLiteException("A strategy for \"" + string(desireType.name())
-                                    + "\" desires have an invalid resource count ("
-                                    + pair.first + "=" + to_string(pair.second) + ").");
+            throw HbbaLiteException(
+                "A strategy for \"" + string(desireType.name()) + "\" desires have an invalid resource count (" +
+                pair.first + "=" + to_string(pair.second) + ").");
         }
     }
 }
@@ -83,10 +86,10 @@ void HbbaLite::run()
 void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
 {
     auto results = m_solver->solve(desires, m_strategiesByDesireType, m_resourcesByNames);
-    
+
     // After the loop iterating the results, this set will contain the strategies that need to be disabled.
     unordered_set<pair<type_index, size_t>> enabledStrategies;
-    
+
     // After the loop iterating the results, this vector will contain the strategies that need to be enabled.
     vector<pair<size_t, unique_ptr<Desire>&>> strategiesToEnable;
 
@@ -110,11 +113,10 @@ void HbbaLite::updateStrategies(vector<unique_ptr<Desire>> desires)
         auto& strategy = m_strategiesByDesireType[p.first][p.second];
 
         if (
-                // The strategy must be enabled, but it is disabled
-                toBeEnabled ||
-                // The strategy is already enabled for another desire, so it must be disabled then enabled.
-                strategy->enabled() && strategy->desireId() != desire->id()
-            )
+            // The strategy must be enabled, but it is disabled
+            toBeEnabled ||
+            // The strategy is already enabled for another desire, so it must be disabled then enabled.
+            strategy->enabled() && strategy->desireId() != desire->id())
         {
             strategiesToEnable.emplace_back(result.strategyIndex, desire);
         }
@@ -149,22 +151,19 @@ void HbbaLite::updateActiveDesireNames(
     }
 }
 
-void HbbaLite::updateActiveStrategies(const std::vector<std::unique_ptr<Desire>>& desires,
-                                      const std::unordered_set<SolverResult>& results)
+void HbbaLite::updateActiveStrategies(
+    const std::vector<std::unique_ptr<Desire>>& desires,
+    const std::unordered_set<SolverResult>& results)
 {
     std::lock_guard<std::mutex> lock(m_activeStrategiesMutex);
     m_activeStrategies.clear();
     for (auto result : results)
     {
         const auto& desire = desires[result.desireIndex];
-        const auto& strategy =
-            m_strategiesByDesireType[desire->type()][result.strategyIndex];
+        const auto& strategy = m_strategiesByDesireType[desire->type()][result.strategyIndex];
         std::string desireName = desire->type().name();
         std::string strategyUtility = std::to_string(strategy->utility());
-        std::string s = desireName.append("::(u:")
-                            .append(strategyUtility)
-                            .append("; ")
-                            .append("r:{");
+        std::string s = desireName.append("::(u:").append(strategyUtility).append("; ").append("r:{");
 
         size_t counter = strategy->resourcesByName().size();
         for (const auto& resource : strategy->resourcesByName())
@@ -185,7 +184,7 @@ void HbbaLite::updateActiveStrategies(const std::vector<std::unique_ptr<Desire>>
             if (filter.second.type() == FilterType::THROTTLING)
             {
                 s.append("=").append(std::to_string(filter.second.rate()));
-            }                
+            }
             if (--counter != 0)
             {
                 s.append("; ");
