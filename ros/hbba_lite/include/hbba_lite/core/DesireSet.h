@@ -67,6 +67,7 @@ private:
     void endTransaction(std::unique_lock<std::recursive_mutex> lock);
     void callObservers(std::unique_lock<std::recursive_mutex> desireLock);
 
+    std::vector<std::unique_ptr<Desire>> getEnabledDesires();
     friend DesireSetTransaction;
 };
 

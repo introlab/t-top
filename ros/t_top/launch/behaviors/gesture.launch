@@ -1,0 +1,10 @@
+<launch>
+    <arg name="simulation"/>
+
+    <node pkg="gesture" type="gesture_node.py" name="gesture_node">
+        <param name="simulation" value="$(arg simulation)"/>
+
+        <remap from="pose/filter_state" to="gesture/filter_state"/>
+    </node>
+
+</launch>

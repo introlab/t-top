@@ -3,7 +3,7 @@
 import threading
 
 import rospy
-import tf
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import numpy as np
 import math
 
@@ -30,8 +30,8 @@ def vector_to_angles(vector):
     y = unit_vector[1]
     z = unit_vector[2]
 
-    yaw = math.fmod(np.arctan2(y,x), 2 * math.pi)
-    pitch = -np.arctan2(z,x)
+    yaw = math.fmod(np.arctan2(y, x), 2 * math.pi)
+    pitch = -np.arctan2(z, x)
     return yaw, pitch
 
 
@@ -51,12 +51,17 @@ class MovementCommands:
         if simulation:
             self._np_head_tolerances = np.array(3 * [0.07] + 3 * [0.1])
 
-        self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('pose/filter_state')
-        self._torso_orientation_pub = rospy.Publisher('opencr/torso_orientation', Float32, queue_size=5)
-        self._head_pose_pub = rospy.Publisher('opencr/head_pose', PoseStamped, queue_size=5)
+        self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState(
+            'pose/filter_state')
+        self._torso_orientation_pub = rospy.Publisher(
+            'opencr/torso_orientation', Float32, queue_size=5)
+        self._head_pose_pub = rospy.Publisher(
+            'opencr/head_pose', PoseStamped, queue_size=5)
 
-        self._torso_orientation_sub = rospy.Subscriber('opencr/current_torso_orientation', Float32, self._read_torso_cb, queue_size=5)
-        self._head_pose_sub = rospy.Subscriber('opencr/current_head_pose', PoseStamped, self._read_head_cb, queue_size=5)
+        self._torso_orientation_sub = rospy.Subscriber(
+            'opencr/current_torso_orientation', Float32, self._read_torso_cb, queue_size=5)
+        self._head_pose_sub = rospy.Subscriber(
+            'opencr/current_head_pose', PoseStamped, self._read_head_cb, queue_size=5)
 
     @property
     def is_filtering_all_messages(self):
@@ -72,15 +77,23 @@ class MovementCommands:
         with self._read_head_lock:
             return self._read_head
 
+    @property
+    def frequency(self):
+        return self._maxFreq
+
+    @property
+    def sleep_time(self):
+        return self._minTime
+
     def _read_torso_cb(self, msg):
         with self._read_torso_lock:
             self._read_torso = math.fmod(msg.data, 2 * math.pi)
 
     def _read_head_cb(self, msg):
-        angles = tf.transformations.euler_from_quaternion([msg.pose.orientation.x,
-                                                        msg.pose.orientation.y,
-                                                        msg.pose.orientation.z,
-                                                        msg.pose.orientation.w])
+        angles = euler_from_quaternion([msg.pose.orientation.x,
+                                        msg.pose.orientation.y,
+                                        msg.pose.orientation.z,
+                                        msg.pose.orientation.w])
 
         with self._read_head_lock:
             self._read_head[0] = msg.pose.position.x
@@ -90,8 +103,56 @@ class MovementCommands:
             self._read_head[4] = angles[1]
             self._read_head[5] = angles[2]
 
-    def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10):
+    # Should be called in a loop
+    def move_torso_speed(self, speed_rad_sec_torso, should_sleep=True):
         if self._hbba_filter_state.is_filtering_all_messages:
+            return False
+
+        if abs(speed_rad_sec_torso) < self._min_speed_rad_sec:
+            speed_rad_sec_torso = np.sign(
+                speed_rad_sec_torso) * self._min_speed_rad_sec
+
+        steps_size_torso = speed_rad_sec_torso * self._minTime
+        torso_pose = self.current_torso_pose + steps_size_torso
+
+        if abs(steps_size_torso) > 0:
+            self._torso_orientation_pub.publish(torso_pose)
+
+            if should_sleep:
+                rospy.sleep(self._minTime)
+
+    # Should be called in a loop
+    def move_head_speed(self, speeds_head, should_sleep=True, current_head_pose=None):
+        if self._hbba_filter_state.is_filtering_all_messages:
+            return False
+
+        for i, speed in enumerate(speeds_head[0:3]):
+            if abs(speed) < self._min_speed_meters_sec:
+                speeds_head[i] = np.sign(
+                    speed) * self._min_speed_meters_sec
+        for i, speed in enumerate(speeds_head[3:]):
+            if abs(speed) < self._min_speed_rad_sec:
+                speeds_head[i] = np.sign(speed) * self._min_speed_rad_sec
+
+        # Little boost against gravity so that speed is closer to the desired speed
+        if speeds_head[4] < 0:
+            speeds_head[4] += np.sign(speeds_head[4]) * 0.5
+
+        steps_size_head = np.array(speeds_head) * self._minTime
+
+        if current_head_pose is None:
+            head_pose = np.array(self.current_head_pose) + steps_size_head
+        else:
+            head_pose = np.array(current_head_pose) + steps_size_head
+
+        if (np.abs(steps_size_head) > 0).any():
+            self._head_msg(head_pose)
+
+            if should_sleep:
+                rospy.sleep(self._minTime)
+
+    def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10, stop_cb=None):
+        if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
             return False
 
         if speed_rad_sec < self._min_speed_rad_sec:
@@ -113,20 +174,20 @@ class MovementCommands:
             steps_number = int(abs(distance / steps_size))
 
             for i in range(1, steps_number):
-                if self._hbba_filter_state.is_filtering_all_messages:
+                if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
                 steps_cumulative_size = i * steps_size
                 offset = distance - steps_cumulative_size
                 self._torso_orientation_pub.publish(pose - offset)
                 rospy.sleep(self._minTime)
         else:
-            if self._hbba_filter_state.is_filtering_all_messages:
+            if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                 return False
             self._torso_orientation_pub.publish(pose)
 
         if should_wait:
             while abs(pose - self.current_torso_pose) > 0.1:
-                if self._hbba_filter_state.is_filtering_all_messages:
+                if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
                 self._torso_orientation_pub.publish(pose)
                 rospy.sleep(self._minTime)
@@ -155,7 +216,8 @@ class MovementCommands:
         np_steps_number = np.zeros(6)
         for i in range(0, 6):
             if np.abs(np_distances[i]) > np.abs(np_steps_size[i]):
-                np_steps_number[i] = int(abs(np_distances[i] / np_steps_size[i]))
+                np_steps_number[i] = int(
+                    abs(np_distances[i] / np_steps_size[i]))
             else:
                 np_steps_number[i] = 1
 
@@ -169,7 +231,7 @@ class MovementCommands:
         pose_msg.pose.position.y = pose[1]
         pose_msg.pose.position.z = pose[2]
 
-        q = tf.transformations.quaternion_from_euler(pose[3], pose[4], pose[5])
+        q = quaternion_from_euler(pose[3], pose[4], pose[5])
 
         pose_msg.pose.orientation.x = q[0]
         pose_msg.pose.orientation.y = q[1]
@@ -178,7 +240,7 @@ class MovementCommands:
 
         self._head_pose_pub.publish(pose_msg)
 
-    def move_head(self, pose, should_wait=False, speed_meters_sec=1.0e10, speed_rad_sec=1.0e10):
+    def move_head(self, pose, should_wait=False, speed_meters_sec=1.0e10, speed_rad_sec=1.0e10, stop_cb=None):
         """
         pose[0]: x
         pose[1]: y
@@ -187,8 +249,8 @@ class MovementCommands:
         pose[4]: pitch (y)
         pose[5]: yaw (z)
         """
-        if self._hbba_filter_state.is_filtering_all_messages:
-                return False
+        if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
+            return False
 
         if speed_meters_sec < self._min_speed_meters_sec:
             speed_meters_sec = self._min_speed_meters_sec
@@ -200,13 +262,15 @@ class MovementCommands:
 
         np_distances = np_pose - np.array(self.current_head_pose)
 
-        np_steps_size = self._compute_head_steps_size_array(speed_meters_sec, speed_rad_sec, np_distances)
+        np_steps_size = self._compute_head_steps_size_array(
+            speed_meters_sec, speed_rad_sec, np_distances)
 
-        np_steps_number = self._compute_head_steps_number_array(np_distances, np_steps_size)
+        np_steps_number = self._compute_head_steps_number_array(
+            np_distances, np_steps_size)
 
         if int(np.amax(np_steps_number)) > 1:
             for i in range(1, int(np.amax(np_steps_number))):
-                if self._hbba_filter_state.is_filtering_all_messages:
+                if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
 
                 np_steps_cumulative_size = i * np_steps_size
@@ -219,13 +283,13 @@ class MovementCommands:
                 self._head_msg(np_pose - np_offsets)
                 rospy.sleep(self._minTime)
         else:
-            if self._hbba_filter_state.is_filtering_all_messages:
+            if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                 return False
             self._head_msg(pose)
 
         if should_wait:
             while not (np.abs(np_pose - np.array(self.current_head_pose)) < self._np_head_tolerances).all():
-                if self._hbba_filter_state.is_filtering_all_messages:
+                if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
                 self._head_msg(pose)
                 rospy.sleep(self._minTime)
@@ -265,8 +329,8 @@ class MovementCommands:
             return False
         return True
 
-    def move_head_to_origin(self):
-        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True)
+    def move_head_to_origin(self, should_wait=True):
+        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait)
 
-    def move_torso_to_origin(self):
-        self.move_torso(0, True)
+    def move_torso_to_origin(self, should_wait=True):
+        self.move_torso(0, should_wait)

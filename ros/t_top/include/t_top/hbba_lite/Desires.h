@@ -3,13 +3,12 @@
 
 #include <hbba_lite/core/Desire.h>
 #include <hbba_lite/core/DesireSet.h>
-
 #include <string>
 
 class RobotNameDetectorDesire : public Desire
 {
 public:
-    RobotNameDetectorDesire(uint16_t intensity = 1);
+    explicit RobotNameDetectorDesire(uint16_t intensity = 1);
     ~RobotNameDetectorDesire() override = default;
 
     DECLARE_DESIRE_METHODS(RobotNameDetectorDesire)
@@ -19,7 +18,7 @@ public:
 class SlowVideoAnalyzerDesire : public Desire
 {
 public:
-    SlowVideoAnalyzerDesire(uint16_t intensity = 1);
+    explicit SlowVideoAnalyzerDesire(uint16_t intensity = 1);
     ~SlowVideoAnalyzerDesire() override = default;
 
     DECLARE_DESIRE_METHODS(SlowVideoAnalyzerDesire)
@@ -29,7 +28,7 @@ public:
 class FastVideoAnalyzerDesire : public Desire
 {
 public:
-    FastVideoAnalyzerDesire(uint16_t intensity = 1);
+    explicit FastVideoAnalyzerDesire(uint16_t intensity = 1);
     ~FastVideoAnalyzerDesire() override = default;
 
     DECLARE_DESIRE_METHODS(FastVideoAnalyzerDesire)
@@ -39,7 +38,7 @@ public:
 class FastVideoAnalyzerWithAnalyzedImageDesire : public Desire
 {
 public:
-    FastVideoAnalyzerWithAnalyzedImageDesire(uint16_t intensity = 1);
+    explicit FastVideoAnalyzerWithAnalyzedImageDesire(uint16_t intensity = 1);
     ~FastVideoAnalyzerWithAnalyzedImageDesire() override = default;
 
     DECLARE_DESIRE_METHODS(FastVideoAnalyzerWithAnalyzedImageDesire)
@@ -49,7 +48,7 @@ public:
 class AudioAnalyzerDesire : public Desire
 {
 public:
-    AudioAnalyzerDesire(uint16_t intensity = 1);
+    explicit AudioAnalyzerDesire(uint16_t intensity = 1);
     ~AudioAnalyzerDesire() override = default;
 
     DECLARE_DESIRE_METHODS(AudioAnalyzerDesire)
@@ -59,7 +58,7 @@ public:
 class SpeechToTextDesire : public Desire
 {
 public:
-    SpeechToTextDesire(uint16_t intensity = 1);
+    explicit SpeechToTextDesire(uint16_t intensity = 1);
     ~SpeechToTextDesire() override = default;
 
     DECLARE_DESIRE_METHODS(SpeechToTextDesire)
@@ -69,7 +68,7 @@ public:
 class ExploreDesire : public Desire
 {
 public:
-    ExploreDesire(uint16_t intensity = 1);
+    explicit ExploreDesire(uint16_t intensity = 1);
     ~ExploreDesire() override = default;
 
     DECLARE_DESIRE_METHODS(ExploreDesire)
@@ -98,7 +97,7 @@ inline const std::string& FaceAnimationDesire::name() const
 class SoundFollowingDesire : public Desire
 {
 public:
-    SoundFollowingDesire(uint16_t intensity = 1);
+    explicit SoundFollowingDesire(uint16_t intensity = 1);
     ~SoundFollowingDesire() override = default;
 
     DECLARE_DESIRE_METHODS(SoundFollowingDesire)
@@ -108,7 +107,7 @@ public:
 class FaceFollowingDesire : public Desire
 {
 public:
-    FaceFollowingDesire(uint16_t intensity = 1);
+    explicit FaceFollowingDesire(uint16_t intensity = 1);
     ~FaceFollowingDesire() override = default;
 
     DECLARE_DESIRE_METHODS(FaceFollowingDesire)
@@ -156,7 +155,7 @@ inline const std::string& GestureDesire::name() const
 class DanceDesire : public Desire
 {
 public:
-    DanceDesire(uint16_t intensity = 1);
+    explicit DanceDesire(uint16_t intensity = 1);
     ~DanceDesire() override = default;
 
     DECLARE_DESIRE_METHODS(DanceDesire)
@@ -180,5 +179,25 @@ inline const std::string& PlaySoundDesire::path() const
 {
     return m_path;
 }
+
+
+class TelepresenceDesire : public Desire
+{
+public:
+    explicit TelepresenceDesire(uint16_t intensity = 1);
+    ~TelepresenceDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(TelepresenceDesire);
+};
+
+class TeleoperationDesire : public Desire
+{
+public:
+    explicit TeleoperationDesire(uint16_t intensity = 1);
+    ~TeleoperationDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(TeleoperationDesire);
+};
+
 
 #endif

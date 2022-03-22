@@ -100,5 +100,10 @@ std::unique_ptr<BaseStrategy> createDanceStrategy(std::shared_ptr<FilterPool> fi
 std::unique_ptr<BaseStrategy> createPlaySoundStrategy(std::shared_ptr<FilterPool> filterPool,
     ros::NodeHandle& nodeHandle, uint16_t utility = 1);
 
+std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool,
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool,
+    uint16_t utility = 1);
+
 
 #endif

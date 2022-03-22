@@ -230,3 +230,25 @@ unique_ptr<BaseStrategy> createPlaySoundStrategy(shared_ptr<FilterPool> filterPo
 {
     return make_unique<PlaySoundStrategy>(utility, move(filterPool), nodeHandle);
 }
+
+unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<TelepresenceDesire>>(utility,
+        unordered_map<string, uint16_t>{{"sound", 1}},
+        unordered_map<string, FilterConfiguration>
+        {
+            {"rtabmap/filter_state", FilterConfiguration::onOff()},
+        },
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<TeleoperationDesire>>(utility,
+        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, FilterConfiguration>
+        {
+            {"teleoperation/filter_state", FilterConfiguration::onOff()},
+        },
+        move(filterPool));
+}

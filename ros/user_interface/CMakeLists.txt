@@ -185,9 +185,29 @@ catkin_package(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_custom_target(
-    user_interface-install ALL
-    COMMAND /usr/bin/npm install
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/package.json
+    COMMAND npm install
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
 )
 
+add_custom_target(
+    user_interface-install ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
+    VERBATIM
+)
+
+#######################
+## Required programs ##
+#######################
+function(assert_program_installed PROGRAM)
+    find_program(prog-${PROGRAM} ${PROGRAM})
+    if(${prog-${PROGRAM}} STREQUAL "prog-${PROGRAM}-NOTFOUND")
+        message(FATAL_ERROR "'${PROGRAM}' needs to be installed")
+    endif()
+endfunction()
+
+assert_program_installed("npm")

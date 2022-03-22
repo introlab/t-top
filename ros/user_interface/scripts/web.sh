@@ -4,7 +4,6 @@ SCRIPT=`realpath $0`
 SCRIPT_PATH=`dirname $SCRIPT`
 
 cd $SCRIPT_PATH/..
-npm install
 
 npm run serve &
 SERVER_PID=$!
@@ -17,13 +16,13 @@ URL="http://localhost:8080/face"
 
 if which xdg-open > /dev/null
 then
-  xdg-open $URL
+  xdg-open $URL &> /dev/null
 elif which gnome-open > /dev/null
 then
-  gnome-open $URL
+  gnome-open $URL &> /dev/null
 elif open > /dev/null
 then
-  open $URL
+  open $URL &> /dev/null
 else
   echo "The OS is not supported"
 fi

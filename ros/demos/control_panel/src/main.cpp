@@ -15,13 +15,15 @@
 
 using namespace std;
 
+constexpr bool WAIT_FOR_SERVICE = true;
+
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "control_panel_node");
     ros::NodeHandle nodeHandle;
 
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(nodeHandle);
+    auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));

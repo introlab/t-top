@@ -62,9 +62,9 @@ sudo apt install -y libasound2-dev \
 ### E. Install Python Dependancies
 1. Execute the following bash commands.
 ```bash
-sudo apt install -y libprotobuf* protobuf-compiler ninja-build python3-pip
+sudo apt install -y 'libprotobuf*' protobuf-compiler ninja-build python3-pip
 sudo -H pip3 install numpy scipy matplotlib torch==1.6.0 torchvision==0.7.0 torchaudio==0.6.0 playsound google-cloud-texttospeech google-cloud-speech libconf tqdm pyside2 sounddevice librosa requests ipinfo
-sudo -H pip3 install git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
+sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 ```
 
 ### F. Install CUDA Tools (Optional)

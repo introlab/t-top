@@ -15,6 +15,7 @@
 #include <typeindex>
 #include <thread>
 #include <mutex>
+#include <set>
 
 template<>
 struct std::hash<std::pair<std::type_index, size_t>>
@@ -41,6 +42,11 @@ class HbbaLite : public DesireSetObserver
     std::atomic_bool m_stopped;
     std::unique_ptr<std::thread> m_thread;
 
+    mutable std::mutex m_activeDesireNamesMutex;
+    std::set<std::string> m_activeDesireNames;
+    mutable std::mutex m_activeStrategiesMutex;
+    std::set<std::string> m_activeStrategies;
+
 public:
     HbbaLite(std::shared_ptr<DesireSet> desireSet,
         std::vector<std::unique_ptr<BaseStrategy>> strategies,
@@ -52,12 +58,18 @@ public:
     DECLARE_NOT_MOVABLE(HbbaLite);
 
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& enabledDesires) override;
+    std::vector<std::string> getActiveStrategies() const;
+    std::vector<std::string> getActiveDesireNames() const;
 
 private:
     void checkStrategyResources(std::type_index desireType, const std::unordered_map<std::string, uint16_t>& resourcesByNames);
 
     void run();
     void updateStrategies(std::vector<std::unique_ptr<Desire>> desires);
+    void updateActiveStrategies(const std::vector<std::unique_ptr<Desire>>& desires,
+                                const std::unordered_set<SolverResult>& results);
+    void updateActiveDesireNames(const std::vector<std::unique_ptr<Desire>>& desires,
+                                 const std::unordered_set<SolverResult>& results);
 };
 
 #endif

@@ -1,0 +1,15 @@
+<launch>
+    <arg name="language"/> <!-- Options: fr or en -->
+
+    <node pkg="speech_to_text" type="speech_to_text_node.py" name="speech_to_text_node">
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="743"/>
+        <param name="request_frame_count" value="4"/>
+        <param name="language" value="$(arg language)"/>
+
+        <remap from="audio_in" to="audio_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+        <remap from="text" to="speech_to_text/transcript"/>
+    </node>
+
+</launch>

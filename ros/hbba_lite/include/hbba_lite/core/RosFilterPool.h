@@ -10,10 +10,12 @@
 class RosFilterPool : public FilterPool
 {
     ros::NodeHandle& m_nodeHandle;
+    bool m_waitForService;
+
     std::unordered_map<std::string, ros::ServiceClient> m_serviceClientsByName;
 
 public:
-    RosFilterPool(ros::NodeHandle& nodeHandle);
+    RosFilterPool(ros::NodeHandle& nodeHandle, bool waitForService);
     void add(const std::string& name, FilterType type) override;
 
 protected:
@@ -29,6 +31,11 @@ template <class ServiceType>
 void RosFilterPool::call(const std::string& name, ServiceType& srv)
 {
     ros::ServiceClient& service = m_serviceClientsByName[name];
+    if (m_waitForService)
+    {
+        ros::service::waitForService(name);
+    }
+
     if (!service.isValid())
     {
         service = m_nodeHandle.serviceClient<ServiceType>(name, true);

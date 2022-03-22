@@ -1,0 +1,14 @@
+<launch>
+
+    <node pkg="dance" type="dance_node.py" name="head_dance_node">
+        <param name="movement_file" value="$(find dance)/head_movements.json"/>
+
+        <remap from="pose/filter_state" to="head_dance/filter_state"/>
+    </node>
+    <node pkg="dance" type="dance_node.py" name="torso_dance_node">
+        <param name="movement_file" value="$(find dance)/torso_movements.json"/>
+
+        <remap from="pose/filter_state" to="torso_dance/filter_state"/>
+    </node>
+
+</launch>

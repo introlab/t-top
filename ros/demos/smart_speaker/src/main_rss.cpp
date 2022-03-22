@@ -28,6 +28,8 @@
 
 using namespace std;
 
+constexpr bool WAIT_FOR_SERVICE = true;
+
 void startNode(Language language,
     ros::NodeHandle& nodeHandle,
     const string& englishStoryPath,
@@ -36,7 +38,7 @@ void startNode(Language language,
     const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(nodeHandle);
+    auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));

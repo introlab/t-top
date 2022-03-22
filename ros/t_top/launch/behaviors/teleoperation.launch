@@ -1,0 +1,10 @@
+<launch>
+    <arg name="simulation"/>
+
+    <node pkg="teleoperation" type="teleoperation_node.py" name="teleoperation_node">
+        <param name="simulation" value="$(arg simulation)"/>
+
+        <remap from="pose/filter_state" to="teleoperation/filter_state"/>
+    </node>
+
+</launch>

@@ -11,7 +11,7 @@ class BinarySemaphore
     std::condition_variable m_conditionVariable;
 
 public:
-    BinarySemaphore(bool state);
+    explicit BinarySemaphore(bool state);
 
     void release();
     void acquire();
