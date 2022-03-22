@@ -8,15 +8,7 @@ project(t_top)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-        geometry_msgs
-        nav_msgs
         rospy
-        sensor_msgs
-        std_msgs
-        tf
-        hbba_lite
-        talk
-        sound_player
         )
 
 ## System dependencies are found with CMake's conventions
@@ -109,8 +101,8 @@ catkin_python_setup()
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-        INCLUDE_DIRS include
-        LIBRARIES t_top_hbba_lite
+        # INCLUDE_DIRS include
+        # LIBRARIES t_top
         #  CATKIN_DEPENDS geometry_msgs nav_msgs rospy sensor_msgs std_msgs tf
         #  DEPENDS system_lib
 )
@@ -122,20 +114,19 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-        include
+        # include
         ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-add_library(t_top_hbba_lite
-        src/t_top_hbba_lite/Desires.cpp
-        src/t_top_hbba_lite/Strategies.cpp
-        )
+# add_library(${PROJECT_NAME}
+#   src/${PROJECT_NAME}/t_top.cpp
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(t_top_hbba_lite ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -153,9 +144,9 @@ add_dependencies(t_top_hbba_lite ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(t_top_hbba_lite
-        ${catkin_LIBRARIES}
-        )
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##

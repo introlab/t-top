@@ -22,7 +22,7 @@
 #include <hbba_lite/core/GecodeSolver.h>
 #include <hbba_lite/core/HbbaLite.h>
 
-#include <t_top/hbba_lite/Strategies.h>
+#include <t_top_hbba_lite/Strategies.h>
 
 #include <memory>
 

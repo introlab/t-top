@@ -6,7 +6,7 @@
 #include <opentera_webrtc_ros_msgs/SetString.h>
 #include <ros/ros.h>
 #include <std_srvs/SetBool.h>
-#include <t_top/hbba_lite/Strategies.h>
+#include <t_top_hbba_lite/Strategies.h>
 
 using namespace std;
 
