@@ -3,25 +3,26 @@
 
 #include <DynamixelWorkbench.h>
 
-class TorsoController {
-  DynamixelWorkbench& m_dynamixelWorkbench;
+class TorsoController
+{
+    DynamixelWorkbench& m_dynamixelWorkbench;
 
-  bool m_isZeroOffsetFound;
-  float m_zeroOffset;
+    bool m_isZeroOffsetFound;
+    float m_zeroOffset;
 
 public:
-  TorsoController(DynamixelWorkbench& dynamixelWorkbench);
-  ~TorsoController();
+    TorsoController(DynamixelWorkbench& dynamixelWorkbench);
+    ~TorsoController();
 
-  void init();
+    void init();
 
-  void setOrientation(float orientation);
-  float readOrientation();
+    void setOrientation(float orientation);
+    float readOrientation();
 
 private:
-  void findZeroOffset();
-  float getOrientationFromDynamixelPosition(float dynamixelPosition);
-  float getNewDynamixelPositionFromOrientationDelta(float dynamixelPosition, float orientationDelta);
+    void findZeroOffset();
+    float getOrientationFromDynamixelPosition(float dynamixelPosition);
+    float getNewDynamixelPositionFromOrientationDelta(float dynamixelPosition, float orientationDelta);
 };
 
 #endif

@@ -11,7 +11,8 @@ class RssWaitPersonIdentificationState : public State
     ros::Timer m_timeoutTimer;
 
 public:
-    RssWaitPersonIdentificationState(Language language,
+    RssWaitPersonIdentificationState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

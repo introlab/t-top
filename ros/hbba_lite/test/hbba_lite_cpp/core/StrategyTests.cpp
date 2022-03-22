@@ -15,13 +15,14 @@ public:
     int onEnablingCount;
     int onDisablingCount;
 
-    StrategyTestee(shared_ptr<FilterPoolMock> filterPool) :
-            Strategy(1,
-                {{"a", 1}, {"b", 2}},
-                {{"c", FilterConfiguration::throttling(1)}, {"d", FilterConfiguration::throttling(2)}},
-                filterPool),
-            onEnablingCount(0),
-            onDisablingCount(0)
+    StrategyTestee(shared_ptr<FilterPoolMock> filterPool)
+        : Strategy(
+              1,
+              {{"a", 1}, {"b", 2}},
+              {{"c", FilterConfiguration::throttling(1)}, {"d", FilterConfiguration::throttling(2)}},
+              filterPool),
+          onEnablingCount(0),
+          onDisablingCount(0)
     {
     }
     ~StrategyTestee() override = default;

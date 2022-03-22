@@ -9,15 +9,9 @@ using namespace std;
 class DesireSet
 {
 public:
-    static void enable(Desire& desire)
-    {
-        desire.enable();
-    }
+    static void enable(Desire& desire) { desire.enable(); }
 
-    static void disable(Desire& desire)
-    {
-        desire.disable();
-    }
+    static void disable(Desire& desire) { desire.disable(); }
 };
 
 TEST(DesireTests, getters_shouldReturnTheRightValues)

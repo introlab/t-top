@@ -8,17 +8,17 @@
 
 using namespace std;
 
-AskTaskState::AskTaskState(Language language,
+AskTaskState::AskTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    type_index nextStateType) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType),
-        m_talkDesireId(MAX_DESIRE_ID)
+    type_index nextStateType)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
+      m_talkDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &AskTaskState::talkDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &AskTaskState::talkDoneSubscriberCallback, this);
 }
 
 void AskTaskState::enable(const string& parameter)
@@ -50,10 +50,10 @@ string AskTaskState::generateText(const string& personName)
 {
     switch (language())
     {
-    case Language::ENGLISH:
-        return generateEnglishText(personName);
-    case Language::FRENCH:
-        return generateFrenchText(personName);
+        case Language::ENGLISH:
+            return generateEnglishText(personName);
+        case Language::FRENCH:
+            return generateFrenchText(personName);
     }
 
     return "";

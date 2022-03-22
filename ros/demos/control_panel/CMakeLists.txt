@@ -8,17 +8,17 @@ project(control_panel)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  audio_analyzer
-  gesture
-  person_identification
-  roscpp
-  std_msgs
-  sensor_msgs
-  talk
-  video_analyzer
-  hbba_lite
-  t_top
-)
+        audio_analyzer
+        gesture
+        person_identification
+        roscpp
+        std_msgs
+        sensor_msgs
+        talk
+        video_analyzer
+        hbba_lite
+        t_top
+        )
 
 ## System dependencies are found with CMake's conventions
 
@@ -112,10 +112,10 @@ find_package(Qt5 COMPONENTS ${control_panel_components} REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES control_panel
-#  CATKIN_DEPENDS audio_analyzer gesture person_identification roscpp std_msgs talk video_analyzer
-#  DEPENDS system_lib
+        #  INCLUDE_DIRS include
+        #  LIBRARIES control_panel
+        #  CATKIN_DEPENDS audio_analyzer gesture person_identification roscpp std_msgs talk video_analyzer
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -125,8 +125,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+        include
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -145,26 +145,26 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/control_panel_node.cpp)
 
 set(headers
-  src/QtUtils.h
-  src/widgets/ImageDisplay.h
-  src/widgets/ControlPanel.h
-  src/widgets/AvatarTab.h
-  src/widgets/SpeechTab.h
-  src/widgets/GestureTab.h
-  src/widgets/BehaviorsTab.h
-  src/widgets/PerceptionsTab.h
-)
+        src/QtUtils.h
+        src/widgets/ImageDisplay.h
+        src/widgets/ControlPanel.h
+        src/widgets/AvatarTab.h
+        src/widgets/SpeechTab.h
+        src/widgets/GestureTab.h
+        src/widgets/BehaviorsTab.h
+        src/widgets/PerceptionsTab.h
+        )
 
 set(srcs
-  src/main.cpp
-  src/widgets/ImageDisplay.cpp
-  src/widgets/ControlPanel.cpp
-  src/widgets/AvatarTab.cpp
-  src/widgets/SpeechTab.cpp
-  src/widgets/GestureTab.cpp
-  src/widgets/BehaviorsTab.cpp
-  src/widgets/PerceptionsTab.cpp
-)
+        src/main.cpp
+        src/widgets/ImageDisplay.cpp
+        src/widgets/ControlPanel.cpp
+        src/widgets/AvatarTab.cpp
+        src/widgets/SpeechTab.cpp
+        src/widgets/GestureTab.cpp
+        src/widgets/BehaviorsTab.cpp
+        src/widgets/PerceptionsTab.cpp
+        )
 
 qt5_wrap_cpp(project_moc_srcs ${headers})
 
@@ -183,9 +183,9 @@ qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-  ${control_panel_components_link}
-)
+        ${catkin_LIBRARIES}
+        ${control_panel_components_link}
+        )
 
 #############
 ## Install ##

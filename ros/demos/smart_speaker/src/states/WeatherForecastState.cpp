@@ -7,17 +7,18 @@
 
 using namespace std;
 
-WeatherForecastState::WeatherForecastState(Language language,
+WeatherForecastState::WeatherForecastState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    std::type_index nextStateType) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType),
-        m_talkDesireId(MAX_DESIRE_ID)
+    std::type_index nextStateType)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
+      m_talkDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &WeatherForecastState::talkDoneSubscriberCallback, this);
+    m_talkDoneSubscriber =
+        nodeHandle.subscribe("talk/done", 1, &WeatherForecastState::talkDoneSubscriberCallback, this);
 }
 
 void WeatherForecastState::enable(const string& parameter)
@@ -47,17 +48,18 @@ void WeatherForecastState::disable()
 
 string WeatherForecastState::generateText()
 {
-    ros::ServiceClient service = m_nodeHandle.serviceClient<cloud_data::LocalWeatherForecast>("cloud_data/local_weather_forecast");
+    ros::ServiceClient service =
+        m_nodeHandle.serviceClient<cloud_data::LocalWeatherForecast>("cloud_data/local_weather_forecast");
     cloud_data::LocalWeatherForecast srv;
-    srv.request.relative_day = 1; // tomorow
+    srv.request.relative_day = 1;  // tomorow
     bool ok = service.exists() && service.call(srv);
 
     switch (language())
     {
-    case Language::ENGLISH:
-        return generateEnglishText(ok, srv);
-    case Language::FRENCH:
-        return generateFrenchText(ok, srv);
+        case Language::ENGLISH:
+            return generateEnglishText(ok, srv);
+        case Language::FRENCH:
+            return generateFrenchText(ok, srv);
     }
 
     return "";
@@ -73,7 +75,8 @@ string WeatherForecastState::generateEnglishText(bool ok, const cloud_data::Loca
         ss << "Tomorrow morning, the temperature will be " << srv.response.temperature_morning_celsius << " °C and ";
         ss << "the feels like temperature will be " << srv.response.feals_like_temperature_morning_celsius << " °C. ";
 
-        ss << "During the day of tomorrow, the temperature will be " << srv.response.temperature_day_celsius << " °C and ";
+        ss << "During the day of tomorrow, the temperature will be " << srv.response.temperature_day_celsius
+           << " °C and ";
         ss << "the feels like temperature will be " << srv.response.feals_like_temperature_day_celsius << " °C. ";
 
         ss << "Tomorrow evening, the temperature will be " << srv.response.temperature_evening_celsius << " °C and ";

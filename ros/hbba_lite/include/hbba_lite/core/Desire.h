@@ -6,15 +6,9 @@
 #include <memory>
 #include <typeindex>
 
-#define DECLARE_DESIRE_METHODS(className) \
-    std::unique_ptr<Desire> clone() override \
-    { \
-        return std::make_unique<className>(*this); \
-    } \
-    std::type_index type() override \
-    { \
-        return std::type_index(typeid(className)); \
-    }
+#define DECLARE_DESIRE_METHODS(className)                                                                              \
+    std::unique_ptr<Desire> clone() override { return std::make_unique<className>(*this); }                            \
+    std::type_index type() override { return std::type_index(typeid(className)); }
 
 class Desire
 {

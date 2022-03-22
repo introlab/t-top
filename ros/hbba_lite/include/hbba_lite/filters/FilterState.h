@@ -18,8 +18,9 @@ public:
     bool isFilteringAllMessages() const;
 
 private:
-    bool stateServiceCallback(hbba_lite::SetOnOffFilterState::Request &request,
-            hbba_lite::SetOnOffFilterState::Response &response);
+    bool stateServiceCallback(
+        hbba_lite::SetOnOffFilterState::Request& request,
+        hbba_lite::SetOnOffFilterState::Response& response);
 };
 
 bool OnOffHbbaFilterState::isFilteringAllMessages() const
@@ -40,8 +41,9 @@ public:
     bool isFilteringAllMessages() const;
 
 private:
-    bool stateServiceCallback(hbba_lite::SetThrottlingFilterState::Request &request,
-            hbba_lite::SetThrottlingFilterState::Response &response);
+    bool stateServiceCallback(
+        hbba_lite::SetThrottlingFilterState::Request& request,
+        hbba_lite::SetThrottlingFilterState::Response& response);
 };
 
 bool ThrottlingHbbaFilterState::isFilteringAllMessages() const

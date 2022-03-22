@@ -5,15 +5,16 @@
 
 using namespace std;
 
-AfterTaskDelayState::AfterTaskDelayState(Language language,
+AfterTaskDelayState::AfterTaskDelayState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     type_index nextStateType,
-    ros::Duration duration) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType),
-        m_duration(duration)
+    ros::Duration duration)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
+      m_duration(duration)
 {
 }
 
@@ -22,8 +23,7 @@ void AfterTaskDelayState::enable(const string& parameter)
     State::enable(parameter);
 
     constexpr bool oneshot = true;
-    m_timeoutTimer = m_nodeHandle.createTimer(m_duration,
-        &AfterTaskDelayState::timeoutTimerCallback, this, oneshot);
+    m_timeoutTimer = m_nodeHandle.createTimer(m_duration, &AfterTaskDelayState::timeoutTimerCallback, this, oneshot);
 }
 
 void AfterTaskDelayState::disable()

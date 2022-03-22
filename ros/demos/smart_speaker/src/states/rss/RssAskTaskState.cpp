@@ -9,11 +9,12 @@
 
 using namespace std;
 
-RssAskTaskState::RssAskTaskState(Language language,
+RssAskTaskState::RssAskTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
+    ros::NodeHandle& nodeHandle)
+    : AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
 {
 }
 

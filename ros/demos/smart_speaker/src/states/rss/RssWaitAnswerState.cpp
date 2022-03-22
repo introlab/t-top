@@ -25,28 +25,29 @@ static const string FRENCH_STORY_WORD = "histoire";
 static const string FRENCH_DANCE_WORD = "danses";
 static const string FRENCH_SONG_WORD = "chanson";
 
-RssWaitAnswerState::RssWaitAnswerState(Language language,
+RssWaitAnswerState::RssWaitAnswerState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        WaitAnswerState(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : WaitAnswerState(language, stateManager, desireSet, nodeHandle)
 {
     switch (language)
     {
-    case Language::ENGLISH:
-        m_weatherWord = ENGLISH_WEATHER_WORD;
-        m_forecastWord = ENGLISH_FORECAST_WORD;
-        m_storyWord = ENGLISH_STORY_WORD;
-        m_danceWord = ENGLISH_DANCE_WORD;
-        m_songWord = ENGLISH_SONG_WORD;
-        break;
-    case Language::FRENCH:
-        m_weatherWord = FRENCH_WEATHER_WORD;
-        m_forecastWord = FRENCH_FORECAST_WORD;
-        m_storyWord = FRENCH_STORY_WORD;
-        m_danceWord = FRENCH_DANCE_WORD;
-        m_songWord = FRENCH_SONG_WORD;
-        break;
+        case Language::ENGLISH:
+            m_weatherWord = ENGLISH_WEATHER_WORD;
+            m_forecastWord = ENGLISH_FORECAST_WORD;
+            m_storyWord = ENGLISH_STORY_WORD;
+            m_danceWord = ENGLISH_DANCE_WORD;
+            m_songWord = ENGLISH_SONG_WORD;
+            break;
+        case Language::FRENCH:
+            m_weatherWord = FRENCH_WEATHER_WORD;
+            m_forecastWord = FRENCH_FORECAST_WORD;
+            m_storyWord = FRENCH_STORY_WORD;
+            m_danceWord = FRENCH_DANCE_WORD;
+            m_songWord = FRENCH_SONG_WORD;
+            break;
     }
 }
 

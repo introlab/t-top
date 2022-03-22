@@ -5,26 +5,27 @@
 
 using namespace std;
 
-DancePlayedSongState::DancePlayedSongState(Language language,
+DancePlayedSongState::DancePlayedSongState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     type_index nextStateType,
-    vector<std::string> songPaths) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType),
-        m_songPaths(move(songPaths)),
-        m_songDesireId(MAX_DESIRE_ID)
+    vector<std::string> songPaths)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
+      m_songPaths(move(songPaths)),
+      m_songDesireId(MAX_DESIRE_ID)
 {
     if (m_songPaths.size() == 0)
     {
         throw runtime_error("songPaths must not be empty");
     }
 
-    m_songStartedSubscriber = nodeHandle.subscribe("sound_player/started", 1,
-        &DancePlayedSongState::songStartedSubscriberCallback, this);
-    m_songDoneSubscriber = nodeHandle.subscribe("sound_player/done", 1,
-        &DancePlayedSongState::songDoneSubscriberCallback, this);
+    m_songStartedSubscriber =
+        nodeHandle.subscribe("sound_player/started", 1, &DancePlayedSongState::songStartedSubscriberCallback, this);
+    m_songDoneSubscriber =
+        nodeHandle.subscribe("sound_player/done", 1, &DancePlayedSongState::songDoneSubscriberCallback, this);
 }
 
 void DancePlayedSongState::enable(const string& parameter)

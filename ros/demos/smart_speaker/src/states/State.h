@@ -12,10 +12,10 @@
 #include <typeindex>
 
 constexpr double TIMEOUT_S = 10;
-constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max(); // TODO change to optional with C++17
+constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max();  // TODO change to optional with C++17
 constexpr int FLOAT_NUMBER_PRECISION = 3;
 
-enum class Language // TODO Use a resource manager for the strings
+enum class Language  // TODO Use a resource manager for the strings
 {
     ENGLISH,
     FRENCH
@@ -54,7 +54,8 @@ protected:
     std::vector<uint64_t> m_desireIds;
 
 public:
-    State(Language language,
+    State(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
@@ -90,10 +91,10 @@ inline std::string State::getAndWord()
 {
     switch (language())
     {
-    case Language::ENGLISH:
-        return "and";
-    case Language::FRENCH:
-        return "et";
+        case Language::ENGLISH:
+            return "and";
+        case Language::FRENCH:
+            return "et";
     }
 
     return "";

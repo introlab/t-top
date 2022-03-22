@@ -8,13 +8,13 @@ project(teleoperation)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  hbba_lite
-  rospy
-  std_msgs
-  t_top
-  geometry_msgs
-  message_generation
-)
+        hbba_lite
+        rospy
+        std_msgs
+        t_top
+        geometry_msgs
+        message_generation
+        )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -58,8 +58,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate services in the 'srv' folder
 add_service_files(
-  FILES
-  DoAction.srv
+        FILES
+        DoAction.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -102,10 +102,10 @@ generate_messages()
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES gesture
-#  CATKIN_DEPENDS hbba_lite rospy std_msgs t_top
-#  DEPENDS system_lib
+        #  INCLUDE_DIRS include
+        #  LIBRARIES gesture
+        #  CATKIN_DEPENDS hbba_lite rospy std_msgs t_top
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -115,8 +115,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+        # include
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -159,9 +159,9 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/teleoperation_node.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+        scripts/teleoperation_node.py
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+        )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

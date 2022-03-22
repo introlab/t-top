@@ -13,19 +13,20 @@
 
 enum class FilterType
 {
-    ON_OFF, THROTTLING
+    ON_OFF,
+    THROTTLING
 };
 
 inline std::string filterTypeToString(FilterType filterType)
 {
     switch (filterType)
     {
-    case FilterType::ON_OFF:
-        return "ON_OFF";
-    case FilterType::THROTTLING:
-        return "THROTTLING";
-    default:
-        return "UNKNOWN";
+        case FilterType::ON_OFF:
+            return "ON_OFF";
+        case FilterType::THROTTLING:
+            return "THROTTLING";
+        default:
+            return "UNKNOWN";
     }
 }
 
@@ -87,7 +88,6 @@ inline bool operator!=(const FilterConfiguration& a, const FilterConfiguration& 
 
 class FilterPool
 {
-
 protected:
     std::unordered_map<std::string, FilterType> m_typesByName;
     std::unordered_map<std::string, int> m_countsByName;
@@ -121,7 +121,8 @@ class BaseStrategy
     std::shared_ptr<FilterPool> m_filterPool;
 
 public:
-    BaseStrategy(uint16_t utility,
+    BaseStrategy(
+        uint16_t utility,
         std::unordered_map<std::string, uint16_t> resourcesByName,
         std::unordered_map<std::string, FilterConfiguration> filterConfigurationByName,
         std::shared_ptr<FilterPool> filterPool);
@@ -193,11 +194,12 @@ inline const std::unordered_map<std::string, FilterConfiguration> BaseStrategy::
 }
 
 
-template <class T>
+template<class T>
 class Strategy : public BaseStrategy
 {
 public:
-    Strategy(uint16_t utility,
+    Strategy(
+        uint16_t utility,
         std::unordered_map<std::string, uint16_t> resourcesByName,
         std::unordered_map<std::string, FilterConfiguration> filterConfigurationByName,
         std::shared_ptr<FilterPool> filterPool);
@@ -209,16 +211,17 @@ public:
     std::type_index desireType() override;
 };
 
-template <class T>
-Strategy<T>::Strategy(uint16_t utility,
+template<class T>
+Strategy<T>::Strategy(
+    uint16_t utility,
     std::unordered_map<std::string, uint16_t> resourcesByName,
     std::unordered_map<std::string, FilterConfiguration> filterConfigurationByName,
-    std::shared_ptr<FilterPool> filterPool) :
-        BaseStrategy(utility, move(resourcesByName), move(filterConfigurationByName), move(filterPool))
+    std::shared_ptr<FilterPool> filterPool)
+    : BaseStrategy(utility, move(resourcesByName), move(filterConfigurationByName), move(filterPool))
 {
 }
 
-template <class T>
+template<class T>
 inline std::type_index Strategy<T>::desireType()
 {
     return std::type_index(typeid(T));

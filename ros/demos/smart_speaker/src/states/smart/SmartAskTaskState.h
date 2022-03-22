@@ -8,7 +8,8 @@
 class SmartAskTaskState : public AskTaskState
 {
 public:
-    SmartAskTaskState(Language language,
+    SmartAskTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

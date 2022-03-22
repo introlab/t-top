@@ -30,7 +30,8 @@ using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
-void startNode(Language language,
+void startNode(
+    Language language,
     ros::NodeHandle& nodeHandle,
     const string& englishStoryPath,
     const string& frenchStoryPath,
@@ -70,20 +71,36 @@ void startNode(Language language,
     stateManager.addState(make_unique<RssValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
 
-    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
-    stateManager.addState(make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
-    stateManager.addState(make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
-    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType, vector<string>{songPath}));
+    stateManager.addState(
+        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(
+        make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(
+        make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
+    stateManager.addState(
+        make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(make_unique<DancePlayedSongState>(
+        language,
+        stateManager,
+        desireSet,
+        nodeHandle,
+        afterTaskDelayStateType,
+        vector<string>{songPath}));
 
-    stateManager.addState(make_unique<AfterTaskDelayState>(language, stateManager, desireSet, nodeHandle, idleStateType, afterTaskDelayDuration));
+    stateManager.addState(make_unique<AfterTaskDelayState>(
+        language,
+        stateManager,
+        desireSet,
+        nodeHandle,
+        idleStateType,
+        afterTaskDelayDuration));
 
     stateManager.switchTo<RssIdleState>();
 
     ros::spin();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     ros::init(argc, argv, "smart_speaker_rss_node");
     ros::NodeHandle nodeHandle;

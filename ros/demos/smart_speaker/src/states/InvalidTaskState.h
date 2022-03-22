@@ -19,7 +19,8 @@ class InvalidTaskState : public State
     bool m_gestureDone;
 
 public:
-    InvalidTaskState(Language language,
+    InvalidTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

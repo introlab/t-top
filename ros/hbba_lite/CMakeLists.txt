@@ -8,13 +8,13 @@ project(hbba_lite)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  roscpp
-  rospy
-  message_filters
-  std_msgs
-  topic_tools
-)
+        message_generation
+        roscpp
+        rospy
+        message_filters
+        std_msgs
+        topic_tools
+        )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -51,15 +51,15 @@ catkin_python_setup()
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-  FILES
-  Int32Stamped.msg
+        FILES
+        Int32Stamped.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
-  FILES
-  SetOnOffFilterState.srv
-  SetThrottlingFilterState.srv
+        FILES
+        SetOnOffFilterState.srv
+        SetThrottlingFilterState.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -71,8 +71,8 @@ add_service_files(
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
-  std_msgs
+        DEPENDENCIES
+        std_msgs
 )
 
 ################################################
@@ -105,10 +105,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES hbba_lite
-  CATKIN_DEPENDS message_generation message_runtime roscpp rospy
-#  DEPENDS system_lib
+        INCLUDE_DIRS include
+        LIBRARIES hbba_lite
+        CATKIN_DEPENDS message_generation message_runtime roscpp rospy
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -118,24 +118,24 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+        include
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-  src/hbba_lite_cpp/filters/FilterState.cpp
-  src/hbba_lite_cpp/utils/BinarySemaphore.cpp
-  src/hbba_lite_cpp/utils/HbbaLiteException.cpp
-  src/hbba_lite_cpp/core/Desire.cpp
-  src/hbba_lite_cpp/core/DesireSet.cpp
-  src/hbba_lite_cpp/core/Motivation.cpp
-  src/hbba_lite_cpp/core/Strategy.cpp
-  src/hbba_lite_cpp/core/RosFilterPool.cpp
-  src/hbba_lite_cpp/core/Solver.cpp
-  src/hbba_lite_cpp/core/GecodeSolver.cpp
-  src/hbba_lite_cpp/core/HbbaLite.cpp
-)
+        src/hbba_lite_cpp/filters/FilterState.cpp
+        src/hbba_lite_cpp/utils/BinarySemaphore.cpp
+        src/hbba_lite_cpp/utils/HbbaLiteException.cpp
+        src/hbba_lite_cpp/core/Desire.cpp
+        src/hbba_lite_cpp/core/DesireSet.cpp
+        src/hbba_lite_cpp/core/Motivation.cpp
+        src/hbba_lite_cpp/core/Strategy.cpp
+        src/hbba_lite_cpp/core/RosFilterPool.cpp
+        src/hbba_lite_cpp/core/Solver.cpp
+        src/hbba_lite_cpp/core/GecodeSolver.cpp
+        src/hbba_lite_cpp/core/HbbaLite.cpp
+        )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -165,44 +165,44 @@ add_executable(test_throttling_hbba_publisher src/hbba_lite_cpp_tests/test_throt
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-  gecodeflatzinc
-  gecodedriver
-  gecodegist
-  gecodesearch
-  gecodeminimodel
-  gecodeset
-  gecodefloat
-  gecodeint
-  gecodekernel
-  gecodesupport
-)
+        ${catkin_LIBRARIES}
+        gecodeflatzinc
+        gecodedriver
+        gecodegist
+        gecodesearch
+        gecodeminimodel
+        gecodeset
+        gecodefloat
+        gecodeint
+        gecodekernel
+        gecodesupport
+        )
 
 target_link_libraries(on_off_hbba_filter_node
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
+        )
 target_link_libraries(throttling_hbba_filter_node
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
+        )
 
 target_link_libraries(test_on_off_hbba_subscriber
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
+        )
 target_link_libraries(test_throttling_hbba_subscriber
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
+        )
 target_link_libraries(test_on_off_hbba_publisher
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
+        )
 target_link_libraries(test_throttling_hbba_publisher
-  ${catkin_LIBRARIES}
-  ${PROJECT_NAME}
-)
+        ${catkin_LIBRARIES}
+        ${PROJECT_NAME}
+        )
 
 #############
 ## Install ##
@@ -227,17 +227,17 @@ target_link_libraries(test_throttling_hbba_publisher
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
 install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-)
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+        )
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
-  PATTERN ".svn" EXCLUDE
-)
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+        FILES_MATCHING PATTERN "*.h"
+        PATTERN ".svn" EXCLUDE
+        )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -252,30 +252,30 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(${PROJECT_NAME}-test
-  test/hbba_lite_cpp/utils/BinarySemaphoreTests.cpp
-  test/hbba_lite_cpp/core/DesireTests.cpp
-  test/hbba_lite_cpp/core/DesireSetTests.cpp
-  test/hbba_lite_cpp/core/StrategyTests.cpp
-  test/hbba_lite_cpp/core/SolverTests.cpp
-  test/hbba_lite_cpp/core/GecodeSolverTests.cpp
-  test/hbba_lite_cpp/core/HbbaLiteTests.cpp
-  test/hbba_lite_cpp/main.cpp
-)
-if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test
-    ${PROJECT_NAME}
-    gecodeflatzinc
-    gecodedriver
-    gecodegist
-    gecodesearch
-    gecodeminimodel
-    gecodeset
-    gecodefloat
-    gecodeint
-    gecodekernel
-    gecodesupport
-  )
-endif()
+        test/hbba_lite_cpp/utils/BinarySemaphoreTests.cpp
+        test/hbba_lite_cpp/core/DesireTests.cpp
+        test/hbba_lite_cpp/core/DesireSetTests.cpp
+        test/hbba_lite_cpp/core/StrategyTests.cpp
+        test/hbba_lite_cpp/core/SolverTests.cpp
+        test/hbba_lite_cpp/core/GecodeSolverTests.cpp
+        test/hbba_lite_cpp/core/HbbaLiteTests.cpp
+        test/hbba_lite_cpp/main.cpp
+        )
+if (TARGET ${PROJECT_NAME}-test)
+    target_link_libraries(${PROJECT_NAME}-test
+            ${PROJECT_NAME}
+            gecodeflatzinc
+            gecodedriver
+            gecodegist
+            gecodesearch
+            gecodeminimodel
+            gecodeset
+            gecodefloat
+            gecodeint
+            gecodekernel
+            gecodesupport
+            )
+endif ()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

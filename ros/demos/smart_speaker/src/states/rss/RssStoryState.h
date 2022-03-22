@@ -24,7 +24,8 @@ class RssStoryState : public State
     uint64_t m_faceAnimationDesireId;
 
 public:
-    RssStoryState(Language language,
+    RssStoryState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

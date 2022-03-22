@@ -8,7 +8,8 @@
 class RssAskTaskState : public AskTaskState
 {
 public:
-    RssAskTaskState(Language language,
+    RssAskTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);

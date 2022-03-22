@@ -10,24 +10,25 @@
 #include "StewartInverseKinematics.h"
 
 
-class StewartPlatformController {
-  DynamixelWorkbench& m_dynamixelWorkbench;
+class StewartPlatformController
+{
+    DynamixelWorkbench& m_dynamixelWorkbench;
 
-  bool m_isValidFrame;
+    bool m_isValidFrame;
 
-  StewartForwardKinematics m_forwardKinematics;
-  StewartInverseKinematics m_inverseKinematics;
+    StewartForwardKinematics m_forwardKinematics;
+    StewartInverseKinematics m_inverseKinematics;
 
 public:
-  StewartPlatformController(DynamixelWorkbench& dynamixelWorkbench);
-  ~StewartPlatformController();
+    StewartPlatformController(DynamixelWorkbench& dynamixelWorkbench);
+    ~StewartPlatformController();
 
-  void init();
+    void init();
 
-  void setPose(const geometry_msgs::PoseStamped& pose);
+    void setPose(const geometry_msgs::PoseStamped& pose);
 
-  bool isPoseReachable();
-  void readCurrentPose(float servoAngles[], geometry_msgs::PoseStamped& pose);
+    bool isPoseReachable();
+    void readCurrentPose(float servoAngles[], geometry_msgs::PoseStamped& pose);
 };
 
 #endif

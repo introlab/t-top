@@ -5,22 +5,23 @@
 
 typedef void (*StatusCommandHandler)(bool isBatteryCharging, float stateOfCharge, float current, float voltage);
 
-class PsuControlCommandHandler {
-  StatusCommandHandler m_statusCommandHandler;
+class PsuControlCommandHandler
+{
+    StatusCommandHandler m_statusCommandHandler;
 
-  uint8_t m_buffer[UINT8_MAX];
-  uint8_t m_bufferIndex;
+    uint8_t m_buffer[UINT8_MAX];
+    uint8_t m_bufferIndex;
 
 public:
-  PsuControlCommandHandler();
-  void update();
+    PsuControlCommandHandler();
+    void update();
 
-  void setStatusCommandHandler(StatusCommandHandler handler);
+    void setStatusCommandHandler(StatusCommandHandler handler);
 
 private:
-  void readOneByte();
-  void handleMessage();
-  void clearMessage();
+    void readOneByte();
+    void handleMessage();
+    void clearMessage();
 };
 
 #endif

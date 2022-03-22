@@ -1,6 +1,9 @@
 # 5. Base Disk Assembly
+
 ## A. Base Disk Pre-Assembly
+
 ### Required Parts
+
 | Part                           | Quantity | Image                                                                             |
 | ------------------------------ | -------- | --------------------------------------------------------------------------------- |
 | `Base Disk`                    | 1        | ![Base Disk](images/laser/base%20disk.jpg)                                        |
@@ -24,6 +27,7 @@
 | `8-cm-Long JST VHR-2N Cable`   | 1        | ![`8-cm-long JST VHR-2N Cable`](images/electronics/battery%20charger%20cable.jpg) |
 
 ### Steps
+
 1. Install the `M2x10mm standoffs` with `M2x5mm socket screws` onto the `base disk`, as shown in the following pictures.
 
 ![Base Disk Bottom M2](images/assemblies/05A%20base%20disk%20bottom%20M2.jpg)
@@ -34,7 +38,8 @@
 ![Base Disk Bottom M3](images/assemblies/05A%20base%20disk%20bottom%20M3.jpg)
 ![Base Disk Bottom M3](images/assemblies/05A%20base%20disk%20top%20M3.jpg)
 
-3. Install the `M3x10mm plastic standoffs` with `M3x5mm socket screws` onto the `base disk`, as shown in the following pictures.
+3. Install the `M3x10mm plastic standoffs` with `M3x5mm socket screws` onto the `base disk`, as shown in the following
+   pictures.
 
 ![Base Disk Bottom M3 Plastic](images/assemblies/05A%20base%20disk%20bottom%20M3%20plastic.jpg)
 ![Base Disk Bottom M3 Plastic](images/assemblies/05A%20base%20disk%20top%20M3%20plastic.jpg)
@@ -56,14 +61,17 @@
 
 ![PSU Control PCB](images/assemblies/05A%20psu%20control%20pcb.jpg)
 
-8. Install the `12V Buck-Boost PCB`  with a `M3 nut` (orange circle) and `M3x25mm standoffs` (red circles), as shown in the following picture.
+8. Install the `12V Buck-Boost PCB`  with a `M3 nut` (orange circle) and `M3x25mm standoffs` (red circles), as shown in
+   the following picture.
 
 ![12V Buck-Boost PCB](images/assemblies/05A%2012V%20buck-boost%20pcb.jpg)
 
-9. Connect the `12V Buck-Boost PCB` input to a `PSU control PCB` output with `6-cm-long 16 AWG wires`, as shown in the following picture.
+9. Connect the `12V Buck-Boost PCB` input to a `PSU control PCB` output with `6-cm-long 16 AWG wires`, as shown in the
+   following picture.
 
 ![12V Buck-Boost PCB Wires](images/assemblies/05A%2012V%20buck-boost%20pcb%20wires.jpg)
 
-10. Connect the `battery charger` to the `PSU control PCB` with the `8-cm-long JST VHR-2N cable`, as shown in the following picture.
+10. Connect the `battery charger` to the `PSU control PCB` with the `8-cm-long JST VHR-2N cable`, as shown in the
+    following picture.
 
 ![12V Buck-Boost PCB Wires](images/assemblies/05A%20battery%20charger%20cable.jpg)

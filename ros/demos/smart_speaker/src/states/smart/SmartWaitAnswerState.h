@@ -19,7 +19,8 @@ class SmartWaitAnswerState : public WaitAnswerState
     std::uniform_int_distribution<size_t> m_songIndexDistribution;
 
 public:
-    SmartWaitAnswerState(Language language,
+    SmartWaitAnswerState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

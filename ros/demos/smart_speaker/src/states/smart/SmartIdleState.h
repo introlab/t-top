@@ -26,7 +26,8 @@ class SmartIdleState : public State
     ros::Subscriber m_videoAnalysisSubscriber;
 
 public:
-    SmartIdleState(Language language,
+    SmartIdleState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

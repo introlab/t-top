@@ -2,6 +2,4 @@
 
 using namespace std;
 
-HbbaLiteException::HbbaLiteException(const string& message) : runtime_error(message)
-{
-}
+HbbaLiteException::HbbaLiteException(const string& message) : runtime_error(message) {}

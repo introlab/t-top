@@ -10,14 +10,15 @@
 
 using namespace std;
 
-RssWaitPersonIdentificationState::RssWaitPersonIdentificationState(Language language,
+RssWaitPersonIdentificationState::RssWaitPersonIdentificationState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        State(language, stateManager, desireSet, nodeHandle)
+    ros::NodeHandle& nodeHandle)
+    : State(language, stateManager, desireSet, nodeHandle)
 {
-    m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1,
-        &RssWaitPersonIdentificationState::personNamesSubscriberCallback, this);
+    m_personNamesSubscriber =
+        nodeHandle.subscribe("person_names", 1, &RssWaitPersonIdentificationState::personNamesSubscriberCallback, this);
 }
 
 void RssWaitPersonIdentificationState::enable(const string& parameter)
@@ -41,8 +42,11 @@ void RssWaitPersonIdentificationState::enable(const string& parameter)
     m_desireSet->addDesire(move(faceAnimationDesire));
 
     constexpr bool oneshot = true;
-    m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S),
-        &RssWaitPersonIdentificationState::timeoutTimerCallback, this, oneshot);
+    m_timeoutTimer = m_nodeHandle.createTimer(
+        ros::Duration(TIMEOUT_S),
+        &RssWaitPersonIdentificationState::timeoutTimerCallback,
+        this,
+        oneshot);
 }
 
 void RssWaitPersonIdentificationState::disable()
@@ -64,7 +68,10 @@ void RssWaitPersonIdentificationState::personNamesSubscriberCallback(
     }
 
     vector<string> names;
-    transform(msg->names.begin(), msg->names.end(), back_inserter(names),
+    transform(
+        msg->names.begin(),
+        msg->names.end(),
+        back_inserter(names),
         [](const person_identification::PersonName& name) { return name.name; });
 
     auto mergedNames = mergeNames(names, getAndWord());

@@ -5,13 +5,14 @@
 
 using namespace std;
 
-DanceState::DanceState(Language language,
+DanceState::DanceState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    type_index nextStateType) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType)
+    type_index nextStateType)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType)
 {
 }
 
@@ -30,8 +31,8 @@ void DanceState::enable(const string& parameter)
     m_desireSet->addDesire(move(faceAnimationDesire));
 
     constexpr bool oneshot = true;
-    m_timeoutTimer = m_nodeHandle.createTimer(ros::Duration(DANCE_TIMEOUT_S),
-        &DanceState::timeoutTimerCallback, this, oneshot);
+    m_timeoutTimer =
+        m_nodeHandle.createTimer(ros::Duration(DANCE_TIMEOUT_S), &DanceState::timeoutTimerCallback, this, oneshot);
 }
 
 void DanceState::disable()

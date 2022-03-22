@@ -7,7 +7,8 @@
 #include <functional>
 
 // Inspired by https://stackoverflow.com/questions/42566421/how-to-queue-lambda-function-into-qts-event-loop
-class FunctionEvent : public QEvent {
+class FunctionEvent : public QEvent
+{
     std::function<void()> m_f;
 
 public:
@@ -15,9 +16,7 @@ public:
     ~FunctionEvent() override;
 };
 
-inline FunctionEvent::FunctionEvent(std::function<void()>&& f) : QEvent(QEvent::None), m_f(move(f))
-{
-}
+inline FunctionEvent::FunctionEvent(std::function<void()>&& f) : QEvent(QEvent::None), m_f(move(f)) {}
 
 inline FunctionEvent::~FunctionEvent()
 {

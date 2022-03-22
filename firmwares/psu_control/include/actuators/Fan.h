@@ -1,10 +1,11 @@
 #ifndef FAN_H
 #define FAN_H
 
-class Fan {
-  int m_speed;
+class Fan
+{
+    int m_speed;
 
-  public:
+public:
     Fan();
     void begin();
 

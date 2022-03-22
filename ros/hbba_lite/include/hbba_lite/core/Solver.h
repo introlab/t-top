@@ -44,14 +44,17 @@ public:
     DECLARE_NOT_MOVABLE(Solver);
 
     // Return the strategy to activate (Desire Type, strategy index)
-    virtual std::unordered_set<SolverResult> solve(const std::vector<std::unique_ptr<Desire>>& desires,
+    virtual std::unordered_set<SolverResult> solve(
+        const std::vector<std::unique_ptr<Desire>>& desires,
         const std::unordered_map<std::type_index, std::vector<std::unique_ptr<BaseStrategy>>>& strategiesByDesireType,
         const std::unordered_map<std::string, uint16_t>& systemResourcesByName) = 0;
 };
 
-void checkDesireStrategies(const std::vector<std::unique_ptr<Desire>>& desires,
+void checkDesireStrategies(
+    const std::vector<std::unique_ptr<Desire>>& desires,
     const std::unordered_map<std::type_index, std::vector<std::unique_ptr<BaseStrategy>>>& strategiesByDesireType);
-void checkStrategyResources(const std::unordered_map<std::type_index, std::vector<std::unique_ptr<BaseStrategy>>>& strategiesByDesireType,
+void checkStrategyResources(
+    const std::unordered_map<std::type_index, std::vector<std::unique_ptr<BaseStrategy>>>& strategiesByDesireType,
     const std::unordered_map<std::string, uint16_t>& systemResourcesByName);
 
 std::vector<size_t> selectMostIntenseEnabledDesireIndexes(const std::vector<std::unique_ptr<Desire>>& desires);

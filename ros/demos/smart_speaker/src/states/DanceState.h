@@ -12,7 +12,8 @@ class DanceState : public State
     ros::Timer m_timeoutTimer;
 
 public:
-    DanceState(Language language,
+    DanceState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,

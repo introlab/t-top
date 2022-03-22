@@ -1,12 +1,13 @@
 #ifndef BATTERY_LED_H
 #define BATTERY_LED_H
 
-class BatteryLed {
+class BatteryLed
+{
 public:
-  BatteryLed();
-  void begin();
+    BatteryLed();
+    void begin();
 
-  void setStateOfCharge(float stateOfCharge);
+    void setStateOfCharge(float stateOfCharge);
 };
 
 #endif

@@ -1,6 +1,7 @@
 # Assembly
 
 ## Required Tools
+
 - Screwdrivers
 - Pliers
 - Epoxy Glue
@@ -15,6 +16,7 @@
 - 12V Power Supply
 
 ## Assembly Instructions
+
 0. [Orders/Print/Laser Cutting](00_ORDER_PRINT_LASER_CUTTING.md)
 1. [Computer Configuration](01_COMPUTER_CONFIGURATION.md)
 2. [Dynamixel Configuration](02_DYNAMIXEL_CONFIGURATION.md)

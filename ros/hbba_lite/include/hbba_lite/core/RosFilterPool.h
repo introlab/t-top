@@ -23,11 +23,11 @@ protected:
     void applyDisabling(const std::string& name) override;
 
 private:
-    template <class ServiceType>
+    template<class ServiceType>
     void call(const std::string& name, ServiceType& request);
 };
 
-template <class ServiceType>
+template<class ServiceType>
 void RosFilterPool::call(const std::string& name, ServiceType& srv)
 {
     ros::ServiceClient& service = m_serviceClientsByName[name];

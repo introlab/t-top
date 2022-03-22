@@ -17,7 +17,8 @@ TEST(GecodeSolverTests, solve_missingStrategy_shouldThrowHbbaLiteException)
     desires.emplace_back(make_unique<DesireA>(1));
     desires.emplace_back(make_unique<DesireB>(1));
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -39,11 +40,13 @@ TEST(GecodeSolverTests, solve_missingRessource_shouldThrowHbbaLiteException)
     desires.emplace_back(make_unique<DesireA>(1));
     desires.emplace_back(make_unique<DesireB>(1));
 
-    auto strategyA = make_unique<Strategy<DesireA>>(10,
+    auto strategyA = make_unique<Strategy<DesireA>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB = make_unique<Strategy<DesireB>>(10,
+    auto strategyB = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -68,27 +71,33 @@ TEST(GecodeSolverTests, solve_compatibleFilters1_shouldReturnStrategiesToActivat
     desires.emplace_back(make_unique<DesireB>(3));
     desires.emplace_back(make_unique<DesireC>());
 
-    auto strategyA1 = make_unique<Strategy<DesireA>>(1,
+    auto strategyA1 = make_unique<Strategy<DesireA>>(
+        1,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyA2 = make_unique<Strategy<DesireA>>(2,
+    auto strategyA2 = make_unique<Strategy<DesireA>>(
+        2,
         unordered_map<string, uint16_t>{{"ra", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyA3 = make_unique<Strategy<DesireA>>(3,
+    auto strategyA3 = make_unique<Strategy<DesireA>>(
+        3,
         unordered_map<string, uint16_t>{{"ra", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB1 = make_unique<Strategy<DesireB>>(10,
+    auto strategyB1 = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB2 = make_unique<Strategy<DesireB>>(1,
+    auto strategyB2 = make_unique<Strategy<DesireB>>(
+        1,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyC = make_unique<Strategy<DesireC>>(1,
+    auto strategyC = make_unique<Strategy<DesireC>>(
+        1,
         unordered_map<string, uint16_t>{{"ra", 20}, {"rb", 30}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -120,27 +129,33 @@ TEST(GecodeSolverTests, solve_compatibleFilters2_shouldReturnStrategiesToActivat
     desires.emplace_back(make_unique<DesireB>(3));
     desires.emplace_back(make_unique<DesireC>());
 
-    auto strategyA1 = make_unique<Strategy<DesireA>>(1,
+    auto strategyA1 = make_unique<Strategy<DesireA>>(
+        1,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyA2 = make_unique<Strategy<DesireA>>(2,
+    auto strategyA2 = make_unique<Strategy<DesireA>>(
+        2,
         unordered_map<string, uint16_t>{{"ra", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyA3 = make_unique<Strategy<DesireA>>(3,
+    auto strategyA3 = make_unique<Strategy<DesireA>>(
+        3,
         unordered_map<string, uint16_t>{{"ra", 20}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB1 = make_unique<Strategy<DesireB>>(10,
+    auto strategyB1 = make_unique<Strategy<DesireB>>(
+        10,
         unordered_map<string, uint16_t>{{"ra", 10}, {"rb", 20}},
         unordered_map<string, FilterConfiguration>{{"fb", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB2 = make_unique<Strategy<DesireB>>(1,
+    auto strategyB2 = make_unique<Strategy<DesireB>>(
+        1,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fb", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyC = make_unique<Strategy<DesireC>>(50,
+    auto strategyC = make_unique<Strategy<DesireC>>(
+        50,
         unordered_map<string, uint16_t>{{"ra", 20}, {"rb", 30}},
         unordered_map<string, FilterConfiguration>{{"fc", FilterConfiguration::throttling(1)}},
         filterPool);
@@ -170,15 +185,18 @@ TEST(GecodeSolverTests, solve_incompatibleFilters1_shouldReturnStrategiesToActiv
     desires.emplace_back(make_unique<DesireA>(1));
     desires.emplace_back(make_unique<DesireB>(1));
 
-    auto strategyA1 = make_unique<Strategy<DesireA>>(1,
+    auto strategyA1 = make_unique<Strategy<DesireA>>(
+        1,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(2)}},
         filterPool);
-    auto strategyA2 = make_unique<Strategy<DesireA>>(3,
+    auto strategyA2 = make_unique<Strategy<DesireA>>(
+        3,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyB1 = make_unique<Strategy<DesireB>>(1,
+    auto strategyB1 = make_unique<Strategy<DesireB>>(
+        1,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::throttling(2)}},
         filterPool);
@@ -206,23 +224,32 @@ TEST(GecodeSolverTests, solve_incompatibleFilters2_shouldReturnStrategiesToActiv
     desires.emplace_back(make_unique<DesireB>(1));
     desires.emplace_back(make_unique<DesireC>());
 
-    auto strategyA1 = make_unique<Strategy<DesireA>>(2,
+    auto strategyA1 = make_unique<Strategy<DesireA>>(
+        2,
         unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::onOff()}, {"fb", FilterConfiguration::throttling(1)}},
+        unordered_map<string, FilterConfiguration>{
+            {"fa", FilterConfiguration::onOff()},
+            {"fb", FilterConfiguration::throttling(1)}},
         filterPool);
-    auto strategyA2 = make_unique<Strategy<DesireA>>(5,
-        unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::onOff()}},
-        filterPool);
-    auto strategyB1 = make_unique<Strategy<DesireB>>(3,
-        unordered_map<string, uint16_t>{{"ra", 10}},
-        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::onOff()}, {"fb", FilterConfiguration::throttling(2)}},
-        filterPool);
-    auto strategyB = make_unique<Strategy<DesireB>>(2,
+    auto strategyA2 = make_unique<Strategy<DesireA>>(
+        5,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::onOff()}},
         filterPool);
-    auto strategyC = make_unique<Strategy<DesireC>>(50,
+    auto strategyB1 = make_unique<Strategy<DesireB>>(
+        3,
+        unordered_map<string, uint16_t>{{"ra", 10}},
+        unordered_map<string, FilterConfiguration>{
+            {"fa", FilterConfiguration::onOff()},
+            {"fb", FilterConfiguration::throttling(2)}},
+        filterPool);
+    auto strategyB = make_unique<Strategy<DesireB>>(
+        2,
+        unordered_map<string, uint16_t>{{"ra", 10}},
+        unordered_map<string, FilterConfiguration>{{"fa", FilterConfiguration::onOff()}},
+        filterPool);
+    auto strategyC = make_unique<Strategy<DesireC>>(
+        50,
         unordered_map<string, uint16_t>{{"ra", 10}},
         unordered_map<string, FilterConfiguration>{{"fc", FilterConfiguration::throttling(1)}},
         filterPool);

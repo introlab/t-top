@@ -6,8 +6,9 @@
 
 using namespace std;
 
-RosFilterPool::RosFilterPool(ros::NodeHandle& nodeHandle, bool waitForService) :
-        m_nodeHandle(nodeHandle), m_waitForService(waitForService)
+RosFilterPool::RosFilterPool(ros::NodeHandle& nodeHandle, bool waitForService)
+    : m_nodeHandle(nodeHandle),
+      m_waitForService(waitForService)
 {
 }
 
@@ -18,16 +19,16 @@ void RosFilterPool::add(const string& name, FilterType type)
 
     switch (type)
     {
-    case FilterType::ON_OFF:
-        m_serviceClientsByName[name] = m_nodeHandle.serviceClient<hbba_lite::SetOnOffFilterState>(name, true);
-        break;
+        case FilterType::ON_OFF:
+            m_serviceClientsByName[name] = m_nodeHandle.serviceClient<hbba_lite::SetOnOffFilterState>(name, true);
+            break;
 
-    case FilterType::THROTTLING:
-        m_serviceClientsByName[name] = m_nodeHandle.serviceClient<hbba_lite::SetThrottlingFilterState>(name, true);
-        break;
+        case FilterType::THROTTLING:
+            m_serviceClientsByName[name] = m_nodeHandle.serviceClient<hbba_lite::SetThrottlingFilterState>(name, true);
+            break;
 
-    default:
-        throw HbbaLiteException("Not supported filter type");
+        default:
+            throw HbbaLiteException("Not supported filter type");
     }
 }
 
@@ -35,7 +36,7 @@ void RosFilterPool::applyEnabling(const string& name, const FilterConfiguration&
 {
     switch (m_typesByName[name])
     {
-    case FilterType::ON_OFF:
+        case FilterType::ON_OFF:
         {
             hbba_lite::SetOnOffFilterState srv;
             srv.request.is_filtering_all_messages = false;
@@ -43,7 +44,7 @@ void RosFilterPool::applyEnabling(const string& name, const FilterConfiguration&
         }
         break;
 
-    case FilterType::THROTTLING:
+        case FilterType::THROTTLING:
         {
             hbba_lite::SetThrottlingFilterState srv;
             srv.request.is_filtering_all_messages = false;
@@ -52,8 +53,8 @@ void RosFilterPool::applyEnabling(const string& name, const FilterConfiguration&
         }
         break;
 
-    default:
-        throw HbbaLiteException("Not supported filter type");
+        default:
+            throw HbbaLiteException("Not supported filter type");
     }
 }
 
@@ -61,7 +62,7 @@ void RosFilterPool::applyDisabling(const string& name)
 {
     switch (m_typesByName[name])
     {
-    case FilterType::ON_OFF:
+        case FilterType::ON_OFF:
         {
             hbba_lite::SetOnOffFilterState srv;
             srv.request.is_filtering_all_messages = true;
@@ -69,7 +70,7 @@ void RosFilterPool::applyDisabling(const string& name)
         }
         break;
 
-    case FilterType::THROTTLING:
+        case FilterType::THROTTLING:
         {
             hbba_lite::SetThrottlingFilterState srv;
             srv.request.is_filtering_all_messages = true;
@@ -78,7 +79,7 @@ void RosFilterPool::applyDisabling(const string& name)
         }
         break;
 
-    default:
-        throw HbbaLiteException("Not supported filter type");
+        default:
+            throw HbbaLiteException("Not supported filter type");
     }
 }

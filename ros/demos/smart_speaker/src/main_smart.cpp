@@ -26,7 +26,8 @@ using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
-void startNode(Language language,
+void startNode(
+    Language language,
     ros::NodeHandle& nodeHandle,
     double personDistanceThreshold,
     const std::string& personDistanceFrame,
@@ -58,25 +59,45 @@ void startNode(Language language,
     type_index idleStateType(typeid(SmartIdleState));
     type_index afterTaskDelayStateType(typeid(AfterTaskDelayState));
 
-    stateManager.addState(make_unique<SmartIdleState>(language, stateManager, desireSet, nodeHandle,
-        personDistanceThreshold, personDistanceFrame, noseConfidenceThreshold,
-        videoAnalysisMessageCountThreshold, videoAnalysisMessageCountTolerance));
+    stateManager.addState(make_unique<SmartIdleState>(
+        language,
+        stateManager,
+        desireSet,
+        nodeHandle,
+        personDistanceThreshold,
+        personDistanceFrame,
+        noseConfidenceThreshold,
+        videoAnalysisMessageCountThreshold,
+        videoAnalysisMessageCountTolerance));
     stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songNames));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
 
-    stateManager.addState(make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType, songPaths));
+    stateManager.addState(
+        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+    stateManager.addState(make_unique<DancePlayedSongState>(
+        language,
+        stateManager,
+        desireSet,
+        nodeHandle,
+        afterTaskDelayStateType,
+        songPaths));
 
-    stateManager.addState(make_unique<AfterTaskDelayState>(language, stateManager, desireSet, nodeHandle, idleStateType, afterTaskDelayDuration));
+    stateManager.addState(make_unique<AfterTaskDelayState>(
+        language,
+        stateManager,
+        desireSet,
+        nodeHandle,
+        idleStateType,
+        afterTaskDelayDuration));
 
     stateManager.switchTo<SmartIdleState>();
 
     ros::spin();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     ros::init(argc, argv, "smart_speaker_smart_node");
     ros::NodeHandle nodeHandle;
@@ -100,8 +121,7 @@ int main(int argc, char **argv)
     }
 
     std::string personDistanceFrame;
-    if (!privateNodeHandle.getParam("person_distance_frame", personDistanceFrame) ||
-        personDistanceFrame == "")
+    if (!privateNodeHandle.getParam("person_distance_frame", personDistanceFrame) || personDistanceFrame == "")
     {
         ROS_ERROR("The parameter person_distance_frame must be set and not empty.");
         return -1;
@@ -155,10 +175,17 @@ int main(int argc, char **argv)
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
 
-    startNode(language, nodeHandle,
-        personDistanceThreshold, personDistanceFrame, noseConfidenceThreshold,
-        videoAnalysisMessageCountThreshold, videoAnalysisMessageCountTolerance,
-        songNames, songPaths, afterTaskDelayDuration);
+    startNode(
+        language,
+        nodeHandle,
+        personDistanceThreshold,
+        personDistanceFrame,
+        noseConfidenceThreshold,
+        videoAnalysisMessageCountThreshold,
+        videoAnalysisMessageCountTolerance,
+        songNames,
+        songPaths,
+        afterTaskDelayDuration);
 
     return 0;
 }

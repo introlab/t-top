@@ -17,7 +17,7 @@ using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     ros::init(argc, argv, "control_panel_node");
     ros::NodeHandle nodeHandle;

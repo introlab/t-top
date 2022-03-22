@@ -2,8 +2,8 @@
 
 using namespace std;
 
-OnOffHbbaFilterState::OnOffHbbaFilterState(ros::NodeHandle& nodeHandle, const string& stateServiceName) :
-    m_isFilteringAllMessages(true)
+OnOffHbbaFilterState::OnOffHbbaFilterState(ros::NodeHandle& nodeHandle, const string& stateServiceName)
+    : m_isFilteringAllMessages(true)
 {
     m_stateService = nodeHandle.advertiseService(stateServiceName, &OnOffHbbaFilterState::stateServiceCallback, this);
 }
@@ -13,18 +13,22 @@ bool OnOffHbbaFilterState::check()
     return !m_isFilteringAllMessages;
 }
 
-bool OnOffHbbaFilterState::stateServiceCallback(hbba_lite::SetOnOffFilterState::Request &request,
-        hbba_lite::SetOnOffFilterState::Response &response)
+bool OnOffHbbaFilterState::stateServiceCallback(
+    hbba_lite::SetOnOffFilterState::Request& request,
+    hbba_lite::SetOnOffFilterState::Response& response)
 {
     m_isFilteringAllMessages = request.is_filtering_all_messages;
     response.ok = true;
     return true;
 }
 
-ThrottlingHbbaFilterState::ThrottlingHbbaFilterState(ros::NodeHandle& nodeHandle, const string& stateServiceName) :
-    m_isFilteringAllMessages(true), m_rate(1), m_counter(0)
+ThrottlingHbbaFilterState::ThrottlingHbbaFilterState(ros::NodeHandle& nodeHandle, const string& stateServiceName)
+    : m_isFilteringAllMessages(true),
+      m_rate(1),
+      m_counter(0)
 {
-    m_stateService = nodeHandle.advertiseService(stateServiceName, &ThrottlingHbbaFilterState::stateServiceCallback, this);
+    m_stateService =
+        nodeHandle.advertiseService(stateServiceName, &ThrottlingHbbaFilterState::stateServiceCallback, this);
 }
 
 bool ThrottlingHbbaFilterState::check()
@@ -43,8 +47,9 @@ bool ThrottlingHbbaFilterState::check()
     return isReady;
 }
 
-bool ThrottlingHbbaFilterState::stateServiceCallback(hbba_lite::SetThrottlingFilterState::Request &request,
-        hbba_lite::SetThrottlingFilterState::Response &response)
+bool ThrottlingHbbaFilterState::stateServiceCallback(
+    hbba_lite::SetThrottlingFilterState::Request& request,
+    hbba_lite::SetThrottlingFilterState::Response& response)
 {
     if (request.rate <= 0)
     {

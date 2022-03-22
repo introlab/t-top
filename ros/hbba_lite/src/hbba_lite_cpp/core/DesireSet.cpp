@@ -2,8 +2,9 @@
 
 using namespace std;
 
-DesireSetTransaction::DesireSetTransaction(DesireSet& desireSet, unique_lock<recursive_mutex>&& lock) :
-        m_desireSet(desireSet), m_lock(move(lock))
+DesireSetTransaction::DesireSetTransaction(DesireSet& desireSet, unique_lock<recursive_mutex>&& lock)
+    : m_desireSet(desireSet),
+      m_lock(move(lock))
 {
 }
 
@@ -15,9 +16,7 @@ DesireSetTransaction::~DesireSetTransaction()
     }
 }
 
-DesireSet::DesireSet() : m_isTransactionStarted(false), m_hasChanged(false)
-{
-}
+DesireSet::DesireSet() : m_isTransactionStarted(false), m_hasChanged(false) {}
 
 void DesireSet::addObserver(DesireSetObserver* observer)
 {
@@ -161,7 +160,7 @@ void DesireSet::callObservers(unique_lock<recursive_mutex> desireLock)
     }
 
     vector<unique_ptr<Desire>> enabledDesires = getEnabledDesires();
-    
+
     desireLock.release();
 
     lock_guard<mutex> lock(m_observerMutex);

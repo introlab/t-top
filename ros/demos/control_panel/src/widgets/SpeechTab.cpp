@@ -9,15 +9,16 @@
 
 using namespace std;
 
-SpeechTab::SpeechTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent) :
-        QWidget(parent), m_nodeHandle(nodeHandle), m_desireSet(std::move(desireSet))
+SpeechTab::SpeechTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+    : QWidget(parent),
+      m_nodeHandle(nodeHandle),
+      m_desireSet(std::move(desireSet))
 {
     createUi();
 
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &SpeechTab::talkDoneSubscriberCallback, this);
-    m_speechToTextSubscriber = nodeHandle.subscribe("speech_to_text/transcript", 1,
-        &SpeechTab::speechToTextSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &SpeechTab::talkDoneSubscriberCallback, this);
+    m_speechToTextSubscriber =
+        nodeHandle.subscribe("speech_to_text/transcript", 1, &SpeechTab::speechToTextSubscriberCallback, this);
 }
 
 void SpeechTab::onTalkButtonClicked()
@@ -46,24 +47,22 @@ void SpeechTab::onListenButtonToggled(bool checked)
 
 void SpeechTab::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 {
-    invokeLater([=]()
-    {
-        if (m_talkDesireId.isValid() && m_talkDesireId.toULongLong() == msg->id)
+    invokeLater(
+        [=]()
         {
-            m_desireSet->removeDesire(m_talkDesireId.toULongLong());
-            m_talkDesireId.clear();
+            if (m_talkDesireId.isValid() && m_talkDesireId.toULongLong() == msg->id)
+            {
+                m_desireSet->removeDesire(m_talkDesireId.toULongLong());
+                m_talkDesireId.clear();
 
-            m_talkButton->setEnabled(true);
-        }
-    });
+                m_talkButton->setEnabled(true);
+            }
+        });
 }
 
 void SpeechTab::speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg)
 {
-    invokeLater([=]()
-    {
-        m_listenedTextTextEdit->append(QString::fromStdString(msg->data));
-    });
+    invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->data)); });
 }
 
 void SpeechTab::createUi()

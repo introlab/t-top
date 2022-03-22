@@ -9,11 +9,12 @@
 
 using namespace std;
 
-SmartAskTaskState::SmartAskTaskState(Language language,
+SmartAskTaskState::SmartAskTaskState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle) :
-        AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(SmartWaitAnswerState)))
+    ros::NodeHandle& nodeHandle)
+    : AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(SmartWaitAnswerState)))
 {
 }
 

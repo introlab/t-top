@@ -5,22 +5,23 @@
 
 typedef void (*VolumeCommandHandler)(uint8_t);
 
-class OpencrCommandHandler {
-  VolumeCommandHandler m_volumeCommandHandler;
+class OpencrCommandHandler
+{
+    VolumeCommandHandler m_volumeCommandHandler;
 
-  uint8_t m_buffer[UINT8_MAX];
-  uint8_t m_bufferIndex;
+    uint8_t m_buffer[UINT8_MAX];
+    uint8_t m_bufferIndex;
 
 public:
-  OpencrCommandHandler();
-  void update();
+    OpencrCommandHandler();
+    void update();
 
-  void setVolumeCommandHandler(VolumeCommandHandler handler);
+    void setVolumeCommandHandler(VolumeCommandHandler handler);
 
 private:
-  void readOneByte();
-  void handleMessage();
-  void clearMessage();
+    void readOneByte();
+    void handleMessage();
+    void clearMessage();
 };
 
 #endif

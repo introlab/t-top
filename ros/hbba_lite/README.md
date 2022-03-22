@@ -1,21 +1,26 @@
 # hbba_lite
+
 This is a lite version of [HBBA](https://github.com/francoisferland/hbba).
 
 The main differences are :
- - Desires cannot have dependencies;
- - All Motivations modules are inside the same ROS node;
- - The filters can be integrated in ROS nodes;
- - Two kinds of filters exist: on/off and throttling;
- - It use [Gecode](https://www.gecode.org/) instead of [OR-Tools](https://developers.google.com/optimization) for the solver.
+
+- Desires cannot have dependencies;
+- All Motivations modules are inside the same ROS node;
+- The filters can be integrated in ROS nodes;
+- Two kinds of filters exist: on/off and throttling;
+- It use [Gecode](https://www.gecode.org/) instead of [OR-Tools](https://developers.google.com/optimization) for the
+  solver.
 
 ## How to use?
 
 ### Create Motivation Modules
+
 See the [demos](../demos).
 
 ### Adding a Filter to C++ Nodes
 
 #### Subscriber
+
 ```cpp
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
@@ -47,6 +52,7 @@ int main(int argc, char** argv)
 ```
 
 #### Publisher
+
 ```cpp
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
@@ -75,6 +81,7 @@ int main(int argc, char** argv)
 ### Adding a Filter to Python Nodes
 
 #### Subscriber
+
 ```python
 import rospy
 from std_msgs.msg import Int8
@@ -106,6 +113,7 @@ if __name__ == '__main__':
 ```
 
 #### Publisher
+
 ```python
 import rospy
 from std_msgs.msg import Int8
@@ -131,23 +139,30 @@ if __name__ == '__main__':
 ```
 
 ## Nodes
+
 ### `on_off_hbba_filter_node`
+
 This node applies an on/off filter on a topic.
 
 #### Subscribed Topics
- - `in` (Any): The input topic.
- - `out` (Any): The filtered topic.
 
- #### Services
- - `filter_state` ([hbba_lite/SetOnOffFilterState](srv/SetOnOffFilterState.srv)) The service to change the filter state.
+- `in` (Any): The input topic.
+- `out` (Any): The filtered topic.
 
+#### Services
+
+- `filter_state` ([hbba_lite/SetOnOffFilterState](srv/SetOnOffFilterState.srv)) The service to change the filter state.
 
 ### `throttling_hbba_filter_node`
+
 This node applies a throttling filter on a topic.
 
 #### Subscribed Topics
- - `in` (Any): The input topic.
- - `out` (Any): The filtered topic.
 
- #### Services
- - `filter_state` ([hbba_lite/SetThrottlingFilterState](srv/SetThrottlingFilterState.srv)) The service to change the filter state.
+- `in` (Any): The input topic.
+- `out` (Any): The filtered topic.
+
+#### Services
+
+- `filter_state` ([hbba_lite/SetThrottlingFilterState](srv/SetThrottlingFilterState.srv)) The service to change the
+  filter state.

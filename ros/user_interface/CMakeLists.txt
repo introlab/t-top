@@ -101,10 +101,10 @@ project(user_interface)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES webrtc
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+        #  INCLUDE_DIRS include
+        #  LIBRARIES webrtc
+        #  CATKIN_DEPENDS roscpp std_msgs
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -119,7 +119,6 @@ catkin_package(
 #)
 
 
-
 ## Declare a C++ library
 # add_library(webrtc
 #   src/${PROJECT_NAME}/webrtc.cpp
@@ -129,7 +128,6 @@ catkin_package(
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(webrtc ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 
 
 ## Add cmake target dependencies of the executable
@@ -186,18 +184,18 @@ catkin_package(
 # catkin_add_nosetests(test)
 
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/package.json
-    COMMAND npm install
-    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    VERBATIM
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/package.json
+        COMMAND npm install
+        COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM
 )
 
 add_custom_target(
-    user_interface-install ALL
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
-    VERBATIM
+        user_interface-install ALL
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
+        VERBATIM
 )
 
 #######################
@@ -205,9 +203,9 @@ add_custom_target(
 #######################
 function(assert_program_installed PROGRAM)
     find_program(prog-${PROGRAM} ${PROGRAM})
-    if(${prog-${PROGRAM}} STREQUAL "prog-${PROGRAM}-NOTFOUND")
+    if (${prog-${PROGRAM}} STREQUAL "prog-${PROGRAM}-NOTFOUND")
         message(FATAL_ERROR "'${PROGRAM}' needs to be installed")
-    endif()
+    endif ()
 endfunction()
 
 assert_program_installed("npm")

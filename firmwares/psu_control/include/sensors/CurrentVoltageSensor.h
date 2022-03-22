@@ -11,20 +11,20 @@
 #include <INA226.h>
 #endif
 
-class CurrentVoltageSensor {
-
+class CurrentVoltageSensor
+{
 #if INA_TYPE == INA220_TYPE
-  INA220 m_ina;
+    INA220 m_ina;
 #elif INA_TYPE == INA226_TYPE
-  INA226 m_ina;
+    INA226 m_ina;
 #endif
 
 public:
-  CurrentVoltageSensor(TwoWire& wire);
-  bool begin();
+    CurrentVoltageSensor(TwoWire& wire);
+    bool begin();
 
-  float readVoltage();
-  float readCurrent();
+    float readVoltage();
+    float readCurrent();
 };
 
 #endif

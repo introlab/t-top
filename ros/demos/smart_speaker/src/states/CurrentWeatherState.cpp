@@ -7,17 +7,17 @@
 
 using namespace std;
 
-CurrentWeatherState::CurrentWeatherState(Language language,
+CurrentWeatherState::CurrentWeatherState(
+    Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    type_index nextStateType) :
-        State(language, stateManager, desireSet, nodeHandle),
-        m_nextStateType(nextStateType),
-        m_talkDesireId(MAX_DESIRE_ID)
+    type_index nextStateType)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
+      m_talkDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1,
-        &CurrentWeatherState::talkDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &CurrentWeatherState::talkDoneSubscriberCallback, this);
 }
 
 void CurrentWeatherState::enable(const string& parameter)
@@ -47,16 +47,17 @@ void CurrentWeatherState::disable()
 
 string CurrentWeatherState::generateText()
 {
-    ros::ServiceClient service = m_nodeHandle.serviceClient<cloud_data::CurrentLocalWeather>("cloud_data/current_local_weather");
+    ros::ServiceClient service =
+        m_nodeHandle.serviceClient<cloud_data::CurrentLocalWeather>("cloud_data/current_local_weather");
     cloud_data::CurrentLocalWeather srv;
 
     bool ok = service.exists() && service.call(srv);
     switch (language())
     {
-    case Language::ENGLISH:
-        return generateEnglishText(ok, srv);
-    case Language::FRENCH:
-        return generateFrenchText(ok, srv);
+        case Language::ENGLISH:
+            return generateEnglishText(ok, srv);
+        case Language::FRENCH:
+            return generateFrenchText(ok, srv);
     }
 
     return "";

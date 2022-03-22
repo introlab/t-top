@@ -3,6 +3,7 @@
 ## A. Base/Torso Bottom Assembly
 
 ### Required Parts
+
 | Part                         | Quantity | Image                                                                             |
 | ---------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `Base Assembly`              | 1        |                                                                                   |
@@ -18,8 +19,10 @@
 | `OpenCR Power Connector`     | 1        | ![OpenCR Power Connector](images/assemblies/04J%20opencr.jpg)                     |
 
 ### Steps
+
 1. Connect the bottom `Ethernet connector` of the `assembled slip sing` to the base connector.
-2. Connect the bottom `power connectors` of the `assembled slip sing` to `power connectors` connected the `Buck-Boost PCBs`.
+2. Connect the bottom `power connectors` of the `assembled slip sing` to `power connectors` connected
+   the `Buck-Boost PCBs`.
 3. Connect the `JST XH connector` of the `assembled slip sing` to the following connector of the `PSU Control PCB`.
 
 ![JST XH](images/assemblies/11A%20JST%20XH.jpg)
@@ -31,7 +34,8 @@
 
 ![16SoundsUSB](images/assemblies/11A%20sound%20card.jpg)
 
-8. Install the `assembled slip ring` into the `torso bottom assembly` with `M5x10mm plastic screws`, as shown in the following picture.
+8. Install the `assembled slip ring` into the `torso bottom assembly` with `M5x10mm plastic screws`, as shown in the
+   following picture.
 
 ![Slip Ring](images/assemblies/11A%20torso%20slip%20ring.jpg)
 
@@ -45,7 +49,8 @@
 
 11. Connect the `computer power connector` to the top of the `power connector` of the `assembled slip sing`.
 12. Connect the `OpenCR power connector` to the top of the `power connector` of the `assembled slip sing`.
-13. Connect the `computer power connector` and the the `Ethernet connector` to the `Nvidia Jetson AGX Xavier`, as shown in the following picture.
+13. Connect the `computer power connector` and the the `Ethernet connector` to the `Nvidia Jetson AGX Xavier`, as shown
+    in the following picture.
 
 ![Computer Connectors](images/assemblies/11A%20computer%20cables.jpg)
 
@@ -57,15 +62,17 @@
 ## B. Torso Bottom/Stewart Platform Assembly
 
 ### Required Parts
+
 | Part                         | Quantity | Image                                                                             |
 | ---------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `Torso Bottom Assembly`      | 1        |                                                                                   |
 | `Stewart Platform Assembly`  | 1        |                                                                                   |
 | `M3x12mm Plastic Screw`      | 6        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                   |
 
-
 ### Steps
-1. Place the `Stewart platform assembly` onto the `torso bottom assembly` without installing the screws, as shown in the following picture.
+
+1. Place the `Stewart platform assembly` onto the `torso bottom assembly` without installing the screws, as shown in the
+   following picture.
 
 ![Stewart Platform Assembly](images/assemblies/11B%20stewart.jpg)
 

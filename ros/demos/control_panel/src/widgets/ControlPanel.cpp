@@ -13,15 +13,20 @@ constexpr int AUDIO_POWER_AMPLIFIER_MIN_VOLUME = 0;
 constexpr int AUDIO_POWER_AMPLIFIER_MAX_VOLUME = 63;
 constexpr int AUDIO_POWER_AMPLIFIER_DEFAULT_VOLUME = 24;
 
-ControlPanel::ControlPanel(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent) :
-        QWidget(parent), m_nodeHandle(nodeHandle), m_desireSet(std::move(desireSet))
+ControlPanel::ControlPanel(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+    : QWidget(parent),
+      m_nodeHandle(nodeHandle),
+      m_desireSet(std::move(desireSet))
 {
     m_volumePublisher = nodeHandle.advertise<std_msgs::Int8>("opencr/audio_power_amplifier_volume", 1);
 
     createUi();
 
-    m_batterySubscriber = nodeHandle.subscribe("opencr/state_of_charge_voltage_current", 1,
-        &ControlPanel::batterySubscriberCallback, this);
+    m_batterySubscriber = nodeHandle.subscribe(
+        "opencr/state_of_charge_voltage_current",
+        1,
+        &ControlPanel::batterySubscriberCallback,
+        this);
 }
 
 void ControlPanel::onVolumeChanged(int volume)
@@ -36,10 +41,7 @@ void ControlPanel::batterySubscriberCallback(const std_msgs::Float32MultiArray::
     if (msg->data.size() == 3)
     {
         int battery = static_cast<int>(msg->data[0]);
-        invokeLater([this, battery]()
-        {
-            m_batteryLevel->display(QString::number(battery));
-        });
+        invokeLater([this, battery]() { m_batteryLevel->display(QString::number(battery)); });
     }
 }
 

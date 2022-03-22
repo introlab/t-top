@@ -14,9 +14,9 @@ constexpr const char* DANCE_PLAYED_SONG_TASK = "DANCE_PLAYED_SONG";
 
 class RssValidTaskState : public ValidTaskState
 {
-
 public:
-    RssValidTaskState(Language language,
+    RssValidTaskState(
+        Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
