@@ -3,7 +3,7 @@
 #include "StateManager.h"
 #include "InvalidTaskState.h"
 
-#include <t_top/hbba_lite/Desires.h>
+#include <t_top_hbba_lite/Desires.h>
 
 #include <unordered_set>
 

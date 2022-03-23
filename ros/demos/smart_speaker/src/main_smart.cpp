@@ -18,7 +18,7 @@
 #include <hbba_lite/core/GecodeSolver.h>
 #include <hbba_lite/core/HbbaLite.h>
 
-#include <t_top/hbba_lite/Strategies.h>
+#include <t_top_hbba_lite/Strategies.h>
 
 #include <memory>
 
@@ -30,7 +30,7 @@ void startNode(
     Language language,
     ros::NodeHandle& nodeHandle,
     double personDistanceThreshold,
-    const std::string& personDistanceFrame,
+    const std::string& personDistanceFrameId,
     double noseConfidenceThreshold,
     size_t videoAnalysisMessageCountThreshold,
     size_t videoAnalysisMessageCountTolerance,
@@ -65,7 +65,7 @@ void startNode(
         desireSet,
         nodeHandle,
         personDistanceThreshold,
-        personDistanceFrame,
+        personDistanceFrameId,
         noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
@@ -120,10 +120,10 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    std::string personDistanceFrame;
-    if (!privateNodeHandle.getParam("person_distance_frame", personDistanceFrame) || personDistanceFrame == "")
+    std::string personDistanceFrameId;
+    if (!privateNodeHandle.getParam("person_distance_frame_id", personDistanceFrameId) || personDistanceFrameId == "")
     {
-        ROS_ERROR("The parameter person_distance_frame must be set and not empty.");
+        ROS_ERROR("The parameter person_distance_frame_id must be set and not empty.");
         return -1;
     }
 
@@ -179,7 +179,7 @@ int main(int argc, char** argv)
         language,
         nodeHandle,
         personDistanceThreshold,
-        personDistanceFrame,
+        personDistanceFrameId,
         noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance,

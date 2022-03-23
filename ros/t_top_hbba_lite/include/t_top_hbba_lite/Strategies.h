@@ -1,7 +1,7 @@
 #ifndef T_TOP_HBBA_LITE_STRATEGIES_H
 #define T_TOP_HBBA_LITE_STRATEGIES_H
 
-#include <t_top/hbba_lite/Desires.h>
+#include <t_top_hbba_lite/Desires.h>
 
 #include <ros/ros.h>
 

@@ -43,11 +43,17 @@ void BatteryLed::setStateOfCharge(float stateOfCharge)
         analogWrite(BATTERY_75_LED_PIN, static_cast<int>((stateOfCharge - 50.f) / 25.f * PWM_MAX_VALUE));
         analogWrite(BATTERY_100_LED_PIN, 0);
     }
-    else if (stateOfCharge < 100.f)
+    else if (stateOfCharge <= 100.f)
     {
         analogWrite(BATTERY_25_LED_PIN, PWM_MAX_VALUE);
         analogWrite(BATTERY_50_LED_PIN, PWM_MAX_VALUE);
         analogWrite(BATTERY_75_LED_PIN, PWM_MAX_VALUE);
         analogWrite(BATTERY_100_LED_PIN, static_cast<int>((stateOfCharge - 75.f) / 25.f * PWM_MAX_VALUE));
+    }
+    else
+    {
+        DEBUG_SERIAL.print("Invalid state of charge (");
+        DEBUG_SERIAL.print(stateOfCharge);
+        DEBUG_SERIAL.println("%)");
     }
 }

@@ -5,7 +5,7 @@
 
 #include "../../StringUtils.h"
 
-#include <t_top/hbba_lite/Desires.h>
+#include <t_top_hbba_lite/Desires.h>
 
 #include <algorithm>
 #include <limits>
@@ -19,13 +19,13 @@ SmartIdleState::SmartIdleState(
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     double personDistanceThreshold,
-    std::string personDistanceFrame,
+    std::string personDistanceFrameId,
     double noseConfidenceThreshold,
     size_t videoAnalysisMessageCountThreshold,
     size_t videoAnalysisMessageCountTolerance)
     : State(language, stateManager, desireSet, nodeHandle),
       m_personDistanceThreshold(personDistanceThreshold),
-      m_personDistanceFrame(personDistanceFrame),
+      m_personDistanceFrameId(personDistanceFrameId),
       m_noseConfidenceThreshold(noseConfidenceThreshold),
       m_videoAnalysisMessageCountThreshold(videoAnalysisMessageCountThreshold),
       m_videoAnalysisMessageCountTolerance(videoAnalysisMessageCountTolerance),
@@ -85,7 +85,7 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
     tf::StampedTransform transform;
     try
     {
-        m_tfListener.lookupTransform(m_personDistanceFrame, msg->header.frame_id, ros::Time(0), transform);
+        m_tfListener.lookupTransform(m_personDistanceFrameId, msg->header.frame_id, ros::Time(0), transform);
     }
     catch (tf::TransformException& ex)
     {
@@ -130,7 +130,7 @@ double SmartIdleState::personNameDistance(const person_identification::PersonNam
     try
     {
         tf::StampedTransform transform;
-        m_tfListener.lookupTransform(m_personDistanceFrame, name.frame_id, ros::Time(0), transform);
+        m_tfListener.lookupTransform(m_personDistanceFrameId, name.frame_id, ros::Time(0), transform);
 
         tf::Vector3 p(name.position[0].x, name.position[0].y, name.position[0].z);
         p = transform * p;

@@ -5,7 +5,7 @@
         <param name="language" value="$(arg language)"/>
 
         <param name="person_distance_threshold" value="1.5"/>
-        <param name="person_distance_frame" value="odas"/>
+        <param name="person_distance_frame_id" value="odas"/>
         <param name="nose_confidence_threshold" value="0.4"/>
 
         <param name="video_analysis_message_count_threshold" value="5"/>

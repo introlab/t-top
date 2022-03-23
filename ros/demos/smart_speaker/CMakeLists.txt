@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
         std_msgs
         talk
         video_analyzer
-        t_top
+        t_top_hbba_lite
         tf
         )
 

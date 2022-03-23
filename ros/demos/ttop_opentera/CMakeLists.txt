@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         sensor_msgs
         std_msgs
-        t_top
+        t_top_hbba_lite
         opentera_webrtc_ros_msgs
         opentera_webrtc_ros
         map_image_generator

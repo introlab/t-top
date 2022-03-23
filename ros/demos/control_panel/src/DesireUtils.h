@@ -3,7 +3,7 @@
 
 #include <hbba_lite/core/DesireSet.h>
 
-#include <t_top/hbba_lite/Desires.h>
+#include <t_top_hbba_lite/Desires.h>
 
 inline void removeAllMovementDesires(DesireSet& desireSet)
 {
