@@ -107,7 +107,7 @@ mkdir src
 catkin_make
 
 cd src
-git clone --recurse-submodules git@github.com:introlab/tabletop_robot.git
+git clone --recurse-submodules git@github.com:introlab/t-top.git
 ```
 
 ### H. Install the RealSense Packages
@@ -115,7 +115,7 @@ git clone --recurse-submodules git@github.com:introlab/tabletop_robot.git
 1. Install [Librealsense](https://github.com/IntelRealSense/librealsense/blob/v2.39.0/doc/installation.md) (use the tag
    v2.39.0).
 2. Install [ROS node](https://github.com/IntelRealSense/realsense-ros#step-2-install-intel-realsense-ros-from-sources)
-   in `~/t-top_ws/src`  (use the tag 2.2.18)
+   in `~/t-top_ws/src` (use the tag 2.2.18)
 
 ## All computer
 
