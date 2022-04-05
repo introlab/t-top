@@ -3,16 +3,22 @@
     <arg name="signaling_server_port" default="8080"/>
     <arg name="signaling_server_password" default="abc"/>
     <arg name="database_path" default="~/.ros/opentera.db"/>
+    <arg name="is_stand_alone" default="false"/>
 
-    <!-- Signaling server -->
-    <include file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
+    <!-- Signaling server (if stand_alone)-->
+    <include if="$(arg is_stand_alone)" file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
         <arg name="signaling_server_port" value="$(arg signaling_server_port)" />
         <arg name="signaling_server_password" value="$(arg signaling_server_password)" />
         <arg name="signaling_server_robot_type" value="ttop" />
         <arg name="python_executable" value="python3.8" />
         <arg name="use_tls" value="true" />
-        <arg name="certificate" value="~/.ros/opentera/server-cert.pem" />
-        <arg name="key" value="~/.ros/opentera/server-key.pem" />
+        <arg name="certificate" value="~/.ros/opentera/certs/server-cert.pem" />
+        <arg name="key" value="~/.ros/opentera/certs/server-key.pem" />
+    </include>
+
+    <!-- OpenTera Client (if not stand_alone)-->
+    <include unless="$(arg is_stand_alone)" file="$(find opentera_client_ros)/launch/client.launch">
+        <arg name="opentera_client_config_file" value="~/.ros/opentera/client_config.json"/>
     </include>
 
     <!-- Map image generator -->
@@ -30,7 +36,7 @@
     <!-- Front camera -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_stream_client.launch">
         <arg name="name" value="topic_streamer1"/>
-        <arg name="is_stand_alone" value="true"/>
+        <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
         <arg name="can_send_audio_stream" value="true"/>
         <arg name="can_receive_audio_stream" value="true"/>
         <arg name="can_send_video_stream" value="true"/>
@@ -44,17 +50,17 @@
         <arg name="input_camera_topic" value="/camera/color/image_raw"/>
         <arg name="input_audio_topic" value="/audio_webrtc_outgoing_signed_16_48000"/>
         <arg name="output_audio_mixed_topic" value="/audio_webrtc_incoming_signed_16_48000"/>
-        <arg name="verify_ssl" value="false"/>
+        <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
     </include>
 
     <!-- Map image stream -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_stream_client.launch">
-        <arg name="name" value="topic_streamer3"/>
-        <arg name="is_stand_alone" value="true"/>
+        <arg name="name" value="topic_streamer2"/>
+        <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
         <arg name="can_send_audio_stream" value="false"/>
         <arg name="can_receive_audio_stream" value="false"/>
         <arg name="can_send_video_stream" value="true"/>
-        <arg name="can_receive_video_stream" value="true"/>
+        <arg name="can_receive_video_stream" value="false"/>
         <arg name="is_screen_cast" value="true"/>
         <arg name="needs_denoising" value="false"/>
         <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
@@ -62,19 +68,19 @@
         <arg name="room_name" value="Map"/>
         <arg name="room_password" value="$(arg signaling_server_password)"/>
         <arg name="input_camera_topic" value="/map_image_generator/image"/>
-        <arg name="verify_ssl" value="false"/>
+        <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
     </include>
 
     <!-- Data Channel  -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_data_channel_client.launch">
         <arg name="name" value="data_streamer"/>
-        <arg name="is_stand_alone" value="true"/>
+        <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
 
         <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
         <arg name="client_name" value="Robot Data Channel"/>
         <arg name="room_name" value="Teleop"/>
         <arg name="room_password" value="$(arg signaling_server_password)"/>
-        <arg name="verify_ssl" value="false"/>
+        <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
     </include>
 
     <!-- Json Message Handler -->

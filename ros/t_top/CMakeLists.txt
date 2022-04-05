@@ -158,9 +158,9 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-        scripts/opencr_raw_data_interpreter.py
-        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+    scripts/opencr_raw_data_interpreter.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
