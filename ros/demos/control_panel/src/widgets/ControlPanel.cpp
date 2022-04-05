@@ -23,7 +23,7 @@ ControlPanel::ControlPanel(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> de
     createUi();
 
     m_batterySubscriber = nodeHandle.subscribe(
-        "opencr/state_of_charge_voltage_current",
+        "opencr/state_of_charge_voltage_current_is_charging",
         1,
         &ControlPanel::batterySubscriberCallback,
         this);
@@ -38,7 +38,7 @@ void ControlPanel::onVolumeChanged(int volume)
 
 void ControlPanel::batterySubscriberCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    if (msg->data.size() == 3)
+    if (msg->data.size() == 4)
     {
         int battery = static_cast<int>(msg->data[0]);
         invokeLater([this, battery]() { m_batteryLevel->display(QString::number(battery)); });

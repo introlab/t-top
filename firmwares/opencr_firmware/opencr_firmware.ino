@@ -50,14 +50,11 @@ float rawImuMsgData[RAW_IMU_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray rawImuMsg;
 ros::Publisher rawImuPub("opencr/raw_imu", &rawImuMsg);
 
-constexpr int STATE_OF_CHARGE_VOLTAGE_CURRENT_MSG_DATA_LENGTH = 3;
-float stateOfChargeVoltageCurrentMsgData[STATE_OF_CHARGE_VOLTAGE_CURRENT_MSG_DATA_LENGTH];
-std_msgs::Float32MultiArray stateOfChargeVoltageCurrentMsg;
+constexpr int STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH = 3;
+float stateOfChargeVoltageCurrentIsChargingMsgData[STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH];
+std_msgs::Float32MultiArray stateOfChargeVoltageCurrentIsChargingMsg;
 ros::Publisher
-    stateOfChargeVoltageCurrentPub("opencr/state_of_charge_voltage_current", &stateOfChargeVoltageCurrentMsg);
-
-std_msgs::Bool isBatteryChargingMsg;
-ros::Publisher isBatteryChargingPub("opencr/is_battery_charging", &isBatteryChargingMsg);
+    stateOfChargeVoltageCurrentIsChargingPub("opencr/state_of_charge_voltage_current_is_charging", &stateOfChargeVoltageCurrentIsChargingMsg);
 
 // Robot
 MPU9250 imu(SPI_IMU, BDPIN_SPI_CS_IMU);
@@ -102,8 +99,7 @@ void setupRos()
     nh.advertise(currentHeadPosePub);
     nh.advertise(isHeadPoseReachablePub);
     nh.advertise(rawImuPub);
-    nh.advertise(stateOfChargeVoltageCurrentPub);
-    nh.advertise(isBatteryChargingPub);
+    nh.advertise(stateOfChargeVoltageCurrentIsChargingPub);
 }
 
 void setupImu()
@@ -206,11 +202,12 @@ void onImuTimer()
 
 void onStatusCommand(bool isBatteryCharging, float stateOfCharge, float current, float voltage)
 {
-    stateOfChargeVoltageCurrentMsgData[0] = stateOfCharge;
-    stateOfChargeVoltageCurrentMsgData[1] = current;
-    stateOfChargeVoltageCurrentMsgData[2] = voltage;
+    stateOfChargeVoltageCurrentIsChargingMsgData[0] = stateOfCharge;
+    stateOfChargeVoltageCurrentIsChargingMsgData[1] = current;
+    stateOfChargeVoltageCurrentIsChargingMsgData[2] = voltage;
+    stateOfChargeVoltageCurrentIsChargingMsgData[2] = isBatteryCharging;
 
-    stateOfChargeVoltageCurrentMsg.data = &stateOfChargeVoltageCurrentMsgData[0];
-    stateOfChargeVoltageCurrentMsg.data_length = STATE_OF_CHARGE_VOLTAGE_CURRENT_MSG_DATA_LENGTH;
-    stateOfChargeVoltageCurrentPub.publish(&stateOfChargeVoltageCurrentMsg);
+    stateOfChargeVoltageCurrentIsChargingMsg.data = stateOfChargeVoltageCurrentIsChargingMsgData;
+    stateOfChargeVoltageCurrentIsChargingMsg.data_length = STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH;
+    stateOfChargeVoltageCurrentIsChargingPub.publish(&stateOfChargeVoltageCurrentIsChargingMsg);
 }
