@@ -5,14 +5,20 @@
 
 #include <talk/Done.h>
 
+#include <string>
+#include <vector>
+
 class SmartAskTaskState : public AskTaskState
 {
+    std::vector<std::string> m_songNames;
+
 public:
     SmartAskTaskState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        ros::NodeHandle& nodeHandle,
+        std::vector<std::string> songNames);
     ~SmartAskTaskState() override = default;
 
     DECLARE_NOT_COPYABLE(SmartAskTaskState);

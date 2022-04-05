@@ -69,7 +69,7 @@ void startNode(
         noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
-    stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle, songNames));
     stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songNames));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
