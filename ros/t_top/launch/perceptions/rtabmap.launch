@@ -16,23 +16,35 @@
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
     <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" args="$(arg rtabmap_args)">
-        <param name="frame_id" type="string" value="base_link"/>
+        <param name="odom_frame_id" type="string" value="base_link"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>
         <param name="subscribe_rgb" type="bool" value="false"/>
 
         <param name="queue_size" type="int" value="10"/>
 
-        <param name="RGBD/AngularUpdate" type="string" value="0.01"/>
-        <param name="RGBD/LinearUpdate" type="string" value="0.01"/>
+        <param name="map_always_update" type="bool" value="true"/>
+        <param name="map_filter_radius" type="double" value="0.1"/>
+        <param name="map_filter_angle" type="double" value="10"/>
+        <param name="gen_depth" type="bool" value="false"/>
+
+        <param name="RGBD/AngularUpdate" type="string" value="0"/>
+        <param name="RGBD/LinearUpdate" type="string" value="0"/>
         <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+
+        <!-- Occupancy Grid -->
+        <param name="Grid/NormalsSegmentation" value="false"/>
+        <param name="Grid/MaxObstacleHeight" value="0.1"/>
+        <param name="Grid/MinGroundHeight" value="-0.1"/>
+        <param name="Grid/MaxGroundHeight" value="0.01"/>
+        <param name="Grid/3D" value="true"/>
+        <param name="Grid/RayTracing" value="true"/>
 
         <!-- localization mode -->
         <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
         <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
         <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/>
 
-        <remap from="odom" to="opencr/odom"/>
         <remap from="rgbd_image" to="rgbd_image_filtered"/>
     </node>
 
