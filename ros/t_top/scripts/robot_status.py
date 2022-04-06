@@ -28,13 +28,9 @@ class BatteryStatus:
             is_charging) if is_charging is not None else False
 
 
-def get_command_output(cmd: List[str], input: str = "") -> str:
-    if input != "":
-        p = Popen(cmd, stdin=PIPE, stdout=PIPE)
-        return p.communicate(input=input.encode("utf-8"))[0].decode("utf-8")
-    else:
-        p = Popen(cmd, stdout=PIPE)
-        return p.communicate()[0].decode('utf-8')
+def get_command_output(cmd: List[str]) -> str:
+    p = Popen(cmd, stdout=PIPE)
+    return p.communicate()[0].decode('utf-8')
 
 
 class RobotStatusPublisher():
@@ -47,8 +43,8 @@ class RobotStatusPublisher():
             '/webrtc_data_outgoing', String, queue_size=10)
 
         self.battery_status_sub = rospy.Subscriber(
-            "/openrc/state_of_charge_voltage_current_is_charging",
-            Float32MultiArray, self.battery_status_cb)
+            "/opencr/state_of_charge_voltage_current_is_charging",
+            Float32MultiArray, self.battery_status_cb, queue_size=1)
 
         self.pub_rate = 1
 
@@ -93,13 +89,15 @@ class RobotStatusPublisher():
             if status.wifi_network:
                 wifi_interface_name = status.wifi_network.split()[0]
 
-                wifi_usage = get_command_output(["grep", "'Link Quality='"],
-                                                input=get_command_output(["iwconfig", wifi_interface_name]))
-                numerator_re = re.search('=(.+?)/', wifi_usage)
-                numerator = int(numerator_re.group(1)) if numerator_re else 0
-                denominator_re = re.search('/(.+?) ', wifi_usage)
-                denominator = int(denominator_re.group(1)
-                                  ) if denominator_re else 1
+                wifi_usage = get_command_output(
+                    ["iwconfig", wifi_interface_name])
+                wifi_strength_re = re.search(
+                    r'Link Quality=(\d+)/(\d+)', wifi_usage)
+                if wifi_strength_re is not None and len(wifi_strength_re.groups()) == 2:
+                    numerator = int(wifi_strength_re.group(1))
+                    denominator = int(wifi_strength_re.group(2))
+                else:
+                    numerator, denominator = (0, 1)
                 status.wifi_strength = numerator / denominator * 100
                 status.local_ip = self.get_ip_address(wifi_interface_name)
             else:
