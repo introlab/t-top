@@ -200,12 +200,12 @@ void onImuTimer()
     rawImuPub.publish(&rawImuMsg);
 }
 
-void onStatusCommand(bool isBatteryCharging, float stateOfCharge, float current, float voltage)
+void onStatusCommand(bool isPsuConnected, float stateOfCharge, float current, float voltage)
 {
     stateOfChargeVoltageCurrentIsChargingMsgData[0] = stateOfCharge;
     stateOfChargeVoltageCurrentIsChargingMsgData[1] = current;
     stateOfChargeVoltageCurrentIsChargingMsgData[2] = voltage;
-    stateOfChargeVoltageCurrentIsChargingMsgData[3] = isBatteryCharging;
+    stateOfChargeVoltageCurrentIsChargingMsgData[3] = isPsuConnected;
 
     stateOfChargeVoltageCurrentIsChargingMsg.data = stateOfChargeVoltageCurrentIsChargingMsgData;
     stateOfChargeVoltageCurrentIsChargingMsg.data_length = STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH;

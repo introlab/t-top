@@ -10,7 +10,7 @@ class OpencrCommandSender
 public:
     OpencrCommandSender();
 
-    void sendStatusCommand(bool isBatteryCharging, float stateOfCharge, float current, float voltage);
+    void sendStatusCommand(bool isPsuConnected, float stateOfCharge, float current, float voltage);
 
 private:
     void sendCommand();
