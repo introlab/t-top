@@ -50,7 +50,7 @@ float rawImuMsgData[RAW_IMU_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray rawImuMsg;
 ros::Publisher rawImuPub("opencr/raw_imu", &rawImuMsg);
 
-constexpr int STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH = 3;
+constexpr int STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH = 4;
 float stateOfChargeVoltageCurrentIsChargingMsgData[STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray stateOfChargeVoltageCurrentIsChargingMsg;
 ros::Publisher
@@ -205,7 +205,7 @@ void onStatusCommand(bool isBatteryCharging, float stateOfCharge, float current,
     stateOfChargeVoltageCurrentIsChargingMsgData[0] = stateOfCharge;
     stateOfChargeVoltageCurrentIsChargingMsgData[1] = current;
     stateOfChargeVoltageCurrentIsChargingMsgData[2] = voltage;
-    stateOfChargeVoltageCurrentIsChargingMsgData[2] = isBatteryCharging;
+    stateOfChargeVoltageCurrentIsChargingMsgData[3] = isBatteryCharging;
 
     stateOfChargeVoltageCurrentIsChargingMsg.data = stateOfChargeVoltageCurrentIsChargingMsgData;
     stateOfChargeVoltageCurrentIsChargingMsg.data_length = STATE_OF_CHARGE_VOLTAGE_CURRENT_IS_CHARGING_MSG_DATA_LENGTH;
