@@ -1,4 +1,5 @@
 <launch>
+    <arg name="localization" default="false"/>
 
     <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
         <remap from="rgb/image" to="/camera/color/image_raw"/>
@@ -23,6 +24,11 @@
         <param name="RGBD/AngularUpdate" type="string" value="0.01"/>
         <param name="RGBD/LinearUpdate" type="string" value="0.01"/>
         <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+
+        <!-- localization mode -->
+        <param     if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
+        <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
+        <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/>
 
         <remap from="odom" to="opencr/odom"/>
         <remap from="rgbd_image" to="rgbd_image_filtered"/>
