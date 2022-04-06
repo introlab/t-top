@@ -1,5 +1,7 @@
 <launch>
     <arg name="localization" default="false"/>
+    <arg if="$(arg localization)" name="rtabmap_args" default=""/>
+    <arg unless="$(arg localization)" name="rtabmap_args" default="-d"/>
 
     <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
         <remap from="rgb/image" to="/camera/color/image_raw"/>
@@ -13,7 +15,7 @@
         <remap from="out" to="rgbd_image_filtered"/>
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
-    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap">
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" args="$(arg rtabmap_args)">
         <param name="frame_id" type="string" value="base_link"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>
