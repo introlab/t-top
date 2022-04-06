@@ -20,10 +20,13 @@ class BatteryStatus:
                  percentage: Optional[float] = None,
                  voltage: Optional[float] = None,
                  current: Optional[float] = None,
+                 is_plugged_in: Optional[Union[bool, float]] = None,
                  is_charging: Optional[Union[bool, float]] = None) -> None:
         self.percentage = clamp(percentage or 0.0, 0, 100)
         self.voltage = voltage or 0.0
         self.current = current or 0.0
+        self.is_plugged_in = bool(
+            is_plugged_in) if is_plugged_in is not None else False
         self.is_charging = bool(
             is_charging) if is_charging is not None else False
 
@@ -43,7 +46,7 @@ class RobotStatusPublisher():
             '/webrtc_data_outgoing', String, queue_size=10)
 
         self.battery_status_sub = rospy.Subscriber(
-            "/opencr/state_of_charge_voltage_current_is_charging",
+            "/opencr/base_status",
             Float32MultiArray, self.battery_status_cb, queue_size=1)
 
         self.pub_rate = 1
@@ -79,7 +82,7 @@ class RobotStatusPublisher():
             status.battery_voltage = self.battery_status.voltage
             status.battery_current = self.battery_status.current
             status.battery_level = self.battery_status.percentage
-            status.is_charging = self.battery_status.is_charging
+            status.is_charging = self.battery_status.is_plugged_in
 
             status.cpu_usage = psutil.cpu_percent()
             status.mem_usage = psutil.virtual_memory().percent
