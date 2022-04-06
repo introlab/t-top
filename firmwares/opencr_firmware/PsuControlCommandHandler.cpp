@@ -44,12 +44,13 @@ void PsuControlCommandHandler::handleMessage()
             if (m_statusCommandHandler != nullptr)
             {
                 bool isPsuConnected = m_buffer[2];
+                bool isBatteryCharging = m_buffer[3];
                 float stateOfCharge, current, voltage;
 
-                memcpy(&stateOfCharge, m_buffer + 3, sizeof(float));
-                memcpy(&current, m_buffer + 7, sizeof(float));
-                memcpy(&voltage, m_buffer + 11, sizeof(float));
-                m_statusCommandHandler(isPsuConnected, stateOfCharge, current, voltage);
+                memcpy(&stateOfCharge, m_buffer + 4, sizeof(float));
+                memcpy(&current, m_buffer + 8, sizeof(float));
+                memcpy(&voltage, m_buffer + 12, sizeof(float));
+                m_statusCommandHandler(isPsuConnected, isBatteryCharging, stateOfCharge, current, voltage);
             }
             break;
     }

@@ -116,7 +116,7 @@ void onStatusTicker()
     DEBUG_SERIAL.println(externalTemperatureCelsius);
     DEBUG_SERIAL.println("Send status");
     DEBUG_SERIAL.println();
-    opencrCommandSender.sendStatusCommand(isPsuConnected, stateOfCharge, current, voltage);
+    opencrCommandSender.sendStatusCommand(isPsuConnected, isBatteryCharging, stateOfCharge, current, voltage);
 }
 
 #endif
