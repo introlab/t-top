@@ -203,8 +203,8 @@ void onImuTimer()
 void onStatusCommand(bool isPsuConnected, bool isBatteryCharging, float stateOfCharge, float current, float voltage)
 {
     baseStatusMsgData[0] = stateOfCharge;
-    baseStatusMsgData[1] = current;
-    baseStatusMsgData[2] = voltage;
+    baseStatusMsgData[1] = voltage;
+    baseStatusMsgData[2] = current;
     baseStatusMsgData[3] = isPsuConnected;
     baseStatusMsgData[4] = isBatteryCharging;
 
