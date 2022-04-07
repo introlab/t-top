@@ -12,6 +12,8 @@ from audio_utils.msg import AudioFrame
 
 import hbba_lite
 
+from pathlib import Path
+
 
 class SoundPlayerNode:
     def __init__(self):
@@ -38,7 +40,7 @@ class SoundPlayerNode:
             self._done_pub.publish(Done(id=msg.id, ok=ok))
 
     def _play_audio(self, id, path):
-        frames = self._load_frames(path)
+        frames = self._load_frames(Path(path).expanduser().resolve())
 
         self._started_pub.publish(Started(id=id))
 
