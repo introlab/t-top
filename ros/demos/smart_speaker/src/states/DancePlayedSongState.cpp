@@ -77,7 +77,6 @@ void DancePlayedSongState::songDoneSubscriberCallback(const sound_player::Done::
     {
         return;
     }
-
     if (!msg->ok)
     {
         ROS_ERROR("Unable to dance the played song");

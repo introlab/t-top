@@ -26,6 +26,8 @@ class SpeechToTextNode:
         self._frame_sample_count = rospy.get_param('~frame_sample_count', 92)
         self._request_frame_count = rospy.get_param('~request_frame_count', 20)
         self._language_code = self._convert_language_to_language_code(rospy.get_param('~language'))
+        self._timeout = rospy.get_param('~timeout', None)
+
         self._sleeping_duration = self._request_frame_count * self._frame_sample_count / self._sampling_frequency
 
         self._buffer = self._create_request_frame_buffer()
@@ -98,7 +100,7 @@ class SpeechToTextNode:
             requests = (speech.StreamingRecognizeRequest(
                 audio_content=content) for content in self._request_frame_generator())
 
-            responses = client.streaming_recognize(streaming_config, requests)
+            responses = client.streaming_recognize(streaming_config, requests, timeout=self._timeout)
             for response in responses:
                 if response.results and response.results[0].is_final:
                     msg = String()
@@ -113,7 +115,12 @@ class SpeechToTextNode:
 def main():
     rospy.init_node('speech_to_text_node')
     speech_to_text_node = SpeechToTextNode()
-    speech_to_text_node.run()
+
+    while not rospy.is_shutdown():
+        try:
+            speech_to_text_node.run()
+        except Exception as e:
+            rospy.logerr(f'speech_to_text_node has failed ({e})')
 
 
 if __name__ == '__main__':
