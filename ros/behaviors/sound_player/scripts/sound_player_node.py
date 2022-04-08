@@ -35,7 +35,8 @@ class SoundPlayerNode:
             try:
                 self._play_audio(msg.id, msg.path)
                 ok = True
-            except Exception:
+            except Exception as e:
+                rospy.logerr(f'Unable to play the song ({e})')
                 ok = False
             self._done_pub.publish(Done(id=msg.id, ok=ok))
 

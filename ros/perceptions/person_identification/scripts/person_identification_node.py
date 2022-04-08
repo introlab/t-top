@@ -103,7 +103,7 @@ class PersonIdentificationNode:
 
     def _audio_analysis_cb(self, msg):
         if msg.header.frame_id != self._direction_frame_id:
-            rospy.logerr('Invalid frame id ({} != {})'.format(msg.header.frame_id, self._direction_frame_id))
+            rospy.logerr(f'Invalid frame id ({msg.header.frame_id} != {self._direction_frame_id})')
             return
 
         if len(msg.voice_descriptor) == 0:

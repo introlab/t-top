@@ -67,7 +67,7 @@ class VideoAnalyzerNode:
             depth_image = self._cv_bridge.imgmsg_to_cv2(depth_image_msg, '16UC1')
             self._analyse(color_image, depth_image, depth_camera_info, color_image_msg.header)
         except Exception as e:
-            rospy.logerr('Image analysis error: {} \n {}'.format(e, traceback.format_exc()))
+            rospy.logerr(f'Image analysis error: {e} \n {traceback.format_exc()}')
 
     def _analyse(self, color_image, depth_image, depth_camera_info, header):
         color_image_tensor = self._convert_color_image_to_tensor(color_image)

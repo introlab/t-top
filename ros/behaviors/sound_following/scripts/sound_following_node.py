@@ -28,7 +28,7 @@ class SoundFollowingNode:
 
     def _sst_cb(self, sst):
         if len(sst.sources) > 1:
-            rospy.logerr('Invalid sst (len(sst.sources)={})'.format(len(sst.sources)))
+            rospy.logerr(f'Invalid sst (len(sst.sources)={len(sst.sources)})')
             return
 
         if len(sst.sources) == 0:
