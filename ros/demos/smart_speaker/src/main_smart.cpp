@@ -113,7 +113,6 @@ bool getSongStrings(ros::NodeHandle& privateNodeHandle, vector<string>& values, 
 
     for (size_t i = 0; i < songs.size(); i++)
     {
-        cout << key << " " << i << endl;
         if (!songs[i].hasMember(key) || (value = static_cast<string>(songs[i][key])).empty())
         {
             ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
