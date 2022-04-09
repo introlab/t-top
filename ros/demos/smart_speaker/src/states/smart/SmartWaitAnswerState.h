@@ -10,7 +10,7 @@
 
 class SmartWaitAnswerState : public WaitAnswerState
 {
-    std::vector<std::string> m_songNames;
+    std::vector<std::vector<std::string>> m_songKeywords;
 
     std::string m_weatherWord;
     std::string m_danceWord;
@@ -24,7 +24,7 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        std::vector<std::string> songNames);
+        std::vector<std::vector<std::string>> songKeywords);
     ~SmartWaitAnswerState() override = default;
 
     DECLARE_NOT_COPYABLE(SmartWaitAnswerState);
@@ -38,6 +38,7 @@ protected:
 
 private:
     size_t getSongIndex(const std::string& text);
+    bool containsAllKeywords(const std::string& text, const std::vector<std::string>& keywords);
 };
 
 inline std::type_index SmartWaitAnswerState::type() const

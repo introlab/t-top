@@ -35,6 +35,7 @@ void startNode(
     size_t videoAnalysisMessageCountThreshold,
     size_t videoAnalysisMessageCountTolerance,
     const vector<string>& songNames,
+    const vector<vector<string>>& songKeywords,
     const vector<string>& songPaths,
     const ros::Duration& afterTaskDelayDuration)
 {
@@ -70,7 +71,8 @@ void startNode(
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
     stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle, songNames));
-    stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songNames));
+    stateManager.addState(
+        make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songKeywords));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
 
@@ -95,6 +97,64 @@ void startNode(
     stateManager.switchTo<SmartIdleState>();
 
     ros::spin();
+}
+
+bool getSongStrings(ros::NodeHandle& privateNodeHandle, vector<string>& values, const std::string& key)
+{
+    string value;
+
+    XmlRpc::XmlRpcValue songs;
+    privateNodeHandle.getParam("songs", songs);
+    if (songs.getType() != XmlRpc::XmlRpcValue::TypeArray)
+    {
+        ROS_ERROR("Invalid songs format");
+        return false;
+    }
+
+    for (size_t i = 0; i < songs.size(); i++)
+    {
+        cout << key << " " << i << endl;
+        if (!songs[i].hasMember(key) || (value = static_cast<string>(songs[i][key])).empty())
+        {
+            ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
+            return false;
+        }
+
+        values.emplace_back(move(value));
+    }
+
+    return values.size() > 0;
+}
+
+bool getSongVectors(ros::NodeHandle& privateNodeHandle, vector<vector<string>>& values, const std::string& key)
+{
+    vector<string> value;
+
+    XmlRpc::XmlRpcValue songs;
+    privateNodeHandle.getParam("songs", songs);
+    if (songs.getType() != XmlRpc::XmlRpcValue::TypeArray)
+    {
+        ROS_ERROR("Invalid songs format");
+        return false;
+    }
+
+    for (size_t i = 0; i < songs.size(); i++)
+    {
+        if (!songs[i].hasMember(key) || songs[i][key].getType() != XmlRpc::XmlRpcValue::TypeArray)
+        {
+            ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
+            return false;
+        }
+
+        for (size_t j = 0; j < songs[i][key].size(); j++)
+        {
+            value.emplace_back(songs[i][key][j]);
+        }
+
+        values.emplace_back(move(value));
+    }
+
+    return values.size() > 0;
 }
 
 int main(int argc, char** argv)
@@ -151,29 +211,19 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    vector<string> songNames;
-    if (!privateNodeHandle.getParam("song_names", songNames) || songNames.size() == 0)
-    {
-        ROS_ERROR("At least one valid name must be set for the songs.");
-        return -1;
-    }
-
-    vector<string> songPaths;
-    if (!privateNodeHandle.getParam("song_paths", songPaths) || songPaths.size() == 0)
-    {
-        ROS_ERROR("At least one valid path must be set for the songs.");
-        return -1;
-    }
-
-    if (songNames.size() != songPaths.size())
-    {
-        ROS_ERROR("The size of song_names and song_paths must be the same.");
-        return -1;
-    }
-
     double afterTaskDelayDurationS;
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
+
+    vector<string> songNames;
+    vector<vector<string>> songKeywords;
+    vector<string> songPaths;
+    if (!getSongStrings(privateNodeHandle, songNames, "name") ||
+        !getSongVectors(privateNodeHandle, songKeywords, "keywords") ||
+        !getSongStrings(privateNodeHandle, songPaths, "path"))
+    {
+        return -1;
+    }
 
     startNode(
         language,
@@ -184,6 +234,7 @@ int main(int argc, char** argv)
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance,
         songNames,
+        songKeywords,
         songPaths,
         afterTaskDelayDuration);
 

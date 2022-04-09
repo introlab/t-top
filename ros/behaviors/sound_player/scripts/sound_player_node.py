@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import threading
+from pathlib import Path
 
 import numpy as np
 
@@ -11,8 +12,6 @@ from sound_player.msg import SoundFile, Started, Done
 from audio_utils.msg import AudioFrame
 
 import hbba_lite
-
-from pathlib import Path
 
 
 class SoundPlayerNode:

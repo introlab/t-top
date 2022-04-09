@@ -24,15 +24,15 @@ SmartWaitAnswerState::SmartWaitAnswerState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    vector<string> songNames)
+    vector<vector<string>> songKeywords)
     : WaitAnswerState(language, stateManager, desireSet, nodeHandle),
-      m_songNames(move(songNames)),
+      m_songKeywords(move(songKeywords)),
       m_randomGenerator(random_device()()),
-      m_songIndexDistribution(0, m_songNames.size() - 1)
+      m_songIndexDistribution(0, m_songKeywords.size() - 1)
 {
-    if (m_songNames.size() == 0)
+    if (m_songKeywords.size() == 0)
     {
-        throw runtime_error("songNames must not be empty");
+        throw runtime_error("songKeywords must not be empty");
     }
 
     switch (language)
@@ -82,14 +82,14 @@ size_t SmartWaitAnswerState::getSongIndex(const std::string& text)
 {
     size_t songIndex = string::npos;
 
-    for (size_t i = 0; i < m_songNames.size(); i++)
+    for (size_t i = 0; i < m_songKeywords.size(); i++)
     {
-        size_t songNameIndex = text.find(m_songNames[i]);
-        if (songNameIndex != string::npos && songIndex == string::npos)
+        size_t isSongSelected = containsAllKeywords(text, m_songKeywords[i]);
+        if (isSongSelected && songIndex == string::npos)
         {
             songIndex = i;
         }
-        else if (songNameIndex != string::npos && songIndex != string::npos)
+        else if (isSongSelected && songIndex != string::npos)
         {
             return string::npos;
         }
@@ -101,4 +101,19 @@ size_t SmartWaitAnswerState::getSongIndex(const std::string& text)
     }
 
     return songIndex;
+}
+
+bool SmartWaitAnswerState::containsAllKeywords(const string& text, const vector<string>& keywords)
+{
+    size_t count = 0;
+    for (size_t i = 0; i < keywords.size(); i++)
+    {
+        size_t songNameIndex = text.find(keywords[i]);
+        if (songNameIndex != string::npos)
+        {
+            count++;
+        }
+    }
+
+    return count == keywords.size();
 }
