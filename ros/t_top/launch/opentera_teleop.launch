@@ -1,6 +1,5 @@
 <launch>
     <arg name="visualization" default="false"/>
-    <arg name="slam" default="true"/>
     <arg name="simulation" default="false"/>
     <arg name="use_echo_cancellation" default="true"/>
     <arg name="echo_cancellation_source" default="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input" />
@@ -27,8 +26,6 @@
         <arg name="rviz" value="$(arg rviz)"/>
         <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
     </include>
-
-    <include if="$(arg slam)" file="$(find t_top)/launch/perceptions/rtabmap.launch"/>
 
     <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
         <arg name="visualization" value="$(arg visualization)"/>

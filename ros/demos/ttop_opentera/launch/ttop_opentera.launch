@@ -1,6 +1,5 @@
 <launch>
     <include file="$(find t_top)/launch/opentera_teleop.launch">
-        <arg name="visualization" value="true"/>
         <arg name="is_stand_alone" value="true"/>
     </include>
 

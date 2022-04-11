@@ -240,9 +240,7 @@ unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> 
     return make_unique<Strategy<TelepresenceDesire>>(
         utility,
         unordered_map<string, uint16_t>{{"sound", 1}},
-        unordered_map<string, FilterConfiguration>{
-            {"rtabmap/filter_state", FilterConfiguration::onOff()},
-        },
+        unordered_map<string, FilterConfiguration>{},
         move(filterPool));
 }
 

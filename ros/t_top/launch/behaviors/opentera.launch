@@ -2,14 +2,13 @@
     <arg name="signaling_server_hostname" default="localhost"/>
     <arg name="signaling_server_port" default="8080"/>
     <arg name="signaling_server_password" default="abc"/>
-    <arg name="database_path" default="~/.ros/opentera.db"/>
     <arg name="is_stand_alone" default="false"/>
 
     <!-- Signaling server (if stand_alone)-->
     <include if="$(arg is_stand_alone)" file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
         <arg name="signaling_server_port" value="$(arg signaling_server_port)" />
         <arg name="signaling_server_password" value="$(arg signaling_server_password)" />
-        <arg name="signaling_server_robot_type" value="ttop" />
+        <arg name="signaling_server_robot_type" value="TTOP" />
         <arg name="python_executable" value="python3.8" />
         <arg name="use_tls" value="true" />
         <arg name="certificate" value="~/.ros/opentera/certs/server-cert.pem" />
@@ -19,18 +18,6 @@
     <!-- OpenTera Client (if not stand_alone)-->
     <include unless="$(arg is_stand_alone)" file="$(find opentera_client_ros)/launch/client.launch">
         <arg name="opentera_client_config_file" value="~/.ros/opentera/client_config.json"/>
-    </include>
-
-    <!-- Map image generator -->
-    <include file="$(find map_image_generator)/launch/map_image_generator.launch" >
-        <arg name="refresh_rate_param" value="5"/>
-        <arg name="draw_goals" value="false"/>
-        <arg name="draw_global_path" value="false"/>
-        <arg name="centered_robot" value="true"/>
-        <arg name="robot_vertical_offset" value="0"/>
-        <arg name="input_sound_sources_topic" value="/audio_sst"/>
-        <arg name="input_occupancy_grid_topic" value="/grid_map"/>
-        <arg name="robot_frame_param" value="torso_base"/>
     </include>
 
     <!-- Front camera -->
@@ -123,14 +110,6 @@
     <!-- OpenTera Robot GUI -->
     <node pkg="opentera_webrtc_robot_gui" type="opentera_webrtc_robot_gui_node" name="robot_gui" output="screen" respawn="true">
         <remap from="/front_camera/image_raw" to="/camera/color/image_raw"/>
-    </node>
-
-    <!-- Labels -->
-    <node name="labels_manager" type="labels_manager.py" pkg="opentera_webrtc_ros" output="screen">
-        <param name="database_path" value="$(arg database_path)"/>
-
-        <remap from="waypoint_reached" to="webrtc_data_outgoing"/>
-        <remap from="stored_labels_text" to="webrtc_data_outgoing"/>
     </node>
 
 </launch>
