@@ -2,6 +2,8 @@
     <arg name="name"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
 
+    <arg name="output" default="log"/>
+
     <node pkg="odas_ros" type="odas_server_node.py" name="odas_server_node">
         <param name="configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
         <param name="frame_id" value="odas"/>
@@ -35,7 +37,7 @@
         <remap from="sst" to="audio_sst"/>
     </node>
 
-    <node pkg="person_identification" type="capture_voice_node.py" name="capture_voice_node" output="screen">
+    <node pkg="person_identification" type="capture_voice_node.py" name="capture_voice_node" output="$(arg output)">
         <param name="name" value="$(arg name)"/>
         <param name="mean_size" value="10"/>
     </node>

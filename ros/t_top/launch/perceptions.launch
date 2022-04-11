@@ -4,6 +4,7 @@
     <arg name="odas_configuration_path" default="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
+    <arg name="output" default="log"/>
 
     <!-- RTAB-Map -->
     <include if="$(arg slam)" file="$(find t_top)/launch/perceptions/rtabmap.launch"/>
@@ -17,6 +18,7 @@
     <!-- ODAS -->
     <include file="$(find t_top)/launch/perceptions/odas.launch">
         <arg name="odas_configuration_path" value="$(arg odas_configuration_path)"/>
+        <arg name="output" value="$(arg output)"/>
     </include>
 
     <!-- Music Beat Detector -->
