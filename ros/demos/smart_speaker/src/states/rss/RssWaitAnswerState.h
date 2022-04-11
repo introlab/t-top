@@ -1,7 +1,7 @@
 #ifndef SMART_SPEAKER_STATES_RSS_RSS_WAIT_ANSWER_STATE_H
 #define SMART_SPEAKER_STATES_RSS_RSS_WAIT_ANSWER_STATE_H
 
-#include "../WaitAnswerState.h"
+#include "../common/WaitAnswerState.h"
 
 #include <std_msgs/String.h>
 

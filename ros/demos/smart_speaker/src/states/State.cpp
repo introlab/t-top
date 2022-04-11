@@ -10,13 +10,15 @@ State::State(
     : m_language(language),
       m_stateManager(stateManager),
       m_desireSet(move(desireSet)),
-      m_nodeHandle(nodeHandle)
+      m_nodeHandle(nodeHandle),
+      m_previousStageType(typeid(State))
 {
 }
 
-void State::enable(const std::string& parameter)
+void State::enable(const string& parameter, const type_index& previousStageType)
 {
     m_enabled = true;
+    m_previousStageType = previousStageType;
 }
 
 void State::disable()

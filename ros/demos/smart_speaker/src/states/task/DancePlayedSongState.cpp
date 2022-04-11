@@ -1,5 +1,6 @@
 #include "DancePlayedSongState.h"
-#include "StateManager.h"
+
+#include "../StateManager.h"
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -28,9 +29,9 @@ DancePlayedSongState::DancePlayedSongState(
         nodeHandle.subscribe("sound_player/done", 1, &DancePlayedSongState::songDoneSubscriberCallback, this);
 }
 
-void DancePlayedSongState::enable(const string& parameter)
+void DancePlayedSongState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     size_t songIndex = atoi(parameter.c_str());
     if (songIndex >= m_songPaths.size())

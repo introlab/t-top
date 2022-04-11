@@ -5,15 +5,15 @@
 #include "states/rss/RssAskTaskState.h"
 #include "states/rss/RssWaitAnswerState.h"
 #include "states/rss/RssValidTaskState.h"
-#include "states/InvalidTaskState.h"
+#include "states/common/InvalidTaskState.h"
 
-#include "states/CurrentWeatherState.h"
-#include "states/WeatherForecastState.h"
+#include "states/task/CurrentWeatherState.h"
+#include "states/task/WeatherForecastState.h"
 #include "states/rss/RssStoryState.h"
-#include "states/DanceState.h"
-#include "states/DancePlayedSongState.h"
+#include "states/task/DanceState.h"
+#include "states/task/DancePlayedSongState.h"
 
-#include "states/AfterTaskDelayState.h"
+#include "states/common/AfterTaskDelayState.h"
 
 #include <ros/ros.h>
 

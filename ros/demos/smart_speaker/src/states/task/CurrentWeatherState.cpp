@@ -1,5 +1,6 @@
 #include "CurrentWeatherState.h"
-#include "StateManager.h"
+
+#include "../StateManager.h"
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -20,9 +21,9 @@ CurrentWeatherState::CurrentWeatherState(
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &CurrentWeatherState::talkDoneSubscriberCallback, this);
 }
 
-void CurrentWeatherState::enable(const string& parameter)
+void CurrentWeatherState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");

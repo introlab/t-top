@@ -1,10 +1,8 @@
 #include "AskTaskState.h"
 
-#include "StateManager.h"
+#include "../StateManager.h"
 
 #include <t_top_hbba_lite/Desires.h>
-
-#include <sstream>
 
 using namespace std;
 
@@ -21,9 +19,9 @@ AskTaskState::AskTaskState(
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &AskTaskState::talkDoneSubscriberCallback, this);
 }
 
-void AskTaskState::enable(const string& parameter)
+void AskTaskState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");

@@ -45,6 +45,7 @@ class State
 {
     bool m_enabled;
     Language m_language;
+    std::type_index m_previousStageType;
 
 protected:
     StateManager& m_stateManager;
@@ -67,9 +68,10 @@ public:
 protected:
     bool enabled() const;
     Language language() const;
+    std::type_index previousStageType() const;
     virtual std::type_index type() const = 0;
 
-    virtual void enable(const std::string& parameter);
+    virtual void enable(const std::string& parameter, const std::type_index& previousStageType);
     virtual void disable();
 
     std::string getAndWord();
@@ -85,6 +87,11 @@ inline bool State::enabled() const
 inline Language State::language() const
 {
     return m_language;
+}
+
+inline std::type_index State::previousStageType() const
+{
+    return m_previousStageType;
 }
 
 inline std::string State::getAndWord()

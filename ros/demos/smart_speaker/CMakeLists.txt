@@ -147,40 +147,42 @@ add_executable(${PROJECT_NAME}_rss_node
         src/StringUtils.cpp
         src/states/State.cpp
         src/states/StateManager.cpp
-        src/states/AskTaskState.cpp
-        src/states/WaitAnswerState.cpp
-        src/states/ValidTaskState.cpp
-        src/states/InvalidTaskState.cpp
-        src/states/CurrentWeatherState.cpp
-        src/states/WeatherForecastState.cpp
-        src/states/DanceState.cpp
-        src/states/DancePlayedSongState.cpp
-        src/states/AfterTaskDelayState.cpp
+        src/states/common/AskTaskState.cpp
+        src/states/common/WaitAnswerState.cpp
+        src/states/common/ValidTaskState.cpp
+        src/states/common/InvalidTaskState.cpp
+        src/states/common/AfterTaskDelayState.cpp
+        src/states/task/CurrentWeatherState.cpp
+        src/states/task/WeatherForecastState.cpp
+        src/states/task/DanceState.cpp
+        src/states/task/DancePlayedSongState.cpp
         src/states/rss/RssIdleState.cpp
         src/states/rss/RssWaitPersonIdentificationState.cpp
         src/states/rss/RssAskTaskState.cpp
         src/states/rss/RssWaitAnswerState.cpp
         src/states/rss/RssValidTaskState.cpp
         src/states/rss/RssStoryState.cpp
-        )
+)
 
 add_executable(${PROJECT_NAME}_smart_node
         src/main_smart.cpp
         src/StringUtils.cpp
         src/states/State.cpp
         src/states/StateManager.cpp
-        src/states/AskTaskState.cpp
-        src/states/WaitAnswerState.cpp
-        src/states/ValidTaskState.cpp
-        src/states/InvalidTaskState.cpp
-        src/states/CurrentWeatherState.cpp
-        src/states/DancePlayedSongState.cpp
-        src/states/AfterTaskDelayState.cpp
+        src/states/common/AskTaskState.cpp
+        src/states/common/WaitAnswerState.cpp
+        src/states/common/ValidTaskState.cpp
+        src/states/common/InvalidTaskState.cpp
+        src/states/common/AfterTaskDelayState.cpp
+        src/states/task/CurrentWeatherState.cpp
+        src/states/task/DancePlayedSongState.cpp
         src/states/smart/SmartIdleState.cpp
         src/states/smart/SmartAskTaskState.cpp
         src/states/smart/SmartWaitAnswerState.cpp
         src/states/smart/SmartValidTaskState.cpp
-        )
+        src/states/smart/SmartAskOtherTaskState.cpp
+        src/states/smart/SmartPeopleInvalidTaskState.cpp
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -195,11 +197,11 @@ add_executable(${PROJECT_NAME}_smart_node
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_rss_node
         ${catkin_LIBRARIES}
-        )
+)
 
 target_link_libraries(${PROJECT_NAME}_smart_node
         ${catkin_LIBRARIES}
-        )
+)
 
 #############
 ## Install ##

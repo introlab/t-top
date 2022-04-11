@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_ASK_TASK_STATE_H
-#define SMART_SPEAKER_STATES_ASK_TASK_STATE_H
+#ifndef SMART_SPEAKER_STATES_COMMON_ASK_TASK_STATE_H
+#define SMART_SPEAKER_STATES_COMMON_ASK_TASK_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <talk/Done.h>
 
@@ -28,7 +28,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
     virtual std::string generateEnglishText(const std::string& personName) = 0;

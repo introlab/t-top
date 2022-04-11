@@ -37,15 +37,17 @@ void StateManager::switchTo(const std::string& parameter)
 
 inline void StateManager::switchTo(std::type_index stateType, const std::string& parameter)
 {
+    std::type_index previousStageType(typeid(State));
     if (m_currentState != nullptr)
     {
         ROS_INFO("Disabling %s", m_currentState->type().name());
         m_currentState->disable();
+        previousStageType = m_currentState->type();
     }
 
     ROS_INFO("Enabling %s (%s)", stateType.name(), parameter.c_str());
     m_currentState = m_states.at(stateType).get();
-    m_currentState->enable(parameter);
+    m_currentState->enable(parameter, previousStageType);
 }
 
 #endif

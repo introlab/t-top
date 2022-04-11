@@ -39,9 +39,9 @@ SmartIdleState::SmartIdleState(
         nodeHandle.subscribe("video_analysis", 1, &SmartIdleState::videoAnalysisSubscriberCallback, this);
 }
 
-void SmartIdleState::enable(const string& parameter)
+void SmartIdleState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto videoAnalyzerDesire = make_unique<FastVideoAnalyzerDesire>();
     auto gestureDesire = make_unique<GestureDesire>("origin_all");

@@ -1,7 +1,7 @@
 #ifndef SMART_SPEAKER_STATES_SMART_SMART_WAIT_ANSWER_STATE_H
 #define SMART_SPEAKER_STATES_SMART_SMART_WAIT_ANSWER_STATE_H
 
-#include "../WaitAnswerState.h"
+#include "../common/WaitAnswerState.h"
 
 #include <std_msgs/String.h>
 
@@ -10,8 +10,12 @@
 
 class SmartWaitAnswerState : public WaitAnswerState
 {
+    bool m_singleTaskPerPerson;
+    size_t m_taskCount;
+
     std::vector<std::vector<std::string>> m_songKeywords;
 
+    std::string m_nothingWord;
     std::string m_weatherWord;
     std::string m_danceWord;
 
@@ -24,6 +28,7 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
+        bool singleTaskPerPerson,
         std::vector<std::vector<std::string>> songKeywords);
     ~SmartWaitAnswerState() override = default;
 

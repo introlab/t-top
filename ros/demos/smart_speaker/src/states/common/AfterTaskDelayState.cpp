@@ -1,7 +1,6 @@
 #include "AfterTaskDelayState.h"
-#include "StateManager.h"
 
-#include <t_top_hbba_lite/Desires.h>
+#include "../StateManager.h"
 
 using namespace std;
 
@@ -18,9 +17,9 @@ AfterTaskDelayState::AfterTaskDelayState(
 {
 }
 
-void AfterTaskDelayState::enable(const string& parameter)
+void AfterTaskDelayState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     constexpr bool oneshot = true;
     m_timeoutTimer = m_nodeHandle.createTimer(m_duration, &AfterTaskDelayState::timeoutTimerCallback, this, oneshot);

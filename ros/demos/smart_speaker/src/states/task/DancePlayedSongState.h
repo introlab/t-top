@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_DANCE_PLAYED_SONG_STATE_H
-#define SMART_SPEAKER_STATES_DANCE_PLAYED_SONG_STATE_H
+#ifndef SMART_SPEAKER_STATES_TASK_DANCE_PLAYED_SONG_STATE_H
+#define SMART_SPEAKER_STATES_TASK_DANCE_PLAYED_SONG_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <sound_player/Started.h>
 #include <sound_player/Done.h>
@@ -32,7 +32,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
 private:

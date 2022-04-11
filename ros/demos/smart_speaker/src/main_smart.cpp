@@ -4,12 +4,14 @@
 #include "states/smart/SmartAskTaskState.h"
 #include "states/smart/SmartWaitAnswerState.h"
 #include "states/smart/SmartValidTaskState.h"
-#include "states/InvalidTaskState.h"
+#include "states/common/InvalidTaskState.h"
 
-#include "states/CurrentWeatherState.h"
-#include "states/DancePlayedSongState.h"
+#include "states/task/CurrentWeatherState.h"
+#include "states/task/DancePlayedSongState.h"
 
-#include "states/AfterTaskDelayState.h"
+#include "states/smart/SmartAskOtherTaskState.h"
+#include "states/smart/SmartPeopleInvalidTaskState.h"
+#include "states/common/AfterTaskDelayState.h"
 
 #include <ros/ros.h>
 
@@ -37,6 +39,7 @@ void startNode(
     const vector<string>& songNames,
     const vector<vector<string>>& songKeywords,
     const vector<string>& songPaths,
+    bool singleTaskPerPerson,
     const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
@@ -57,8 +60,7 @@ void startNode(
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
     StateManager stateManager;
-    type_index idleStateType(typeid(SmartIdleState));
-    type_index afterTaskDelayStateType(typeid(AfterTaskDelayState));
+    type_index askOtherTaskStateType(typeid(SmartAskOtherTaskState));
 
     stateManager.addState(make_unique<SmartIdleState>(
         language,
@@ -71,27 +73,35 @@ void startNode(
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
     stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle, songNames));
-    stateManager.addState(
-        make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songKeywords));
+    stateManager.addState(make_unique<SmartWaitAnswerState>(
+        language,
+        stateManager,
+        desireSet,
+        nodeHandle,
+        singleTaskPerPerson,
+        songKeywords));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(
+        make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
 
     stateManager.addState(
-        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
     stateManager.addState(make_unique<DancePlayedSongState>(
         language,
         stateManager,
         desireSet,
         nodeHandle,
-        afterTaskDelayStateType,
+        askOtherTaskStateType,
         songPaths));
 
+    stateManager.addState(make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<SmartPeopleInvalidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<AfterTaskDelayState>(
         language,
         stateManager,
         desireSet,
         nodeHandle,
-        idleStateType,
+        typeid(SmartIdleState),
         afterTaskDelayDuration));
 
     stateManager.switchTo<SmartIdleState>();
@@ -210,6 +220,9 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    bool singleTaskPerPerson = false;
+    privateNodeHandle.param("single_task_per_person", singleTaskPerPerson, false);
+
     double afterTaskDelayDurationS;
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
@@ -235,6 +248,7 @@ int main(int argc, char** argv)
         songNames,
         songKeywords,
         songPaths,
+        singleTaskPerPerson,
         afterTaskDelayDuration);
 
     return 0;

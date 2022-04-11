@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_WAIT_ANSWER_STATE_H
-#define SMART_SPEAKER_STATES_WAIT_ANSWER_STATE_H
+#ifndef SMART_SPEAKER_STATES_COMMON_WAIT_ANSWER_STATE_H
+#define SMART_SPEAKER_STATES_COMMON_WAIT_ANSWER_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <std_msgs/String.h>
 
@@ -24,7 +24,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
     virtual void switchStateAfterTranscriptReceived(const std::string& text) = 0;

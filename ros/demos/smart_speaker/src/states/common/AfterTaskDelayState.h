@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_AFTER_TASK_DELAY_STATE_H
-#define SMART_SPEAKER_AFTER_TASK_DELAY_STATE_H
+#ifndef SMART_SPEAKER_STATES_COMMON_AFTER_TASK_DELAY_STATE_H
+#define SMART_SPEAKER_STATES_COMMON_AFTER_TASK_DELAY_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 class AfterTaskDelayState : public State
 {
@@ -26,7 +26,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
 private:

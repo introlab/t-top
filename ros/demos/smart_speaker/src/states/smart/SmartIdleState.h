@@ -44,7 +44,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
 
 private:
     void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);

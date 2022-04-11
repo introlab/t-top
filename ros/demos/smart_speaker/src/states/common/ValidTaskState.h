@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_VALID_TASK_STATE_H
-#define SMART_SPEAKER_STATES_VALID_TASK_STATE_H
+#ifndef SMART_SPEAKER_STATES_COMMON_VALID_TASK_STATE_H
+#define SMART_SPEAKER_STATES_COMMON_VALID_TASK_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <talk/Done.h>
 #include <gesture/Done.h>
@@ -30,7 +30,7 @@ public:
     DECLARE_NOT_MOVABLE(ValidTaskState);
 
 protected:
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
     virtual void switchState(const std::string& task) = 0;
