@@ -22,7 +22,7 @@
         <remap from="sst" to="audio_sst"/>
         <remap from="ec_signal" to="audio_signed_16_44100"/>
     </node>
-    <node if="$(arg visualization)" pkg="odas_ros" type="odas_visualization_node.py" name="odas_visualization_node">
+    <node if="$(eval arg('visualization') or arg('rviz'))" pkg="odas_ros" type="odas_visualization_node.py" name="odas_visualization_node">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
 
         <remap from="sst" to="audio_sst"/>

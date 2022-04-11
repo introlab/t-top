@@ -39,7 +39,6 @@
     </include>
 
     <include file="$(find t_top)/launch/behaviors/opentera.launch">
-        <arg name="database_path" value="~/.ros/opentera.yaml"/>
         <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
     </include>
 
