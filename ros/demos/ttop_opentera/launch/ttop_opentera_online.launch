@@ -2,6 +2,7 @@
     <arg name="output" default="log"/>
 
     <include file="$(find t_top)/launch/opentera_teleop.launch">
+        <arg name="is_stand_alone" value="false"/>
         <arg name="output" value="$(arg output)"/>
     </include>
 
