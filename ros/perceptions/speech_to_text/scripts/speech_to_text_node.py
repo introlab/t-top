@@ -90,27 +90,25 @@ class SpeechToTextNode:
                 continue
 
             with speech.SpeechClient() as client:
-                config = speech.RecognitionConfig(
-                    encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-                    sample_rate_hertz=self._sampling_frequency,
-                    language_code=self._language_code)
-                streaming_config = speech.StreamingRecognitionConfig(config=config,
-                                                                    single_utterance=False,
-                                                                    interim_results=False)
-
-                requests = (speech.StreamingRecognizeRequest(
-                    audio_content=content) for content in self._request_frame_generator())
-
-                responses = client.streaming_recognize(streaming_config, requests, timeout=self._timeout)
+                responses = client.streaming_recognize(self._requests_generator(), timeout=self._timeout)
                 for response in responses:
                     if response.results and response.results[0].is_final:
                         msg = String()
                         msg.data = response.results[0].alternatives[0].transcript
                         self._text_pub.publish(msg)
 
-    def _request_frame_generator(self):
+    def _requests_generator(self):
+        config = speech.RecognitionConfig(
+                    encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+                    sample_rate_hertz=self._sampling_frequency,
+                    language_code=self._language_code)
+        streaming_config = speech.StreamingRecognitionConfig(config=config,
+                                                            single_utterance=False,
+                                                            interim_results=False)
+        yield speech.StreamingRecognizeRequest(streaming_config=streaming_config)
+
         while self._is_enabled:
-            yield self._request_frame_queue.get().tobytes()
+            yield speech.StreamingRecognizeRequest(audio_content=self._request_frame_queue.get().tobytes())
 
 
 def main():
