@@ -3,11 +3,16 @@
 
 #include "../State.h"
 
+#include <std_msgs/Empty.h>
+
 class AfterTaskDelayState : public State
 {
     std::type_index m_nextStateType;
 
+    bool m_useAfterTaskDelayDurationTopic;
     ros::Duration m_duration;
+
+    ros::Subscriber m_readySubscriber;
     ros::Timer m_timeoutTimer;
 
 public:
@@ -17,6 +22,7 @@ public:
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         std::type_index nextStateType,
+        bool useAfterTaskDelayDurationTopic,
         ros::Duration duration);
     ~AfterTaskDelayState() override = default;
 
@@ -30,6 +36,7 @@ protected:
     void disable() override;
 
 private:
+    void readyCallback(const std_msgs::Empty::ConstPtr& msg);
     void timeoutTimerCallback(const ros::TimerEvent& event);
 };
 

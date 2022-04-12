@@ -36,6 +36,7 @@ void startNode(
     const string& englishStoryPath,
     const string& frenchStoryPath,
     const string& songPath,
+    bool useAfterTaskDelayDurationTopic,
     const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
@@ -93,6 +94,7 @@ void startNode(
         desireSet,
         nodeHandle,
         idleStateType,
+        useAfterTaskDelayDurationTopic,
         afterTaskDelayDuration));
 
     stateManager.switchTo<RssIdleState>();
@@ -139,11 +141,21 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    bool useAfterTaskDelayDurationTopic = false;
+    privateNodeHandle.param("use_after_task_delay_duration_topic", useAfterTaskDelayDurationTopic, false);
+
     double afterTaskDelayDurationS;
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
 
-    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath, afterTaskDelayDuration);
+    startNode(
+        language,
+        nodeHandle,
+        englishStoryPath,
+        frenchStoryPath,
+        songPath,
+        useAfterTaskDelayDurationTopic,
+        afterTaskDelayDuration);
 
     return 0;
 }

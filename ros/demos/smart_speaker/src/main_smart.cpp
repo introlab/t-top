@@ -40,6 +40,7 @@ void startNode(
     const vector<vector<string>>& songKeywords,
     const vector<string>& songPaths,
     bool singleTaskPerPerson,
+    bool useAfterTaskDelayDurationTopic,
     const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
@@ -102,6 +103,7 @@ void startNode(
         desireSet,
         nodeHandle,
         typeid(SmartIdleState),
+        useAfterTaskDelayDurationTopic,
         afterTaskDelayDuration));
 
     stateManager.switchTo<SmartIdleState>();
@@ -223,6 +225,9 @@ int main(int argc, char** argv)
     bool singleTaskPerPerson = false;
     privateNodeHandle.param("single_task_per_person", singleTaskPerPerson, false);
 
+    bool useAfterTaskDelayDurationTopic = false;
+    privateNodeHandle.param("use_after_task_delay_duration_topic", useAfterTaskDelayDurationTopic, false);
+
     double afterTaskDelayDurationS;
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
@@ -249,6 +254,7 @@ int main(int argc, char** argv)
         songKeywords,
         songPaths,
         singleTaskPerPerson,
+        useAfterTaskDelayDurationTopic,
         afterTaskDelayDuration);
 
     return 0;
