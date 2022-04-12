@@ -20,8 +20,6 @@ SUPPORTED_CHANNEL_COUNT = 1
 
 class SpeechToTextNode:
     def __init__(self):
-        self._lock = threading.Lock()
-
         self._sampling_frequency = rospy.get_param('~sampling_frequency', 16000)
         self._frame_sample_count = rospy.get_param('~frame_sample_count', 92)
         self._request_frame_count = rospy.get_param('~request_frame_count', 20)
@@ -31,6 +29,8 @@ class SpeechToTextNode:
         self._sleeping_duration = self._request_frame_count * self._frame_sample_count / self._sampling_frequency
 
         self._is_enabled = False
+
+        self._buffer_lock = threading.Lock()
         self._buffer = self._create_request_frame_buffer()
         self._current_buffer_index = 0
         self._request_frame_queue = queue.Queue()
@@ -40,6 +40,8 @@ class SpeechToTextNode:
         self._text_pub = rospy.Publisher('text', String, queue_size=10)
         self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
+
+        self._client = speech.SpeechClient()
 
     def _convert_language_to_language_code(self, language):
         if language == 'en':
@@ -59,7 +61,7 @@ class SpeechToTextNode:
                 .format(msg.format, msg.channel_count, msg.sampling_frequency, msg.frame_sample_count))
             return
 
-        with self._lock:
+        with self._buffer_lock:
             audio_frame = np.frombuffer(msg.data, dtype=np.int16)
             self._buffer[self._current_buffer_index:self._current_buffer_index + self._frame_sample_count] = audio_frame
 
@@ -70,7 +72,7 @@ class SpeechToTextNode:
                 self._request_frame_queue.put(self._buffer.copy())
 
     def _filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        with self._lock:
+        with self._buffer_lock:
             if previous_is_filtering_all_messages and not new_is_filtering_all_messages:
                 self._current_buffer_index = 0
                 while not self._request_frame_queue.empty():
@@ -78,7 +80,7 @@ class SpeechToTextNode:
                 self._is_enabled = True
             elif not previous_is_filtering_all_messages and new_is_filtering_all_messages:
                 self._is_enabled = False
-                self._request_frame_queue.put(self._create_request_frame_buffer())
+                self._request_frame_queue.put(None)
 
     def _shutdown_cb(self):
         self._filter_state_changed_cb(self._audio_sub.is_filtering_all_messages, True)
@@ -89,28 +91,29 @@ class SpeechToTextNode:
                 time.sleep(self._sleeping_duration)
                 continue
 
-            with speech.SpeechClient() as client:
-                config = speech.RecognitionConfig(
-                    encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-                    sample_rate_hertz=self._sampling_frequency,
-                    language_code=self._language_code)
-                streaming_config = speech.StreamingRecognitionConfig(config=config,
-                                                                    single_utterance=False,
-                                                                    interim_results=False)
+            config = speech.RecognitionConfig(
+                encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+                sample_rate_hertz=self._sampling_frequency,
+                language_code=self._language_code)
+            streaming_config = speech.StreamingRecognitionConfig(config=config,
+                                                                single_utterance=False,
+                                                                interim_results=False)
 
-                requests = (speech.StreamingRecognizeRequest(
-                    audio_content=content) for content in self._request_frame_generator())
-
-                responses = client.streaming_recognize(streaming_config, requests, timeout=self._timeout)
-                for response in responses:
-                    if response.results and response.results[0].is_final:
-                        msg = String()
-                        msg.data = response.results[0].alternatives[0].transcript
-                        self._text_pub.publish(msg)
+            requests = self._request_frame_generator()
+            responses = self._client.streaming_recognize(streaming_config, requests, timeout=self._timeout)
+            for response in responses:
+                if response.results and response.results[0].is_final:
+                    msg = String()
+                    msg.data = response.results[0].alternatives[0].transcript
+                    self._text_pub.publish(msg)
 
     def _request_frame_generator(self):
         while self._is_enabled:
-            yield self._request_frame_queue.get().tobytes()
+            audio_content = self._request_frame_queue.get().tobytes()
+            if audio_content is None:
+                break
+
+            yield speech.StreamingRecognizeRequest(audio_content=audio_content)
 
 
 def main():
