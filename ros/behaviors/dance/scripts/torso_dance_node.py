@@ -24,7 +24,7 @@ class TorsoDanceNode(DanceNode):
         self._current_torso_orientation_sub = rospy.Subscriber('opencr/current_torso_orientation', Float32, self._current_torso_orientation_cb, queue_size=1)
 
     def _hbba_filter_state_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
+        if previous_is_filtering_all_messages and not new_is_filtering_all_messages:
             with self._lock, self._current_torso_orientation_lock:
                 self._torso_offset = self._current_torso_orientation
 
