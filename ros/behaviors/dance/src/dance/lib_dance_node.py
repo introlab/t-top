@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from abc import ABC, abstractmethod
 import threading
 import json
 import random
@@ -7,16 +8,14 @@ import random
 import rospy
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
-from geometry_msgs.msg import PoseStamped
 
 import hbba_lite
-from t_top import HEAD_ZERO_Z
 
 
 P_CHANGE_MOVEMENT = 0.25
 
 
-class DanceNode:
+class DanceNode(ABC):
     def __init__(self):
         self._lock = threading.Lock()
 
@@ -29,15 +28,16 @@ class DanceNode:
         self._bpm = 120
         self._peak_delay_pose_count = 0
 
-
         self._rate = rospy.Rate(100)
 
-        self._head_pose_pub = rospy.Publisher('opencr/head_pose', PoseStamped, queue_size=5)
-        self._torso_orientation_pub = rospy.Publisher('opencr/torso_orientation', Float32, queue_size=5)
-
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('pose/filter_state')
+        self._hbba_filter_state.on_changed(self._hbba_filter_state_cb)
+
         self._bpm_sub = rospy.Subscriber('bpm', Float32, self._bpm_cb, queue_size=1)
         self._beat_sub = rospy.Subscriber('beat', Bool, self._beat_cb, queue_size=1)
+
+    def _hbba_filter_state_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
+        pass
 
     def _bpm_cb(self, msg):
         if msg.data > 0:
@@ -87,28 +87,10 @@ class DanceNode:
 
         return rospy.Duration.from_sec(float(beat_duration) / pose_count / self._bpm * 60.0)
 
+    @abstractmethod
     def _send_pose(self, pose):
-        if len(pose) == 7:
-            pose_msg = PoseStamped()
-            pose_msg.header.frame_id = 'stewart_base'
-
-            pose_msg.pose.position.x = pose[0]
-            pose_msg.pose.position.y = pose[1]
-            pose_msg.pose.position.z = HEAD_ZERO_Z + pose[2]
-
-            pose_msg.pose.orientation.x = pose[3]
-            pose_msg.pose.orientation.y = pose[4]
-            pose_msg.pose.orientation.z = pose[5]
-            pose_msg.pose.orientation.w = pose[6]
-
-            self._head_pose_pub.publish(pose_msg)
-        elif len(pose) == 1:
-            pose_msg = Float32()
-            pose_msg.data = pose[0]
-
-            self._torso_orientation_pub.publish(pose_msg)
-        else:
-            rospy.logerr('Invalid pose')
+        """ Called with self._lock locked """
+        pass
 
 
 def main():

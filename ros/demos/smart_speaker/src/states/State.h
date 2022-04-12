@@ -11,7 +11,7 @@
 #include <vector>
 #include <typeindex>
 
-constexpr double TIMEOUT_S = 10;
+constexpr double TIMEOUT_S = 30;
 constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max();  // TODO change to optional with C++17
 constexpr int FLOAT_NUMBER_PRECISION = 3;
 
