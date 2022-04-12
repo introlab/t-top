@@ -41,7 +41,7 @@ class SpeechToTextNode:
         self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
 
-        self._client = speech.SpeechClient()
+        self._speech_client = speech.SpeechClient()
 
     def _convert_language_to_language_code(self, language):
         if language == 'en':
@@ -100,7 +100,7 @@ class SpeechToTextNode:
                                                                 interim_results=False)
 
             requests = self._request_frame_generator()
-            responses = self._client.streaming_recognize(streaming_config, requests, timeout=self._timeout)
+            responses = self._speech_client.streaming_recognize(streaming_config, requests, timeout=self._timeout)
             for response in responses:
                 if response.results and response.results[0].is_final:
                     msg = String()
@@ -109,11 +109,11 @@ class SpeechToTextNode:
 
     def _request_frame_generator(self):
         while self._is_enabled:
-            audio_content = self._request_frame_queue.get().tobytes()
+            audio_content = self._request_frame_queue.get()
             if audio_content is None:
                 break
 
-            yield speech.StreamingRecognizeRequest(audio_content=audio_content)
+            yield speech.StreamingRecognizeRequest(audio_content=audio_content.tobytes())
 
 
 def main():
