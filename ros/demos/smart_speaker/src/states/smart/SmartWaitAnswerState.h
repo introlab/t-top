@@ -6,7 +6,6 @@
 #include <std_msgs/String.h>
 
 #include <string>
-#include <random>
 
 class SmartWaitAnswerState : public WaitAnswerState
 {
@@ -18,9 +17,6 @@ class SmartWaitAnswerState : public WaitAnswerState
     std::string m_nothingWord;
     std::string m_weatherWord;
     std::string m_danceWord;
-
-    std::mt19937 m_randomGenerator;
-    std::uniform_int_distribution<size_t> m_songIndexDistribution;
 
 public:
     SmartWaitAnswerState(

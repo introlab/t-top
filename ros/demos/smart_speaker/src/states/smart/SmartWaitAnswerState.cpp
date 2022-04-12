@@ -33,11 +33,9 @@ SmartWaitAnswerState::SmartWaitAnswerState(
     bool singleTaskPerPerson,
     vector<vector<string>> songKeywords)
     : WaitAnswerState(language, stateManager, desireSet, nodeHandle),
-      m_songKeywords(move(songKeywords)),
-      m_randomGenerator(random_device()()),
       m_singleTaskPerPerson(singleTaskPerPerson),
       m_taskCount(0),
-      m_songIndexDistribution(0, m_songKeywords.size() - 1)
+      m_songKeywords(move(songKeywords))
 {
     if (m_songKeywords.size() == 0)
     {
@@ -119,11 +117,6 @@ size_t SmartWaitAnswerState::getSongIndex(const std::string& text)
         {
             return string::npos;
         }
-    }
-
-    if (songIndex == string::npos)
-    {
-        songIndex = m_songIndexDistribution(m_randomGenerator);
     }
 
     return songIndex;
