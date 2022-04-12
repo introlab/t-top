@@ -11,7 +11,7 @@ from std_msgs.msg import String
 from audio_utils.msg import AudioFrame
 import hbba_lite
 
-from google.cloud import speech_v1 as speech
+from google.cloud import speech
 
 
 SUPPORTED_AUDIO_FORMAT = 'signed_16'
@@ -30,6 +30,7 @@ class SpeechToTextNode:
 
         self._sleeping_duration = self._request_frame_count * self._frame_sample_count / self._sampling_frequency
 
+        self._is_enabled = False
         self._buffer = self._create_request_frame_buffer()
         self._current_buffer_index = 0
         self._request_frame_queue = queue.Queue()
@@ -84,7 +85,7 @@ class SpeechToTextNode:
 
     def run(self):
         while not rospy.is_shutdown():
-            if self._audio_sub.is_filtering_all_messages:
+            if not self._is_enabled:
                 time.sleep(self._sleeping_duration)
                 continue
 
@@ -108,7 +109,7 @@ class SpeechToTextNode:
                     self._text_pub.publish(msg)
 
     def _request_frame_generator(self):
-        while not self._audio_sub.is_filtering_all_messages:
+        while self._is_enabled:
             yield self._request_frame_queue.get().tobytes()
 
 
