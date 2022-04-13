@@ -9,13 +9,14 @@ from opentera_webrtc_ros_msgs.msg import RobotStatus
 from std_msgs.msg import String, Float32MultiArray
 from subprocess import Popen, PIPE
 from typing import List, Optional, Union
+from threading import Lock
 
 
 def clamp(value: float, min_value: float, max_value: float) -> float:
     return max(min(value, max_value), min_value)
 
 
-class BatteryStatus:
+class BaseStatus:
     def __init__(self,
                  percentage: Optional[float] = None,
                  voltage: Optional[float] = None,
@@ -40,18 +41,18 @@ class RobotStatusPublisher():
     def __init__(self):
         rospy.init_node("robot_status_publisher")
 
+        self.base_status = BaseStatus()
+        self.base_status_lock = Lock()
+        self.pub_rate = 1
+
         self.status_pub = rospy.Publisher(
             '/robot_status', RobotStatus, queue_size=10)
         self.status_webrtc_pub = rospy.Publisher(
             '/webrtc_data_outgoing', String, queue_size=10)
 
-        self.battery_status_sub = rospy.Subscriber(
+        self.base_status_sub = rospy.Subscriber(
             "/opencr/base_status",
-            Float32MultiArray, self.battery_status_cb, queue_size=1)
-
-        self.pub_rate = 1
-
-        self.battery_status = BatteryStatus()
+            Float32MultiArray, self.base_status_cb, queue_size=1)
 
     def get_ip_address(self, ifname: str):
         try:
@@ -68,21 +69,23 @@ class RobotStatusPublisher():
         free_blocks = result.f_bfree
         return 100 - (free_blocks * 100 / total_blocks)
 
-    def battery_status_cb(self, msg):
-        self.battery_status = BatteryStatus(*msg.data)
+    def base_status_cb(self, msg):
+        with self.base_status_lock:
+            self.base_status = BaseStatus(*msg.data)
 
     def run(self):
-        r = rospy.Rate(self.pub_rate)
+        rate = rospy.Rate(self.pub_rate)
         while not rospy.is_shutdown():
             # Fill timestamp
             status = RobotStatus()
             status.header.stamp = rospy.Time.now()
 
             # Fill robot info
-            status.battery_voltage = self.battery_status.voltage
-            status.battery_current = self.battery_status.current
-            status.battery_level = self.battery_status.percentage
-            status.is_charging = self.battery_status.is_plugged_in
+            with self.base_status_lock:
+                status.battery_voltage = self.base_status.voltage
+                status.battery_current = self.base_status.current
+                status.battery_level = self.base_status.percentage
+                status.is_charging = self.base_status.is_plugged_in
 
             status.cpu_usage = psutil.cpu_percent()
             status.mem_usage = psutil.virtual_memory().percent
@@ -135,7 +138,7 @@ class RobotStatusPublisher():
             # Publish
             self.status_pub.publish(status)
 
-            r.sleep()
+            rate.sleep()
 
 
 if __name__ == '__main__':
