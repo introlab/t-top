@@ -1,6 +1,7 @@
 <launch>
     <arg name="language" default="fr"/>  <!-- Options: fr or en -->
     <arg name="single_task_per_person" default="true"/>
+    <arg name="record_session" default="false"/>
 
     <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 30; $0 $@' ">
         <param name="language" value="$(arg language)"/>
@@ -16,22 +17,28 @@
         <param name="after_task_delay_duration_s" value="30"/> <!-- Useless when use_after_task_delay_duration_topic=true -->
         <param name="single_task_per_person" value="$(arg single_task_per_person)"/>
 
-        <rosparam param="songs">
+        <rosparam if="$(eval arg('language') == 'fr')" param="songs">
             - name: Ça fait rire les oiseaux
               keywords:
                 - rire
                 - oiseau
-              path: ~/.ros/ttop/Compagnie_créole_ca_fait_rire_les_oiseaux_30s.mp3
+              path: ~/.ros/ttop/audio/Compagnie_créole_ca_fait_rire_les_oiseaux_30s.mp3
             - name: La dame en bleu,
               keywords:
                 - dame
                 - bleu
-              path: ~/.ros/ttop/Michel_Louvain_La_Dame_En_Bleu_30s.mp3
+              path: ~/.ros/ttop/audio/Michel_Louvain_La_Dame_En_Bleu_30s.mp3
             - name: Un amour qui ne veut pas mourir,
               keywords:
                 - amour
                 - mourir
-              path: ~/.ros/ttop/Renee_Martel_Un_Amour_Qui_Ne_Veut_Pas_Mourir_30s.mp3
+              path: ~/.ros/ttop/audio/Renee_Martel_Un_Amour_Qui_Ne_Veut_Pas_Mourir_30s.mp3
+        </rosparam>
+        <rosparam if="$(eval arg('language') == 'en')" param="songs">
+            - name: Help!
+              keywords:
+                - help
+              path: ~/.ros/ttop/audio/The_Beatles_Help_30s.mp3
         </rosparam>
     </node>
 
@@ -40,4 +47,6 @@
         <arg name="slam" value="false"/>
         <arg name="fullscreen_face" value="true"/>
     </include>
+
+    <include if="$(arg record_session)" file="$(find t_top)/launch/record.launch"/>
 </launch>
