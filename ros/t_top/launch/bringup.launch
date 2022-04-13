@@ -4,6 +4,7 @@
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
     <arg name="simulation" default="false"/>
+    <arg name="fullscreen_face" default="false"/>
 
     <include file="$(find t_top)/launch/platform.launch"/>
 
@@ -16,6 +17,7 @@
     <include file="$(find t_top)/launch/behaviors.launch">
         <arg name="language" value="$(arg language)"/>
         <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="fullscreen_face" value="$(arg fullscreen_face)"/>
     </include>
 
     <node pkg="cloud_data" type="cloud_data_node.py" name="cloud_data_node">

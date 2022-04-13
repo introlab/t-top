@@ -1,5 +1,7 @@
 <launch>
 
-    <node pkg="user_interface" type="web.sh" name="user_interface"/>
+    <arg name="fullscreen" default="false"/>
+
+    <node pkg="user_interface" type="web.sh" name="user_interface" args="$(arg fullscreen)"/>
 
 </launch>

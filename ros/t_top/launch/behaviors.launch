@@ -1,13 +1,16 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="simulation"/>
+    <arg name="fullscreen_face" default="false"/>
 
     <!-- Telepresence -->
     <!-- See opentera-webrtc-ros -->
 
     <!-- Emotions -->
     <!-- See user_interface -->
-    <include file="$(find t_top)/launch/behaviors/face.launch"/>
+    <include file="$(find t_top)/launch/behaviors/face.launch">
+        <arg name="fullscreen" value="$(arg fullscreen_face)"/>
+    </include>
 
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">

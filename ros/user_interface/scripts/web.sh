@@ -10,11 +10,20 @@ SERVER_PID=$!
 trap "kill ${SERVER_PID}; exit 1" INT
 sleep 10
 
+if [ "$1" == "true" ]
+then
+  FULLSCREEN="--kiosk"
+else
+  FULLSCREEN=""
+fi
 
 export DISPLAY=:0.0
 URL="http://localhost:8080/face"
 
-if which xdg-open > /dev/null
+if which chromium-browser > /dev/null
+then
+  chromium-browser $FULLSCREEN $URL &> /dev/null
+elif which xdg-open > /dev/null
 then
   xdg-open $URL &> /dev/null
 elif which gnome-open > /dev/null
