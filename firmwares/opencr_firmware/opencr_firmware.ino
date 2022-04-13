@@ -50,7 +50,7 @@ float rawImuMsgData[RAW_IMU_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray rawImuMsg;
 ros::Publisher rawImuPub("opencr/raw_imu", &rawImuMsg);
 
-// Message format ; stateOfCharge, current, voltage, isPsuConnected, isBatteryCharging
+// Message format : stateOfCharge, current, voltage, isPsuConnected, isBatteryCharging
 constexpr int BASE_STATUS_MSG_DATA_LENGTH = 5;
 float baseStatusMsgData[BASE_STATUS_MSG_DATA_LENGTH];
 std_msgs::Float32MultiArray baseStatusMsg;
