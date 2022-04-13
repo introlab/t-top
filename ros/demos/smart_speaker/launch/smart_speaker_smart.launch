@@ -22,23 +22,23 @@
               keywords:
                 - rire
                 - oiseau
-              path: ~/.ros/ttop/audio/Compagnie_créole_ca_fait_rire_les_oiseaux_30s.mp3
+              path: ~/.ros/ttop/audio/fr/Compagnie_créole_ca_fait_rire_les_oiseaux_30s.mp3
             - name: La dame en bleu,
               keywords:
                 - dame
                 - bleu
-              path: ~/.ros/ttop/audio/Michel_Louvain_La_Dame_En_Bleu_30s.mp3
+              path: ~/.ros/ttop/audio/fr/Michel_Louvain_La_Dame_En_Bleu_30s.mp3
             - name: Un amour qui ne veut pas mourir,
               keywords:
                 - amour
                 - mourir
-              path: ~/.ros/ttop/audio/Renee_Martel_Un_Amour_Qui_Ne_Veut_Pas_Mourir_30s.mp3
+              path: ~/.ros/ttop/audio/fr/Renee_Martel_Un_Amour_Qui_Ne_Veut_Pas_Mourir_30s.mp3
         </rosparam>
         <rosparam if="$(eval arg('language') == 'en')" param="songs">
             - name: Help!
               keywords:
                 - help
-              path: ~/.ros/ttop/audio/The_Beatles_Help_30s.mp3
+              path: ~/.ros/ttop/audio/en/The_Beatles_Help_30s.mp3
         </rosparam>
     </node>
 
