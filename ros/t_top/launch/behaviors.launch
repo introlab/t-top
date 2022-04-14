@@ -1,5 +1,6 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
     <arg name="simulation"/>
     <arg name="fullscreen_face" default="false"/>
 
@@ -15,6 +16,7 @@
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="speaking_rate" value="$(arg speaking_rate)"/>
     </include>
 
     <!-- Gesture -->

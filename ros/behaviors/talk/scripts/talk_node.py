@@ -23,9 +23,11 @@ import hbba_lite
 class TalkNode:
     def __init__(self):
         self._language = rospy.get_param('~language')
+        self._speaking_rate = rospy.get_param('~speaking_rate')
         self._mouth_signal_gain = rospy.get_param('~mouth_signal_gain')
         self._sampling_frequency = rospy.get_param('~sampling_frequency')
         self._frame_sample_count = rospy.get_param('~frame_sample_count')
+
         self._rospack = rospkg.RosPack()
         self._pkg_path = self._rospack.get_path('talk')
 
@@ -55,7 +57,8 @@ class TalkNode:
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
         voice = texttospeech.VoiceSelectionParams(language_code=language_code, ssml_gender=texttospeech.SsmlVoiceGender.MALE)
-        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
+        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
+                                                speaking_rate=self._speaking_rate)
 
         response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
         return response.audio_content
@@ -132,7 +135,8 @@ class TalkNode:
         return current_energy_filter_sos, current_energy_filter_zi
 
     def _initialize_mouth_signal_filter(self):
-        mouth_signal_filter_sos =  signal.butter(1, 2.5, btype='lowpass', fs=self._sampling_frequency // self._frame_sample_count, output='sos')
+        mouth_signal_filter_sos =  signal.butter(1, 2.5, btype='lowpass',
+                                                 fs=self._sampling_frequency // self._frame_sample_count, output='sos')
         mouth_signal_filter_zi = np.zeros((mouth_signal_filter_sos.shape[0], 2))
         return mouth_signal_filter_sos, mouth_signal_filter_zi
 

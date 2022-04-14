@@ -1,5 +1,6 @@
 <launch>
     <arg name="language" default="fr"/>  <!-- Options: fr or en -->
+    <arg name="speaking_rate" default="0.75"/> <!-- Range: [0.25, 4.0] -->
     <arg name="single_task_per_person" default="true"/>
     <arg name="record_session" default="false"/>
 
@@ -44,6 +45,7 @@
 
     <include file="$(find t_top)/launch/bringup.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="speaking_rate" value="$(arg speaking_rate)"/>
         <arg name="slam" value="false"/>
         <arg name="fullscreen_face" value="true"/>
     </include>
