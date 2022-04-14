@@ -21,12 +21,10 @@ SUPPORTED_CHANNEL_COUNT = 1
 
 class SpeechToTextNode:
     def __init__(self):
-        self._sampling_frequency = rospy.get_param(
-            '~sampling_frequency', 16000)
+        self._sampling_frequency = rospy.get_param('~sampling_frequency', 16000)
         self._frame_sample_count = rospy.get_param('~frame_sample_count', 92)
         self._request_frame_count = rospy.get_param('~request_frame_count', 20)
-        self._language_code = self._convert_language_to_language_code(
-            rospy.get_param('~language'))
+        self._language_code = self._convert_language_to_language_code(rospy.get_param('~language'))
         self._timeout = rospy.get_param('~timeout', None)
 
         self._sleeping_duration = (self._request_frame_count *
@@ -42,8 +40,7 @@ class SpeechToTextNode:
         rospy.on_shutdown(self._shutdown_cb)
 
         self._text_pub = rospy.Publisher('text', String, queue_size=10)
-        self._audio_sub = hbba_lite.OnOffHbbaSubscriber(
-            'audio_in', AudioFrame, self._audio_cb, queue_size=10)
+        self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
 
         self._speech_client = speech.SpeechClient()
@@ -131,7 +128,10 @@ def main():
     while not rospy.is_shutdown():
         try:
             speech_to_text_node.run()
-        except (core_exceptions.InvalidArgument, core_exceptions.Unknown, core_exceptions.DeadlineExceeded) as e:
+        except (core_exceptions.InvalidArgument,
+                core_exceptions.Unknown,
+                core_exceptions.DeadlineExceeded,
+                core_exceptions.OutOfRange) as e:
             rospy.logerr(f'speech_to_text_node has failed ({e})')
 
 

@@ -6,7 +6,6 @@
         <param name="frame_sample_count" value="743"/>
         <param name="request_frame_count" value="4"/>
         <param name="language" value="$(arg language)"/>
-        <param name="timeout" value="15"/>
 
         <remap from="audio_in" to="audio_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
