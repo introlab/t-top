@@ -10,7 +10,7 @@
 #include "states/task/DancePlayedSongState.h"
 
 #include "states/smart/SmartAskOtherTaskState.h"
-#include "states/smart/SmartPeopleInvalidTaskState.h"
+#include "states/smart/SmartThankYouState.h"
 #include "states/common/AfterTaskDelayState.h"
 
 #include <ros/ros.h>
@@ -74,13 +74,8 @@ void startNode(
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
     stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle, songNames));
-    stateManager.addState(make_unique<SmartWaitAnswerState>(
-        language,
-        stateManager,
-        desireSet,
-        nodeHandle,
-        singleTaskPerPerson,
-        songKeywords));
+    stateManager.addState(
+        make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songKeywords));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(
         make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
@@ -95,8 +90,9 @@ void startNode(
         askOtherTaskStateType,
         songPaths));
 
-    stateManager.addState(make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<SmartPeopleInvalidTaskState>(language, stateManager, desireSet, nodeHandle));
+    stateManager.addState(
+        make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, nodeHandle, singleTaskPerPerson));
+    stateManager.addState(make_unique<SmartThankYouState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<AfterTaskDelayState>(
         language,
         stateManager,

@@ -9,9 +9,6 @@
 
 class SmartWaitAnswerState : public WaitAnswerState
 {
-    bool m_singleTaskPerPerson;
-    size_t m_taskCount;
-
     std::vector<std::vector<std::string>> m_songKeywords;
 
     std::string m_nothingWord;
@@ -24,7 +21,6 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        bool singleTaskPerPerson,
         std::vector<std::vector<std::string>> songKeywords);
     ~SmartWaitAnswerState() override = default;
 

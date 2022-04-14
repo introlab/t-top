@@ -1,11 +1,11 @@
 #ifndef SMART_SPEAKER_STATES_RSS_RSS_ASK_TASK_STATE_H
 #define SMART_SPEAKER_STATES_RSS_RSS_ASK_TASK_STATE_H
 
-#include "../common/AskTaskState.h"
+#include "../common/TalkState.h"
 
 #include <talk/Done.h>
 
-class RssAskTaskState : public AskTaskState
+class RssAskTaskState : public TalkState
 {
 public:
     RssAskTaskState(

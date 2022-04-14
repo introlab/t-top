@@ -1,4 +1,4 @@
-#include "AskTaskState.h"
+#include "TalkState.h"
 
 #include "../StateManager.h"
 
@@ -6,7 +6,7 @@
 
 using namespace std;
 
-AskTaskState::AskTaskState(
+TalkState::TalkState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
@@ -16,10 +16,10 @@ AskTaskState::AskTaskState(
       m_nextStateType(nextStateType),
       m_talkDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &AskTaskState::talkDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &TalkState::talkDoneSubscriberCallback, this);
 }
 
-void AskTaskState::enable(const string& parameter, const type_index& previousStageType)
+void TalkState::enable(const string& parameter, const type_index& previousStageType)
 {
     State::enable(parameter, previousStageType);
 
@@ -38,13 +38,13 @@ void AskTaskState::enable(const string& parameter, const type_index& previousSta
     m_desireSet->addDesire(move(talkDesire));
 }
 
-void AskTaskState::disable()
+void TalkState::disable()
 {
     State::disable();
     m_talkDesireId = MAX_DESIRE_ID;
 }
 
-string AskTaskState::generateText(const string& personName)
+string TalkState::generateText(const string& personName)
 {
     switch (language())
     {
@@ -57,7 +57,7 @@ string AskTaskState::generateText(const string& personName)
     return "";
 }
 
-void AskTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+void TalkState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 {
     if (!enabled() || msg->id != m_talkDesireId)
     {

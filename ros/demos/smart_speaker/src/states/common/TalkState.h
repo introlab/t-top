@@ -1,11 +1,11 @@
-#ifndef SMART_SPEAKER_STATES_COMMON_ASK_TASK_STATE_H
-#define SMART_SPEAKER_STATES_COMMON_ASK_TASK_STATE_H
+#ifndef SMART_SPEAKER_STATES_COMMON_TALK_STATE_H
+#define SMART_SPEAKER_STATES_COMMON_TALK_STATE_H
 
 #include "../State.h"
 
 #include <talk/Done.h>
 
-class AskTaskState : public State
+class TalkState : public State
 {
     std::type_index m_nextStateType;
 
@@ -14,20 +14,18 @@ class AskTaskState : public State
     uint64_t m_talkDesireId;
 
 public:
-    AskTaskState(
+    TalkState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         std::type_index nextStateType);
-    ~AskTaskState() override = default;
+    ~TalkState() override = default;
 
-    DECLARE_NOT_COPYABLE(AskTaskState);
-    DECLARE_NOT_MOVABLE(AskTaskState);
+    DECLARE_NOT_COPYABLE(TalkState);
+    DECLARE_NOT_MOVABLE(TalkState);
 
 protected:
-    std::type_index type() const override;
-
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
@@ -38,10 +36,5 @@ private:
     std::string generateText(const std::string& personName);
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
 };
-
-inline std::type_index AskTaskState::type() const
-{
-    return std::type_index(typeid(AskTaskState));
-}
 
 #endif

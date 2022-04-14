@@ -1,14 +1,14 @@
 #ifndef SMART_SPEAKER_STATES_SMART_SAMRT_ASK_TASK_STATE_H
 #define SMART_SPEAKER_STATES_SMART_SMART_ASK_TASK_STATE_H
 
-#include "../common/AskTaskState.h"
+#include "../common/TalkState.h"
 
 #include <talk/Done.h>
 
 #include <string>
 #include <vector>
 
-class SmartAskTaskState : public AskTaskState
+class SmartAskTaskState : public TalkState
 {
     std::vector<std::string> m_songNames;
 

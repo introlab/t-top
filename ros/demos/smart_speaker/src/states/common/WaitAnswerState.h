@@ -22,8 +22,6 @@ public:
     DECLARE_NOT_MOVABLE(WaitAnswerState);
 
 protected:
-    std::type_index type() const override;
-
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
@@ -34,10 +32,5 @@ private:
     void speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg);
     void timeoutTimerCallback(const ros::TimerEvent& event);
 };
-
-inline std::type_index WaitAnswerState::type() const
-{
-    return std::type_index(typeid(WaitAnswerState));
-}
 
 #endif

@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
         video_analyzer
         t_top_hbba_lite
         tf
-        )
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -147,7 +147,7 @@ add_executable(${PROJECT_NAME}_rss_node
         src/StringUtils.cpp
         src/states/State.cpp
         src/states/StateManager.cpp
-        src/states/common/AskTaskState.cpp
+        src/states/common/TalkState.cpp
         src/states/common/WaitAnswerState.cpp
         src/states/common/ValidTaskState.cpp
         src/states/common/InvalidTaskState.cpp
@@ -169,7 +169,7 @@ add_executable(${PROJECT_NAME}_smart_node
         src/StringUtils.cpp
         src/states/State.cpp
         src/states/StateManager.cpp
-        src/states/common/AskTaskState.cpp
+        src/states/common/TalkState.cpp
         src/states/common/WaitAnswerState.cpp
         src/states/common/ValidTaskState.cpp
         src/states/common/InvalidTaskState.cpp
@@ -181,7 +181,7 @@ add_executable(${PROJECT_NAME}_smart_node
         src/states/smart/SmartWaitAnswerState.cpp
         src/states/smart/SmartValidTaskState.cpp
         src/states/smart/SmartAskOtherTaskState.cpp
-        src/states/smart/SmartPeopleInvalidTaskState.cpp
+        src/states/smart/SmartThankYouState.cpp
 )
 
 ## Rename C++ executable without prefix

@@ -1,8 +1,8 @@
 #include "SmartWaitAnswerState.h"
 #include "SmartIdleState.h"
 #include "SmartValidTaskState.h"
-#include "SmartAskOtherTaskState.h"
-#include "SmartPeopleInvalidTaskState.h"
+#include "SmartAskTaskState.h"
+#include "SmartThankYouState.h"
 
 #include "../StateManager.h"
 
@@ -30,11 +30,8 @@ SmartWaitAnswerState::SmartWaitAnswerState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    bool singleTaskPerPerson,
     vector<vector<string>> songKeywords)
     : WaitAnswerState(language, stateManager, desireSet, nodeHandle),
-      m_singleTaskPerPerson(singleTaskPerPerson),
-      m_taskCount(0),
       m_songKeywords(move(songKeywords))
 {
     if (m_songKeywords.size() == 0)
@@ -59,11 +56,6 @@ SmartWaitAnswerState::SmartWaitAnswerState(
 
 void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text)
 {
-    if (previousStageType() != type_index(typeid(SmartAskOtherTaskState)))
-    {
-        m_taskCount = 0;
-    }
-
     auto lowerCaseText = toLowerString(text);
 
     // TODO Improve the task classification
@@ -72,22 +64,20 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
     bool dance = lowerCaseText.find(m_danceWord) != string::npos;
     size_t songIndex = getSongIndex(lowerCaseText);
 
-    if (nothing && !weather && !dance)
+    if (nothing && !weather && !dance && previousStageType() == type_index(typeid(SmartAskTaskState)))
     {
         m_stateManager.switchTo<AfterTaskDelayState>();
     }
-    else if (m_singleTaskPerPerson && m_taskCount > 0)
+    else if (nothing && !weather && !dance)
     {
-        m_stateManager.switchTo<SmartPeopleInvalidTaskState>();
+        m_stateManager.switchTo<SmartThankYouState>();
     }
     else if (!nothing && weather && !dance)
     {
-        m_taskCount++;
         m_stateManager.switchTo<SmartValidTaskState>(CURRENT_WEATHER_TASK);
     }
     else if (!nothing && !weather && dance && songIndex != string::npos)
     {
-        m_taskCount++;
         m_stateManager.switchTo<SmartValidTaskState>(string(DANCE_TASK) + '|' + to_string(songIndex));
     }
     else
@@ -99,7 +89,14 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
 
 void SmartWaitAnswerState::switchStateAfterTimeout()
 {
-    m_stateManager.switchTo<AfterTaskDelayState>();
+    if (previousStageType() == type_index(typeid(SmartAskTaskState)))
+    {
+        m_stateManager.switchTo<AfterTaskDelayState>();
+    }
+    else
+    {
+        m_stateManager.switchTo<SmartThankYouState>();
+    }
 }
 
 size_t SmartWaitAnswerState::getSongIndex(const std::string& text)

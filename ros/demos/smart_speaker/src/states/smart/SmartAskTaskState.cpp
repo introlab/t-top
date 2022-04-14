@@ -15,7 +15,7 @@ SmartAskTaskState::SmartAskTaskState(
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     vector<string> songNames)
-    : AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(SmartWaitAnswerState))),
+    : TalkState(language, stateManager, desireSet, nodeHandle, type_index(typeid(SmartWaitAnswerState))),
       m_songNames(move(songNames))
 {
 }

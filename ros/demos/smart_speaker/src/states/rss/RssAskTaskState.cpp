@@ -12,7 +12,7 @@ RssAskTaskState::RssAskTaskState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
-    : AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
+    : TalkState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
 {
 }
 
