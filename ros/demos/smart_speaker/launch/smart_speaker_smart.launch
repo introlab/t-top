@@ -50,5 +50,5 @@
         <arg name="fullscreen_face" value="true"/>
     </include>
 
-    <include if="$(arg record_session)" file="$(find t_top)/launch/record.launch"/>
+    <include if="$(arg record_session)" file="$(find smart_speaker)/launch/record.launch"/>
 </launch>
