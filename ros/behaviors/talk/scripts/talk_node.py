@@ -43,12 +43,17 @@ class TalkNode:
             if self._audio_pub.is_filtering_all_messages:
                 return
 
-            if msg.text != '':
-                mp3_audio_content = self._generate_mp3_audio_content(msg.text)
-                file_path = self._write_mp3_audio_content(mp3_audio_content)
-                self._play_audio(file_path)
+            try:
+                if msg.text != '':
+                    mp3_audio_content = self._generate_mp3_audio_content(msg.text)
+                    file_path = self._write_mp3_audio_content(mp3_audio_content)
+                    self._play_audio(file_path)
+                ok = True
+            except Exception as e:
+                rospy.logerr(f'Unable to talk ({e})')
+                ok = False
 
-            self._done_talking_pub.publish(Done(id=msg.id))
+            self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
 
     def _generate_mp3_audio_content(self, text):
         language_code = self._convert_language_to_language_code(self._language)
