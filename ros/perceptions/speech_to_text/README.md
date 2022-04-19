@@ -10,7 +10,6 @@ The node performs speech to text. It uses Google Cloud Speech-to-Text.
  - `frame_sample_count` (int): The number of samples in each frame.
  - `request_frame_count` (int): The number of frame in each request.
  - `language` (string): The language (en or fr).
- - `timeout` (optional float): The request timeout.
 
 #### Subscribed Topics
  - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic processed.
