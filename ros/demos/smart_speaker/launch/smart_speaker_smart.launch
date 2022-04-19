@@ -36,10 +36,20 @@
               path: ~/.ros/ttop/audio/fr/Renee_Martel_Un_Amour_Qui_Ne_Veut_Pas_Mourir_30s.mp3
         </rosparam>
         <rosparam if="$(eval arg('language') == 'en')" param="songs">
-            - name: Help!
+            - name: Can't Buy Me Love
               keywords:
-                - help
-              path: ~/.ros/ttop/audio/en/The_Beatles_Help_30s.mp3
+                - buy
+                - love
+              path: ~/.ros/ttop/audio/en/The_Beatles_Cant_Buy_Me_Love_30s.mp3
+            - name: Surfin' USA
+              keywords:
+                - surf
+                - usa
+              path: ~/.ros/ttop/audio/en/The_Beach_Boys_Surfin_USA_30s.mp3
+            - name: The Locomotion
+              keywords:
+                - locomotion
+              path: ~/.ros/ttop/audio/en/Little_Eva_The_Locomotion_30s.mp3
         </rosparam>
     </node>
 
