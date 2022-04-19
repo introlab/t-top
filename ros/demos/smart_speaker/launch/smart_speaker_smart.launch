@@ -1,6 +1,6 @@
 <launch>
     <arg name="language" default="fr"/>  <!-- Options: fr or en -->
-    <arg name="speaking_rate" default="0.75"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="speaking_rate" default="0.85"/> <!-- Range: [0.25, 4.0] -->
     <arg name="single_task_per_person" default="true"/>
     <arg name="record_session" default="false"/>
 
