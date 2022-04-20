@@ -12,7 +12,7 @@ This folder contains a node that makes T-Top a telepresence robot using OpenTera
 The OpenTera telepresence stack can be launched in stand-alone mode or using the OpenTera servers.
 
 ### Stand-alone mode
-To launch in stand-alone mode, you will need to generate CA certificates and keys. Follow the guide [here](../../../tools/ca_certificate_setup.md).
+To launch in stand-alone mode, you will need to generate CA certificates and keys. Follow the guide [here](../../../tools/ca_certificates/ca_certificate_setup.md).
 
 1. Start the ROS stack.
 ```bash
