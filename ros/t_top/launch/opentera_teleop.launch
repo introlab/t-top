@@ -3,7 +3,7 @@
     <arg name="simulation" default="false"/>
     <arg name="use_echo_cancellation" default="true"/>
     <arg name="echo_cancellation_source" default="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input" />
-    <arg name="echo_cancellation_sink" default="__default" />
+    <arg name="echo_cancellation_sink" default="alsa_output.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.analog-surround-40" />
     <arg name="echo_cancellation_dest" default="odas_echo_cancelled" />
     <arg name="ec_volume_percent" default="90" />
     <arg name="rviz" default="false"/>

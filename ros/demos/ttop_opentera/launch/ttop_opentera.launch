@@ -1,8 +1,9 @@
 <launch>
     <arg name="output" default="log"/>
+    <arg name="online" default="false"/>
 
     <include file="$(find t_top)/launch/opentera_teleop.launch">
-        <arg name="is_stand_alone" value="true"/>
+        <arg name="is_stand_alone" value="$(eval not arg('online'))"/>
         <arg name="output" value="$(arg output)"/>
     </include>
 

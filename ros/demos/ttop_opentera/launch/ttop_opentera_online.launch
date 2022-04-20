@@ -1,10 +1,8 @@
 <launch>
     <arg name="output" default="log"/>
 
-    <include file="$(find t_top)/launch/opentera_teleop.launch">
-        <arg name="is_stand_alone" value="false"/>
+    <include file="$(find ttop_opentera)/launch/ttop_opentera.launch">
+        <arg name="online" value="true"/>
         <arg name="output" value="$(arg output)"/>
     </include>
-
-    <node pkg="ttop_opentera" type="ttop_opentera_node" name="ttop_opentera_node" output="$(arg output)" launch-prefix="bash -c 'sleep 20; $0 $@' "/>
 </launch>
