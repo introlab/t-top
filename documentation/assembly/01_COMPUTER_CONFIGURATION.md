@@ -9,7 +9,8 @@ TODO
 ### A. OpenCR Dev Rule
 
 1. Copy [100-opencr-custom.rules](../../firmwares/opencr_firmware/100-opencr-custom.rules) in `/etc/udev/rules.d/`.
-2. Add the user to the `dialout` group.
+2. Copy [100-teensy.rules](../../firmwares/psu_control/100-teensy.rules) in `/etc/udev/rules.d/`.
+3. Add the user to the `dialout` group.
 
 ```bash
 sudo usermod -a -G dialout $USER

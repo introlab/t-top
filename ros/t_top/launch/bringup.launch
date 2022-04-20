@@ -4,6 +4,7 @@
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
     <arg name="simulation" default="false"/>
+    <arg name="output" default="log"/>
 
     <include file="$(find t_top)/launch/platform.launch"/>
 
@@ -12,6 +13,7 @@
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="slam" value="$(arg slam)"/>
+        <arg name="output" value="$(arg output)"/>
     </include>
     <include file="$(find t_top)/launch/behaviors.launch">
         <arg name="language" value="$(arg language)"/>

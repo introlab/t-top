@@ -98,7 +98,10 @@ void onStatusTicker()
     float current = currentVoltageSensor.readCurrent();
     float voltage = currentVoltageSensor.readVoltage();
 
+    bool isPsuConnected = charger.isPsuConnected();
 
+    DEBUG_SERIAL.print("isPsuConnected=");
+    DEBUG_SERIAL.println(isPsuConnected);
     DEBUG_SERIAL.print("isBatteryCharging=");
     DEBUG_SERIAL.println(isBatteryCharging);
     DEBUG_SERIAL.print("stateOfCharge=");
@@ -113,7 +116,7 @@ void onStatusTicker()
     DEBUG_SERIAL.println(externalTemperatureCelsius);
     DEBUG_SERIAL.println("Send status");
     DEBUG_SERIAL.println();
-    opencrCommandSender.sendStatusCommand(isBatteryCharging, stateOfCharge, current, voltage);
+    opencrCommandSender.sendStatusCommand(isPsuConnected, isBatteryCharging, stateOfCharge, current, voltage);
 }
 
 #endif
