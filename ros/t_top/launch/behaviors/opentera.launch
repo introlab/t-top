@@ -45,25 +45,6 @@
         <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
     </include>
 
-    <!-- Map image stream -->
-    <include file="$(find opentera_webrtc_ros)/launch/ros_stream_client.launch">
-        <arg name="name" value="topic_streamer2"/>
-        <arg name="output" value="$(arg output)"/>
-        <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
-        <arg name="can_send_audio_stream" value="false"/>
-        <arg name="can_receive_audio_stream" value="false"/>
-        <arg name="can_send_video_stream" value="true"/>
-        <arg name="can_receive_video_stream" value="false"/>
-        <arg name="is_screen_cast" value="true"/>
-        <arg name="needs_denoising" value="false"/>
-        <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
-        <arg name="client_name" value="Map image"/>
-        <arg name="room_name" value="Map"/>
-        <arg name="room_password" value="$(arg signaling_server_password)"/>
-        <arg name="input_camera_topic" value="/map_image_generator/image"/>
-        <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
-    </include>
-
     <!-- Data Channel  -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_data_channel_client.launch">
         <arg name="name" value="data_streamer"/>
