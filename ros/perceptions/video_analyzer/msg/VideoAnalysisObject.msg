@@ -1,13 +1,13 @@
-geometry_msgs/Point center
-geometry_msgs/Point center_pixel
+geometry_msgs/Point center_2d # Normalized
+geometry_msgs/Point center_3d
 
 string object_class
 float32 object_confidence
 float32[] object_descriptor
 sensor_msgs/Image object_image
 
-geometry_msgs/Point[] person_pose
-geometry_msgs/Point[] person_pose_pixel
+geometry_msgs/Point[] person_pose_2d # Normalized
+geometry_msgs/Point[] person_pose_3d
 float32[] person_pose_confidence
 sensor_msgs/Image person_pose_image
 

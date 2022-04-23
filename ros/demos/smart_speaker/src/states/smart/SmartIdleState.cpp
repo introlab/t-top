@@ -150,12 +150,13 @@ double SmartIdleState::faceDistance(
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;
 
     if (object.face_descriptor.size() == 0 ||
-        object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < m_noseConfidenceThreshold)
+        object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < m_noseConfidenceThreshold ||
+        object.person_pose_3d.size() == 0)
     {
         return numeric_limits<double>::infinity();
     }
 
-    auto nosePoint = object.person_pose[PERSON_POSE_NOSE_INDEX];
+    auto nosePoint = object.person_pose_3d[PERSON_POSE_NOSE_INDEX];
     tf::Vector3 p(nosePoint.x, nosePoint.y, nosePoint.z);
     p = transform * p;
     return p.length();

@@ -12,7 +12,8 @@ This node makes T-Top follow the nearest face.
 
 - `simulation` (bool): Indicates if it's used in the simulation.
 - `control_frequency` (double): The frequency at which the pose messages are sent.
-- `control_alpha` (double): The low-pass filter parameter for the pose.
+- `torso_control_alpha` (double): The low-pass filter parameter for the torso pose.
+- `head_control_p_gain` (double): The controller proportional gain for the head pose.
 - `nose_confidence_threshold` (double): The confidence threshold for the nose keypoint.
 - `head_enabled` (bool): Indicates if the head will move.
 - `min_head_pitch_rad` (double): The minimum pitch angle in radian of the head.

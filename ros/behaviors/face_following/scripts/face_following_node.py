@@ -12,13 +12,15 @@ from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_PIT
 
 
 PERSON_POSE_NOSE_INDEX = 0
+TARGET_HEAD_IMAGE_Y = 0.5
 
 
 class FaceFollowingNode:
     def __init__(self):
         self._simulation = rospy.get_param('~simulation')
         self._rate = rospy.Rate(rospy.get_param('~control_frequency'))
-        self._control_alpha = rospy.get_param('~control_alpha')
+        self._torso_control_alpha = rospy.get_param('~torso_control_alpha')
+        self._head_control_p_gain = rospy.get_param('~head_control_p_gain')
         self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
         self._head_enabled = rospy.get_param('~head_enabled')
         self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
@@ -26,7 +28,7 @@ class FaceFollowingNode:
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
-        self._target_head_pitch = None
+        self._current_head_image_y = None
 
         self._tf_listener = tf.TransformListener()
 
@@ -34,25 +36,29 @@ class FaceFollowingNode:
         self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
 
     def _video_analysis_cb(self, msg):
-        yaw, pitch = self._find_nearest_face_yaw_pitch(msg.objects, msg.header)
+        yaw, head_image_y = self._find_nearest_face_yaw_head_image_y(msg.objects, msg.header)
         with self._target_lock:
             self._target_torso_yaw = yaw
-            self._target_head_pitch = None if pitch is None else max(self._min_head_pitch, min(pitch, self._max_head_pitch))
+            self._current_head_image_y = head_image_y
 
-    def _find_nearest_face_yaw_pitch(self, objects, header):
-        nose_points = []
-        for object in objects:
-            if len(object.person_pose) > 0 and len(object.person_pose_confidence) > 0 \
-                    and object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] > self._nose_confidence_threshold:
-                nose_points.append(object.person_pose[PERSON_POSE_NOSE_INDEX])
+    def _find_nearest_face_yaw_head_image_y(self, objects, header):
+        nose_points_3d = []
+        for i, o in enumerate(objects):
+            if len(o.person_pose_2d) > 0 and len(o.person_pose_3d) > 0 and len(o.person_pose_confidence) > 0 \
+                    and o.person_pose_confidence[PERSON_POSE_NOSE_INDEX] > self._nose_confidence_threshold:
+                nose_points_3d.append((i, o.person_pose_3d[PERSON_POSE_NOSE_INDEX]))
 
-        if len(nose_points) == 0:
+        if len(nose_points_3d) == 0:
             return None, None
         else:
-            nose_point = min(nose_points, key=lambda p: p.x ** 2 + p.y ** 2 + p.z ** 2)
+            nose_point_index = min(nose_points_3d, key=lambda p: p[1].x ** 2 + p[1].y ** 2 + p[1].z ** 2)[0]
+            nose_point_2d = objects[nose_point_index].person_pose_2d[PERSON_POSE_NOSE_INDEX]
+            nose_point_3d = objects[nose_point_index].person_pose_3d[PERSON_POSE_NOSE_INDEX]
 
-            self._transform_point(nose_point, header)
-            return vector_to_angles(nose_point)
+            self._transform_point(nose_point_3d, header)
+            yaw, _ = vector_to_angles(nose_point_3d)
+
+            return yaw, nose_point_2d.y
 
     def _transform_point(self, point, header):
         temp_in_point = PointStamped()
@@ -90,17 +96,18 @@ class FaceFollowingNode:
         elif distance > math.pi:
             distance = -(2 * math.pi - distance)
 
-        pose = self._movement_commands.current_torso_pose + self._control_alpha * distance
+        pose = self._movement_commands.current_torso_pose + self._torso_control_alpha * distance
         self._movement_commands.move_torso(pose)
 
     def _update_head(self):
         with self._target_lock:
-            target_head_pitch = self._target_head_pitch
-        if target_head_pitch is None:
+            current_head_image_y = self._current_head_image_y
+        if current_head_image_y is None:
             return
 
         current_pitch = self._movement_commands.current_head_pose[HEAD_POSE_PITCH_INDEX]
-        pitch = self._control_alpha * target_head_pitch + (1 - self._control_alpha) * current_pitch
+        pitch = current_pitch + self._head_control_p_gain * (current_head_image_y - TARGET_HEAD_IMAGE_Y)
+        pitch = max(self._min_head_pitch, min(pitch, self._max_head_pitch))
         self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, pitch, 0])
 
 

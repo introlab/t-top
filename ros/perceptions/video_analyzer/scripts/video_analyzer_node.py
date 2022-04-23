@@ -103,7 +103,8 @@ class VideoAnalyzerNode:
             else:
                 person_predictions.append(None)
 
-        self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header)
+        self._publish_video_analysis(predictions, object_images, person_predictions,
+                                     color_image, depth_image, depth_camera_info, header)
 
         if not self._analysed_image_hbba_filter_state.is_filtering_all_messages:
             self._publish_analysed_image(color_image, header, predictions, person_predictions)
@@ -127,7 +128,8 @@ class VideoAnalyzerNode:
 
         return pose_coordinates.tolist(), pose_confidence.tolist(), pose_image, face_descriptor.tolist(), face_image
 
-    def _publish_video_analysis(self, predictions, object_images, person_predictions, depth_image, depth_camera_info, header):
+    def _publish_video_analysis(self, predictions, object_images, person_predictions,
+                                color_image, depth_image, depth_camera_info, header):
         msg = VideoAnalysis()
         msg.header.seq = header.seq
         msg.header.stamp = header.stamp
@@ -135,17 +137,19 @@ class VideoAnalyzerNode:
 
         for i in range(len(predictions)):
             o = self._convert_prediction_to_video_analysis_object(predictions[i], object_images[i], person_predictions[i],
-                                                                  depth_image, depth_camera_info)
+                                                                  color_image, depth_image, depth_camera_info)
             msg.objects.append(o)
 
         self._video_analysis_pub.publish(msg)
 
     def _convert_prediction_to_video_analysis_object(self, prediction, object_image, person_prediction,
-                                                     depth_image, depth_camera_info):
+                                                     color_image, depth_image, depth_camera_info):
+        image_height, image_width, _ = color_image.shape
+
         o = VideoAnalysisObject()
-        o.center = self._project_2d_to_3d(prediction.center_x, prediction.center_y,
-                                          depth_image, depth_camera_info)
-        o.center_pixel = Point(x=prediction.center_x, y=prediction.center_y)
+        o.center_2d = Point(x=prediction.center_x / image_width, y=prediction.center_y / image_height)
+        o.center_3d = self._project_2d_to_3d(prediction.center_x, prediction.center_y,
+                                             depth_image, depth_camera_info)
 
         o.object_class = self._object_class_names[prediction.class_index]
         o.object_confidence = prediction.confidence
@@ -156,8 +160,8 @@ class VideoAnalyzerNode:
 
         if person_prediction is not None:
             pose_coordinates, pose_confidence, pose_image, face_descriptor, face_image = person_prediction
-            o.person_pose = self._convert_pose_coordinates(pose_coordinates, depth_image, depth_camera_info)
-            o.person_pose_pixel = self._convert_pose_coordinates_pixel(pose_coordinates)
+            o.person_pose_2d = self._convert_pose_coordinates_2d(pose_coordinates, image_width, image_height)
+            o.person_pose_3d = self._convert_pose_coordinates_3d(pose_coordinates, depth_image, depth_camera_info)
             o.person_pose_confidence = pose_confidence
             o.person_pose_image = self._cv_bridge.cv2_to_imgmsg(pose_image, encoding='rgb8')
 
@@ -166,17 +170,17 @@ class VideoAnalyzerNode:
 
         return o
 
-    def _convert_pose_coordinates(self, pose_coordinates, depth_image, depth_camera_info):
+    def _convert_pose_coordinates_2d(self, pose_coordinates, image_width, image_height):
+        points = []
+        for pose_coordinate in pose_coordinates:
+            points.append(Point(x=pose_coordinate[0] / image_width, y=pose_coordinate[1] / image_height))
+        return points
+
+    def _convert_pose_coordinates_3d(self, pose_coordinates, depth_image, depth_camera_info):
         points = []
         for pose_coordinate in pose_coordinates:
             point = self._project_2d_to_3d(pose_coordinate[0], pose_coordinate[1], depth_image, depth_camera_info)
             points.append(point)
-        return points
-
-    def _convert_pose_coordinates_pixel(self, pose_coordinates):
-        points = []
-        for pose_coordinate in pose_coordinates:
-            points.append(Point(x=pose_coordinate[0], y=pose_coordinate[1]))
         return points
 
     def _project_2d_to_3d(self, x, y, depth_image, depth_camera_info):
