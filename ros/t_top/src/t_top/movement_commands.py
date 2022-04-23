@@ -180,6 +180,7 @@ class MovementCommands:
                 offset = distance - steps_cumulative_size
                 self._torso_orientation_pub.publish(pose - offset)
                 rospy.sleep(self._minTime)
+            self._torso_orientation_pub.publish(pose)
         else:
             if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                 return False
@@ -282,6 +283,7 @@ class MovementCommands:
 
                 self._head_msg(np_pose - np_offsets)
                 rospy.sleep(self._minTime)
+            self._head_msg(pose)
         else:
             if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                 return False
