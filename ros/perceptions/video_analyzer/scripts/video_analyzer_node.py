@@ -20,6 +20,23 @@ from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExt
 import hbba_lite
 
 MM_TO_M = 0.001
+PERSON_POSE_KEYPOINT_COLORS = [(0, 255, 0),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255),
+                               (255, 0, 0),
+                               (0, 0, 255)]
 
 
 class VideoAnalyzerNode:
@@ -75,23 +92,18 @@ class VideoAnalyzerNode:
 
         person_predictions = []
         object_images = []
-        object_corners = []
         for prediction in predictions:
             x0, y0, x1, y1 = self._get_bbox(prediction, color_image.shape[1], color_image.shape[0])
             object_color_image = color_image[y0:y1, x0:x1, :]
             object_color_image_tensor = color_image_tensor[:, y0:y1, x0:x1]
             object_images.append(object_color_image)
-            object_corner = Point()
-            object_corner.x = x0
-            object_corner.y = y0
-            object_corners.append(object_corner)
             if prediction.class_index == self._person_class_index and \
                     prediction.class_probabilities[prediction.class_index] > self._person_probability_threshold:
                 person_predictions.append(self._analyse_person(object_color_image, object_color_image_tensor, x0, y0))
             else:
                 person_predictions.append(None)
 
-        self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header, object_corners)
+        self._publish_video_analysis(predictions, object_images, person_predictions, depth_image, depth_camera_info, header)
 
         if not self._analysed_image_hbba_filter_state.is_filtering_all_messages:
             self._publish_analysed_image(color_image, header, predictions, person_predictions)
@@ -115,7 +127,7 @@ class VideoAnalyzerNode:
 
         return pose_coordinates.tolist(), pose_confidence.tolist(), pose_image, face_descriptor.tolist(), face_image
 
-    def _publish_video_analysis(self, predictions, object_images, person_predictions, depth_image, depth_camera_info, header, object_corners):
+    def _publish_video_analysis(self, predictions, object_images, person_predictions, depth_image, depth_camera_info, header):
         msg = VideoAnalysis()
         msg.header.seq = header.seq
         msg.header.stamp = header.stamp
@@ -123,19 +135,19 @@ class VideoAnalyzerNode:
 
         for i in range(len(predictions)):
             o = self._convert_prediction_to_video_analysis_object(predictions[i], object_images[i], person_predictions[i],
-                                                                  depth_image, depth_camera_info, object_corners[i])
+                                                                  depth_image, depth_camera_info)
             msg.objects.append(o)
 
         self._video_analysis_pub.publish(msg)
 
     def _convert_prediction_to_video_analysis_object(self, prediction, object_image, person_prediction,
-                                                     depth_image, depth_camera_info, object_corner):
+                                                     depth_image, depth_camera_info):
         o = VideoAnalysisObject()
         o.center = self._project_2d_to_3d(prediction.center_x, prediction.center_y,
                                           depth_image, depth_camera_info)
+        o.center_pixel = Point(x=prediction.center_x, y=prediction.center_y)
 
         o.object_class = self._object_class_names[prediction.class_index]
-        o.object_corner = object_corner
         o.object_confidence = prediction.confidence
         o.object_image = self._cv_bridge.cv2_to_imgmsg(object_image, encoding='rgb8')
 
@@ -145,6 +157,7 @@ class VideoAnalyzerNode:
         if person_prediction is not None:
             pose_coordinates, pose_confidence, pose_image, face_descriptor, face_image = person_prediction
             o.person_pose = self._convert_pose_coordinates(pose_coordinates, depth_image, depth_camera_info)
+            o.person_pose_pixel = self._convert_pose_coordinates_pixel(pose_coordinates)
             o.person_pose_confidence = pose_confidence
             o.person_pose_image = self._cv_bridge.cv2_to_imgmsg(pose_image, encoding='rgb8')
 
@@ -158,6 +171,12 @@ class VideoAnalyzerNode:
         for pose_coordinate in pose_coordinates:
             point = self._project_2d_to_3d(pose_coordinate[0], pose_coordinate[1], depth_image, depth_camera_info)
             points.append(point)
+        return points
+
+    def _convert_pose_coordinates_pixel(self, pose_coordinates):
+        points = []
+        for pose_coordinate in pose_coordinates:
+            points.append(Point(x=pose_coordinate[0], y=pose_coordinate[1]))
         return points
 
     def _project_2d_to_3d(self, x, y, depth_image, depth_camera_info):
@@ -204,7 +223,7 @@ class VideoAnalyzerNode:
             if pose_confidence[i] >= self._pose_confidence_threshold:
                 x = int(pose_coordinates[i][0])
                 y = int(pose_coordinates[i][1])
-                cv2.circle(image, (x, y), 10, (0, 255, 0), thickness=cv2.FILLED)
+                cv2.circle(image, (x, y), 10, PERSON_POSE_KEYPOINT_COLORS[i], thickness=cv2.FILLED)
 
         for pair in self._pose_estimator.get_skeleton_pairs():
             if pose_confidence[pair[0]] >= self._pose_confidence_threshold and \
