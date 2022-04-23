@@ -3,7 +3,12 @@
 
 #include <cstdint>
 
-typedef void (*StatusCommandHandler)(bool isBatteryCharging, float stateOfCharge, float current, float voltage);
+typedef void (*StatusCommandHandler)(
+    bool isPsuConnected,
+    bool isBatteryCharging,
+    float stateOfCharge,
+    float current,
+    float voltage);
 
 class PsuControlCommandHandler
 {

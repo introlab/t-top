@@ -5,7 +5,7 @@ from geometry_msgs.msg import Twist
 from contextlib import contextmanager
 
 from t_top import MovementCommands, HEAD_ZERO_Z
-from teleoperation.srv import DoAction, DoActionRequest, DoActionResponse
+from opentera_webrtc_ros_msgs.srv import SetString, SetStringRequest, SetStringResponse
 
 
 def twist_is_null(twist: Twist) -> bool:
@@ -46,7 +46,7 @@ class TeleoperationNode:
             self._movement_commands.sleep_time), self._on_timer_cb)
 
         self._origin_serv = rospy.Service(
-            "teleop_do_action", DoAction, self._do_action_cb)
+            "teleop_do_action", SetString, self._do_action_cb)
 
     def _on_twist_cb(self, msg):
         if self._movement_commands.is_filtering_all_messages:
@@ -90,7 +90,7 @@ class TeleoperationNode:
         self._state.current_speed = TeleopAngles(
             torso_angle=msg.angular.z/0.15, head_angle=-1.1*msg.linear.x/0.15)
 
-    def _do_action_cb(self, req: DoActionRequest) -> DoActionResponse:
+    def _do_action_cb(self, req: SetStringRequest) -> SetStringResponse:
         jump_table = {
             "goto_origin": self._goto_origin,
             "do_yes": self._do_yes,
@@ -100,15 +100,15 @@ class TeleoperationNode:
             "goto_origin_torso": self._goto_origin_torso,
         }
 
-        if req.name in jump_table:
+        if req.data in jump_table:
             if self._movement_commands.is_filtering_all_messages:
-                return DoActionResponse(success=False, message="HBBA filter is active")
+                return SetStringResponse(success=False, message="HBBA filter is active")
 
-            jump_table[req.name]()
-            return DoActionResponse(success=True, message="")
+            jump_table[req.data]()
+            return SetStringResponse(success=True, message="")
 
         else:
-            return DoActionResponse(success=False, message=f"'{req.name}' not in {list(jump_table.keys())}")
+            return SetStringResponse(success=False, message=f"'{req.data}' not in {list(jump_table.keys())}")
 
     @contextmanager
     def _pause_moving(self):

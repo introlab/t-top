@@ -13,6 +13,7 @@ Panels:
         - /MapCloud1
         - /MarkerArray1
         - /PoseArray1
+        - /Map1
       Splitter Ratio: 0.6360294222831726
     Tree Height: 741
   - Class: rviz/Selection
@@ -180,7 +181,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /rtabmap/cloud_map
+      Topic: /cloud_map
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -203,6 +204,7 @@ Visualization Manager:
       Color Transformer: RGB8
       Download graph: false
       Download map: false
+      Download namespace: ""
       Enabled: true
       Filter ceiling (m): 0
       Filter floor (m): 0
@@ -219,7 +221,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /rtabmap/mapData
+      Topic: /mapData
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -248,6 +250,16 @@ Visualization Manager:
       Shape: Arrow (3D)
       Topic: /sst_poses
       Unreliable: false
+      Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /grid_map
+      Unreliable: false
+      Use Timestamp: false
       Value: true
   Enabled: true
   Global Options:

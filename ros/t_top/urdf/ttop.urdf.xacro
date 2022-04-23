@@ -45,14 +45,14 @@
       <!--<origin xyz="0     0    0.0375" rpy="0 0 0"/>-->
       <origin xyz="0     0    0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://ttop_sim/models/ttop/meshes/rotating_base_mesh.dae" scale="1.0 1.0 1.0"/>
+        <mesh filename="package://t_top/meshes/rotating_base_mesh.dae" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
     <visual name="ttop__visual">
       <!--<origin xyz="0     0    0.0375" rpy="0 0 0"/>-->
       <origin xyz="0     0    0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://ttop_sim/models/ttop/meshes/rotating_base_mesh.dae" scale="1.0 1.0 1.0"/>
+        <mesh filename="package://t_top/meshes/rotating_base_mesh.dae" scale="1.0 1.0 1.0"/>
       </geometry>
     </visual>
   </link>
@@ -67,7 +67,7 @@
       <!--<origin xyz="0      0      0.379359" rpy="0       0      3.141593"/>-->
       <origin xyz="0      0      0" rpy="0       0      0"/>
       <geometry>
-        <mesh filename="package://ttop_sim/models/ttop/meshes/stewart_platform_mesh.dae" scale="1.0 1.0 1.0"/>
+        <mesh filename="package://t_top/meshes/stewart_platform_mesh.dae" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
     <visual name="ttop__visual">
@@ -75,7 +75,7 @@
       <!--<origin xyz="0      0      0.379359" rpy="0       0      3.141593"/>-->
       <origin xyz="0      0      0" rpy="0       0      0"/>
       <geometry>
-        <mesh filename="package://ttop_sim/models/ttop/meshes/stewart_platform_mesh.dae" scale="1.0 1.0 1.0"/>
+        <mesh filename="package://t_top/meshes/stewart_platform_mesh.dae" scale="1.0 1.0 1.0"/>
       </geometry>
     </visual>
   </link>
@@ -91,7 +91,7 @@
     <xacro:property name="d435_cam_height" value="0.025"/>
     <xacro:property name="d435_cam_depth" value="0.02505"/>
     <xacro:property name="d435_cam_mount_from_center_offset" value="0.0149"/>
-  
+
 
     <xacro:property name="d435_cam_depth_px" value="${d435_cam_mount_from_center_offset}"/>
     <xacro:property name="d435_cam_depth_py" value="0.0175"/>
@@ -104,7 +104,7 @@
     <joint name="${name}_link_joint" type="fixed">
       <parent link="head"/>
       <child link="${name}_link" />
-    </joint> 
+    </joint>
 
     <link name="${name}_link">
       <visual>

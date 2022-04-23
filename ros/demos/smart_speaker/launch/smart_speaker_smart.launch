@@ -3,8 +3,9 @@
     <arg name="speaking_rate" default="0.85"/> <!-- Range: [0.25, 4.0] -->
     <arg name="single_task_per_person" default="false"/>
     <arg name="record_session" default="false"/>
+    <arg name="output" default="log"/>
 
-    <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 45; $0 $@' ">
+    <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="$(arg output)" launch-prefix="bash -c 'sleep 45; $0 $@' ">
         <param name="language" value="$(arg language)"/>
 
         <param name="person_distance_threshold" value="1.5"/>
@@ -58,6 +59,7 @@
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
         <arg name="slam" value="false"/>
         <arg name="fullscreen_face" value="true"/>
+        <arg name="output" value="$(arg output)"/>
     </include>
 
     <include if="$(arg record_session)" file="$(find smart_speaker)/launch/record.launch"/>

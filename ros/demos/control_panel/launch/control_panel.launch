@@ -1,10 +1,13 @@
 <launch>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
 
-    <node pkg="control_panel" type="control_panel_node" name="control_panel_node" output="screen"/>
+    <arg name="output" default="log"/>
+
+    <node pkg="control_panel" type="control_panel_node" name="control_panel_node" output="$(arg output)"/>
 
     <include file="$(find t_top)/launch/bringup.launch">
         <arg name="language" value="$(arg language)"/>
         <arg name="slam" value="false"/>
+        <arg name="output" value="$(arg output)"/>
     </include>
 </launch>
