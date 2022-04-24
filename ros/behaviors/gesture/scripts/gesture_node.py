@@ -8,6 +8,13 @@ from gesture.msg import GestureName, Done
 from t_top import MovementCommands
 
 
+MOVE_YES_TIMEOUT = 10
+MOVE_NO_TIMEOUT = 10
+MOVE_MAYBE_TIMEOUT = 10
+MOVE_HEAD_TO_ORIGIN = 5
+MOVE_TORSO_TO_ORIGIN = 30
+
+
 class GestureNode:
     def __init__(self):
         self._simulation = rospy.get_param('~simulation')
@@ -23,23 +30,33 @@ class GestureNode:
             if self._movement_commands.is_filtering_all_messages:
                 return
 
-            if msg.name == 'yes':
-                self._movement_commands.move_yes(count=1)
-            elif msg.name == 'no':
-                self._movement_commands.move_no(count=1)
-            elif msg.name == 'maybe':
-                self._movement_commands.move_maybe(count=1)
-            elif msg.name == 'origin_all':
-                self._movement_commands.move_head_to_origin()
-                self._movement_commands.move_torso_to_origin()
-            elif msg.name == 'origin_head':
-                self._movement_commands.move_head_to_origin()
-            elif msg.name == 'origin_torso':
-                self._movement_commands.move_torso_to_origin()
-            else:
-                rospy.logerr(f'Invalid gesture name ({msg.name})')
+            try:
+                ok = self._execute_gesture(msg.name)
+            except TimeoutError:
+                rospy.logerr(f'The {msg.name} gesture has timed out.')
+                ok = False
 
-            self._done_pub.publish(Done(id=msg.id))
+            self._done_pub.publish(Done(id=msg.id, ok=ok))
+
+    def _execute_gesture(self, name):
+        if name == 'yes':
+            self._movement_commands.move_yes(count=1, timeout=MOVE_YES_TIMEOUT)
+        elif name == 'no':
+            self._movement_commands.move_no(count=1, timeout=MOVE_NO_TIMEOUT)
+        elif name == 'maybe':
+            self._movement_commands.move_maybe(count=1, timeout=MOVE_MAYBE_TIMEOUT)
+        elif name == 'origin_all':
+            self._movement_commands.move_head_to_origin(should_wait=True, timeout=MOVE_HEAD_TO_ORIGIN)
+            self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN)
+        elif name == 'origin_head':
+            self._movement_commands.move_head_to_origin(should_wait=True, timeout=MOVE_HEAD_TO_ORIGIN)
+        elif name == 'origin_torso':
+            self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN)
+        else:
+            rospy.logerr(f'Invalid gesture name ({name})')
+            return False
+
+        return True
 
     def run(self):
         rospy.spin()
