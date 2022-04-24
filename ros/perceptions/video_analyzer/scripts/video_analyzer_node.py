@@ -11,7 +11,6 @@ import rospy
 import message_filters
 from cv_bridge import CvBridge
 
-from std_msgs.msg import Bool
 from sensor_msgs.msg import Image, CameraInfo
 from geometry_msgs.msg import Point
 from video_analyzer.msg import VideoAnalysis, VideoAnalysisObject
