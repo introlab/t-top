@@ -5,15 +5,15 @@
 #include "states/rss/RssAskTaskState.h"
 #include "states/rss/RssWaitAnswerState.h"
 #include "states/rss/RssValidTaskState.h"
-#include "states/InvalidTaskState.h"
+#include "states/common/InvalidTaskState.h"
 
-#include "states/CurrentWeatherState.h"
-#include "states/WeatherForecastState.h"
+#include "states/task/CurrentWeatherState.h"
+#include "states/task/WeatherForecastState.h"
 #include "states/rss/RssStoryState.h"
-#include "states/DanceState.h"
-#include "states/DancePlayedSongState.h"
+#include "states/task/DanceState.h"
+#include "states/task/DancePlayedSongState.h"
 
-#include "states/AfterTaskDelayState.h"
+#include "states/common/AfterTaskDelayState.h"
 
 #include <ros/ros.h>
 
@@ -36,6 +36,7 @@ void startNode(
     const string& englishStoryPath,
     const string& frenchStoryPath,
     const string& songPath,
+    bool useAfterTaskDelayDurationTopic,
     const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
@@ -93,6 +94,7 @@ void startNode(
         desireSet,
         nodeHandle,
         idleStateType,
+        useAfterTaskDelayDurationTopic,
         afterTaskDelayDuration));
 
     stateManager.switchTo<RssIdleState>();
@@ -139,11 +141,21 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    bool useAfterTaskDelayDurationTopic = false;
+    privateNodeHandle.param("use_after_task_delay_duration_topic", useAfterTaskDelayDurationTopic, false);
+
     double afterTaskDelayDurationS;
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
 
-    startNode(language, nodeHandle, englishStoryPath, frenchStoryPath, songPath, afterTaskDelayDuration);
+    startNode(
+        language,
+        nodeHandle,
+        englishStoryPath,
+        frenchStoryPath,
+        songPath,
+        useAfterTaskDelayDurationTopic,
+        afterTaskDelayDuration);
 
     return 0;
 }

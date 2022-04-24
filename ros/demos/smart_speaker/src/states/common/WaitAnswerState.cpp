@@ -1,11 +1,9 @@
 #include "WaitAnswerState.h"
-
-#include "StateManager.h"
 #include "InvalidTaskState.h"
 
-#include <t_top_hbba_lite/Desires.h>
+#include "../StateManager.h"
 
-#include <unordered_set>
+#include <t_top_hbba_lite/Desires.h>
 
 using namespace std;
 
@@ -32,9 +30,9 @@ WaitAnswerState::WaitAnswerState(
         nodeHandle.subscribe("speech_to_text/transcript", 1, &WaitAnswerState::speechToTextSubscriberCallback, this);
 }
 
-void WaitAnswerState::enable(const string& parameter)
+void WaitAnswerState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto speechToTextDesire = make_unique<SpeechToTextDesire>();
     auto faceFollowingDesire = make_unique<FaceFollowingDesire>();

@@ -8,32 +8,34 @@
 #include <string>
 #include <vector>
 
-class SmartAskTaskState : public TalkState
+class SmartAskOtherTaskState : public TalkState
 {
-    std::vector<std::string> m_songNames;
+    bool m_singleTaskPerPerson;
 
 public:
-    SmartAskTaskState(
+    SmartAskOtherTaskState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        std::vector<std::string> songNames);
-    ~SmartAskTaskState() override = default;
+        bool singleTaskPerPerson);
+    ~SmartAskOtherTaskState() override = default;
 
-    DECLARE_NOT_COPYABLE(SmartAskTaskState);
-    DECLARE_NOT_MOVABLE(SmartAskTaskState);
+    DECLARE_NOT_COPYABLE(SmartAskOtherTaskState);
+    DECLARE_NOT_MOVABLE(SmartAskOtherTaskState);
 
 protected:
     std::type_index type() const override;
+
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
 
     std::string generateEnglishText(const std::string& personName) override;
     std::string generateFrenchText(const std::string& personName) override;
 };
 
-inline std::type_index SmartAskTaskState::type() const
+inline std::type_index SmartAskOtherTaskState::type() const
 {
-    return std::type_index(typeid(SmartAskTaskState));
+    return std::type_index(typeid(SmartAskOtherTaskState));
 }
 
 #endif

@@ -38,7 +38,7 @@ void ControlPanel::onVolumeChanged(int volume)
 
 void ControlPanel::batterySubscriberCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    if (msg->data.size() == 4)
+    if (msg->data.size() == 5)
     {
         int battery = static_cast<int>(msg->data[0]);
         invokeLater([this, battery]() { m_batteryLevel->display(QString::number(battery)); });

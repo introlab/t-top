@@ -37,7 +37,7 @@ class GestureNode:
             elif msg.name == 'origin_torso':
                 self._movement_commands.move_torso_to_origin()
             else:
-                rospy.logerr('Invalid gesture name ({})'.format(msg.name))
+                rospy.logerr(f'Invalid gesture name ({msg.name})')
 
             self._done_pub.publish(Done(id=msg.id))
 

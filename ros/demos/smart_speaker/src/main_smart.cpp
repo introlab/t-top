@@ -4,12 +4,14 @@
 #include "states/smart/SmartAskTaskState.h"
 #include "states/smart/SmartWaitAnswerState.h"
 #include "states/smart/SmartValidTaskState.h"
-#include "states/InvalidTaskState.h"
+#include "states/common/InvalidTaskState.h"
 
-#include "states/CurrentWeatherState.h"
-#include "states/DancePlayedSongState.h"
+#include "states/task/CurrentWeatherState.h"
+#include "states/task/DancePlayedSongState.h"
 
-#include "states/AfterTaskDelayState.h"
+#include "states/smart/SmartAskOtherTaskState.h"
+#include "states/smart/SmartThankYouState.h"
+#include "states/common/AfterTaskDelayState.h"
 
 #include <ros/ros.h>
 
@@ -35,7 +37,10 @@ void startNode(
     size_t videoAnalysisMessageCountThreshold,
     size_t videoAnalysisMessageCountTolerance,
     const vector<string>& songNames,
+    const vector<vector<string>>& songKeywords,
     const vector<string>& songPaths,
+    bool singleTaskPerPerson,
+    bool useAfterTaskDelayDurationTopic,
     const ros::Duration& afterTaskDelayDuration)
 {
     auto desireSet = make_shared<DesireSet>();
@@ -56,8 +61,7 @@ void startNode(
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
     StateManager stateManager;
-    type_index idleStateType(typeid(SmartIdleState));
-    type_index afterTaskDelayStateType(typeid(AfterTaskDelayState));
+    type_index askOtherTaskStateType(typeid(SmartAskOtherTaskState));
 
     stateManager.addState(make_unique<SmartIdleState>(
         language,
@@ -69,32 +73,95 @@ void startNode(
         noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
-    stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songNames));
+    stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle, songNames));
+    stateManager.addState(
+        make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songKeywords));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(
+        make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
 
     stateManager.addState(
-        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
     stateManager.addState(make_unique<DancePlayedSongState>(
         language,
         stateManager,
         desireSet,
         nodeHandle,
-        afterTaskDelayStateType,
+        askOtherTaskStateType,
         songPaths));
 
+    stateManager.addState(
+        make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, nodeHandle, singleTaskPerPerson));
+    stateManager.addState(make_unique<SmartThankYouState>(language, stateManager, desireSet, nodeHandle));
     stateManager.addState(make_unique<AfterTaskDelayState>(
         language,
         stateManager,
         desireSet,
         nodeHandle,
-        idleStateType,
+        typeid(SmartIdleState),
+        useAfterTaskDelayDurationTopic,
         afterTaskDelayDuration));
 
     stateManager.switchTo<SmartIdleState>();
 
     ros::spin();
+}
+
+bool getSongStrings(ros::NodeHandle& privateNodeHandle, vector<string>& values, const std::string& key)
+{
+    string value;
+
+    XmlRpc::XmlRpcValue songs;
+    privateNodeHandle.getParam("songs", songs);
+    if (songs.getType() != XmlRpc::XmlRpcValue::TypeArray)
+    {
+        ROS_ERROR("Invalid songs format");
+        return false;
+    }
+
+    for (size_t i = 0; i < songs.size(); i++)
+    {
+        if (!songs[i].hasMember(key) || (value = static_cast<string>(songs[i][key])).empty())
+        {
+            ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
+            return false;
+        }
+
+        values.emplace_back(move(value));
+    }
+
+    return values.size() > 0;
+}
+
+bool getSongVectors(ros::NodeHandle& privateNodeHandle, vector<vector<string>>& values, const std::string& key)
+{
+    vector<string> value;
+
+    XmlRpc::XmlRpcValue songs;
+    privateNodeHandle.getParam("songs", songs);
+    if (songs.getType() != XmlRpc::XmlRpcValue::TypeArray)
+    {
+        ROS_ERROR("Invalid songs format");
+        return false;
+    }
+
+    for (size_t i = 0; i < songs.size(); i++)
+    {
+        if (!songs[i].hasMember(key) || songs[i][key].getType() != XmlRpc::XmlRpcValue::TypeArray)
+        {
+            ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
+            return false;
+        }
+
+        for (size_t j = 0; j < songs[i][key].size(); j++)
+        {
+            value.emplace_back(songs[i][key][j]);
+        }
+
+        values.emplace_back(move(value));
+    }
+
+    return values.size() > 0;
 }
 
 int main(int argc, char** argv)
@@ -151,29 +218,25 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    vector<string> songNames;
-    if (!privateNodeHandle.getParam("song_names", songNames) || songNames.size() == 0)
-    {
-        ROS_ERROR("At least one valid name must be set for the songs.");
-        return -1;
-    }
+    bool singleTaskPerPerson = false;
+    privateNodeHandle.param("single_task_per_person", singleTaskPerPerson, false);
 
-    vector<string> songPaths;
-    if (!privateNodeHandle.getParam("song_paths", songPaths) || songPaths.size() == 0)
-    {
-        ROS_ERROR("At least one valid path must be set for the songs.");
-        return -1;
-    }
-
-    if (songNames.size() != songPaths.size())
-    {
-        ROS_ERROR("The size of song_names and song_paths must be the same.");
-        return -1;
-    }
+    bool useAfterTaskDelayDurationTopic = false;
+    privateNodeHandle.param("use_after_task_delay_duration_topic", useAfterTaskDelayDurationTopic, false);
 
     double afterTaskDelayDurationS;
     privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
     ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
+
+    vector<string> songNames;
+    vector<vector<string>> songKeywords;
+    vector<string> songPaths;
+    if (!getSongStrings(privateNodeHandle, songNames, "name") ||
+        !getSongVectors(privateNodeHandle, songKeywords, "keywords") ||
+        !getSongStrings(privateNodeHandle, songPaths, "path"))
+    {
+        return -1;
+    }
 
     startNode(
         language,
@@ -184,7 +247,10 @@ int main(int argc, char** argv)
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance,
         songNames,
+        songKeywords,
         songPaths,
+        singleTaskPerPerson,
+        useAfterTaskDelayDurationTopic,
         afterTaskDelayDuration);
 
     return 0;

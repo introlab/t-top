@@ -76,11 +76,11 @@ class PersonIdentificationNode:
     def _video_analysis_cb(self, msg):
         with self._descriptors_lock:
             for object in msg.objects:
-                if len(object.face_descriptor) == 0 or len(object.person_pose) == 0 or len(object.person_pose_confidence) == 0 \
+                if len(object.face_descriptor) == 0 or len(object.person_pose_3d) == 0 or len(object.person_pose_confidence) == 0 \
                         or object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < self._nose_confidence_threshold:
                     continue
 
-                position, direction = self._get_face_position_and_direction(object.person_pose[PERSON_POSE_NOSE_INDEX], msg.header)
+                position, direction = self._get_face_position_and_direction(object.person_pose_3d[PERSON_POSE_NOSE_INDEX], msg.header)
                 if np.isfinite(direction).all():
                     self._face_descriptor_data.append(FaceDescriptorData(np.array(object.face_descriptor), position, direction))
 
@@ -103,7 +103,7 @@ class PersonIdentificationNode:
 
     def _audio_analysis_cb(self, msg):
         if msg.header.frame_id != self._direction_frame_id:
-            rospy.logerr('Invalid frame id ({} != {})'.format(msg.header.frame_id, self._direction_frame_id))
+            rospy.logerr(f'Invalid frame id ({msg.header.frame_id} != {self._direction_frame_id})')
             return
 
         if len(msg.voice_descriptor) == 0:

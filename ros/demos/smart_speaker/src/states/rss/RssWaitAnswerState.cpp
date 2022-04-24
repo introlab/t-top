@@ -3,7 +3,8 @@
 #include "RssValidTaskState.h"
 
 #include "../StateManager.h"
-#include "../InvalidTaskState.h"
+
+#include "../common/InvalidTaskState.h"
 
 #include "../../StringUtils.h"
 

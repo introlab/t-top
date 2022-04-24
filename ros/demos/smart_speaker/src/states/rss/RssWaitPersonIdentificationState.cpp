@@ -21,9 +21,9 @@ RssWaitPersonIdentificationState::RssWaitPersonIdentificationState(
         nodeHandle.subscribe("person_names", 1, &RssWaitPersonIdentificationState::personNamesSubscriberCallback, this);
 }
 
-void RssWaitPersonIdentificationState::enable(const string& parameter)
+void RssWaitPersonIdentificationState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto audioAnalyzerDesire = make_unique<AudioAnalyzerDesire>();
     auto videoAnalyzerDesire = make_unique<FastVideoAnalyzerDesire>();

@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_INVALID_TASK_STATE_H
-#define SMART_SPEAKER_STATES_INVALID_TASK_STATE_H
+#ifndef SMART_SPEAKER_STATES_COMMON_INVALID_TASK_STATE_H
+#define SMART_SPEAKER_STATES_COMMON_INVALID_TASK_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <talk/Done.h>
 #include <gesture/Done.h>
@@ -33,12 +33,12 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
-private:
-    std::string generateText();
+    virtual std::string generateText();
 
+private:
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
     void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
     void switchState();

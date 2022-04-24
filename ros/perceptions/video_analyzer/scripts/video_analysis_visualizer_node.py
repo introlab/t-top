@@ -54,14 +54,14 @@ class VideoAnalysisVisualizerNode:
 
     def _sort_objects(self, objects):
         def key(o):
-            return [o.center.x, o.center.y]
+            return [o.center_2d.x, o.center_2d.y]
         objects.sort(key=key)
 
     def _concatenate_object_images(self, o):
         object_image = self._cv_bridge.imgmsg_to_cv2(o.object_image, 'rgb8')
         pose_image = None
         face_image = None
-        if len(o.person_pose) > 0:
+        if len(o.person_pose_3d) > 0:
             pose_image = self._cv_bridge.imgmsg_to_cv2(o.person_pose_image, 'rgb8')
             face_image = self._cv_bridge.imgmsg_to_cv2(o.face_image, 'rgb8')
 

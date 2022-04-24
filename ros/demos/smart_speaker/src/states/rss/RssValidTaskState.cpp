@@ -3,14 +3,11 @@
 #include "RssStoryState.h"
 
 #include "../StateManager.h"
-#include "../CurrentWeatherState.h"
-#include "../WeatherForecastState.h"
-#include "../DanceState.h"
-#include "../DancePlayedSongState.h"
 
-#include <t_top_hbba_lite/Desires.h>
-
-#include <sstream>
+#include "../task/CurrentWeatherState.h"
+#include "../task/WeatherForecastState.h"
+#include "../task/DanceState.h"
+#include "../task/DancePlayedSongState.h"
 
 using namespace std;
 

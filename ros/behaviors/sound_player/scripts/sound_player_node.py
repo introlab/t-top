@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import threading
+from pathlib import Path
 
 import numpy as np
 
@@ -33,12 +34,13 @@ class SoundPlayerNode:
             try:
                 self._play_audio(msg.id, msg.path)
                 ok = True
-            except Exception:
+            except Exception as e:
+                rospy.logerr(f'Unable to play the song ({e})')
                 ok = False
             self._done_pub.publish(Done(id=msg.id, ok=ok))
 
     def _play_audio(self, id, path):
-        frames = self._load_frames(path)
+        frames = self._load_frames(Path(path).expanduser().resolve())
 
         self._started_pub.publish(Started(id=id))
 

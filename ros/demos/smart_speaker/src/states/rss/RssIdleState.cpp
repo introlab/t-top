@@ -8,8 +8,6 @@
 
 #include <t_top_hbba_lite/Desires.h>
 
-#include <algorithm>
-
 using namespace std;
 
 RssIdleState::RssIdleState(
@@ -25,9 +23,9 @@ RssIdleState::RssIdleState(
         nodeHandle.subscribe("person_names", 1, &RssIdleState::personNamesSubscriberCallback, this);
 }
 
-void RssIdleState::enable(const string& parameter)
+void RssIdleState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto robotNameDetectorDesire = make_unique<RobotNameDetectorDesire>();
     auto videoAnalyzerDesire = make_unique<SlowVideoAnalyzerDesire>();

@@ -1,7 +1,7 @@
-#ifndef SMART_SPEAKER_STATES_CURRENT_WEATHER_STATE_H
-#define SMART_SPEAKER_STATES_CURRENT_WEATHER_STATE_H
+#ifndef SMART_SPEAKER_STATES_TASK_CURRENT_WEATHER_STATE_H
+#define SMART_SPEAKER_STATES_TASK_CURRENT_WEATHER_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <cloud_data/CurrentLocalWeather.h>
 #include <talk/Done.h>
@@ -29,7 +29,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
 private:

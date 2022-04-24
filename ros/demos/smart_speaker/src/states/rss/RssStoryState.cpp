@@ -1,7 +1,8 @@
 #include "RssStoryState.h"
 
 #include "../StateManager.h"
-#include "../AfterTaskDelayState.h"
+
+#include "../common/AfterTaskDelayState.h"
 
 #include "../../StringUtils.h"
 
@@ -37,9 +38,9 @@ RssStoryState::RssStoryState(
     }
 }
 
-void RssStoryState::enable(const string& parameter)
+void RssStoryState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     m_talkDesireId = MAX_DESIRE_ID;
     m_faceAnimationDesireId = MAX_DESIRE_ID;

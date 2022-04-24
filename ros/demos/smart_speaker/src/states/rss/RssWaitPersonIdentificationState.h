@@ -24,7 +24,7 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter) override;
+    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
 private:

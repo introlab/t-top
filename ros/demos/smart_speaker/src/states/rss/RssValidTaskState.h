@@ -1,7 +1,7 @@
 #ifndef SMART_SPEAKER_STATES_RSS_RSS_VALID_TASK_STATE_H
 #define SMART_SPEAKER_STATES_RSS_RSS_VALID_TASK_STATE_H
 
-#include "../ValidTaskState.h"
+#include "../common/ValidTaskState.h"
 
 #include <talk/Done.h>
 #include <gesture/Done.h>

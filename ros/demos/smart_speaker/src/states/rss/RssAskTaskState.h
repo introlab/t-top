@@ -1,11 +1,11 @@
 #ifndef SMART_SPEAKER_STATES_RSS_RSS_ASK_TASK_STATE_H
 #define SMART_SPEAKER_STATES_RSS_RSS_ASK_TASK_STATE_H
 
-#include "../AskTaskState.h"
+#include "../common/TalkState.h"
 
 #include <talk/Done.h>
 
-class RssAskTaskState : public AskTaskState
+class RssAskTaskState : public TalkState
 {
 public:
     RssAskTaskState(
@@ -21,8 +21,8 @@ public:
 protected:
     std::type_index type() const override;
 
-    std::string generateEnglishText(const std::string& personName);
-    std::string generateFrenchText(const std::string& personName);
+    std::string generateEnglishText(const std::string& personName) override;
+    std::string generateFrenchText(const std::string& personName) override;
 };
 
 inline std::type_index RssAskTaskState::type() const

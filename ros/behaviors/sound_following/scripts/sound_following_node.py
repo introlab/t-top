@@ -13,7 +13,8 @@ class SoundFollowingNode:
     def __init__(self):
         self._simulation = rospy.get_param('~simulation')
         self._rate = rospy.Rate(rospy.get_param('~control_frequency'))
-        self._control_alpha = rospy.get_param('~control_alpha')
+        self._torso_control_alpha = rospy.get_param('~torso_control_alpha')
+        self._head_control_alpha = rospy.get_param('~head_control_alpha')
         self._head_enabled = rospy.get_param('~head_enabled')
         self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
         self._max_head_pitch = rospy.get_param('~max_head_pitch_rad')
@@ -28,7 +29,7 @@ class SoundFollowingNode:
 
     def _sst_cb(self, sst):
         if len(sst.sources) > 1:
-            rospy.logerr('Invalid sst (len(sst.sources)={})'.format(len(sst.sources)))
+            rospy.logerr(f'Invalid sst (len(sst.sources)={len(sst.sources)})')
             return
 
         if len(sst.sources) == 0:
@@ -64,7 +65,7 @@ class SoundFollowingNode:
         elif distance > math.pi:
             distance = -(2 * math.pi - distance)
 
-        pose = self._movement_commands.current_torso_pose + self._control_alpha * distance
+        pose = self._movement_commands.current_torso_pose + self._torso_control_alpha * distance
         self._movement_commands.move_torso(pose)
 
     def _update_head(self):
@@ -74,7 +75,7 @@ class SoundFollowingNode:
             return
 
         current_pitch = self._movement_commands.current_head_pose[HEAD_POSE_PITCH_INDEX]
-        pitch = self._control_alpha * target_head_pitch + (1 - self._control_alpha) * current_pitch
+        pitch = self._head_control_alpha * target_head_pitch + (1 - self._head_control_alpha) * current_pitch
         self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, pitch, 0])
 
 

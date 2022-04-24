@@ -3,8 +3,6 @@
 
 #include "../StateManager.h"
 
-#include <t_top_hbba_lite/Desires.h>
-
 #include <sstream>
 
 using namespace std;
@@ -14,7 +12,7 @@ RssAskTaskState::RssAskTaskState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
-    : AskTaskState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
+    : TalkState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
 {
 }
 

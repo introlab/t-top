@@ -1,38 +1,38 @@
-#include "ValidTaskState.h"
-#include "StateManager.h"
+#include "InvalidTaskState.h"
+
+#include "../StateManager.h"
 
 #include <t_top_hbba_lite/Desires.h>
 
-#include <sstream>
-
 using namespace std;
 
-ValidTaskState::ValidTaskState(
+InvalidTaskState::InvalidTaskState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
+    ros::NodeHandle& nodeHandle,
+    type_index nextStateType)
     : State(language, stateManager, desireSet, nodeHandle),
+      m_nextStateType(nextStateType),
       m_talkDesireId(MAX_DESIRE_ID),
       m_gestureDesireId(MAX_DESIRE_ID),
       m_talkDone(false),
       m_gestureDone(false)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &ValidTaskState::talkDoneSubscriberCallback, this);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &InvalidTaskState::talkDoneSubscriberCallback, this);
     m_gestureDoneSubscriber =
-        nodeHandle.subscribe("gesture/done", 1, &ValidTaskState::gestureDoneSubscriberCallback, this);
+        nodeHandle.subscribe("gesture/done", 1, &InvalidTaskState::gestureDoneSubscriberCallback, this);
 }
 
-void ValidTaskState::enable(const string& parameter)
+void InvalidTaskState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
-    m_task = parameter;
     m_talkDone = false;
     m_gestureDone = false;
 
-    auto gestureDesire = make_unique<GestureDesire>("yes");
-    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("happy");
+    auto gestureDesire = make_unique<GestureDesire>("no");
+    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("sad");
     auto talkDesire = make_unique<TalkDesire>(generateText());
     m_talkDesireId = talkDesire->id();
     m_gestureDesireId = gestureDesire->id();
@@ -47,7 +47,7 @@ void ValidTaskState::enable(const string& parameter)
     m_desireSet->addDesire(move(talkDesire));
 }
 
-void ValidTaskState::disable()
+void InvalidTaskState::disable()
 {
     State::disable();
 
@@ -55,20 +55,20 @@ void ValidTaskState::disable()
     m_gestureDesireId = MAX_DESIRE_ID;
 }
 
-string ValidTaskState::generateText()
+string InvalidTaskState::generateText()
 {
     switch (language())
     {
         case Language::ENGLISH:
-            return "Yes, of course.";
+            return "I cannot do that.";
         case Language::FRENCH:
-            return "Oui, bien sûr.";
+            return "Je ne peux pas faire cela.";
     }
 
     return "";
 }
 
-void ValidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+void InvalidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
 {
     if (!enabled() || msg->id != m_talkDesireId)
     {
@@ -76,13 +76,10 @@ void ValidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
     }
 
     m_talkDone = true;
-    if (m_talkDone && m_gestureDone)
-    {
-        switchState(m_task);
-    }
+    switchState();
 }
 
-void ValidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
+void InvalidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
 {
     if (!enabled() || msg->id != m_gestureDesireId)
     {
@@ -90,8 +87,13 @@ void ValidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr
     }
 
     m_gestureDone = true;
+    switchState();
+}
+
+void InvalidTaskState::switchState()
+{
     if (m_talkDone && m_gestureDone)
     {
-        switchState(m_task);
+        m_stateManager.switchTo(m_nextStateType);
     }
 }

@@ -1,5 +1,6 @@
 #include "DanceState.h"
-#include "StateManager.h"
+
+#include "../StateManager.h"
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -16,9 +17,9 @@ DanceState::DanceState(
 {
 }
 
-void DanceState::enable(const string& parameter)
+void DanceState::enable(const string& parameter, const type_index& previousStageType)
 {
-    State::enable(parameter);
+    State::enable(parameter, previousStageType);
 
     auto danceDesire = make_unique<DanceDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
