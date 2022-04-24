@@ -5,7 +5,7 @@
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>
         <param name="torso_control_alpha" value="0.2"/>
-        <param name="head_control_p_gain" value="0.01"/>
+        <param name="head_control_p_gain" value="0.25"/>
         <param name="nose_confidence_threshold" value="0.4"/>
         <param name="head_enabled" value="true"/>
         <param name="min_head_pitch_rad" value="-0.35"/>
