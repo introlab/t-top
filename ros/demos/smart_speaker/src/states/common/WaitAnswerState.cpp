@@ -62,14 +62,14 @@ void WaitAnswerState::disable()
     }
 }
 
-void WaitAnswerState::speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg)
+void WaitAnswerState::speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
 {
     if (!enabled())
     {
         return;
     }
 
-    switchStateAfterTranscriptReceived(msg->data);
+    switchStateAfterTranscriptReceived(msg->text, msg->is_final);
 }
 
 void WaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)

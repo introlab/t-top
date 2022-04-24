@@ -60,9 +60,9 @@ void SpeechTab::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
         });
 }
 
-void SpeechTab::speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg)
+void SpeechTab::speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
 {
-    invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->data)); });
+    invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->text)); });
 }
 
 void SpeechTab::createUi()

@@ -15,7 +15,7 @@ The node performs speech to text. It uses Google Cloud Speech-to-Text.
  - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic processed.
 
 #### Published Topics
- - `text` ([std_msgs/String](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html)): The text said.
+ - `transcript` ([speech_to_text/Transcript](msg/Transcript.msg)): The text said.
 
 #### Services
  - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)) :The HBBA filter state service to enable or disable the processing.

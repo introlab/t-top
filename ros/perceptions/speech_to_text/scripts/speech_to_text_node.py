@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 import rospy
-from std_msgs.msg import String
+from speech_to_text.msg import Transcript
 from audio_utils.msg import AudioFrame
 import hbba_lite
 
@@ -38,7 +38,7 @@ class SpeechToTextNode:
 
         rospy.on_shutdown(self._shutdown_cb)
 
-        self._text_pub = rospy.Publisher('text', String, queue_size=10)
+        self._text_pub = rospy.Publisher('transcript', Transcript, queue_size=10)
         self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
 
@@ -100,14 +100,15 @@ class SpeechToTextNode:
                 language_code=self._language_code)
             streaming_config = speech.StreamingRecognitionConfig(config=config,
                                                                  single_utterance=False,
-                                                                 interim_results=False)
+                                                                 interim_results=True)
 
             requests = self._request_frame_generator()
             responses = self._speech_client.streaming_recognize(config=streaming_config, requests=requests)
             for response in responses:
-                if response.results and response.results[0].is_final:
-                    msg = String()
-                    msg.data = response.results[0].alternatives[0].transcript
+                if response.results:
+                    msg = Transcript()
+                    msg.text = response.results[0].alternatives[0].transcript
+                    msg.is_final = response.results[0].is_final
                     self._text_pub.publish(msg)
 
     def _request_frame_generator(self):

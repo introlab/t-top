@@ -12,7 +12,7 @@ from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_PIT
 
 
 PERSON_POSE_NOSE_INDEX = 0
-TARGET_HEAD_IMAGE_Y = 0.5
+TARGET_HEAD_IMAGE_Y = 0.25
 
 
 class FaceFollowingNode:
