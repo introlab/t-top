@@ -30,7 +30,6 @@ class GoogleVoiceGenerator(VoiceGenerator):
         self._language_code = self._get_language_code()
 
     def generate(self, text: str) -> str:
-
         client = texttospeech.TextToSpeechClient()
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
