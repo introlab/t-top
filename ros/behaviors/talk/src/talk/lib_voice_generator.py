@@ -6,7 +6,6 @@ import json
 import random
 
 from google.cloud import texttospeech
-from sympy import re
 
 
 class VoiceGenerator(ABC):
