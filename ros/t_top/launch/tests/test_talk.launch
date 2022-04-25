@@ -1,0 +1,28 @@
+<launch>
+    <arg name="language" default="fr"/> <!-- Options: fr or en -->
+    <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
+
+    <node pkg="talk" type="talk_node.py" name="talk_node" output="screen">
+        <param name="language" value="$(arg language)"/>
+        <param name="speaking_rate" value="$(arg speaking_rate)"/>
+        <param name="cache_size" value="2"/>
+        <param name="mouth_signal_gain" value="0.03"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="2048"/>
+
+        <remap from="audio_out" to="audio_float_44100"/>
+        <remap from="audio_out/filter_state" to="talk/filter_state"/>
+    </node>
+
+    <node pkg="audio_utils" type="alsa_playback_node" name="alsa_playback_node" respawn="true">
+        <param name="device" value="default"/>
+        <param name="format" value="float"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="2048"/>
+        <param name="latency_us" value="4000"/>
+
+        <remap from="audio_in" to="audio_float_44100"/>
+    </node>
+
+</launch>
