@@ -27,8 +27,8 @@ public:
 protected:
     std::type_index type() const override;
 
-    void switchStateAfterTranscriptReceived(const std::string& text) override;
-    void switchStateAfterTimeout() override;
+    void switchStateAfterTranscriptReceived(const std::string& text, bool isFinal) override;
+    void switchStateAfterTimeout(bool transcriptReceived) override;
 };
 
 inline std::type_index RssWaitAnswerState::type() const

@@ -52,7 +52,7 @@ RssWaitAnswerState::RssWaitAnswerState(
     }
 }
 
-void RssWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text)
+void RssWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text, bool isFinal)
 {
     auto words = splitStrings(toLowerString(text), " \n.,!?");
     unordered_set<string> wordSet(words.begin(), words.end());
@@ -84,13 +84,20 @@ void RssWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& t
     {
         m_stateManager.switchTo<RssValidTaskState>(DANCE_PLAYED_SONG_TASK);
     }
-    else
+    else if (isFinal)
     {
         m_stateManager.switchTo<InvalidTaskState>();
     }
 }
 
-void RssWaitAnswerState::switchStateAfterTimeout()
+void RssWaitAnswerState::switchStateAfterTimeout(bool transcriptReceived)
 {
-    m_stateManager.switchTo<RssIdleState>();
+    if (transcriptReceived)
+    {
+        m_stateManager.switchTo<InvalidTaskState>();
+    }
+    else
+    {
+        m_stateManager.switchTo<RssIdleState>();
+    }
 }

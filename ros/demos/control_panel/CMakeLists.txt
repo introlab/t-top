@@ -18,7 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
         video_analyzer
         hbba_lite
         t_top_hbba_lite
-        )
+        speech_to_text
+)
 
 ## System dependencies are found with CMake's conventions
 

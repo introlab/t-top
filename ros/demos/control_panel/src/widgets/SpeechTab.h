@@ -8,7 +8,7 @@
 
 #include <ros/ros.h>
 #include <talk/Done.h>
-#include <std_msgs/String.h>
+#include <speech_to_text/Transcript.h>
 
 #include <hbba_lite/core/DesireSet.h>
 
@@ -36,7 +36,7 @@ private slots:
 
 private:
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
-    void speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg);
+    void speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg);
 
     void createUi();
 

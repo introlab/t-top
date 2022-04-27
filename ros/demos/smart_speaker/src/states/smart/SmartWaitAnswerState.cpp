@@ -54,7 +54,7 @@ SmartWaitAnswerState::SmartWaitAnswerState(
     }
 }
 
-void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text)
+void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& text, bool isFinal)
 {
     auto lowerCaseText = toLowerString(text);
 
@@ -80,16 +80,20 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
     {
         m_stateManager.switchTo<SmartValidTaskState>(string(DANCE_TASK) + '|' + to_string(songIndex));
     }
-    else
+    else if (isFinal)
     {
         ROS_WARN_STREAM("Invalid task (" << text << ")");
         m_stateManager.switchTo<InvalidTaskState>();
     }
 }
 
-void SmartWaitAnswerState::switchStateAfterTimeout()
+void SmartWaitAnswerState::switchStateAfterTimeout(bool transcriptReceived)
 {
-    if (previousStageType() == type_index(typeid(SmartAskTaskState)))
+    if (transcriptReceived)
+    {
+        m_stateManager.switchTo<InvalidTaskState>();
+    }
+    else if (previousStageType() == type_index(typeid(SmartAskTaskState)))
     {
         m_stateManager.switchTo<AfterTaskDelayState>();
     }

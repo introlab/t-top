@@ -3,7 +3,7 @@
 
     <arg name="output" default="log"/>
 
-    <node pkg="control_panel" type="control_panel_node" name="control_panel_node" output="$(arg output)"/>
+    <node pkg="control_panel" type="control_panel_node" name="control_panel_node" output="screen"/>
 
     <include file="$(find t_top)/launch/bringup.launch">
         <arg name="language" value="$(arg language)"/>

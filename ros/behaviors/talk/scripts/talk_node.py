@@ -4,8 +4,6 @@
 import os
 import threading
 
-from google.cloud import texttospeech
-
 import numpy as np
 from scipy import signal
 
@@ -19,17 +17,25 @@ from audio_utils.msg import AudioFrame
 
 import hbba_lite
 
+from talk.lib_voice_generator import GoogleVoiceGenerator, CachedVoiceGenerator
+
 
 class TalkNode:
     def __init__(self):
-        self._language = rospy.get_param('~language')
-        self._speaking_rate = rospy.get_param('~speaking_rate')
+        language = rospy.get_param('~language')
+        speaking_rate = rospy.get_param('~speaking_rate')
+        cache_size = rospy.get_param('~cache_size')
+
         self._mouth_signal_gain = rospy.get_param('~mouth_signal_gain')
         self._sampling_frequency = rospy.get_param('~sampling_frequency')
         self._frame_sample_count = rospy.get_param('~frame_sample_count')
 
         self._rospack = rospkg.RosPack()
         self._pkg_path = self._rospack.get_path('talk')
+        audio_directory_path = os.path.join(self._pkg_path, 'audio_files')
+
+        google_voice_generator = GoogleVoiceGenerator(audio_directory_path, language, speaking_rate)
+        self._voice_generator = CachedVoiceGenerator(google_voice_generator, cache_size)
 
         self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
@@ -45,8 +51,7 @@ class TalkNode:
 
             try:
                 if msg.text != '':
-                    mp3_audio_content = self._generate_mp3_audio_content(msg.text)
-                    file_path = self._write_mp3_audio_content(mp3_audio_content)
+                    file_path = self._voice_generator.generate(msg.text)
                     self._play_audio(file_path)
                 ok = True
             except Exception as e:
@@ -54,35 +59,6 @@ class TalkNode:
                 ok = False
 
             self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
-
-    def _generate_mp3_audio_content(self, text):
-        language_code = self._convert_language_to_language_code(self._language)
-
-        client = texttospeech.TextToSpeechClient()
-
-        synthesis_input = texttospeech.SynthesisInput(text=text)
-        voice = texttospeech.VoiceSelectionParams(language_code=language_code, ssml_gender=texttospeech.SsmlVoiceGender.MALE)
-        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
-                                                speaking_rate=self._speaking_rate)
-
-        response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
-        return response.audio_content
-
-    def _convert_language_to_language_code(self, language):
-        if language == 'en':
-            return 'en-US'
-        elif language == 'fr':
-            return 'fr-CA'
-
-    def _write_mp3_audio_content(self, mp3_audio_content):
-        directory_path = os.path.join(self._pkg_path, 'audio_files')
-        file_path = os.path.join(directory_path, 'text.mp3')
-        os.makedirs(directory_path, exist_ok=True)
-
-        with open(file_path, 'wb') as file:
-            file.write(mp3_audio_content)
-
-        return file_path
 
     def _play_audio(self, file_path):
         frames = self._load_frames(file_path)

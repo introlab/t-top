@@ -30,8 +30,8 @@ public:
 protected:
     std::type_index type() const override;
 
-    void switchStateAfterTranscriptReceived(const std::string& text) override;
-    void switchStateAfterTimeout() override;
+    void switchStateAfterTranscriptReceived(const std::string& text, bool isFinal) override;
+    void switchStateAfterTimeout(bool transcriptReceived) override;
 
 private:
     size_t getSongIndex(const std::string& text);

@@ -3,12 +3,14 @@
 
 #include "../State.h"
 
-#include <std_msgs/String.h>
+#include <speech_to_text/Transcript.h>
 
 class WaitAnswerState : public State
 {
     ros::Subscriber m_speechToTextSubscriber;
     ros::Timer m_timeoutTimer;
+
+    bool m_transcriptReceived;
 
 public:
     WaitAnswerState(
@@ -25,11 +27,11 @@ protected:
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
     void disable() override;
 
-    virtual void switchStateAfterTranscriptReceived(const std::string& text) = 0;
-    virtual void switchStateAfterTimeout() = 0;
+    virtual void switchStateAfterTranscriptReceived(const std::string& text, bool isFinal) = 0;
+    virtual void switchStateAfterTimeout(bool transcriptReceived) = 0;
 
 private:
-    void speechToTextSubscriberCallback(const std_msgs::String::ConstPtr& msg);
+    void speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg);
     void timeoutTimerCallback(const ros::TimerEvent& event);
 };
 

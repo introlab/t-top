@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 import threading
+import math
+import time
 
 import rospy
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import numpy as np
-import math
 
 from std_msgs.msg import Float32
 from geometry_msgs.msg import PoseStamped
@@ -151,7 +152,7 @@ class MovementCommands:
             if should_sleep:
                 rospy.sleep(self._minTime)
 
-    def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10, stop_cb=None):
+    def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10, stop_cb=None, timeout=float('inf')):
         if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
             return False
 
@@ -170,6 +171,7 @@ class MovementCommands:
         if distance < 0:
             steps_size = -steps_size
 
+        start_time = time.time()
         if abs(distance) > abs(steps_size):
             steps_number = int(abs(distance / steps_size))
 
@@ -190,6 +192,9 @@ class MovementCommands:
             while abs(pose - self.current_torso_pose) > 0.1:
                 if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
+                if (time.time() - start_time) > timeout:
+                    raise TimeoutError()
+
                 self._torso_orientation_pub.publish(pose)
                 rospy.sleep(self._minTime)
 
@@ -241,7 +246,9 @@ class MovementCommands:
 
         self._head_pose_pub.publish(pose_msg)
 
-    def move_head(self, pose, should_wait=False, speed_meters_sec=1.0e10, speed_rad_sec=1.0e10, stop_cb=None):
+    def move_head(self, pose, should_wait=False,
+                  speed_meters_sec=1.0e10, speed_rad_sec=1.0e10,
+                  stop_cb=None, timeout=float('inf')):
         """
         pose[0]: x
         pose[1]: y
@@ -269,6 +276,7 @@ class MovementCommands:
         np_steps_number = self._compute_head_steps_number_array(
             np_distances, np_steps_size)
 
+        start_time = time.time()
         if int(np.amax(np_steps_number)) > 1:
             for i in range(1, int(np.amax(np_steps_number))):
                 if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
@@ -293,46 +301,64 @@ class MovementCommands:
             while not (np.abs(np_pose - np.array(self.current_head_pose)) < self._np_head_tolerances).all():
                 if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
+                if (time.time() - start_time) > timeout:
+                    raise TimeoutError()
+
                 self._head_msg(pose)
                 rospy.sleep(self._minTime)
 
         return True
 
-    def move_yes(self, count=3, speed_rad_sec=0.5):
+    def move_yes(self, count=3, speed_rad_sec=0.5, timeout=float('inf')):
+        timeout /= 2 * count
+
         for i in range(count):
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], should_wait=True,
+                                  speed_rad_sec=speed_rad_sec, timeout=timeout):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, -0.25, 0], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, -0.25, 0], should_wait=True,
+                                  speed_rad_sec=speed_rad_sec, timeout=timeout):
                 return False
 
-        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
+        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait=True,
+                              speed_rad_sec=speed_rad_sec, timeout=timeout):
             return False
         return True
 
-    def move_no(self, count=3, speed_rad_sec=0.5):
+    def move_no(self, count=3, speed_rad_sec=0.5, timeout=float('inf')):
+        timeout /= 2 * count
+
         for i in range(count):
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0.25], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0.25], should_wait=True,
+                                  speed_rad_sec=speed_rad_sec, timeout=timeout):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, -0.25], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, -0.25], should_wait=True,
+                                  speed_rad_sec=speed_rad_sec, timeout=timeout):
                 return False
 
-        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
+        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait=True,
+                              speed_rad_sec=speed_rad_sec, timeout=timeout):
             return False
         return True
 
-    def move_maybe(self, count=3, speed_rad_sec=0.5):
+    def move_maybe(self, count=3, speed_rad_sec=0.5, timeout=float('inf')):
+        timeout /= 2 * count
+
         for i in range(count):
-            if not self.move_head([0, 0, HEAD_ZERO_Z, 0.25, 0, 0], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, 0.25, 0, 0],should_wait= True,
+                                  speed_rad_sec=speed_rad_sec, timeout=timeout):
                 return False
-            if not self.move_head([0, 0, HEAD_ZERO_Z, -0.25, 0, 0], True, speed_rad_sec=speed_rad_sec):
+            if not self.move_head([0, 0, HEAD_ZERO_Z, -0.25, 0, 0], should_wait=True,
+                                  speed_rad_sec=speed_rad_sec, timeout=timeout):
                 return False
 
-        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], True, speed_rad_sec=speed_rad_sec):
+        if not self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait=True,
+                              speed_rad_sec=speed_rad_sec, timeout=timeout):
             return False
         return True
 
-    def move_head_to_origin(self, should_wait=True):
-        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait)
+    def move_head_to_origin(self, should_wait=True, timeout=float('inf')):
+        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait, timeout=timeout)
 
-    def move_torso_to_origin(self, should_wait=True):
-        self.move_torso(0, should_wait)
+    def move_torso_to_origin(self, should_wait=True, timeout=float('inf')):
+        self.move_torso(0, should_wait, timeout=timeout)
