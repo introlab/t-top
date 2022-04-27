@@ -24,7 +24,8 @@ WaitAnswerState::WaitAnswerState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
-    : State(language, stateManager, desireSet, nodeHandle)
+    : State(language, stateManager, desireSet, nodeHandle),
+      m_transcriptReceived(false)
 {
     m_speechToTextSubscriber =
         nodeHandle.subscribe("speech_to_text/transcript", 1, &WaitAnswerState::speechToTextSubscriberCallback, this);
@@ -33,6 +34,7 @@ WaitAnswerState::WaitAnswerState(
 void WaitAnswerState::enable(const string& parameter, const type_index& previousStageType)
 {
     State::enable(parameter, previousStageType);
+    m_transcriptReceived = false;
 
     auto speechToTextDesire = make_unique<SpeechToTextDesire>();
     auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
@@ -69,6 +71,7 @@ void WaitAnswerState::speechToTextSubscriberCallback(const speech_to_text::Trans
         return;
     }
 
+    m_transcriptReceived = true;
     switchStateAfterTranscriptReceived(msg->text, msg->is_final);
 }
 
@@ -79,5 +82,5 @@ void WaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
         return;
     }
 
-    switchStateAfterTimeout();
+    switchStateAfterTimeout(m_transcriptReceived);
 }

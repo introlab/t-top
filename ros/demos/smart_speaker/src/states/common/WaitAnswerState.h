@@ -10,6 +10,8 @@ class WaitAnswerState : public State
     ros::Subscriber m_speechToTextSubscriber;
     ros::Timer m_timeoutTimer;
 
+    bool m_transcriptReceived;
+
 public:
     WaitAnswerState(
         Language language,
@@ -26,7 +28,7 @@ protected:
     void disable() override;
 
     virtual void switchStateAfterTranscriptReceived(const std::string& text, bool isFinal) = 0;
-    virtual void switchStateAfterTimeout() = 0;
+    virtual void switchStateAfterTimeout(bool transcriptReceived) = 0;
 
 private:
     void speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg);

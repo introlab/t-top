@@ -87,9 +87,13 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
     }
 }
 
-void SmartWaitAnswerState::switchStateAfterTimeout()
+void SmartWaitAnswerState::switchStateAfterTimeout(bool transcriptReceived)
 {
-    if (previousStageType() == type_index(typeid(SmartAskTaskState)))
+    if (transcriptReceived)
+    {
+        m_stateManager.switchTo<InvalidTaskState>();
+    }
+    else if (previousStageType() == type_index(typeid(SmartAskTaskState)))
     {
         m_stateManager.switchTo<AfterTaskDelayState>();
     }

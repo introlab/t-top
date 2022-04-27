@@ -90,7 +90,14 @@ void RssWaitAnswerState::switchStateAfterTranscriptReceived(const std::string& t
     }
 }
 
-void RssWaitAnswerState::switchStateAfterTimeout()
+void RssWaitAnswerState::switchStateAfterTimeout(bool transcriptReceived)
 {
-    m_stateManager.switchTo<RssIdleState>();
+    if (transcriptReceived)
+    {
+        m_stateManager.switchTo<InvalidTaskState>();
+    }
+    else
+    {
+        m_stateManager.switchTo<RssIdleState>();
+    }
 }
