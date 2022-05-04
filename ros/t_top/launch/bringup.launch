@@ -1,4 +1,5 @@
 <launch>
+    <arg name="use_echo_cancellation" default="true"/>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
     <arg name="neural_network_inference_type" default="trt_gpu"/>
@@ -8,7 +9,9 @@
     <arg name="fullscreen_face" default="false"/>
     <arg name="output" default="log"/>
 
-    <include file="$(find t_top)/launch/platform.launch"/>
+    <include file="$(find t_top)/launch/platform.launch">
+        <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
+    </include>
 
     <include file="$(find t_top)/launch/perceptions.launch">
         <arg name="language" value="$(arg language)"/>

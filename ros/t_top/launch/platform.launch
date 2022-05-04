@@ -1,7 +1,10 @@
 <launch>
+    <arg name="use_echo_cancellation" default="false"/>
 
     <include file="$(find t_top)/launch/platform/opencr.launch"/>
     <include file="$(find t_top)/launch/platform/actuators.launch"/>
-    <include file="$(find t_top)/launch/platform/sensors.launch"/>
+    <include file="$(find t_top)/launch/platform/sensors.launch">
+        <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
+    </include>
 
 </launch>

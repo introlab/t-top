@@ -6,7 +6,8 @@
     </include>
 
     <!-- Sound -->
-    <node pkg="audio_utils" type="alsa_playback_node" name="alsa_playback_node" respawn="true">
+    <node pkg="audio_utils" type="playback_node" name="playback_node" respawn="true">
+        <param name="backend" value="alsa"/>
         <param name="device" value="default"/>
         <param name="format" value="float"/>
         <param name="channel_count" value="1"/>
