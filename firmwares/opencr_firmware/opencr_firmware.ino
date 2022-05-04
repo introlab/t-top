@@ -7,6 +7,8 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Int32.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <geometry_msgs/PoseStamped.h>
 
 #include "MPU9250.h"
@@ -18,75 +20,84 @@
 
 // ROS
 constexpr unsigned long ROS_SERIAL_BAUD_RATE = 1000000;
-ros::NodeHandle nh;
+static ros::NodeHandle nh;
 
-void setTorsoOrientation(const std_msgs::Float32& msg);
-ros::Subscriber<std_msgs::Float32> setTorsoOrientationSub("opencr/torso_orientation", &setTorsoOrientation);
+static void setTorsoOrientation(const std_msgs::Float32& msg);
+static ros::Subscriber<std_msgs::Float32> setTorsoOrientationSub("opencr/torso_orientation", &setTorsoOrientation);
 
-void setHeadPose(const geometry_msgs::PoseStamped& msg);
-ros::Subscriber<geometry_msgs::PoseStamped> setHeadPoseSub("opencr/head_pose", &setHeadPose);
+static void setHeadPose(const geometry_msgs::PoseStamped& msg);
+static ros::Subscriber<geometry_msgs::PoseStamped> setHeadPoseSub("opencr/head_pose", &setHeadPose);
 
-void setAudioPowerAmplifierVolume(const std_msgs::Int8& msg);
-ros::Subscriber<std_msgs::Int8>
+static void setAudioPowerAmplifierVolume(const std_msgs::Int8& msg);
+static ros::Subscriber<std_msgs::Int8>
     setAudioPowerAmplifierVolumeSub("opencr/audio_power_amplifier_volume", &setAudioPowerAmplifierVolume);
 
 
-std_msgs::Float32 currentTorsoOrientationMsg;
-ros::Publisher currentTorsoOrientationPub("opencr/current_torso_orientation", &currentTorsoOrientationMsg);
+static std_msgs::Float32 currentTorsoOrientationMsg;
+static ros::Publisher currentTorsoOrientationPub("opencr/current_torso_orientation", &currentTorsoOrientationMsg);
+
+static std_msgs::Int32 currentTorsoServoSpeedMsg;
+static ros::Publisher currentTorsoServoSpeedPub("opencr/current_torso_servo_speed", &currentTorsoServoSpeedMsg);
+
 
 constexpr int CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH = 6;
-float currentHeadServoAnglesData[CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH];
-std_msgs::Float32MultiArray currentHeadServoAnglesMsg;
-ros::Publisher currentHeadServoAnglesPub("opencr/current_head_servo_angles", &currentHeadServoAnglesMsg);
+static float currentHeadServoAnglesMsgData[CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH];
+static std_msgs::Float32MultiArray currentHeadServoAnglesMsg;
+static ros::Publisher currentHeadServoAnglesPub("opencr/current_head_servo_angles", &currentHeadServoAnglesMsg);
 
-geometry_msgs::PoseStamped currentHeadPoseMsg;
-ros::Publisher currentHeadPosePub("opencr/current_head_pose", &currentHeadPoseMsg);
+constexpr int CURRENT_HEAD_SERVO_SPEEDS_MSG_DATA_LENGTH = 6;
+static int32_t currentHeadServoSpeedsMsgData[CURRENT_HEAD_SERVO_SPEEDS_MSG_DATA_LENGTH];
+static std_msgs::Int32MultiArray currentHeadServoSpeedsMsg;
+static ros::Publisher currentHeadServoSpeedsPub("opencr/current_head_servo_speeds", &currentHeadServoSpeedsMsg);
 
-std_msgs::Bool isHeadPoseReachableMsg;
-ros::Publisher isHeadPoseReachablePub("opencr/is_head_pose_reachable", &isHeadPoseReachableMsg);
+static geometry_msgs::PoseStamped currentHeadPoseMsg;
+static ros::Publisher currentHeadPosePub("opencr/current_head_pose", &currentHeadPoseMsg);
+
+static std_msgs::Bool isHeadPoseReachableMsg;
+static ros::Publisher isHeadPoseReachablePub("opencr/is_head_pose_reachable", &isHeadPoseReachableMsg);
+
 
 constexpr int RAW_IMU_MSG_DATA_LENGTH = 9;
-float rawImuMsgData[RAW_IMU_MSG_DATA_LENGTH];
-std_msgs::Float32MultiArray rawImuMsg;
-ros::Publisher rawImuPub("opencr/raw_imu", &rawImuMsg);
+static float rawImuMsgData[RAW_IMU_MSG_DATA_LENGTH];
+static std_msgs::Float32MultiArray rawImuMsg;
+static ros::Publisher rawImuPub("opencr/raw_imu", &rawImuMsg);
 
 // Message format : stateOfCharge, current, voltage, isPsuConnected, isBatteryCharging
 constexpr int BASE_STATUS_MSG_DATA_LENGTH = 5;
-float baseStatusMsgData[BASE_STATUS_MSG_DATA_LENGTH];
-std_msgs::Float32MultiArray baseStatusMsg;
-ros::Publisher baseStatusPub("opencr/base_status", &baseStatusMsg);
+static float baseStatusMsgData[BASE_STATUS_MSG_DATA_LENGTH];
+static std_msgs::Float32MultiArray baseStatusMsg;
+static ros::Publisher baseStatusPub("opencr/base_status", &baseStatusMsg);
 
 // Robot
-MPU9250 imu(SPI_IMU, BDPIN_SPI_CS_IMU);
+static MPU9250 imu(SPI_IMU, BDPIN_SPI_CS_IMU);
 
 const char* DYNAMIXEL_BUS_SERIAL = "/dev/ttyUSB0";
 constexpr long DYNAMIXEL_BAUDRATE = 1000000;
-DynamixelWorkbench dynamixelWorkbench;
-StewartPlatformController stewartPlatformController(dynamixelWorkbench);
-TorsoController torsoController(dynamixelWorkbench);
+static DynamixelWorkbench dynamixelWorkbench;
+static StewartPlatformController stewartPlatformController(dynamixelWorkbench);
+static TorsoController torsoController(dynamixelWorkbench);
 
 constexpr unsigned long PSU_CONTROL_BAUD_RATE = 9600;
-PsuControlCommandHandler psuControlCommandHandler;
-PsuControlCommandSender psuControlCommandSender;
+static PsuControlCommandHandler psuControlCommandHandler;
+static PsuControlCommandSender psuControlCommandSender;
 
 // Timers
 constexpr long ROS_TIMER_PERIOD_MS = 1;
 constexpr long SERVO_STATUS_TIMER_PERIOD_MS = 33;
 constexpr long IMU_TIMER_PERIOD_MS = 10;
 
-void onRosTimer();
-Ticker rosTimer(onRosTimer, ROS_TIMER_PERIOD_MS);
+static void onRosTimer();
+static Ticker rosTimer(onRosTimer, ROS_TIMER_PERIOD_MS);
 
-void onServoStatusTimer();
-Ticker servoStatusTimer(onServoStatusTimer, SERVO_STATUS_TIMER_PERIOD_MS);
+static void onServoStatusTimer();
+static Ticker servoStatusTimer(onServoStatusTimer, SERVO_STATUS_TIMER_PERIOD_MS);
 
-void onImuTimer();
-Ticker imuTimer(onImuTimer, IMU_TIMER_PERIOD_MS);
+static void onImuTimer();
+static Ticker imuTimer(onImuTimer, IMU_TIMER_PERIOD_MS);
 
 
-void setupRos()
+static void setupRos()
 {
-    // Setup ROS
     nh.getHardware()->setBaud(ROS_SERIAL_BAUD_RATE);
 
     nh.initNode();
@@ -95,14 +106,16 @@ void setupRos()
     nh.subscribe(setAudioPowerAmplifierVolumeSub);
 
     nh.advertise(currentTorsoOrientationPub);
+    nh.advertise(currentTorsoServoSpeedPub);
     nh.advertise(currentHeadServoAnglesPub);
+    nh.advertise(currentHeadServoSpeedsPub);
     nh.advertise(currentHeadPosePub);
     nh.advertise(isHeadPoseReachablePub);
     nh.advertise(rawImuPub);
     nh.advertise(baseStatusPub);
 }
 
-void setupImu()
+static void setupImu()
 {
     imu.begin();
     imu.setAccelRange(MPU9250::ACCEL_RANGE_2G);
@@ -111,14 +124,14 @@ void setupImu()
     imu.setSrd(9);  // 100 Hz update rate
 }
 
-void setupControllers()
+static void setupControllers()
 {
     dynamixelWorkbench.begin(DYNAMIXEL_BUS_SERIAL, DYNAMIXEL_BAUDRATE);
     stewartPlatformController.init();
     torsoController.init();
 }
 
-void setupPsuControlCommandHandler()
+static void setupPsuControlCommandHandler()
 {
     Serial1.begin(PSU_CONTROL_BAUD_RATE);
     psuControlCommandHandler.setStatusCommandHandler(&onStatusCommand);
@@ -144,45 +157,52 @@ void loop()
     psuControlCommandHandler.update();
 }
 
-void setTorsoOrientation(const std_msgs::Float32& msg)
+static void setTorsoOrientation(const std_msgs::Float32& msg)
 {
     torsoController.setOrientation(msg.data);
 }
 
-void setHeadPose(const geometry_msgs::PoseStamped& msg)
+static void setHeadPose(const geometry_msgs::PoseStamped& msg)
 {
     stewartPlatformController.setPose(msg);
 }
 
-void setAudioPowerAmplifierVolume(const std_msgs::Int8& msg)
+static void setAudioPowerAmplifierVolume(const std_msgs::Int8& msg)
 {
     psuControlCommandSender.sendVolumeCommand(msg.data);
 }
 
-void onRosTimer()
+static void onRosTimer()
 {
     nh.spinOnce();
 }
 
-void onServoStatusTimer()
+static void onServoStatusTimer()
 {
     isHeadPoseReachableMsg.data = stewartPlatformController.isPoseReachable();
     isHeadPoseReachablePub.publish(&isHeadPoseReachableMsg);
 
-    stewartPlatformController.readCurrentPose(currentHeadServoAnglesData, currentHeadPoseMsg);
-
-    currentHeadServoAnglesMsg.data = &currentHeadServoAnglesData[0];
+    stewartPlatformController.readCurrentPose(currentHeadServoAnglesMsgData, currentHeadPoseMsg);
+    currentHeadServoAnglesMsg.data = currentHeadServoAnglesMsgData;
     currentHeadServoAnglesMsg.data_length = CURRENT_HEAD_SERVO_ANGLES_MSG_DATA_LENGTH;
     currentHeadServoAnglesPub.publish(&currentHeadServoAnglesMsg);
+
+    stewartPlatformController.readServoSpeeds(currentHeadServoSpeedsMsgData);
+    currentHeadServoSpeedsMsg.data = currentHeadServoSpeedsMsgData;
+    currentHeadServoSpeedsMsg.data_length = CURRENT_HEAD_SERVO_SPEEDS_MSG_DATA_LENGTH;
+    currentHeadServoSpeedsPub.publish(&currentHeadServoSpeedsMsg);
 
     currentHeadPosePub.publish(&currentHeadPoseMsg);
 
 
     currentTorsoOrientationMsg.data = torsoController.readOrientation();
     currentTorsoOrientationPub.publish(&currentTorsoOrientationMsg);
+
+    currentTorsoServoSpeedMsg.data = torsoController.readServoSpeed();
+    currentTorsoServoSpeedPub.publish(&currentTorsoServoSpeedMsg);
 }
 
-void onImuTimer()
+static void onImuTimer()
 {
     imu.readSensor();
     rawImuMsgData[0] = imu.getAccelX_mss();
@@ -195,12 +215,13 @@ void onImuTimer()
     rawImuMsgData[7] = imu.getMagY_uT();
     rawImuMsgData[8] = imu.getMagZ_uT();
 
-    rawImuMsg.data = &rawImuMsgData[0];
+    rawImuMsg.data = rawImuMsgData;
     rawImuMsg.data_length = RAW_IMU_MSG_DATA_LENGTH;
     rawImuPub.publish(&rawImuMsg);
 }
 
-void onStatusCommand(bool isPsuConnected, bool isBatteryCharging, float stateOfCharge, float current, float voltage)
+static void
+    onStatusCommand(bool isPsuConnected, bool isBatteryCharging, float stateOfCharge, float current, float voltage)
 {
     baseStatusMsgData[0] = stateOfCharge;
     baseStatusMsgData[1] = voltage;

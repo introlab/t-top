@@ -29,6 +29,7 @@ public:
 
     bool isPoseReachable();
     void readCurrentPose(float servoAngles[], geometry_msgs::PoseStamped& pose);
+    void readServoSpeeds(int32_t servoSpeeds[]);
 };
 
 #endif

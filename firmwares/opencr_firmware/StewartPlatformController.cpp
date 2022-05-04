@@ -93,3 +93,11 @@ void StewartPlatformController::readCurrentPose(float servoAngles[], geometry_ms
     pose.pose.orientation.y = orientation.y();
     pose.pose.orientation.z = orientation.z();
 }
+
+void StewartPlatformController::readServoSpeeds(int32_t servoSpeeds[])
+{
+    for (int i = 0; i < STEWART_SERVO_COUNT; i++)
+    {
+        m_dynamixelWorkbench.getPresentVelocityData(STEWART_PLATFORM_DYNAMIXEL_IDS[i], servoSpeeds + i);
+    }
+}
