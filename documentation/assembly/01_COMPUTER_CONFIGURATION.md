@@ -61,6 +61,7 @@ sudo apt install -y libasound2-dev \
     libconfig-dev \
     alsa-utils \
     gfortran \
+    libgfortran-*-dev \
     texinfo \
     libfftw3-dev \
     libsqlite3-dev \
