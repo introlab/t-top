@@ -2,7 +2,9 @@
 
 ## Onboard Computer (Jetson AGX Xavier)
 
-TODO
+TODO SSD install
+TODO Move the WiFi Card install here
+TODO Software install
 
 ## Development Computer (Ubuntu 20.04)
 
