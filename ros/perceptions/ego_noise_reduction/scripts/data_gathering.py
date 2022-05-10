@@ -25,6 +25,7 @@ class DataGatheringNode:
         self._rospack = rospkg.RosPack()
         self._pkg_path = self._rospack.get_path('ego_noise_reduction')
         self._data_directory_path = os.path.join(self._pkg_path, 'data')
+        os.makedirs(self._data_directory_path, exist_ok=True)
 
         self._start_ego_noise_data_gathering_pub = rospy.Publisher('opencr/start_ego_noise_data_gathering', Empty, queue_size=10)
 
