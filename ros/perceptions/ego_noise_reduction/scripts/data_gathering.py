@@ -10,6 +10,9 @@ from std_msgs.msg import Float32, Int32, Empty
 from audio_utils.msg import AudioFrame
 
 
+START_DELAY_S = 10.
+
+
 class DataGatheringNode:
     def __init__(self):
         self._torso_orientation_deg = 0
@@ -22,6 +25,8 @@ class DataGatheringNode:
         self._rospack = rospkg.RosPack()
         self._pkg_path = self._rospack.get_path('ego_noise_reduction')
         self._data_directory_path = os.path.join(self._pkg_path, 'data')
+
+        self._start_ego_noise_data_gathering_pub = rospy.Publisher('opencr/start_ego_noise_data_gathering', Empty, queue_size=10)
 
         self._current_torso_orientation_sub = rospy.Subscriber('opencr/current_torso_orientation', Float32,
                                                                self._current_torso_orientation_cb, queue_size=10)
@@ -88,6 +93,9 @@ class DataGatheringNode:
             file.write(data)
 
     def run(self):
+        rospy.sleep(START_DELAY_S)
+        self._start_ego_noise_data_gathering_pub.publish(Empty())
+
         rospy.spin()
 
 
