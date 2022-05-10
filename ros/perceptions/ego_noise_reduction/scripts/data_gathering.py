@@ -88,7 +88,7 @@ class DataGatheringNode:
                     f'torso_servo_deg{self._torso_orientation_deg}_speed{self._moving_servo_speed}.raw')
                 self._append_to(path, msg.data)
 
-    def _append_to(path, data):
+    def _append_to(self, path, data):
         with open(path, 'a+b') as file:
             file.write(data)
 
