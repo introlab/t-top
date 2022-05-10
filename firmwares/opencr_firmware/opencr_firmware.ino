@@ -220,8 +220,7 @@ static void onImuTimer()
     rawImuPub.publish(&rawImuMsg);
 }
 
-static void
-    onStatusCommand(bool isPsuConnected, bool isBatteryCharging, float stateOfCharge, float current, float voltage)
+void onStatusCommand(bool isPsuConnected, bool isBatteryCharging, float stateOfCharge, float current, float voltage)
 {
     baseStatusMsgData[0] = stateOfCharge;
     baseStatusMsgData[1] = voltage;

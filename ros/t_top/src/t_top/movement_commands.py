@@ -40,6 +40,13 @@ def fmod_radian(v):
     return math.fmod(math.fmod(v, 2 * math.pi) + 2 * math.pi, 2 * math.pi)
 
 
+def abs_diff_torso_angle(a, b):
+    d = abs(a - b)
+    if d > math.pi:
+        d = 2 * math.pi - d
+    return d
+
+
 class MovementCommands:
     def __init__(self, simulation=False):
         self._read_torso_lock = threading.Lock()
@@ -193,7 +200,7 @@ class MovementCommands:
             self._torso_orientation_pub.publish(pose)
 
         if should_wait:
-            while abs(pose - self.current_torso_pose) > 0.1:
+            while abs_diff_torso_angle(pose, self.current_torso_pose) > 0.1:
                 if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
                 if (time.time() - start_time) > timeout:
