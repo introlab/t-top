@@ -47,7 +47,7 @@ class DataGatheringNode:
 
         self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
 
-    def current_torso_orientation_cb(self, msg):
+    def _current_torso_orientation_cb(self, msg):
         with self._lock:
             self._torso_orientation_deg = int(round(msg.data))
 
