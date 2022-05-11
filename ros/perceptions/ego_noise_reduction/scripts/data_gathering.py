@@ -51,7 +51,7 @@ class DataGatheringNode:
 
     def _current_torso_orientation_cb(self, msg):
         with self._lock:
-            self._torso_orientation_deg = int(round(math.degrees(msg.data)))
+            self._torso_orientation_deg = math.degrees(msg.data)
 
     def _moving_servo_id_cb(self, msg):
         with self._lock:
@@ -80,15 +80,19 @@ class DataGatheringNode:
     def _audio_cb(self, msg):
         with self._lock:
             if self._is_head_servo_audio_recording:
-                path = os.path.join(
-                    self._data_directory_path,
-                    f'head_servo_id{self._moving_servo_id}_deg{self._torso_orientation_deg}_speed{self._moving_servo_speed}.raw')
-                self._append_to(path, msg.data)
+                self._append_to(self._get_head_servo_path(), msg.data)
             if self._is_torso_servo_audio_recording:
-                path = os.path.join(
-                    self._data_directory_path,
-                    f'torso_servo_deg{self._torso_orientation_deg}_speed{self._moving_servo_speed}.raw')
-                self._append_to(path, msg.data)
+                self._append_to(self._get_torso_servo_path(), msg.data)
+
+    def _get_head_servo_path(self):
+        deg = round(self._torso_orientation_deg, 1)
+        name = f'head_servo_id{self._moving_servo_id}_deg{deg}_speed{self._moving_servo_speed}.raw'
+        return os.path.join(self._data_directory_path, name)
+
+    def _get_torso_servo_path(self):
+        deg = int(round(self._torso_orientation_deg, -1))
+        name = f'torso_servo_deg{deg}_speed{self._moving_servo_speed}.raw'
+        return os.path.join(self._data_directory_path, name)
 
     def _append_to(self, path, data):
         with open(path, 'a+b') as file:
