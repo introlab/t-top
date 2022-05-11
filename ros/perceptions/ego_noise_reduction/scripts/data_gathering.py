@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import math
 import threading
 
 import rospy
@@ -50,7 +51,7 @@ class DataGatheringNode:
 
     def _current_torso_orientation_cb(self, msg):
         with self._lock:
-            self._torso_orientation_deg = int(round(msg.data))
+            self._torso_orientation_deg = int(round(math.degrees(msg.data)))
 
     def _moving_servo_id_cb(self, msg):
         with self._lock:
