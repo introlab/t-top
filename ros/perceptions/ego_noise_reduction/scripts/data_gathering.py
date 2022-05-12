@@ -124,7 +124,7 @@ class DataGatheringNode:
         return os.path.join(self._audio_data_directory_path, name)
 
     def _get_torso_servo_path(self):
-        base = 2.25
+        base = 2
         deg = base * round(self._torso_orientation_deg / base)
         name = f'torso_servo_deg{deg}_speed{self._moving_servo_speed}.raw'
         return os.path.join(self._audio_data_directory_path, name)
@@ -139,7 +139,7 @@ class DataGatheringNode:
 
     def _convert_audio_data_to_noise_data(self, file):
         input_path = os.path.join(self._audio_data_directory_path, file)
-        output_path = os.path.join(self._noise_data_directory_path, os.path.splitext(file)[0] + '.ampl')
+        output_path = os.path.join(self._noise_data_directory_path, os.path.splitext(file)[0] + '.txt')
 
         x = np.fromfile(input_path, dtype=np.int32).astype(np.float32) / -np.iinfo(np.int32).min
         x = x.reshape(-1, self._channel_count)
@@ -148,7 +148,7 @@ class DataGatheringNode:
             X = librosa.stft(x[:, c], n_fft=self._n_fft, hop_length=self._n_fft // 2, window=sqrt_hann, center=False)
             X_ampl_mean[c, :] = np.abs(X).mean(axis=1)
 
-        X_ampl_mean.tofile(output_path)
+        np.savetxt(output_path, X_ampl_mean)
 
     def run(self):
         rospy.sleep(STARTUP_DELAY_S)

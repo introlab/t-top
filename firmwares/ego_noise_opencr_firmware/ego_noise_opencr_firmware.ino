@@ -13,14 +13,14 @@
 #include <cmath>
 
 // Constants
-constexpr unsigned long INIT_DELAY = 10000;
-constexpr unsigned long DATA_GATHERING_DELAY = 1000;
-constexpr unsigned long AUDIO_RECORDING_DELAY = 2000;
-constexpr unsigned long TORSO_STEP_DELAY = 10;
+constexpr unsigned long INIT_DELAY_MS = 10000;
+constexpr unsigned long DATA_GATHERING_DELAY_MS = 500;
+constexpr unsigned long AUDIO_RECORDING_DELAY_MS = 2000;
+constexpr unsigned long TORSO_STEP_DELAY_MS = 10;
 
-constexpr float TORSO_ORIENTATION_START = 0;
-constexpr float TORSO_ORIENTATION_END = 2 * M_PI / 16;
-constexpr float TORSO_ORIENTATION_STEP = TORSO_ORIENTATION_END / 10;
+constexpr float HEAD_SERVO_TORSO_ORIENTATION_START = 0;
+constexpr float HEAD_SERVO_TORSO_ORIENTATION_END = 2 * M_PI;
+constexpr float HEAD_SERVO_TORSO_ORIENTATION_STEP = HEAD_SERVO_TORSO_ORIENTATION_END / 180;
 
 constexpr int32_t HEAD_SERVO_SPEED_START = 25;
 constexpr int32_t HEAD_SERVO_SPEED_END = 265;
@@ -29,6 +29,9 @@ constexpr int32_t HEAD_SERVO_SPEED_STEP = 5;
 constexpr int32_t TORSO_SERVO_SPEED_START = 5;
 constexpr int32_t TORSO_SERVO_SPEED_END = TORSO_MAX_VELOCITY;
 constexpr int32_t TORSO_SERVO_SPEED_STEP = 5;
+
+constexpr float TORSO_SERVO_TORSO_ORIENTATION_START = M_PI / 2;
+constexpr float TORSO_SERVO_TORSO_ORIENTATION_END = 4 * M_PI + M_PI / 2;
 
 // ROS
 constexpr unsigned long ROS_SERIAL_BAUD_RATE = 1000000;
@@ -62,10 +65,6 @@ static std_msgs::Empty stopTorsoServoAudioRecordingMsg;
 static ros::Publisher
     stopTorsoServoAudioRecordingPub("opencr/stop_torso_servo_audio_recording", &stopTorsoServoAudioRecordingMsg);
 
-static std_msgs::Empty egoNoiseDataGatheringFinishedMsg;
-static ros::Publisher
-    egoNoiseDataGatheringFinishedPub("opencr/ego_noise_data_gathering_finished", &egoNoiseDataGatheringFinishedMsg);
-
 static void startEgoNoiseDataGathering(const std_msgs::Empty& msg);
 static ros::Subscriber<std_msgs::Empty>
     startEgoNoiseDataGatheringSub("opencr/start_ego_noise_data_gathering", &startEgoNoiseDataGathering);
@@ -93,7 +92,6 @@ void setup()
     nh.advertise(stopHeadServoAudioRecordingPub);
     nh.advertise(startTorsoServoAudioRecordingPub);
     nh.advertise(stopTorsoServoAudioRecordingPub);
-    nh.advertise(egoNoiseDataGatheringFinishedPub);
 
     dynamixelWorkbench.begin(DYNAMIXEL_BUS_SERIAL, DYNAMIXEL_BAUDRATE);
 }
@@ -186,8 +184,6 @@ static void gatherHeadServoEgoNoiseData()
         ServoSpeedController(dynamixelWorkbench, STEWART_PLATFORM_DYNAMIXEL_IDS[4]),
         ServoSpeedController(dynamixelWorkbench, STEWART_PLATFORM_DYNAMIXEL_IDS[5])};
 
-    nhDelay(INIT_DELAY);
-
     for (size_t servoIndex = 0; servoIndex < STEWART_SERVO_COUNT; servoIndex++)
     {
         sendMovingServoId(STEWART_PLATFORM_DYNAMIXEL_IDS[servoIndex]);
@@ -196,17 +192,16 @@ static void gatherHeadServoEgoNoiseData()
         {
             sendMovingServoSpeedTarget(speed);
             servoSpeedControllers[servoIndex].setSpeed(speed);
-            nhDelay(DATA_GATHERING_DELAY);
+            nhDelay(DATA_GATHERING_DELAY_MS);
             sendMovingServoSpeed(servoSpeedControllers[servoIndex].readSpeed());
-            nhDelay(DATA_GATHERING_DELAY);
+            nhDelay(DATA_GATHERING_DELAY_MS);
 
             startHeadServoAudioRecording();
-            nhDelay(AUDIO_RECORDING_DELAY);
+            nhDelay(AUDIO_RECORDING_DELAY_MS);
             stopHeadServoAudioRecording();
         }
 
         servoSpeedControllers[servoIndex].setSpeed(0);
-        nhDelay(DATA_GATHERING_DELAY);
     }
 }
 
@@ -214,19 +209,20 @@ static void gatherAllHeadServoEgoNoiseData()
 {
     TorsoController torsoController(dynamixelWorkbench);
     torsoController.init();
-    nhDelay(INIT_DELAY);
+    nhDelay(INIT_DELAY_MS);
 
-    for (float o = TORSO_ORIENTATION_START; o < TORSO_ORIENTATION_END; o += TORSO_ORIENTATION_STEP)
+    for (float o = HEAD_SERVO_TORSO_ORIENTATION_START; o < HEAD_SERVO_TORSO_ORIENTATION_END;
+         o += HEAD_SERVO_TORSO_ORIENTATION_STEP)
     {
         torsoController.setOrientation(o);
-        nhDelay(DATA_GATHERING_DELAY);
+        nhDelay(DATA_GATHERING_DELAY_MS);
         sendTorsoOrientation(torsoController);
-        nhDelay(DATA_GATHERING_DELAY);
+        nhDelay(DATA_GATHERING_DELAY_MS);
 
         gatherHeadServoEgoNoiseData();
     }
     torsoController.setOrientation(0);
-    nhDelay(INIT_DELAY);
+    nhDelay(INIT_DELAY_MS);
 }
 
 static void gatherTorsoServoEgoNoiseData(int32_t speed)
@@ -235,7 +231,7 @@ static void gatherTorsoServoEgoNoiseData(int32_t speed)
     {
         TorsoController torsoController(dynamixelWorkbench);
         torsoController.init();
-        nhDelay(INIT_DELAY);
+        nhDelay(INIT_DELAY_MS);
     }
 
     ServoSpeedController servoSpeedController(dynamixelWorkbench, TORSO_DYNAMIXEL_ID);
@@ -247,9 +243,9 @@ static void gatherTorsoServoEgoNoiseData(int32_t speed)
     sendMovingServoSpeedTarget(speed);
     servoSpeedController.setSpeed(speed);
 
-    while (orientation < (4 * M_PI))
+    while (orientation < TORSO_SERVO_TORSO_ORIENTATION_END)
     {
-        if (orientation > (M_PI / 2) && !recordingStarted)
+        if (orientation > TORSO_SERVO_TORSO_ORIENTATION_START && !recordingStarted)
         {
             startTorsoServoAudioRecording();
             recordingStarted = true;
@@ -261,17 +257,17 @@ static void gatherTorsoServoEgoNoiseData(int32_t speed)
 
         sendTorsoOrientation(fmodRadian(orientation));
         sendMovingServoSpeed(servoSpeedController.readSpeed());
-        nhDelay(TORSO_STEP_DELAY);
+        nhDelay(TORSO_STEP_DELAY_MS);
     }
 
     stopTorsoServoAudioRecording();
-    nhDelay(DATA_GATHERING_DELAY);
+    nhDelay(DATA_GATHERING_DELAY_MS);
 }
 
 static void gatherAllTorsoServoEgoNoiseData()
 {
     sendMovingServoId(TORSO_DYNAMIXEL_ID);
-    nhDelay(DATA_GATHERING_DELAY);
+    nhDelay(DATA_GATHERING_DELAY_MS);
 
     for (int32_t speed = TORSO_SERVO_SPEED_START; speed <= TORSO_SERVO_SPEED_END; speed += TORSO_SERVO_SPEED_STEP)
     {
@@ -283,5 +279,4 @@ static void gatherEgoNoiseData()
 {
     gatherAllHeadServoEgoNoiseData();
     gatherAllTorsoServoEgoNoiseData();
-    egoNoiseDataGatheringFinishedPub.publish(&egoNoiseDataGatheringFinishedMsg);
 }
