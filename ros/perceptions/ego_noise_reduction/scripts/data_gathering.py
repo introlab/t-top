@@ -119,7 +119,7 @@ class DataGatheringNode:
                 self._append_to(self._get_torso_servo_path(), msg.data)
 
     def _get_head_servo_path(self):
-        deg = round(self._torso_orientation_deg, 1)
+        deg = round(self._torso_orientation_deg)
         name = f'head_servo_id{self._moving_servo_id}_deg{deg}_speed{self._moving_servo_speed}.raw'
         return os.path.join(self._audio_data_directory_path, name)
 

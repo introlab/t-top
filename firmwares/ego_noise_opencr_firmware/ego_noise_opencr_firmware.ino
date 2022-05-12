@@ -202,6 +202,7 @@ static void gatherHeadServoEgoNoiseData()
         }
 
         servoSpeedControllers[servoIndex].setSpeed(0);
+        nhDelay(DATA_GATHERING_DELAY_MS);
     }
 }
 
@@ -278,5 +279,5 @@ static void gatherAllTorsoServoEgoNoiseData()
 static void gatherEgoNoiseData()
 {
     gatherAllHeadServoEgoNoiseData();
-    gatherAllTorsoServoEgoNoiseData();
+    //gatherAllTorsoServoEgoNoiseData();
 }
