@@ -16,6 +16,10 @@
     </node>
 
     <node pkg="ego_noise_reduction" type="data_gathering.py" name="data_gathering">
+        <param name="n_fft" value="2048"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="channel_count" value="16"/>
+
         <remap from="audio_in" to="odas_audio_signed_32_44100"/>
     </node>
 

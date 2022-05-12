@@ -19,16 +19,16 @@ constexpr unsigned long AUDIO_RECORDING_DELAY = 2000;
 constexpr unsigned long TORSO_STEP_DELAY = 10;
 
 constexpr float TORSO_ORIENTATION_START = 0;
-constexpr float TORSO_ORIENTATION_END = 2 * M_PI;
-constexpr float TORSO_ORIENTATION_STEP = 0.0174533f;
+constexpr float TORSO_ORIENTATION_END = 2 * M_PI / 16;
+constexpr float TORSO_ORIENTATION_STEP = TORSO_ORIENTATION_END / 10;
 
-constexpr int32_t HEAD_SERVO_SPEED_START = 1;
+constexpr int32_t HEAD_SERVO_SPEED_START = 25;
 constexpr int32_t HEAD_SERVO_SPEED_END = 265;
-constexpr int32_t HEAD_SERVO_SPEED_STEP = 1;
+constexpr int32_t HEAD_SERVO_SPEED_STEP = 5;
 
-constexpr int32_t TORSO_SERVO_SPEED_START = 1;
+constexpr int32_t TORSO_SERVO_SPEED_START = 5;
 constexpr int32_t TORSO_SERVO_SPEED_END = TORSO_MAX_VELOCITY;
-constexpr int32_t TORSO_SERVO_SPEED_STEP = 1;
+constexpr int32_t TORSO_SERVO_SPEED_STEP = 5;
 
 // ROS
 constexpr unsigned long ROS_SERIAL_BAUD_RATE = 1000000;
@@ -62,6 +62,10 @@ static std_msgs::Empty stopTorsoServoAudioRecordingMsg;
 static ros::Publisher
     stopTorsoServoAudioRecordingPub("opencr/stop_torso_servo_audio_recording", &stopTorsoServoAudioRecordingMsg);
 
+static std_msgs::Empty egoNoiseDataGatheringFinishedMsg;
+static ros::Publisher
+    egoNoiseDataGatheringFinishedPub("opencr/ego_noise_data_gathering_finished", &egoNoiseDataGatheringFinishedMsg);
+
 static void startEgoNoiseDataGathering(const std_msgs::Empty& msg);
 static ros::Subscriber<std_msgs::Empty>
     startEgoNoiseDataGatheringSub("opencr/start_ego_noise_data_gathering", &startEgoNoiseDataGathering);
@@ -89,6 +93,7 @@ void setup()
     nh.advertise(stopHeadServoAudioRecordingPub);
     nh.advertise(startTorsoServoAudioRecordingPub);
     nh.advertise(stopTorsoServoAudioRecordingPub);
+    nh.advertise(egoNoiseDataGatheringFinishedPub);
 
     dynamixelWorkbench.begin(DYNAMIXEL_BUS_SERIAL, DYNAMIXEL_BAUDRATE);
 }
@@ -278,4 +283,5 @@ static void gatherEgoNoiseData()
 {
     gatherAllHeadServoEgoNoiseData();
     gatherAllTorsoServoEgoNoiseData();
+    egoNoiseDataGatheringFinishedPub.publish(&egoNoiseDataGatheringFinishedMsg);
 }
