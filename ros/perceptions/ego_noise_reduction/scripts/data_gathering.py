@@ -143,10 +143,10 @@ class DataGatheringNode:
 
         x = np.fromfile(input_path, dtype=np.int32).astype(np.float32) / -np.iinfo(np.int32).min
         x = x.reshape(-1, self._channel_count)
-        X_ampl_mean = np.zeros((self._channel_count, self._n_fft // 2 + 1))
+        X_ampl_mean = np.zeros((self._n_fft // 2 + 1, self._channel_count))
         for c in range(self._channel_count):
             X = librosa.stft(x[:, c], n_fft=self._n_fft, hop_length=self._n_fft // 2, window=sqrt_hann, center=False)
-            X_ampl_mean[c, :] = np.abs(X).mean(axis=1)
+            X_ampl_mean[:, c] = np.abs(X).mean(axis=1)
 
         np.savetxt(output_path, X_ampl_mean)
 
