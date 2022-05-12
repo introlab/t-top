@@ -12,8 +12,6 @@ float fmodRadian(float v);
 class TorsoController
 {
     DynamixelWorkbench& m_dynamixelWorkbench;
-
-    bool m_isZeroOffsetFound;
     float m_zeroOffset;
 
 public:

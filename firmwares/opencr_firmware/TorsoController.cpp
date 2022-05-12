@@ -13,7 +13,7 @@ float fmodRadian(float v)
 
 TorsoController::TorsoController(DynamixelWorkbench& dynamixelWorkbench)
     : m_dynamixelWorkbench(dynamixelWorkbench),
-      m_isZeroOffsetFound(false)
+      m_zeroOffset(0.f)
 {
 }
 
@@ -69,40 +69,30 @@ void TorsoController::setMaxVelocityIfNeeded()
     }
 }
 
-static bool* isZeroOffsetFound;
-
-void onLimitSwitchInterrupt()
-{
-    detachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN));
-    *isZeroOffsetFound = true;
-}
-
 void TorsoController::findZeroOffset()
 {
-    isZeroOffsetFound = &m_isZeroOffsetFound;
     pinMode(TORSO_LIMIT_SWITCH_PIN, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN), onLimitSwitchInterrupt, FALLING);
 
     float goalPosition = 2.5 * M_PI / TORSO_GEAR_RATIO;
     float dynamixelPosition = 0.f;
+    bool isZeroOffsetFound = false;
 
     m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, goalPosition);
     do
     {
         m_dynamixelWorkbench.getRadian(TORSO_DYNAMIXEL_ID, &dynamixelPosition);
-    } while (std::abs(dynamixelPosition - goalPosition) > 0.01 && !m_isZeroOffsetFound);
+        isZeroOffsetFound = digitalRead(TORSO_LIMIT_SWITCH_PIN);
+    } while (std::abs(dynamixelPosition - goalPosition) > 0.01 && !isZeroOffsetFound);
 
-    if (m_isZeroOffsetFound)
+    if (isZeroOffsetFound)
     {
         m_zeroOffset = dynamixelPosition + TORSO_ORIENTATION_OFFSET / TORSO_GEAR_RATIO;
-        m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, m_zeroOffset);
     }
     else
     {
-        detachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN));
-        m_zeroOffset = 0;
-        m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, 0.f);
+        m_zeroOffset = 0.f;
     }
+    m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, m_zeroOffset);
 }
 
 float TorsoController::getOrientationFromDynamixelPosition(float dynamixelPosition)

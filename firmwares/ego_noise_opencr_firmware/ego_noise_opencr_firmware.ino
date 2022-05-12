@@ -22,11 +22,11 @@ constexpr float HEAD_SERVO_TORSO_ORIENTATION_START = 0;
 constexpr float HEAD_SERVO_TORSO_ORIENTATION_END = 2 * M_PI;
 constexpr float HEAD_SERVO_TORSO_ORIENTATION_STEP = HEAD_SERVO_TORSO_ORIENTATION_END / 180;
 
-constexpr int32_t HEAD_SERVO_SPEED_START = 25;
+constexpr int32_t HEAD_SERVO_SPEED_START = 10;
 constexpr int32_t HEAD_SERVO_SPEED_END = 265;
 constexpr int32_t HEAD_SERVO_SPEED_STEP = 5;
 
-constexpr int32_t TORSO_SERVO_SPEED_START = 5;
+constexpr int32_t TORSO_SERVO_SPEED_START = 10;
 constexpr int32_t TORSO_SERVO_SPEED_END = TORSO_MAX_VELOCITY;
 constexpr int32_t TORSO_SERVO_SPEED_STEP = 5;
 
@@ -202,7 +202,6 @@ static void gatherHeadServoEgoNoiseData()
         }
 
         servoSpeedControllers[servoIndex].setSpeed(0);
-        nhDelay(DATA_GATHERING_DELAY_MS);
     }
 }
 
@@ -279,5 +278,5 @@ static void gatherAllTorsoServoEgoNoiseData()
 static void gatherEgoNoiseData()
 {
     gatherAllHeadServoEgoNoiseData();
-    //gatherAllTorsoServoEgoNoiseData();
+    gatherAllTorsoServoEgoNoiseData();
 }
