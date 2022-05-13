@@ -137,6 +137,8 @@ class DataGatheringNode:
         for file in os.listdir(self._audio_data_directory_path):
             self._convert_audio_data_to_noise_data(file)
 
+    # TODO extract transfert function
+
     def _convert_audio_data_to_noise_data(self, file):
         input_path = os.path.join(self._audio_data_directory_path, file)
         output_path = os.path.join(self._noise_data_directory_path, os.path.splitext(file)[0] + '.txt')
