@@ -18,19 +18,22 @@ constexpr float AbsError = 0.001f;
 class DummyStftNoiseRemover : public StftNoiseRemover
 {
 public:
-    DummyStftNoiseRemover(size_t channelCount, size_t frameSampleCount) : StftNoiseRemover(channelCount, frameSampleCount)
+    DummyStftNoiseRemover(size_t channelCount, size_t frameSampleCount)
+        : StftNoiseRemover(channelCount, frameSampleCount)
     {
     }
 
-    ~DummyStftNoiseRemover() override
-    {
-    }
+    ~DummyStftNoiseRemover() override {}
 
     DECLARE_NOT_COPYABLE(DummyStftNoiseRemover);
     DECLARE_NOT_MOVABLE(DummyStftNoiseRemover);
 
 protected:
-    void updateSpectrum(size_t channelIndex, const arma::cx_fvec& input, arma::cx_fvec& output, const arma::fvec& noiseMagnitudeSpectrum) override
+    void updateSpectrum(
+        size_t channelIndex,
+        const arma::cx_fvec& input,
+        arma::cx_fvec& output,
+        const arma::fvec& noiseMagnitudeSpectrum) override
     {
         output = input;
     }
@@ -137,8 +140,10 @@ TEST(StftNoiseRemoverTests, removeNoise_shouldReturnTheSameSignal)
     DummyStftNoiseRemover testee(ChannelCount, FrameSampleCount);
 
     string resourcesPath = getResourcesPath();
-    vector<PcmAudioFrame> inputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
-    vector<PcmAudioFrame> expectedOutputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds_zero_output.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> inputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> expectedOutputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds_zero_output.raw", FORMAT, ChannelCount, FrameSampleCount);
     arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
 
     testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames, noiseMagnitudeSpectrum);

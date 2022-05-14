@@ -52,10 +52,18 @@ public:
 
 private:
     void removeNoise(std::size_t channelIndex, const arma::fmat& noiseMagnitudeSpectrum);
-    void removeNoise(std::size_t channelIndex, arma::fvec& output, const arma::fvec& input, const arma::fvec& noiseMagnitudeSpectrum);
+    void removeNoise(
+        std::size_t channelIndex,
+        arma::fvec& output,
+        const arma::fvec& input,
+        const arma::fvec& noiseMagnitudeSpectrum);
 
 protected:
-    virtual void updateSpectrum(std::size_t channelIndex, const arma::cx_fvec& input, arma::cx_fvec& output, const arma::fvec& noiseMagnitudeSpectrum) = 0;
+    virtual void updateSpectrum(
+        std::size_t channelIndex,
+        const arma::cx_fvec& input,
+        arma::cx_fvec& output,
+        const arma::fvec& noiseMagnitudeSpectrum) = 0;
 
 public:
     static Type parseType(const std::string& backend);

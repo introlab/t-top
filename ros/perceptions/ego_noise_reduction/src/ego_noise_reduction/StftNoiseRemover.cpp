@@ -9,7 +9,8 @@
 using namespace introlab;
 using namespace std;
 
-StftNoiseRemover::StftNoiseRemover(size_t channelCount, size_t frameSampleCount) : m_channelCount(channelCount),
+StftNoiseRemover::StftNoiseRemover(size_t channelCount, size_t frameSampleCount)
+    : m_channelCount(channelCount),
       m_frameSampleCount(frameSampleCount),
       m_step(m_frameSampleCount / 2),
       m_fftOutputSize(m_frameSampleCount / 2 + 1)
@@ -64,7 +65,8 @@ void StftNoiseRemover::replaceLastFrame(const introlab::AudioFrame<float>& input
     const arma::fmat inputMat(const_cast<float*>(input.data()), m_frameSampleCount, m_channelCount, false, true);
 
     m_inputBuffer.rows(0, m_step - 1) = inputMat.rows(m_step, m_frameSampleCount - 1);
-    m_outputBuffer.rows(0, m_step - 1) = inputMat.rows(m_step, m_frameSampleCount - 1).eval().each_col() % m_window.rows(m_step, m_frameSampleCount - 1);
+    m_outputBuffer.rows(0, m_step - 1) =
+        inputMat.rows(m_step, m_frameSampleCount - 1).eval().each_col() % m_window.rows(m_step, m_frameSampleCount - 1);
 }
 
 AudioFrame<float>

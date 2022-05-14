@@ -13,14 +13,23 @@ class SpectralSubtractionNoiseRemover : public StftNoiseRemover
     arma::fvec m_fftAngle;
 
 public:
-    SpectralSubtractionNoiseRemover(std::size_t channelCount, std::size_t frameSampleCount, float alpha0, float gamma, float beta);
+    SpectralSubtractionNoiseRemover(
+        std::size_t channelCount,
+        std::size_t frameSampleCount,
+        float alpha0,
+        float gamma,
+        float beta);
     ~SpectralSubtractionNoiseRemover() override;
 
     DECLARE_NOT_COPYABLE(SpectralSubtractionNoiseRemover);
     DECLARE_NOT_MOVABLE(SpectralSubtractionNoiseRemover);
 
 protected:
-    void updateSpectrum(std::size_t channelIndex, const arma::cx_fvec& input, arma::cx_fvec& output, const arma::fvec& noiseMagnitudeSpectrum) override;
+    void updateSpectrum(
+        std::size_t channelIndex,
+        const arma::cx_fvec& input,
+        arma::cx_fvec& output,
+        const arma::fvec& noiseMagnitudeSpectrum) override;
 };
 
 #endif

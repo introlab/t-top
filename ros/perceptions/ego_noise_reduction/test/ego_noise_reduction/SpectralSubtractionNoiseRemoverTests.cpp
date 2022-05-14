@@ -39,8 +39,10 @@ TEST(SpectralSubtractionNoiseRemoverTests, removeNoise_zeroNoiseMagnitudeSpectru
     SpectralSubtractionNoiseRemover testee(ChannelCount, FrameSampleCount, Alpha0, Gamma, Beta);
 
     string resourcesPath = getResourcesPath();
-    vector<PcmAudioFrame> inputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
-    vector<PcmAudioFrame> expectedOutputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds_zero_output.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> inputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> expectedOutputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds_zero_output.raw", FORMAT, ChannelCount, FrameSampleCount);
     arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
 
     testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames, noiseMagnitudeSpectrum);
@@ -55,8 +57,10 @@ TEST(SpectralSubtractionNoiseRemoverTests, removeNoise_shouldRemoveTheNoise)
     SpectralSubtractionNoiseRemover testee(ChannelCount, FrameSampleCount, Alpha0, Gamma, Beta);
 
     string resourcesPath = getResourcesPath();
-    vector<PcmAudioFrame> inputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
-    vector<PcmAudioFrame> expectedOutputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds_output.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> inputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> expectedOutputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds_specsub_output.raw", FORMAT, ChannelCount, FrameSampleCount);
     arma::fmat noiseMagnitudeSpectrum;
     noiseMagnitudeSpectrum.load(resourcesPath + "/noises.txt");
 
@@ -73,8 +77,13 @@ TEST(SpectralSubtractionNoiseRemoverTests, removeNoise_alternating_shouldNotCrea
     SpectralSubtractionNoiseRemover testee(ChannelCount, FrameSampleCount, Alpha0, Gamma, Beta);
 
     string resourcesPath = getResourcesPath();
-    vector<PcmAudioFrame> inputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
-    vector<PcmAudioFrame> expectedOutputPcmFrames = getPcmAudioFrames(resourcesPath + "/noisy_sounds_alternating_output.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> inputPcmFrames =
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+    vector<PcmAudioFrame> expectedOutputPcmFrames = getPcmAudioFrames(
+        resourcesPath + "/noisy_sounds_alternating_specsub_output.raw",
+        FORMAT,
+        ChannelCount,
+        FrameSampleCount);
 
     AudioFrame<float> inputFrame(ChannelCount, FrameSampleCount);
     arma::fmat noiseMagnitudeSpectrum;

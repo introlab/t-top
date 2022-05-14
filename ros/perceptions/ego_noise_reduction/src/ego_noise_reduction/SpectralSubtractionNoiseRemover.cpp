@@ -21,26 +21,28 @@ SpectralSubtractionNoiseRemover::SpectralSubtractionNoiseRemover(
 {
     if (m_alpha0 < 0.f)
     {
-        THROW_NOT_SUPPORTED_EXCEPTION("The alpha must be greater than or equal to 0.");
+        THROW_NOT_SUPPORTED_EXCEPTION("Alpha0 must be greater than or equal to 0.");
     }
     if (gamma < 0.f)
     {
-        THROW_NOT_SUPPORTED_EXCEPTION("The alpha must be greater than or equal to 0.");
+        THROW_NOT_SUPPORTED_EXCEPTION("Gamma must be greater than or equal to 0.");
     }
     if (beta < 0.f)
     {
-        THROW_NOT_SUPPORTED_EXCEPTION("The alpha must be greater than or equal to 0.");
+        THROW_NOT_SUPPORTED_EXCEPTION("Beta must be greater than or equal to 0.");
     }
 
     m_fftMagnitude.zeros(m_fftOutputSize);
     m_fftAngle.zeros(m_fftOutputSize);
 }
 
-SpectralSubtractionNoiseRemover::~SpectralSubtractionNoiseRemover()
-{
-}
+SpectralSubtractionNoiseRemover::~SpectralSubtractionNoiseRemover() {}
 
-void SpectralSubtractionNoiseRemover::updateSpectrum(std::size_t channelIndex, const arma::cx_fvec& input, arma::cx_fvec& output, const arma::fvec& noiseMagnitudeSpectrum)
+void SpectralSubtractionNoiseRemover::updateSpectrum(
+    size_t channelIndex,
+    const arma::cx_fvec& input,
+    arma::cx_fvec& output,
+    const arma::fvec& noiseMagnitudeSpectrum)
 {
     m_fftMagnitude = arma::abs(input);
     m_fftAngle = arma::arg(input);

@@ -15,7 +15,8 @@ string getResourcesPath()
     return currentFilePath.substr(0, currentFilePath.rfind("/")) + "/resources";
 }
 
-vector<PcmAudioFrame> getPcmAudioFrames(const string& path, PcmAudioFrameFormat format, size_t channelCount, size_t frameSampleCount)
+vector<PcmAudioFrame>
+    getPcmAudioFrames(const string& path, PcmAudioFrameFormat format, size_t channelCount, size_t frameSampleCount)
 {
     std::ifstream file(path, std::ifstream::in);
     vector<PcmAudioFrame> frames;
@@ -49,7 +50,8 @@ void expectFrameNear(const AudioFrame<float> value, const AudioFrame<float> expe
     }
 }
 
-void testNoiseReduction(StftNoiseRemover& remover,
+void testNoiseReduction(
+    StftNoiseRemover& remover,
     const vector<PcmAudioFrame>& inputPcmFrames,
     const vector<PcmAudioFrame>& expectedOutputPcmFrames,
     const arma::fmat& noiseMagnitudeSpectrum)

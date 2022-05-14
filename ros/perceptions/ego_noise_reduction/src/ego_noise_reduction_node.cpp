@@ -1,5 +1,6 @@
 #include <ego_noise_reduction/StftNoiseRemover.h>
 #include <ego_noise_reduction/SpectralSubtractionNoiseRemover.h>
+#include <ego_noise_reduction/LogMmseNoiseRemover.h>
 
 #include <MusicBeatDetector/Utils/Data/PcmAudioFrame.h>
 #include <MusicBeatDetector/Utils/Exception/InvalidValueException.h>
@@ -34,12 +35,14 @@ struct EgoNoiseReductionNodeConfiguration
     int frameSampleCount;
     int nFft;
 
-    // Spectral substraction parameters
-    float alpha0;
-    float gamma;
-    float beta;
+    float spectralSubstractionAlpha0;
+    float spectralSubstractionGamma;
+    float spectralSubstractionBeta;
 
     // LogMMSE parameters
+    float logMmseAlpha;
+    float logMmseMaxAPosterioriSnr;
+    float logMmseMinAPrioriSnr;
 
     EgoNoiseReductionNodeConfiguration()
         : format(PcmAudioFrameFormat::Signed8),
@@ -47,9 +50,12 @@ struct EgoNoiseReductionNodeConfiguration
           samplingFrequency(0),
           frameSampleCount(0),
           nFft(0),
-          alpha0(0.f),
-          gamma(0.f),
-          beta(0.f)
+          spectralSubstractionAlpha0(0.f),
+          spectralSubstractionGamma(0.f),
+          spectralSubstractionBeta(0.f),
+          logMmseAlpha(0.f),
+          logMmseMaxAPosterioriSnr(0.f),
+          logMmseMinAPrioriSnr(0.f)
     {
     }
 };
@@ -139,14 +145,16 @@ private:
 
         if (m_inputPcmAudioFrameIndex >= m_inputPcmAudioFrame.size())
         {
-            if (m_filterState.isFilteringAllMessages()) // TODO add || no noise
+            if (m_filterState.isFilteringAllMessages())  // TODO add || no noise
             {
                 m_noiseRemover->replaceLastFrame(m_inputPcmAudioFrame);
                 publishFrames(m_inputPcmAudioFrame);
             }
             else
             {
-                arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(m_configuration.frameSampleCount / 2 + 1, m_configuration.channelCount); // TODO change
+                arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(
+                    m_configuration.frameSampleCount / 2 + 1,
+                    m_configuration.channelCount);  // TODO change
                 m_inputPcmAudioFrame.copyTo(m_inputAudioFrame);
                 m_outputPcmAudioFrame = m_noiseRemover->removeNoise(m_inputAudioFrame, noiseMagnitudeSpectrum);
                 publishFrames(m_outputPcmAudioFrame);
@@ -202,11 +210,16 @@ private:
                 return make_unique<SpectralSubtractionNoiseRemover>(
                     m_configuration.channelCount,
                     m_configuration.nFft,
-                    m_configuration.alpha0,
-                    m_configuration.gamma,
-                    m_configuration.beta);
+                    m_configuration.spectralSubstractionAlpha0,
+                    m_configuration.spectralSubstractionGamma,
+                    m_configuration.spectralSubstractionBeta);
             case StftNoiseRemover::Type::LogMmse:
-                THROW_INVALID_VALUE_EXCEPTION("type", ""); // TODO
+                return make_unique<LogMmseNoiseRemover>(
+                    m_configuration.channelCount,
+                    m_configuration.nFft,
+                    m_configuration.logMmseAlpha,
+                    m_configuration.logMmseMaxAPosterioriSnr,
+                    m_configuration.logMmseMinAPrioriSnr);
             default:
                 THROW_INVALID_VALUE_EXCEPTION("type", "");
         }
@@ -260,9 +273,13 @@ int main(int argc, char** argv)
             return -1;
         }
 
-        configuration.alpha0 = privateNodeHandle.param("alpha0", 0.5f);
-        configuration.gamma = privateNodeHandle.param("gamma", 0.1f);
-        configuration.beta = privateNodeHandle.param("beta", 0.01f);
+        configuration.spectralSubstractionAlpha0 = privateNodeHandle.param("spectral_subtraction_alpha0", 0.5f);
+        configuration.spectralSubstractionGamma = privateNodeHandle.param("spectral_subtraction_gamma", 0.1f);
+        configuration.spectralSubstractionBeta = privateNodeHandle.param("spectral_subtraction_beta", 0.01f);
+
+        configuration.logMmseAlpha = privateNodeHandle.param("log_mmse_alpha", 0.98f);
+        configuration.logMmseMaxAPosterioriSnr = privateNodeHandle.param("log_mmse_max_a_posteriori_snr", 40.f);
+        configuration.logMmseMinAPrioriSnr = privateNodeHandle.param("log_mmse_min_a_priori_snr", 0.003f);
 
         EgoNoiseReductionNode node(nodeHandle, configuration);
         node.run();
