@@ -12,10 +12,10 @@ TEST(MathTests, hann_length0_shouldThrowNotSupportedException)
 
 TEST(MathTests, hann_even_shouldReturnTheRightValues)
 {
-    constexpr size_t WINDOW_LENGTH = 4;
-    arma::fvec window = hann<arma::fvec>(WINDOW_LENGTH);
+    constexpr size_t WindowLength = 4;
+    arma::fvec window = hann<arma::fvec>(WindowLength);
 
-    ASSERT_EQ(window.n_elem, WINDOW_LENGTH);
+    ASSERT_EQ(window.n_elem, WindowLength);
     EXPECT_FLOAT_EQ(window(0), 0.f);
     EXPECT_FLOAT_EQ(window(1), 0.75f);
     EXPECT_FLOAT_EQ(window(2), 0.75f);
@@ -24,10 +24,10 @@ TEST(MathTests, hann_even_shouldReturnTheRightValues)
 
 TEST(MathTests, hann_odd_shouldReturnTheRightValues)
 {
-    constexpr size_t WINDOW_LENGTH = 5;
-    arma::fvec window = hann<arma::fvec>(WINDOW_LENGTH);
+    constexpr size_t WindowLength = 5;
+    arma::fvec window = hann<arma::fvec>(WindowLength);
 
-    ASSERT_EQ(window.n_elem, WINDOW_LENGTH);
+    ASSERT_EQ(window.n_elem, WindowLength);
     EXPECT_FLOAT_EQ(window(0), 0.f);
     EXPECT_FLOAT_EQ(window(1), 0.5f);
     EXPECT_FLOAT_EQ(window(2), 1.f);

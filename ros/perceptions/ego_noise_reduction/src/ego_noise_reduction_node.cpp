@@ -1,4 +1,8 @@
+#include <ego_noise_reduction/StftNoiseRemover.h>
+#include <ego_noise_reduction/SpectralSubtractionNoiseRemover.h>
+
 #include <MusicBeatDetector/Utils/Data/PcmAudioFrame.h>
+#include <MusicBeatDetector/Utils/Exception/InvalidValueException.h>
 
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
@@ -11,6 +15,8 @@
 
 #include <armadillo>
 
+#include <memory>
+
 using namespace introlab;
 using namespace std;
 
@@ -19,6 +25,8 @@ constexpr uint32_t STATUS_QUEUE_SIZE = 1;
 
 struct EgoNoiseReductionNodeConfiguration
 {
+    string typeString;
+    StftNoiseRemover::Type type;
     string formatString;
     PcmAudioFrameFormat format = PcmAudioFrameFormat::Signed16;
     int channelCount;
@@ -26,12 +34,22 @@ struct EgoNoiseReductionNodeConfiguration
     int frameSampleCount;
     int nFft;
 
+    // Spectral substraction parameters
+    float alpha0;
+    float gamma;
+    float beta;
+
+    // LogMMSE parameters
+
     EgoNoiseReductionNodeConfiguration()
         : format(PcmAudioFrameFormat::Signed8),
           channelCount(0),
           samplingFrequency(0),
           frameSampleCount(0),
-          nFft(0)
+          nFft(0),
+          alpha0(0.f),
+          gamma(0.f),
+          beta(0.f)
     {
     }
 };
@@ -51,9 +69,12 @@ class EgoNoiseReductionNode
 
     PcmAudioFrame m_inputPcmAudioFrame;
     size_t m_inputPcmAudioFrameIndex;
+    AudioFrame<float> m_inputAudioFrame;
     PcmAudioFrame m_outputPcmAudioFrame;
 
     audio_utils::AudioFrame m_audioFrameMsg;
+
+    unique_ptr<StftNoiseRemover> m_noiseRemover;
 
 public:
     EgoNoiseReductionNode(ros::NodeHandle& nodeHandle, EgoNoiseReductionNodeConfiguration configuration)
@@ -62,6 +83,7 @@ public:
           m_filterState(m_nodeHandle, "ego_noise_reduction/filter_state"),
           m_inputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft),
           m_inputPcmAudioFrameIndex(0),
+          m_inputAudioFrame(m_configuration.channelCount, m_configuration.nFft),
           m_outputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft)
     {
         m_audioPub = m_nodeHandle.advertise<audio_utils::AudioFrame>("audio_out", AUDIO_QUEUE_SIZE);
@@ -89,6 +111,8 @@ public:
         m_audioFrameMsg.frame_sample_count = m_configuration.frameSampleCount;
         m_audioFrameMsg.data.resize(
             size(m_configuration.format, m_configuration.channelCount, m_configuration.frameSampleCount));
+
+        m_noiseRemover = createNoiseRemover();
     }
 
     void run() { ros::spin(); }
@@ -110,36 +134,30 @@ private:
             return;
         }
 
-        if (m_filterState.isFilteringAllMessages())
-        {
-            if (m_inputPcmAudioFrameIndex != 0)
-            {
-                publishFrames(m_outputPcmAudioFrame, m_inputPcmAudioFrameIndex);
-                m_inputPcmAudioFrameIndex = 0;
-            }
-            m_audioPub.publish(msg);
-            return;
-        }
-
         memcpy(m_inputPcmAudioFrame.data() + m_inputPcmAudioFrameIndex, msg->data.data(), msg->data.size());
         m_inputPcmAudioFrameIndex += msg->data.size();
 
         if (m_inputPcmAudioFrameIndex >= m_inputPcmAudioFrame.size())
         {
-            removeNoise();
-            publishFrames(m_outputPcmAudioFrame, m_outputPcmAudioFrame.size());
+            if (m_filterState.isFilteringAllMessages()) // TODO add || no noise
+            {
+                m_noiseRemover->replaceLastFrame(m_inputPcmAudioFrame);
+                publishFrames(m_inputPcmAudioFrame);
+            }
+            else
+            {
+                arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(m_configuration.frameSampleCount / 2 + 1, m_configuration.channelCount); // TODO change
+                m_inputPcmAudioFrame.copyTo(m_inputAudioFrame);
+                m_outputPcmAudioFrame = m_noiseRemover->removeNoise(m_inputAudioFrame, noiseMagnitudeSpectrum);
+                publishFrames(m_outputPcmAudioFrame);
+            }
             m_inputPcmAudioFrameIndex = 0;
         }
     }
 
-    void removeNoise()
+    void publishFrames(const PcmAudioFrame& frame)
     {
-        // TODO
-    }
-
-    void publishFrames(const PcmAudioFrame& frame, size_t size)
-    {
-        for (size_t i = 0; i < size; i += m_audioFrameMsg.data.size())
+        for (size_t i = 0; i < frame.size(); i += m_audioFrameMsg.data.size())
         {
             memcpy(m_audioFrameMsg.data.data(), frame.data() + i, m_audioFrameMsg.data.size());
             m_audioPub.publish(m_audioFrameMsg);
@@ -175,6 +193,24 @@ private:
 
         // TODO
     }
+
+    unique_ptr<StftNoiseRemover> createNoiseRemover()
+    {
+        switch (m_configuration.type)
+        {
+            case StftNoiseRemover::Type::SpectralSubtraction:
+                return make_unique<SpectralSubtractionNoiseRemover>(
+                    m_configuration.channelCount,
+                    m_configuration.nFft,
+                    m_configuration.alpha0,
+                    m_configuration.gamma,
+                    m_configuration.beta);
+            case StftNoiseRemover::Type::LogMmse:
+                THROW_INVALID_VALUE_EXCEPTION("type", ""); // TODO
+            default:
+                THROW_INVALID_VALUE_EXCEPTION("type", "");
+        }
+    }
 };
 
 int main(int argc, char** argv)
@@ -188,6 +224,13 @@ int main(int argc, char** argv)
 
     try
     {
+        if (!privateNodeHandle.getParam("type", configuration.typeString))
+        {
+            ROS_ERROR("The parameter type must be spectral_subtraction or log_mmse.");
+            return -1;
+        }
+        configuration.type = StftNoiseRemover::parseType(configuration.typeString);
+
         if (!privateNodeHandle.getParam("format", configuration.formatString))
         {
             ROS_ERROR("The parameter format is required.");
@@ -216,6 +259,10 @@ int main(int argc, char** argv)
             ROS_ERROR("The parameter n_fft is required. It must be a multiple of frame_sample_count.");
             return -1;
         }
+
+        configuration.alpha0 = privateNodeHandle.param("alpha0", 0.5f);
+        configuration.gamma = privateNodeHandle.param("gamma", 0.1f);
+        configuration.beta = privateNodeHandle.param("beta", 0.01f);
 
         EgoNoiseReductionNode node(nodeHandle, configuration);
         node.run();
