@@ -4,6 +4,9 @@ T-Top is a tabletop robot designed with advanced audio and vision sensors, deep 
 telecommunication capabilities to provide richer interaction modalities and develop higher cognitive abilities from
 interacting with people.
 
+[![T-Top](images/t_top_video.jpg)](https://www.youtube.com/watch?v=q7WNzdIGrfQ)
+
+
 ![T-Top](images/t_top.jpg)
 ![T-Top Hoody](images/t_top_hoody.jpg)
 
