@@ -6,7 +6,6 @@ interacting with people.
 
 [![T-Top](images/t_top_video.jpg)](https://www.youtube.com/watch?v=q7WNzdIGrfQ)
 
-
 ![T-Top](images/t_top.jpg)
 ![T-Top Hoody](images/t_top_hoody.jpg)
 
