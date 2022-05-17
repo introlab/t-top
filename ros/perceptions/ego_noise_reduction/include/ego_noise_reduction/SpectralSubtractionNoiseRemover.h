@@ -16,6 +16,7 @@ public:
     SpectralSubtractionNoiseRemover(
         std::size_t channelCount,
         std::size_t frameSampleCount,
+        std::shared_ptr<NoiseEstimator> noiseEstimator,
         float alpha0,
         float gamma,
         float beta);

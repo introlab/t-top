@@ -19,7 +19,22 @@ class DummyStftNoiseRemover : public StftNoiseRemover
 {
 public:
     DummyStftNoiseRemover(size_t channelCount, size_t frameSampleCount)
-        : StftNoiseRemover(channelCount, frameSampleCount)
+        : StftNoiseRemover(
+              channelCount,
+              frameSampleCount,
+              createZeroConstantNoiseEstimator(channelCount, frameSampleCount))
+    {
+    }
+
+    DummyStftNoiseRemover(
+        size_t channelCount,
+        size_t frameSampleCount,
+        size_t neChannelCount,
+        size_t neFrameSampleCount)
+        : StftNoiseRemover(
+              channelCount,
+              frameSampleCount,
+              createZeroConstantNoiseEstimator(neChannelCount, neFrameSampleCount))
     {
     }
 
@@ -27,6 +42,11 @@ public:
 
     DECLARE_NOT_COPYABLE(DummyStftNoiseRemover);
     DECLARE_NOT_MOVABLE(DummyStftNoiseRemover);
+
+    size_t channelCount() const { return m_channelCount; }
+    size_t frameSampleCount() const { return m_frameSampleCount; }
+    size_t step() const { return m_step; }
+    size_t fftOutputSize() { return m_fftOutputSize; };
 
 protected:
     void updateSpectrum(
@@ -52,6 +72,26 @@ TEST(StftNoiseRemoverTests, constructor_frameSampleCount0_shouldThrowNotSupporte
 TEST(StftNoiseRemoverTests, constructor_oddFrameSampleCount_shouldThrowNotSupportedException)
 {
     EXPECT_THROW(DummyStftNoiseRemover(1, 1), NotSupportedException);
+}
+
+TEST(StftNoiseRemoverTests, constructor_invalidNoiseEstimatorChannelCount_shouldThrowNotSupportedException)
+{
+    EXPECT_THROW(DummyStftNoiseRemover(1, 4, 2, 4), NotSupportedException);
+}
+
+TEST(StftNoiseRemoverTests, constructor_invalidNoiseEstimatorFrameSampleCount_shouldThrowNotSupportedException)
+{
+    EXPECT_THROW(DummyStftNoiseRemover(1, 4, 1, 6), NotSupportedException);
+}
+
+TEST(StftNoiseRemoverTests, constructor_shouldSetTheRightValues)
+{
+    DummyStftNoiseRemover testee(1, 4);
+
+    EXPECT_EQ(testee.channelCount(), 1);
+    EXPECT_EQ(testee.frameSampleCount(), 4);
+    EXPECT_EQ(testee.step(), 2);
+    EXPECT_EQ(testee.fftOutputSize(), 3);
 }
 
 TEST(StftNoiseRemoverTests, replaceLastFrame_invalidChannelCount_shouldThrowNotSupportedException)
@@ -85,10 +125,9 @@ TEST(StftNoiseRemoverTests, replaceLastFrame_shouldSetTheBuffers)
     inputFrame[1] = 2.f;
     inputFrame[2] = 3.f;
     inputFrame[3] = 4.f;
-    arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
 
     testee.replaceLastFrame(inputFrame);
-    AudioFrame<float> outputFrame = testee.removeNoise(inputFrame, noiseMagnitudeSpectrum);
+    AudioFrame<float> outputFrame = testee.removeNoise(inputFrame);
 
     EXPECT_NEAR(outputFrame[0], 2.598f, AbsError);
     EXPECT_NEAR(outputFrame[1], 3.f, AbsError);
@@ -104,7 +143,7 @@ TEST(StftNoiseRemoverTests, removeNoise_invalidChannelCount_shouldThrowNotSuppor
 
     AudioFrame<float> frame(ChannelCount - 1, FrameSampleCount);
     arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
-    EXPECT_THROW(testee.removeNoise(frame, noiseMagnitudeSpectrum), NotSupportedException);
+    EXPECT_THROW(testee.removeNoise(frame), NotSupportedException);
 }
 
 TEST(StftNoiseRemoverTests, removeNoise_invalidFrameSampleCount_shouldThrowNotSupportedException)
@@ -115,38 +154,23 @@ TEST(StftNoiseRemoverTests, removeNoise_invalidFrameSampleCount_shouldThrowNotSu
 
     AudioFrame<float> frame(ChannelCount, FrameSampleCount - 1);
     arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
-    EXPECT_THROW(testee.removeNoise(frame, noiseMagnitudeSpectrum), NotSupportedException);
-}
-
-TEST(StftNoiseRemoverTests, removeNoise_invalidNoiseMagnitudeSpectrum_shouldThrowNotSupportedException)
-{
-    constexpr size_t ChannelCount = 2;
-    constexpr size_t FrameSampleCount = 2048;
-    DummyStftNoiseRemover testee(ChannelCount, FrameSampleCount);
-
-    AudioFrame<float> frame(ChannelCount, FrameSampleCount);
-    arma::fmat noiseMagnitudeSpectrum1 = arma::zeros<arma::fmat>(FrameSampleCount / 2, ChannelCount);
-    arma::fmat noiseMagnitudeSpectrum2 = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount - 1);
-    EXPECT_THROW(testee.removeNoise(frame, noiseMagnitudeSpectrum1), NotSupportedException);
-    EXPECT_THROW(testee.removeNoise(frame, noiseMagnitudeSpectrum2), NotSupportedException);
+    EXPECT_THROW(testee.removeNoise(frame), NotSupportedException);
 }
 
 TEST(StftNoiseRemoverTests, removeNoise_shouldReturnTheSameSignal)
 {
     constexpr size_t ChannelCount = 2;
     constexpr size_t FrameSampleCount = 2048;
-    constexpr PcmAudioFrameFormat FORMAT = PcmAudioFrameFormat::Signed32;
-
-    DummyStftNoiseRemover testee(ChannelCount, FrameSampleCount);
+    constexpr PcmAudioFrameFormat Format = PcmAudioFrameFormat::Signed32;
 
     string resourcesPath = getResourcesPath();
     vector<PcmAudioFrame> inputPcmFrames =
-        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", Format, ChannelCount, FrameSampleCount);
     vector<PcmAudioFrame> expectedOutputPcmFrames =
-        getPcmAudioFrames(resourcesPath + "/noisy_sounds_zero_output.raw", FORMAT, ChannelCount, FrameSampleCount);
-    arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds_zero_output.raw", Format, ChannelCount, FrameSampleCount);
 
-    testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames, noiseMagnitudeSpectrum);
+    DummyStftNoiseRemover testee(ChannelCount, FrameSampleCount);
+    testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames);
 }
 
 TEST(StftNoiseRemoverTests, parseType_invalidType_shouldThrowInvalidValueException)

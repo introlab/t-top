@@ -17,55 +17,68 @@ constexpr float AbsError = 0.001f;
 
 TEST(LogMmseNoiseRemoverTests, constructor_negativeAlpha_shouldThrowNotSupportedException)
 {
-    EXPECT_THROW(LogMmseNoiseRemover(1, 1, -0.1f, 0.1f, 0.01f), NotSupportedException);
+    EXPECT_THROW(
+        LogMmseNoiseRemover(1, 4, createZeroConstantNoiseEstimator(1, 4), -0.1f, 0.1f, 0.01f),
+        NotSupportedException);
 }
 
 TEST(LogMmseNoiseRemoverTests, constructor_maxAPosterioriSnr_shouldThrowNotSupportedException)
 {
-    EXPECT_THROW(LogMmseNoiseRemover(1, 1, 4.f, -0.1f, 0.01f), NotSupportedException);
+    EXPECT_THROW(
+        LogMmseNoiseRemover(1, 4, createZeroConstantNoiseEstimator(1, 4), 4.f, -0.1f, 0.01f),
+        NotSupportedException);
 }
 
 TEST(LogMmseNoiseRemoverTests, constructor_minAPrioriSnr_shouldThrowNotSupportedException)
 {
-    EXPECT_THROW(LogMmseNoiseRemover(1, 1, 4.f, 0.1f, -0.01f), NotSupportedException);
+    EXPECT_THROW(
+        LogMmseNoiseRemover(1, 4, createZeroConstantNoiseEstimator(1, 4), 4.f, 0.1f, -0.01f),
+        NotSupportedException);
 }
 
 TEST(LogMmseNoiseRemoverTests, removeNoise_zeroNoiseMagnitudeSpectrum_shouldReturnTheSameSignal)
 {
     constexpr size_t ChannelCount = 2;
     constexpr size_t FrameSampleCount = 2048;
-    constexpr PcmAudioFrameFormat FORMAT = PcmAudioFrameFormat::Signed32;
-
-    LogMmseNoiseRemover testee(ChannelCount, FrameSampleCount, Alpha, MaxAPosterioriSnr, MinAPrioriSnr);
+    constexpr PcmAudioFrameFormat Format = PcmAudioFrameFormat::Signed32;
 
     string resourcesPath = getResourcesPath();
     vector<PcmAudioFrame> inputPcmFrames =
-        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", Format, ChannelCount, FrameSampleCount);
     vector<PcmAudioFrame> expectedOutputPcmFrames = getPcmAudioFrames(
         resourcesPath + "/noisy_sounds_log_mmse_zero_output.raw",
-        FORMAT,
+        Format,
         ChannelCount,
         FrameSampleCount);
-    arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(FrameSampleCount / 2 + 1, ChannelCount);
 
-    testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames, noiseMagnitudeSpectrum);
+    LogMmseNoiseRemover testee(
+        ChannelCount,
+        FrameSampleCount,
+        createZeroConstantNoiseEstimator(ChannelCount, FrameSampleCount),
+        Alpha,
+        MaxAPosterioriSnr,
+        MinAPrioriSnr);
+    testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames);
 }
 
 TEST(LogMmseNoiseRemoverTests, removeNoise_shouldRemoveTheNoise)
 {
     constexpr size_t ChannelCount = 2;
     constexpr size_t FrameSampleCount = 2048;
-    constexpr PcmAudioFrameFormat FORMAT = PcmAudioFrameFormat::Signed32;
-
-    LogMmseNoiseRemover testee(ChannelCount, FrameSampleCount, Alpha, MaxAPosterioriSnr, MinAPrioriSnr);
+    constexpr PcmAudioFrameFormat Format = PcmAudioFrameFormat::Signed32;
 
     string resourcesPath = getResourcesPath();
     vector<PcmAudioFrame> inputPcmFrames =
-        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", FORMAT, ChannelCount, FrameSampleCount);
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds.raw", Format, ChannelCount, FrameSampleCount);
     vector<PcmAudioFrame> expectedOutputPcmFrames =
-        getPcmAudioFrames(resourcesPath + "/noisy_sounds_log_mmse_output.raw", FORMAT, ChannelCount, FrameSampleCount);
-    arma::fmat noiseMagnitudeSpectrum;
-    noiseMagnitudeSpectrum.load(resourcesPath + "/noises.txt");
+        getPcmAudioFrames(resourcesPath + "/noisy_sounds_log_mmse_output.raw", Format, ChannelCount, FrameSampleCount);
 
-    testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames, noiseMagnitudeSpectrum);
+    LogMmseNoiseRemover testee(
+        ChannelCount,
+        FrameSampleCount,
+        createConstantNoiseEstimatorFromFile(resourcesPath + "/noises.txt"),
+        Alpha,
+        MaxAPosterioriSnr,
+        MinAPrioriSnr);
+    testNoiseReduction(testee, inputPcmFrames, expectedOutputPcmFrames);
 }

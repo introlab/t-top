@@ -9,11 +9,15 @@
 using namespace introlab;
 using namespace std;
 
-StftNoiseRemover::StftNoiseRemover(size_t channelCount, size_t frameSampleCount)
+StftNoiseRemover::StftNoiseRemover(
+    size_t channelCount,
+    size_t frameSampleCount,
+    shared_ptr<NoiseEstimator> noiseEstimator)
     : m_channelCount(channelCount),
       m_frameSampleCount(frameSampleCount),
       m_step(m_frameSampleCount / 2),
-      m_fftOutputSize(m_frameSampleCount / 2 + 1)
+      m_fftOutputSize(m_frameSampleCount / 2 + 1),
+      m_noiseEstimator(move(noiseEstimator))
 {
     if (m_channelCount == 0)
     {
@@ -23,6 +27,16 @@ StftNoiseRemover::StftNoiseRemover(size_t channelCount, size_t frameSampleCount)
     {
         THROW_NOT_SUPPORTED_EXCEPTION("The frame sample count must be greater than 0 and even.");
     }
+    if (m_noiseEstimator->channelCount() != m_channelCount)
+    {
+        THROW_NOT_SUPPORTED_EXCEPTION("The noise estimator channel count must be the same.");
+    }
+    if (m_noiseEstimator->fftOutputSize() != m_fftOutputSize)
+    {
+        THROW_NOT_SUPPORTED_EXCEPTION("The noise estimator frame sample count must be the same.");
+    }
+
+    m_noiseMagnitudeSpectrum.zeros(m_fftOutputSize);
 
     size_t bufferColCount = 3 * m_step;
     m_inputBuffer.zeros(bufferColCount, m_channelCount);
@@ -69,17 +83,11 @@ void StftNoiseRemover::replaceLastFrame(const introlab::AudioFrame<float>& input
         inputMat.rows(m_step, m_frameSampleCount - 1).eval().each_col() % m_window.rows(m_step, m_frameSampleCount - 1);
 }
 
-AudioFrame<float>
-    StftNoiseRemover::removeNoise(const AudioFrame<float>& input, const arma::fmat& noiseMagnitudeSpectrum)
+AudioFrame<float> StftNoiseRemover::removeNoise(const AudioFrame<float>& input)
 {
     if (input.channelCount() != m_channelCount || input.sampleCount() != m_frameSampleCount)
     {
         THROW_NOT_SUPPORTED_EXCEPTION("The input frame does not match the constructor parameters.");
-    }
-    if (noiseMagnitudeSpectrum.n_rows != m_fftOutput.n_elem || noiseMagnitudeSpectrum.n_cols != m_channelCount)
-    {
-        THROW_NOT_SUPPORTED_EXCEPTION("The noise magnitude spectrum does have the right shape. "
-                                      "It must be (frameSampleCount/2+1 X channelCount)");
     }
 
     const arma::fmat inputMat(const_cast<float*>(input.data()), m_frameSampleCount, m_channelCount, false, true);
@@ -89,7 +97,7 @@ AudioFrame<float>
 
     for (size_t channelIndex = 0; channelIndex < m_channelCount; channelIndex++)
     {
-        removeNoise(channelIndex, noiseMagnitudeSpectrum);
+        removeNoise(channelIndex);
     }
 
     m_output = m_outputBuffer.rows(0, m_frameSampleCount - 1);
@@ -100,33 +108,28 @@ AudioFrame<float>
     return AudioFrame<float>(m_channelCount, m_frameSampleCount, m_output.memptr());
 }
 
-void StftNoiseRemover::removeNoise(size_t channelIndex, const arma::fmat& noiseMagnitudeSpectrum)
+void StftNoiseRemover::removeNoise(size_t channelIndex)
 {
     removeNoise(
         channelIndex,
         m_singleOutput,
-        m_inputBuffer(arma::span(0, m_frameSampleCount - 1), channelIndex) % m_window,
-        noiseMagnitudeSpectrum.col(channelIndex));
+        m_inputBuffer(arma::span(0, m_frameSampleCount - 1), channelIndex) % m_window);
     m_outputBuffer(arma::span(0, m_frameSampleCount - 1), channelIndex) += m_singleOutput % m_window;
 
     removeNoise(
         channelIndex,
         m_singleOutput,
-        m_inputBuffer(arma::span(m_step, m_inputBuffer.n_rows - 1), channelIndex) % m_window,
-        noiseMagnitudeSpectrum.col(channelIndex));
+        m_inputBuffer(arma::span(m_step, m_inputBuffer.n_rows - 1), channelIndex) % m_window);
     m_outputBuffer(arma::span(m_step, m_outputBuffer.n_rows - 1), channelIndex) += m_singleOutput % m_window;
 }
 
-void StftNoiseRemover::removeNoise(
-    size_t channelIndex,
-    arma::fvec& output,
-    const arma::fvec& input,
-    const arma::fvec& noiseMagnitudeSpectrum)
+void StftNoiseRemover::removeNoise(size_t channelIndex, arma::fvec& output, const arma::fvec& input)
 {
     m_fftInput = input;
     fftwf_execute(m_fftPlan);
 
-    updateSpectrum(channelIndex, m_fftOutput, m_ifftInput, noiseMagnitudeSpectrum);
+    m_noiseEstimator->estimate(m_noiseMagnitudeSpectrum, m_fftOutput, channelIndex);
+    updateSpectrum(channelIndex, m_fftOutput, m_ifftInput, m_noiseMagnitudeSpectrum);
 
     fftwf_execute(m_ifftPlan);
     output = m_ifftOutput / static_cast<float>(m_frameSampleCount);

@@ -1,3 +1,4 @@
+#include <ego_noise_reduction/WeightedAverageNoiseEstimator.h>
 #include <ego_noise_reduction/StftNoiseRemover.h>
 #include <ego_noise_reduction/SpectralSubtractionNoiseRemover.h>
 #include <ego_noise_reduction/LogMmseNoiseRemover.h>
@@ -35,11 +36,14 @@ struct EgoNoiseReductionNodeConfiguration
     int frameSampleCount;
     int nFft;
 
+    float noiseEstimatorEpsilon;
+    float noiseEstimatorAlpha;
+    float noiseEstimatorDelta;
+
     float spectralSubstractionAlpha0;
     float spectralSubstractionGamma;
     float spectralSubstractionBeta;
 
-    // LogMMSE parameters
     float logMmseAlpha;
     float logMmseMaxAPosterioriSnr;
     float logMmseMinAPrioriSnr;
@@ -50,6 +54,9 @@ struct EgoNoiseReductionNodeConfiguration
           samplingFrequency(0),
           frameSampleCount(0),
           nFft(0),
+          noiseEstimatorEpsilon(0.f),
+          noiseEstimatorAlpha(0.f),
+          noiseEstimatorDelta(0.f),
           spectralSubstractionAlpha0(0.f),
           spectralSubstractionGamma(0.f),
           spectralSubstractionBeta(0.f),
@@ -80,6 +87,7 @@ class EgoNoiseReductionNode
 
     audio_utils::AudioFrame m_audioFrameMsg;
 
+    shared_ptr<WeightedAverageNoiseEstimator> m_noiseEstimator;  // TODO change the type
     unique_ptr<StftNoiseRemover> m_noiseRemover;
 
 public:
@@ -118,6 +126,12 @@ public:
         m_audioFrameMsg.data.resize(
             size(m_configuration.format, m_configuration.channelCount, m_configuration.frameSampleCount));
 
+        m_noiseEstimator = make_shared<WeightedAverageNoiseEstimator>(
+            m_configuration.channelCount,
+            m_configuration.nFft,
+            m_configuration.noiseEstimatorEpsilon,
+            m_configuration.noiseEstimatorAlpha,
+            m_configuration.noiseEstimatorDelta);
         m_noiseRemover = createNoiseRemover();
     }
 
@@ -147,16 +161,14 @@ private:
         {
             if (m_filterState.isFilteringAllMessages())  // TODO add || no noise
             {
+                m_noiseEstimator->reset();
                 m_noiseRemover->replaceLastFrame(m_inputPcmAudioFrame);
                 publishFrames(m_inputPcmAudioFrame);
             }
             else
             {
-                arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(
-                    m_configuration.frameSampleCount / 2 + 1,
-                    m_configuration.channelCount);  // TODO change
                 m_inputPcmAudioFrame.copyTo(m_inputAudioFrame);
-                m_outputPcmAudioFrame = m_noiseRemover->removeNoise(m_inputAudioFrame, noiseMagnitudeSpectrum);
+                m_outputPcmAudioFrame = m_noiseRemover->removeNoise(m_inputAudioFrame);
                 publishFrames(m_outputPcmAudioFrame);
             }
             m_inputPcmAudioFrameIndex = 0;
@@ -210,6 +222,7 @@ private:
                 return make_unique<SpectralSubtractionNoiseRemover>(
                     m_configuration.channelCount,
                     m_configuration.nFft,
+                    m_noiseEstimator,
                     m_configuration.spectralSubstractionAlpha0,
                     m_configuration.spectralSubstractionGamma,
                     m_configuration.spectralSubstractionBeta);
@@ -217,6 +230,7 @@ private:
                 return make_unique<LogMmseNoiseRemover>(
                     m_configuration.channelCount,
                     m_configuration.nFft,
+                    m_noiseEstimator,
                     m_configuration.logMmseAlpha,
                     m_configuration.logMmseMaxAPosterioriSnr,
                     m_configuration.logMmseMinAPrioriSnr);
@@ -272,6 +286,10 @@ int main(int argc, char** argv)
             ROS_ERROR("The parameter n_fft is required. It must be a multiple of frame_sample_count.");
             return -1;
         }
+
+        configuration.noiseEstimatorEpsilon = privateNodeHandle.param("noise_estimator_epsilon", 4.f);
+        configuration.noiseEstimatorAlpha = privateNodeHandle.param("noise_estimator_alpha", 0.9f);
+        configuration.noiseEstimatorDelta = privateNodeHandle.param("noise_estimator_delta", 0.9f);
 
         configuration.spectralSubstractionAlpha0 = privateNodeHandle.param("spectral_subtraction_alpha0", 0.5f);
         configuration.spectralSubstractionGamma = privateNodeHandle.param("spectral_subtraction_gamma", 0.1f);

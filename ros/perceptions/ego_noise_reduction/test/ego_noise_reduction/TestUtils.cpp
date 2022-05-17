@@ -53,8 +53,7 @@ void expectFrameNear(const AudioFrame<float> value, const AudioFrame<float> expe
 void testNoiseReduction(
     StftNoiseRemover& remover,
     const vector<PcmAudioFrame>& inputPcmFrames,
-    const vector<PcmAudioFrame>& expectedOutputPcmFrames,
-    const arma::fmat& noiseMagnitudeSpectrum)
+    const vector<PcmAudioFrame>& expectedOutputPcmFrames)
 {
     ASSERT_GT(inputPcmFrames.size(), 0);
 
@@ -68,9 +67,41 @@ void testNoiseReduction(
     for (size_t i = 0; i < frameCount; i++)
     {
         inputPcmFrames[i].copyTo(inputFrame);
-        AudioFrame<float> outputFrame = remover.removeNoise(inputFrame, noiseMagnitudeSpectrum);
+        AudioFrame<float> outputFrame = remover.removeNoise(inputFrame);
         expectedOutputPcmFrames[i].copyTo(expectedOutputFrame);
 
         expectFrameNear(outputFrame, expectedOutputFrame, ABS_ERROR);
     }
+}
+
+ConstantNoiseEstimator::ConstantNoiseEstimator(arma::fmat noiseMagnitudeSpectrum)
+    : NoiseEstimator(noiseMagnitudeSpectrum.n_cols, (noiseMagnitudeSpectrum.n_rows - 1) * 2),
+      m_noiseMagnitudeSpectrum(move(noiseMagnitudeSpectrum))
+{
+}
+
+ConstantNoiseEstimator::~ConstantNoiseEstimator() {}
+
+void ConstantNoiseEstimator::reset() {}
+
+void ConstantNoiseEstimator::estimate(
+    arma::fvec& noiseMagnitudeSpectrum,
+    const arma::cx_fvec& signalSpectrum,
+    size_t channelIndex)
+{
+    noiseMagnitudeSpectrum = m_noiseMagnitudeSpectrum.col(channelIndex);
+}
+
+shared_ptr<NoiseEstimator> createZeroConstantNoiseEstimator(size_t channelCount, size_t frameSampleCount)
+{
+    arma::fmat noiseMagnitudeSpectrum = arma::zeros<arma::fmat>(frameSampleCount / 2 + 1, channelCount);
+    return make_shared<ConstantNoiseEstimator>(noiseMagnitudeSpectrum);
+}
+
+shared_ptr<NoiseEstimator> createConstantNoiseEstimatorFromFile(const string& path)
+{
+    arma::fmat noiseMagnitudeSpectrum;
+    noiseMagnitudeSpectrum.load(path);
+
+    return make_shared<ConstantNoiseEstimator>(noiseMagnitudeSpectrum);
 }

@@ -15,10 +15,11 @@ using namespace std;
 LogMmseNoiseRemover::LogMmseNoiseRemover(
     size_t channelCount,
     size_t frameSampleCount,
+    std::shared_ptr<NoiseEstimator> noiseEstimator,
     float alpha,
     float maxAPosterioriSnr,
     float minAPrioriSnr)
-    : StftNoiseRemover(channelCount, frameSampleCount),
+    : StftNoiseRemover(channelCount, frameSampleCount, move(noiseEstimator)),
       m_alpha(alpha),
       m_maxAPosterioriSnr(maxAPosterioriSnr),
       m_minAPrioriSnr(minAPrioriSnr)

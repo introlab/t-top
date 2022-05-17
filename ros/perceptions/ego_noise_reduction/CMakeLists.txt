@@ -127,6 +127,8 @@ add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}/StftNoiseRemover.cpp
   src/${PROJECT_NAME}/SpectralSubtractionNoiseRemover.cpp
   src/${PROJECT_NAME}/LogMmseNoiseRemover.cpp
+  src/${PROJECT_NAME}/NoiseEstimator.cpp
+  src/${PROJECT_NAME}/WeightedAverageNoiseEstimator.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -207,6 +209,8 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/ego_noise_reduction/StftNoiseRemoverTests.cpp
   test/ego_noise_reduction/SpectralSubtractionNoiseRemoverTests.cpp
   test/ego_noise_reduction/LogMmseNoiseRemoverTests.cpp
+  test/ego_noise_reduction/NoiseEstimatorTests.cpp
+  test/ego_noise_reduction/WeightedAverageNoiseEstimatorTests.cpp
   test/ego_noise_reduction/TestUtils.cpp
   test/ego_noise_reduction/main.cpp
 )
