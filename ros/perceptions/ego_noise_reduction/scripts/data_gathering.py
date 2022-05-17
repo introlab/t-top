@@ -18,6 +18,8 @@ from audio_utils.msg import AudioFrame
 STARTUP_DELAY_S = 10.
 SUPPORTED_AUDIO_FORMAT = 'signed_32'
 
+CIRCLE_DEGREES = 360
+
 
 def sqrt_hann(M):
     return np.sqrt(scipy.signal.windows.hann(M))
@@ -119,13 +121,14 @@ class DataGatheringNode:
                 self._append_to(self._get_torso_servo_path(), msg.data)
 
     def _get_head_servo_path(self):
-        deg = round(self._torso_orientation_deg)
+        deg = round(self._torso_orientation_deg) % CIRCLE_DEGREES
         name = f'head_servo_id{self._moving_servo_id}_deg{deg}_speed{self._moving_servo_speed}.raw'
         return os.path.join(self._audio_data_directory_path, name)
 
     def _get_torso_servo_path(self):
-        base = 2
+        base = 5
         deg = base * round(self._torso_orientation_deg / base)
+        deg %= CIRCLE_DEGREES
         name = f'torso_servo_deg{deg}_speed{self._moving_servo_speed}.raw'
         return os.path.join(self._audio_data_directory_path, name)
 
