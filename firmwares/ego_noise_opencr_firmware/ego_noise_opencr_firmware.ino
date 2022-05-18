@@ -15,18 +15,18 @@
 // Constants
 constexpr unsigned long INIT_DELAY_MS = 10000;
 constexpr unsigned long DATA_GATHERING_DELAY_MS = 500;
-constexpr unsigned long AUDIO_RECORDING_DELAY_MS = 2000;
+constexpr unsigned long AUDIO_RECORDING_DELAY_MS = 1000;
 constexpr unsigned long TORSO_STEP_DELAY_MS = 10;
 
 constexpr float HEAD_SERVO_TORSO_ORIENTATION_START = 0;
 constexpr float HEAD_SERVO_TORSO_ORIENTATION_END = 2 * M_PI;
-constexpr float HEAD_SERVO_TORSO_ORIENTATION_STEP = HEAD_SERVO_TORSO_ORIENTATION_END / 72;
+constexpr float HEAD_SERVO_TORSO_ORIENTATION_STEP = HEAD_SERVO_TORSO_ORIENTATION_END / 36;
 
-constexpr int32_t HEAD_SERVO_SPEED_START = 10;
+constexpr int32_t HEAD_SERVO_SPEED_START = 20;
 constexpr int32_t HEAD_SERVO_SPEED_END = 265;
 constexpr int32_t HEAD_SERVO_SPEED_STEP = 5;
 
-constexpr int32_t TORSO_SERVO_SPEED_START = 10;
+constexpr int32_t TORSO_SERVO_SPEED_START = 20;
 constexpr int32_t TORSO_SERVO_SPEED_END = TORSO_MAX_VELOCITY;
 constexpr int32_t TORSO_SERVO_SPEED_STEP = 5;
 

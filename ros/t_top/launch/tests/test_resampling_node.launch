@@ -1,0 +1,35 @@
+<launch>
+
+    <node name="audio_capture" type="capture_node" pkg="audio_utils" output="screen">
+        <param name="backend" value="alsa"/>
+        <param name="device" value="default"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="2048"/>
+        <param name="merge" value="true" />
+        <param name="gain" value="1.0" />
+        <param name="latency_us" value="40000" />
+
+        <remap from="audio_out" to="audio_signed_16_44100"/>
+    </node>
+
+    <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
+        <param name="input_format" value="signed_16"/>
+        <param name="output_format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="input_sampling_frequency" value="44100"/>
+        <param name="output_sampling_frequency" value="16000"/>
+        <param name="input_frame_sample_count" value="2048"/>
+
+        <remap from="audio_in" to="audio_signed_16_44100"/>
+        <remap from="audio_out" to="audio_signed_16_16000"/>
+    </node>
+
+    <node pkg="audio_utils" type="raw_file_writer_node.py" name="raw_file_writer_node">
+        <param name="output_path" value="/home/marc-antoine/audio_signed_16_16000.raw"/>
+
+        <remap from="audio_in" to="audio_signed_16_16000"/>
+    </node>
+
+</launch>

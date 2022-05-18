@@ -16,6 +16,7 @@ std::vector<introlab::PcmAudioFrame> getPcmAudioFrames(
     introlab::PcmAudioFrameFormat format,
     size_t channelCount,
     size_t frameSampleCount);
+
 void writePcmAudioFrames(const std::string& path, const std::vector<introlab::PcmAudioFrame>& frames);
 
 void expectFrameNear(

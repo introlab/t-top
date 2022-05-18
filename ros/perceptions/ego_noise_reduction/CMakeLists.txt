@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   hbba_lite
+  t_top
 )
 
 ## System dependencies are found with CMake's conventions
@@ -129,6 +130,8 @@ add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}/LogMmseNoiseRemover.cpp
   src/${PROJECT_NAME}/NoiseEstimator.cpp
   src/${PROJECT_NAME}/WeightedAverageNoiseEstimator.cpp
+  src/${PROJECT_NAME}/WeightedAverageWithAPrioriNoiseEstimator.cpp
+  src/${PROJECT_NAME}/NoiseMagnitudeDatabase.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -168,6 +171,7 @@ target_link_libraries(${PROJECT_NAME}_node
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/data_gathering.py
+  scripts/test.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -211,6 +215,8 @@ catkin_add_gtest(${PROJECT_NAME}-test
   test/ego_noise_reduction/LogMmseNoiseRemoverTests.cpp
   test/ego_noise_reduction/NoiseEstimatorTests.cpp
   test/ego_noise_reduction/WeightedAverageNoiseEstimatorTests.cpp
+  test/ego_noise_reduction/WeightedAverageWithAPrioriNoiseEstimatorTests.cpp
+  test/ego_noise_reduction/NoiseMagnitudeDatabaseTests.cpp
   test/ego_noise_reduction/TestUtils.cpp
   test/ego_noise_reduction/main.cpp
 )

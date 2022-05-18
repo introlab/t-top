@@ -1,4 +1,4 @@
-#include <ego_noise_reduction/WeightedAverageNoiseEstimator.h>
+#include <ego_noise_reduction/WeightedAverageWithAPrioriNoiseEstimator.h>
 #include <ego_noise_reduction/StftNoiseRemover.h>
 #include <ego_noise_reduction/SpectralSubtractionNoiseRemover.h>
 #include <ego_noise_reduction/LogMmseNoiseRemover.h>
@@ -22,8 +22,9 @@
 using namespace introlab;
 using namespace std;
 
-constexpr uint32_t AUDIO_QUEUE_SIZE = 100;
-constexpr uint32_t STATUS_QUEUE_SIZE = 1;
+constexpr uint32_t AudioQueueSize = 100;
+constexpr uint32_t StatusQueueSize = 1;
+constexpr size_t HeadServoCount = 6;
 
 struct EgoNoiseReductionNodeConfiguration
 {
@@ -35,6 +36,8 @@ struct EgoNoiseReductionNodeConfiguration
     int samplingFrequency;
     int frameSampleCount;
     int nFft;
+
+    string noiseDirectory;
 
     float noiseEstimatorEpsilon;
     float noiseEstimatorAlpha;
@@ -87,7 +90,7 @@ class EgoNoiseReductionNode
 
     audio_utils::AudioFrame m_audioFrameMsg;
 
-    shared_ptr<WeightedAverageNoiseEstimator> m_noiseEstimator;  // TODO change the type
+    shared_ptr<WeightedAverageWithAPrioriNoiseEstimator> m_noiseEstimator;
     unique_ptr<StftNoiseRemover> m_noiseRemover;
 
 public:
@@ -100,22 +103,22 @@ public:
           m_inputAudioFrame(m_configuration.channelCount, m_configuration.nFft),
           m_outputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft)
     {
-        m_audioPub = m_nodeHandle.advertise<audio_utils::AudioFrame>("audio_out", AUDIO_QUEUE_SIZE);
-        m_audioSub = m_nodeHandle.subscribe("audio_in", AUDIO_QUEUE_SIZE, &EgoNoiseReductionNode::audioCallback, this);
+        m_audioPub = m_nodeHandle.advertise<audio_utils::AudioFrame>("audio_out", AudioQueueSize);
+        m_audioSub = m_nodeHandle.subscribe("audio_in", AudioQueueSize, &EgoNoiseReductionNode::audioCallback, this);
 
         m_currentTorsoOrientationSub = m_nodeHandle.subscribe(
             "opencr/current_torso_orientation",
-            STATUS_QUEUE_SIZE,
+            StatusQueueSize,
             &EgoNoiseReductionNode::currentTorsoOrientationCallback,
             this);
         m_currentTorsoServoSpeedSub = m_nodeHandle.subscribe(
             "opencr/current_torso_servo_speed",
-            STATUS_QUEUE_SIZE,
+            StatusQueueSize,
             &EgoNoiseReductionNode::currentTorsoServoSpeedCallback,
             this);
         m_currentHeadServoSpeedsSub = m_nodeHandle.subscribe(
             "opencr/current_head_servo_speeds",
-            STATUS_QUEUE_SIZE,
+            StatusQueueSize,
             &EgoNoiseReductionNode::currentHeadServoSpeedsCallback,
             this);
 
@@ -126,12 +129,14 @@ public:
         m_audioFrameMsg.data.resize(
             size(m_configuration.format, m_configuration.channelCount, m_configuration.frameSampleCount));
 
-        m_noiseEstimator = make_shared<WeightedAverageNoiseEstimator>(
+        m_noiseEstimator = make_shared<WeightedAverageWithAPrioriNoiseEstimator>(
             m_configuration.channelCount,
             m_configuration.nFft,
+            m_configuration.samplingFrequency,
             m_configuration.noiseEstimatorEpsilon,
             m_configuration.noiseEstimatorAlpha,
-            m_configuration.noiseEstimatorDelta);
+            m_configuration.noiseEstimatorDelta,
+            m_configuration.noiseDirectory);
         m_noiseRemover = createNoiseRemover();
     }
 
@@ -159,7 +164,7 @@ private:
 
         if (m_inputPcmAudioFrameIndex >= m_inputPcmAudioFrame.size())
         {
-            if (m_filterState.isFilteringAllMessages())  // TODO add || no noise
+            if (m_filterState.isFilteringAllMessages() || !m_noiseEstimator->hasNoise())
             {
                 m_noiseEstimator->reset();
                 m_noiseRemover->replaceLastFrame(m_inputPcmAudioFrame);
@@ -191,7 +196,7 @@ private:
             return;
         }
 
-        // TODO
+        m_noiseEstimator->setOrientationRadians(msg->data);
     }
 
     void currentTorsoServoSpeedCallback(const std_msgs::Int32Ptr& msg)
@@ -201,7 +206,7 @@ private:
             return;
         }
 
-        // TODO
+        m_noiseEstimator->setTorsoSpeed(msg->data);
     }
 
     void currentHeadServoSpeedsCallback(const std_msgs::Int32MultiArrayPtr& msg)
@@ -210,8 +215,18 @@ private:
         {
             return;
         }
+        if (msg->data.size() != HeadServoCount)
+        {
+            ROS_ERROR("The head servo speeds does not have 6 values.");
+            return;
+        }
 
-        // TODO
+        m_noiseEstimator->setHeadSpeedId1(msg->data[0]);
+        m_noiseEstimator->setHeadSpeedId2(msg->data[1]);
+        m_noiseEstimator->setHeadSpeedId3(msg->data[2]);
+        m_noiseEstimator->setHeadSpeedId4(msg->data[3]);
+        m_noiseEstimator->setHeadSpeedId5(msg->data[4]);
+        m_noiseEstimator->setHeadSpeedId5(msg->data[5]);
     }
 
     unique_ptr<StftNoiseRemover> createNoiseRemover()
@@ -286,12 +301,17 @@ int main(int argc, char** argv)
             ROS_ERROR("The parameter n_fft is required. It must be a multiple of frame_sample_count.");
             return -1;
         }
+        if (!privateNodeHandle.getParam("noise_directory", configuration.noiseDirectory))
+        {
+            ROS_ERROR("The parameter noise_directory is required.");
+            return -1;
+        }
 
         configuration.noiseEstimatorEpsilon = privateNodeHandle.param("noise_estimator_epsilon", 4.f);
         configuration.noiseEstimatorAlpha = privateNodeHandle.param("noise_estimator_alpha", 0.9f);
         configuration.noiseEstimatorDelta = privateNodeHandle.param("noise_estimator_delta", 0.9f);
 
-        configuration.spectralSubstractionAlpha0 = privateNodeHandle.param("spectral_subtraction_alpha0", 0.5f);
+        configuration.spectralSubstractionAlpha0 = privateNodeHandle.param("spectral_subtraction_alpha0", 5.f);
         configuration.spectralSubstractionGamma = privateNodeHandle.param("spectral_subtraction_gamma", 0.1f);
         configuration.spectralSubstractionBeta = privateNodeHandle.param("spectral_subtraction_beta", 0.01f);
 

@@ -39,7 +39,7 @@ TEST(WeightedAverageNoiseEstimatorTests, constructor_invalidDelta_shouldThrowNot
     EXPECT_THROW(WeightedAverageNoiseEstimator(1, 2, 0.1f, 0.9f, -0.1f), NotSupportedException);
 }
 
-TEST(WeightedAverageNoiseEstimatorTests, estimate_shouldEstimateTheSound)
+TEST(WeightedAverageNoiseEstimatorTests, estimate_shouldEstimateTheNoise)
 {
     constexpr size_t ChannelCount = 2;
     constexpr size_t FrameSampleCount = 2048;
@@ -51,7 +51,7 @@ TEST(WeightedAverageNoiseEstimatorTests, estimate_shouldEstimateTheSound)
     vector<PcmAudioFrame> expectedOutputPcmFrames =
         getPcmAudioFrames(resourcesPath + "/noisy_sounds_wa_ne_output.raw", Format, ChannelCount, FrameSampleCount);
 
-    shared_ptr<WeightedAverageNoiseEstimator> testee = make_shared<WeightedAverageNoiseEstimator>(
+    auto testee = make_shared<WeightedAverageNoiseEstimator>(
         ChannelCount,
         FrameSampleCount,
         NoiseEstimatorEpsilon,
