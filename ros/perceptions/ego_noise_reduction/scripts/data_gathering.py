@@ -57,8 +57,13 @@ class AudioAnalyser:
         paths_by_speed = self._list_paths_by_speed(input_directory, prefix)
         paths_by_speed_orientation = self._list_paths_by_speed_orientation(input_directory, prefix)
 
+        rospy.loginfo('\tCalculating base noise magnitudes')
         base_noise_magnitudes_by_speed = self._get_base_noise_magnitudes(paths_by_speed)
+
+        rospy.loginfo('\tCalculating orientation tf')
         orientation_tf = self._get_orientation_tf(paths_by_speed_orientation, base_noise_magnitudes_by_speed)
+
+        rospy.loginfo('\tCalculating channel tf')
         channel_tf = self._get_channel_tf(paths_by_speed_orientation, base_noise_magnitudes_by_speed, orientation_tf)
 
         self._write_dict_of_array(base_noise_magnitudes_by_speed,
@@ -98,34 +103,29 @@ class AudioAnalyser:
         return librosa.stft(x, n_fft=self._n_fft, hop_length=hop_length, window=sqrt_hann, center=False)
 
     def _get_base_noise_magnitudes(self, paths_by_speed):
-        stfts_by_speed = {}
-        for speed, paths in paths_by_speed.items():
+        stfts_by_speed = defaultdict(list)
+        for i, (speed, paths) in enumerate(paths_by_speed.items()):
+            rospy.loginfo(f'\t\t{i+1}/{len(paths_by_speed)}')
             for path in paths:
                 x = self._load_raw_audio_file(path)
                 for c in range(x.shape[1]):
                     X = self._stft(x[:, c])
-                    if speed in stfts_by_speed:
-                        stfts_by_speed[speed] = np.append(stfts_by_speed[speed], X, axis=1)
-                    else:
-                        stfts_by_speed[speed] = X
+                    stfts_by_speed[speed].append(X)
 
-        return {speed: np.abs(X).mean(axis=1) for speed, X in stfts_by_speed.items()}
+        return {speed: np.abs(np.concatenate(X, axis=1)).mean(axis=1) for speed, X in stfts_by_speed.items()}
 
     def _get_orientation_tf(self, paths_by_speed_orientation, base_noise_magnitudes_by_speed):
-        stfts_by_speed_orientation = {}
+        stfts_by_speed_orientation = defaultdict(list)
         for (speed, orientation), paths in paths_by_speed_orientation.items():
             for path in paths:
                 x = self._load_raw_audio_file(path)
                 for c in range(x.shape[1]):
                     X = self._stft(x[:, c])
-                    if (speed, orientation) in stfts_by_speed_orientation:
-                        stfts_by_speed_orientation[(speed, orientation)] = \
-                            np.append(stfts_by_speed_orientation[(speed, orientation)], X, axis=1)
-                    else:
-                        stfts_by_speed_orientation[(speed, orientation)] = X
+                    stfts_by_speed_orientation[(speed, orientation)].append(X)
 
         tf_by_speed_orientation = {}
         for (speed, orientation), X in stfts_by_speed_orientation.items():
+            X = np.concatenate(X, axis=1)
             tf_by_speed_orientation[(speed, orientation)] = np.abs(X).mean(axis=1) / base_noise_magnitudes_by_speed[speed]
 
         tf_by_orientation = {}
@@ -145,20 +145,17 @@ class AudioAnalyser:
         return tf_by_orientation
 
     def _get_channel_tf(self, paths_by_speed_orientation, base_noise_magnitudes_by_speed, orientation_tf):
-        stfts_by_speed_orientation_channel = {}
+        stfts_by_speed_orientation_channel = defaultdict(list)
         for (speed, orientation), paths in paths_by_speed_orientation.items():
             for path in paths:
                 x = self._load_raw_audio_file(path)
                 for c in range(x.shape[1]):
                     X = self._stft(x[:, c])
-                    if (speed, orientation, c) in stfts_by_speed_orientation_channel:
-                        stfts_by_speed_orientation_channel[(speed, orientation, c)] = \
-                            np.append(stfts_by_speed_orientation_channel[(speed, orientation, c)], X, axis=1)
-                    else:
-                        stfts_by_speed_orientation_channel[(speed, orientation, c)] = X
+                    stfts_by_speed_orientation_channel[(speed, orientation, c)].append(X)
 
         tf_by_speed_orientation_channel = {}
         for (speed, orientation, c), X in stfts_by_speed_orientation_channel.items():
+            X = np.concatenate(X, axis=1)
             tf_by_speed_orientation_channel[(speed, orientation, c)] = \
                 np.abs(X).mean(axis=1) / (base_noise_magnitudes_by_speed[speed] * orientation_tf[orientation])
 
@@ -287,7 +284,7 @@ class DataGatheringNode:
         return os.path.join(self._audio_data_directory_path, name)
 
     def _get_torso_servo_path(self):
-        base = 5
+        base = 10
         deg = base * round(self._torso_orientation_deg / base)
         deg %= CIRCLE_DEGREES
         name = f'torso_servo_deg{deg}_speed{self._moving_servo_speed}.raw'

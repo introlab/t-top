@@ -41,7 +41,7 @@ void NoiseMagnitudeDatabase::verifyKeys(
 {
     for (int speed = minSpeed; speed <= maxSpeed; speed += speedStep)
     {
-        if (m_tfByOrientation.find(speed) == m_tfByOrientation.end())
+        if (m_noiseMagnitudesBySpeed.find(speed) == m_noiseMagnitudesBySpeed.end())
         {
             THROW_NOT_SUPPORTED_EXCEPTION("The speed " + to_string(speed) + " is missing in the database files.");
         }

@@ -10,9 +10,9 @@ using namespace introlab;
 using namespace std;
 
 constexpr size_t MagnitudeSize = 1025;
-constexpr int MinSpeed = 10;
+constexpr int MinSpeed = 20;
 constexpr int MaxSpeed = 80;
-constexpr int SpeedStep = 10;
+constexpr int SpeedStep = 5;
 constexpr int MinOrientation = 0;
 constexpr int MaxOrientation = 350;
 constexpr int OrientationStep = 10;
@@ -71,8 +71,8 @@ TEST(NoiseMagnitudeDatabaseTests, noiseMagnitude_shouldSetTheNoiseMagnitude)
     testee.noiseMagnitude(noiseMagnitude, Speed, Orinetation, ChannelIndex);
 
     ASSERT_EQ(noiseMagnitude.n_elem, 1025);
-    EXPECT_FLOAT_EQ(noiseMagnitude[0], 0.2554924f);
-    EXPECT_FLOAT_EQ(noiseMagnitude[1], 0.55282063f);
-    EXPECT_FLOAT_EQ(noiseMagnitude[2], 0.99890353f);
-    EXPECT_FLOAT_EQ(noiseMagnitude[3], 1.20199985f);
+    EXPECT_FLOAT_EQ(noiseMagnitude[0], 1.2480844f);
+    EXPECT_FLOAT_EQ(noiseMagnitude[1], 1.5236406f);
+    EXPECT_FLOAT_EQ(noiseMagnitude[2], 1.0376955f);
+    EXPECT_FLOAT_EQ(noiseMagnitude[3], 1.0239863f);
 }

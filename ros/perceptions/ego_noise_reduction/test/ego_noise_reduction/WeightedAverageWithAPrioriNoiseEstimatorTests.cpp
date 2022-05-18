@@ -154,25 +154,11 @@ TEST(WeightedAverageWithAPrioriNoiseEstimatorTests, estimate_shouldEstimateTheNo
     EXPECT_EQ(testee->torsoSpeed(), 70);
     EXPECT_EQ(testee->headSpeedId1(), 100);
     EXPECT_EQ(testee->headSpeedId2(), 125);
-    EXPECT_EQ(testee->headSpeedId3(), 134);
+    EXPECT_EQ(testee->headSpeedId3(), 135);
     EXPECT_EQ(testee->headSpeedId4(), 200);
     EXPECT_EQ(testee->headSpeedId5(), 175);
     EXPECT_EQ(testee->headSpeedId6(), 50);
     EXPECT_EQ(testee->orientationDegrees(), 10);
-    // testNoiseReduction(noiseRemover, inputPcmFrames, expectedOutputPcmFrames);
 
-
-    AudioFrame<float> inputFrame(ChannelCount, FrameSampleCount);
-    AudioFrame<float> expectedOutputFrame(ChannelCount, FrameSampleCount);
-    vector<PcmAudioFrame> outputPcmFrames;
-
-    const size_t frameCount = min(inputPcmFrames.size(), expectedOutputPcmFrames.size());
-    for (size_t i = 0; i < frameCount; i++)
-    {
-        inputPcmFrames[i].copyTo(inputFrame);
-        AudioFrame<float> outputFrame = noiseRemover.removeNoise(inputFrame);
-        outputPcmFrames.emplace_back(outputFrame, Format);
-    }
-
-    writePcmAudioFrames("/home/marc-antoine/noisy_sounds_wa_ne_a_priori_output.raw", outputPcmFrames);
+    testNoiseReduction(noiseRemover, inputPcmFrames, expectedOutputPcmFrames);
 }
