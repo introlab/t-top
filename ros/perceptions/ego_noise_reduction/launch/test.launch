@@ -1,5 +1,5 @@
 <launch>
-    <arg name="output_directory" default="log"/>
+    <arg name="output_directory"/>
 
     <include file="$(find t_top)/launch/platform/opencr.launch"/>
 
@@ -30,9 +30,7 @@
         <remap from="audio_out" to="odas_audio_signed_32_44100"/>
     </node>
 
-    <include file="$(find t_top)/launch/perceptions/odas.launch">
-        <arg name="output" value="$(arg output)"/>
-    </include>
+    <include file="$(find t_top)/launch/perceptions/odas.launch"/>
 
     <node pkg="ego_noise_reduction" type="test.py" name="data_gathering" output="screen"/>
 
