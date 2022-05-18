@@ -1,4 +1,5 @@
 #include "ServoSpeedController.h"
+#include "DynamixelWorkbenchUtils.h"
 
 ServoSpeedController::ServoSpeedController(DynamixelWorkbench& dynamixelWorkbench, uint8_t id)
     : m_dynamixelWorkbench(dynamixelWorkbench),
@@ -25,7 +26,7 @@ void ServoSpeedController::setSpeed(int32_t speed)
 int32_t ServoSpeedController::readSpeed()
 {
     int32_t speed = 0;
-    m_dynamixelWorkbench.getPresentVelocityData(m_id, &speed);
+    readProfileVelocityData(m_dynamixelWorkbench, m_id, &speed);
     return speed;
 }
 

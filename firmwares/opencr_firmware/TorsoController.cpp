@@ -1,5 +1,6 @@
 #include "TorsoController.h"
 #include "IoMapping.h"
+#include "DynamixelWorkbenchUtils.h"
 
 #include <cmath>
 
@@ -53,7 +54,7 @@ float TorsoController::readOrientation()
 int32_t TorsoController::readServoSpeed()
 {
     int32_t speed = 0;
-    m_dynamixelWorkbench.getPresentVelocityData(TORSO_DYNAMIXEL_ID, &speed);
+    readProfileVelocityData(m_dynamixelWorkbench, TORSO_DYNAMIXEL_ID, &speed);
     return speed;
 }
 
