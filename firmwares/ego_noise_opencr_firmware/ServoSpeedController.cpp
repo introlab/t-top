@@ -26,7 +26,7 @@ void ServoSpeedController::setSpeed(int32_t speed)
 int32_t ServoSpeedController::readSpeed()
 {
     int32_t speed = 0;
-    readProfileVelocityData(m_dynamixelWorkbench, m_id, &speed);
+    readPresentVelocityData(m_dynamixelWorkbench, m_id, &speed);
     return speed;
 }
 

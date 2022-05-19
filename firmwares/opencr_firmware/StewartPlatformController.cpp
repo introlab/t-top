@@ -99,6 +99,6 @@ void StewartPlatformController::readServoSpeeds(int32_t servoSpeeds[])
 {
     for (int i = 0; i < STEWART_SERVO_COUNT; i++)
     {
-        readProfileVelocityData(m_dynamixelWorkbench, STEWART_PLATFORM_DYNAMIXEL_IDS[i], servoSpeeds + i);
+        readPresentVelocityData(m_dynamixelWorkbench, STEWART_PLATFORM_DYNAMIXEL_IDS[i], servoSpeeds + i);
     }
 }

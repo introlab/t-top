@@ -54,7 +54,7 @@ float TorsoController::readOrientation()
 int32_t TorsoController::readServoSpeed()
 {
     int32_t speed = 0;
-    readProfileVelocityData(m_dynamixelWorkbench, TORSO_DYNAMIXEL_ID, &speed);
+    readPresentVelocityData(m_dynamixelWorkbench, TORSO_DYNAMIXEL_ID, &speed);
     return speed;
 }
 

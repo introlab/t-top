@@ -3,7 +3,7 @@
 
 #include <DynamixelWorkbench.h>
 
-inline bool readProfileVelocityData(DynamixelWorkbench& dynamixelWorkbench, uint8_t id, int32_t* value)
+inline bool readPresentVelocityData(DynamixelWorkbench& dynamixelWorkbench, uint8_t id, int32_t* value)
 {
     constexpr uint16_t ADDRESS = 128;
     constexpr uint16_t LENGTH = 4;
