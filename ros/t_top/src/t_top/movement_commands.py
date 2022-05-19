@@ -31,9 +31,20 @@ def vector_to_angles(vector):
     y = unit_vector[1]
     z = unit_vector[2]
 
-    yaw = math.fmod(np.arctan2(y, x), 2 * math.pi)
+    yaw = np.arctan2(y, x)
     pitch = -np.arctan2(z, x)
     return yaw, pitch
+
+
+def fmod_radian(v):
+    return math.fmod(math.fmod(v, 2 * math.pi) + 2 * math.pi, 2 * math.pi)
+
+
+def abs_diff_torso_angle(a, b):
+    d = abs(a - b)
+    if d > math.pi:
+        d = 2 * math.pi - d
+    return d
 
 
 class MovementCommands:
@@ -88,7 +99,7 @@ class MovementCommands:
 
     def _read_torso_cb(self, msg):
         with self._read_torso_lock:
-            self._read_torso = math.fmod(msg.data, 2 * math.pi)
+            self._read_torso = fmod_radian(msg.data)
 
     def _read_head_cb(self, msg):
         angles = euler_from_quaternion([msg.pose.orientation.x,
@@ -161,7 +172,7 @@ class MovementCommands:
 
         steps_size = speed_rad_sec * self._minTime
 
-        pose = math.fmod(pose, 2 * math.pi)
+        pose = fmod_radian(pose)
         distance = pose - self.current_torso_pose
         if distance < -math.pi:
             distance = 2 * math.pi + distance
@@ -189,7 +200,7 @@ class MovementCommands:
             self._torso_orientation_pub.publish(pose)
 
         if should_wait:
-            while abs(pose - self.current_torso_pose) > 0.1:
+            while abs_diff_torso_angle(pose, self.current_torso_pose) > 0.1:
                 if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                     return False
                 if (time.time() - start_time) > timeout:

@@ -1,4 +1,5 @@
 #include "StewartPlatformController.h"
+#include "DynamixelWorkbenchUtils.h"
 
 #include <Eigen/Geometry>
 #include <cstring>
@@ -92,4 +93,12 @@ void StewartPlatformController::readCurrentPose(float servoAngles[], geometry_ms
     pose.pose.orientation.x = orientation.x();
     pose.pose.orientation.y = orientation.y();
     pose.pose.orientation.z = orientation.z();
+}
+
+void StewartPlatformController::readServoSpeeds(int32_t servoSpeeds[])
+{
+    for (int i = 0; i < STEWART_SERVO_COUNT; i++)
+    {
+        readProfileVelocityData(m_dynamixelWorkbench, STEWART_PLATFORM_DYNAMIXEL_IDS[i], servoSpeeds + i);
+    }
 }

@@ -1,0 +1,55 @@
+<launch>
+    <arg name="output_directory"/>
+
+    <include file="$(find t_top)/launch/platform/opencr.launch"/>
+
+    <node pkg="audio_utils" type="capture_node" name="capture_node">
+        <param name="backend" value="alsa"/>
+        <param name="device" value="default"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="2048"/>
+        <param name="merge" value="false"/>
+        <param name="gain" value="1.0"/>
+        <param name="latency_us" value="40000"/>
+
+        <remap from="audio_out" to="before_ego_audio_signed_32_44100"/>
+    </node>
+
+    <node pkg="ego_noise_reduction" type="ego_noise_reduction_node" name="ego_noise_reduction_node">
+        <param name="type" value="log_mmse"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="44100"/>
+        <param name="frame_sample_count" value="2048"/>
+        <param name="n_fft" value="2048"/>
+        <param name="noise_directory" value="$(find ego_noise_reduction)/noise_data"/>
+
+        <remap from="audio_in" to="before_ego_audio_signed_32_44100"/>
+        <remap from="audio_out" to="odas_audio_signed_32_44100"/>
+    </node>
+
+    <include file="$(find t_top)/launch/perceptions/odas.launch"/>
+
+    <node pkg="ego_noise_reduction" type="test.py" name="data_gathering" output="screen"/>
+
+    <node pkg="audio_utils" type="raw_file_writer_node.py" name="before_raw_file_writer_node">
+        <param name="output_path" value="$(arg output_directory)/before.raw"/>
+
+        <remap from="audio_in" to="before_ego_audio_signed_32_44100"/>
+    </node>
+
+    <node pkg="audio_utils" type="raw_file_writer_node.py" name="after_raw_file_writer_node">
+        <param name="output_path" value="$(arg output_directory)/after.raw"/>
+
+        <remap from="audio_in" to="odas_audio_signed_32_44100"/>
+    </node>
+
+    <node pkg="audio_utils" type="raw_file_writer_node.py" name="odas_raw_file_writer_node">
+        <param name="output_path" value="$(arg output_directory)/odas.raw"/>
+
+        <remap from="audio_in" to="audio_signed_16_44100"/>
+    </node>
+
+</launch>

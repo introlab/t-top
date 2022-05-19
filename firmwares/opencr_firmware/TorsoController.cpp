@@ -1,20 +1,20 @@
 #include "TorsoController.h"
 #include "IoMapping.h"
+#include "DynamixelWorkbenchUtils.h"
 
 #include <cmath>
-
-constexpr float ORIENTATION_OFFSET = 0.0;
-constexpr float GEAR_RATIO = 46.0 / 130.0;
 
 constexpr float MIN_DYNAMIXEL_POSITION = std::ceil(-255 * 2 * M_PI);
 constexpr float MAX_DYNAMIXEL_POSITION = std::floor(255 * 2 * M_PI);
 
-constexpr int32_t MAX_VELOCITY = 80;  // unit : 0.229 rev/min
-
+float fmodRadian(float v)
+{
+    return std::fmod(std::fmod(v, 2 * M_PI) + 2 * M_PI, 2 * M_PI);
+}
 
 TorsoController::TorsoController(DynamixelWorkbench& dynamixelWorkbench)
     : m_dynamixelWorkbench(dynamixelWorkbench),
-      m_isZeroOffsetFound(false)
+      m_zeroOffset(0.f)
 {
 }
 
@@ -26,7 +26,7 @@ void TorsoController::init()
     m_dynamixelWorkbench.torqueOff(TORSO_DYNAMIXEL_ID);
     m_dynamixelWorkbench.setNormalDirection(TORSO_DYNAMIXEL_ID);
     m_dynamixelWorkbench.setExtendedPositionControlMode(TORSO_DYNAMIXEL_ID);
-    m_dynamixelWorkbench.itemWrite(TORSO_DYNAMIXEL_ID, "Profile_Velocity", MAX_VELOCITY);
+    setMaxVelocityIfNeeded();
     m_dynamixelWorkbench.torqueOn(TORSO_DYNAMIXEL_ID);
 
     findZeroOffset();
@@ -37,7 +37,7 @@ void TorsoController::setOrientation(float orientation)
     float dynamixelPosition = 0.f;
     m_dynamixelWorkbench.getRadian(TORSO_DYNAMIXEL_ID, &dynamixelPosition);
     float currentOrientation = getOrientationFromDynamixelPosition(dynamixelPosition);
-    float orientationDelta = std::fmod(orientation, 2 * M_PI) - currentOrientation;
+    float orientationDelta = fmodRadian(orientation) - currentOrientation;
 
 
     float newDynamixelPosition = getNewDynamixelPositionFromOrientationDelta(dynamixelPosition, orientationDelta);
@@ -51,45 +51,54 @@ float TorsoController::readOrientation()
     return getOrientationFromDynamixelPosition(dynamixelPosition);
 }
 
-static bool* isZeroOffsetFound;
-
-void onLimitSwitchInterrupt()
+int32_t TorsoController::readServoSpeed()
 {
-    detachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN));
-    *isZeroOffsetFound = true;
+    int32_t speed = 0;
+    readProfileVelocityData(m_dynamixelWorkbench, TORSO_DYNAMIXEL_ID, &speed);
+    return speed;
+}
+
+void TorsoController::setMaxVelocityIfNeeded()
+{
+    const char* REGISTER_NAME = "Profile_Velocity";
+    int32_t currentMaxVelocity = 0;
+    m_dynamixelWorkbench.itemRead(TORSO_DYNAMIXEL_ID, REGISTER_NAME, &currentMaxVelocity);
+
+    if (currentMaxVelocity != TORSO_MAX_VELOCITY)
+    {
+        m_dynamixelWorkbench.itemWrite(TORSO_DYNAMIXEL_ID, REGISTER_NAME, TORSO_MAX_VELOCITY);
+    }
 }
 
 void TorsoController::findZeroOffset()
 {
-    isZeroOffsetFound = &m_isZeroOffsetFound;
     pinMode(TORSO_LIMIT_SWITCH_PIN, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN), onLimitSwitchInterrupt, FALLING);
 
-    float goalPosition = 2.5 * M_PI / GEAR_RATIO;
+    float goalPosition = 2.5 * M_PI / TORSO_GEAR_RATIO;
     float dynamixelPosition = 0.f;
+    bool isZeroOffsetFound = false;
 
     m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, goalPosition);
     do
     {
         m_dynamixelWorkbench.getRadian(TORSO_DYNAMIXEL_ID, &dynamixelPosition);
-    } while (std::abs(dynamixelPosition - goalPosition) > 0.01 && !m_isZeroOffsetFound);
+        isZeroOffsetFound = digitalRead(TORSO_LIMIT_SWITCH_PIN);
+    } while (std::abs(dynamixelPosition - goalPosition) > 0.01 && !isZeroOffsetFound);
 
-    if (m_isZeroOffsetFound)
+    if (isZeroOffsetFound)
     {
-        m_zeroOffset = dynamixelPosition + ORIENTATION_OFFSET / GEAR_RATIO;
-        m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, m_zeroOffset);
+        m_zeroOffset = dynamixelPosition + TORSO_ORIENTATION_OFFSET / TORSO_GEAR_RATIO;
     }
     else
     {
-        detachInterrupt(digitalPinToInterrupt(TORSO_LIMIT_SWITCH_PIN));
-        m_zeroOffset = 0;
-        m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, 0.f);
+        m_zeroOffset = 0.f;
     }
+    m_dynamixelWorkbench.goalPosition(TORSO_DYNAMIXEL_ID, m_zeroOffset);
 }
 
 float TorsoController::getOrientationFromDynamixelPosition(float dynamixelPosition)
 {
-    return std::fmod((dynamixelPosition - m_zeroOffset) * GEAR_RATIO, 2 * M_PI);
+    return fmodRadian((dynamixelPosition - m_zeroOffset) * TORSO_GEAR_RATIO);
 }
 
 float TorsoController::getNewDynamixelPositionFromOrientationDelta(float dynamixelPosition, float orientationDelta1)
@@ -104,8 +113,8 @@ float TorsoController::getNewDynamixelPositionFromOrientationDelta(float dynamix
         orientationDelta2 = -(2 * M_PI - orientationDelta1);
     }
 
-    float newDynamixelPosition1 = dynamixelPosition + orientationDelta1 / GEAR_RATIO;
-    float newDynamixelPosition2 = dynamixelPosition + orientationDelta2 / GEAR_RATIO;
+    float newDynamixelPosition1 = dynamixelPosition + orientationDelta1 / TORSO_GEAR_RATIO;
+    float newDynamixelPosition2 = dynamixelPosition + orientationDelta2 / TORSO_GEAR_RATIO;
 
     if (newDynamixelPosition1 > MAX_DYNAMIXEL_POSITION || newDynamixelPosition1 < MIN_DYNAMIXEL_POSITION)
     {

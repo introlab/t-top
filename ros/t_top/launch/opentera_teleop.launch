@@ -2,9 +2,6 @@
     <arg name="visualization" default="false"/>
     <arg name="simulation" default="false"/>
     <arg name="use_echo_cancellation" default="true"/>
-    <arg name="echo_cancellation_source" default="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input" />
-    <arg name="echo_cancellation_sink" default="alsa_output.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.analog-surround-40" />
-    <arg name="echo_cancellation_dest" default="odas_echo_cancelled" />
     <arg name="ec_volume_percent" default="90" />
     <arg name="rviz" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
@@ -12,15 +9,14 @@
 
     <arg name="output" default="log"/>
 
-    <!-- Sound interface echo cancellation -->
-    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg echo_cancellation_source) $(arg echo_cancellation_sink) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
-
-
     <!-- Platform nodes -->
-    <include file="$(find t_top)/launch/platform.launch"/>
-
+    <include file="$(find t_top)/launch/platform.launch">
+        <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
+    </include>
 
     <!-- Perceptions -->
+    <include file="$(find t_top)/launch/perceptions/ego_noise_reduction.launch"/>
+
     <include file="$(find t_top)/launch/perceptions/odas.launch">
         <arg if="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pulseaudio_ec.cfg"/>
         <arg unless="$(arg use_echo_cancellation)" name="odas_configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB_pulseaudio.cfg"/>

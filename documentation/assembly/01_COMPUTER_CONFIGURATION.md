@@ -59,9 +59,11 @@ sudo apt install -y python3-rosinstall \
 
 ```bash
 sudo apt install -y libasound2-dev \
+    libpulse-dev \
     libconfig-dev \
     alsa-utils \
     gfortran \
+    libgfortran-*-dev \
     texinfo \
     libfftw3-dev \
     libsqlite3-dev \

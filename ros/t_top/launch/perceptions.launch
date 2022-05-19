@@ -1,7 +1,6 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
-    <arg name="odas_configuration_path" default="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
     <arg name="output" default="log"/>
@@ -15,9 +14,11 @@
         <arg name="visualization" value="$(arg visualization)"/>
     </include>
 
+    <!-- Ego Noise Reduction -->
+    <include file="$(find t_top)/launch/perceptions/ego_noise_reduction.launch"/>
+
     <!-- ODAS -->
     <include file="$(find t_top)/launch/perceptions/odas.launch">
-        <arg name="odas_configuration_path" value="$(arg odas_configuration_path)"/>
         <arg name="output" value="$(arg output)"/>
     </include>
 
