@@ -242,7 +242,8 @@ class DataGatheringNode:
 
     def _moving_servo_id_cb(self, msg):
         with self._lock:
-            self._moving_servo_id = msg.data
+            base = 5
+            self._moving_servo_id = base * round(msg.data / base)
 
     def _moving_servo_speed_cb(self, msg):
         with self._lock:
