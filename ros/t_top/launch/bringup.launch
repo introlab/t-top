@@ -1,5 +1,5 @@
 <launch>
-    <arg name="use_echo_cancellation" default="true"/>
+    <arg name="use_echo_cancellation" default="false"/>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
     <arg name="neural_network_inference_type" default="trt_gpu"/>
