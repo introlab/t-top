@@ -17,6 +17,9 @@ This node makes T-Top follow the loudest sound.
 - `head_enabled` (bool): Indicates if the head will move.
 - `min_head_pitch_rad` (double): The minimum pitch angle in radian of the head.
 - `max_head_pitch_rad` (double): The maximum pitch angle in radian of the head.
+- `min_activity` (double): The minimum activity level to consider the sound source valid.
+- `min_valid_source_pitch_rad` (double): The minimum pitch angle in radian to consider the sound source valid.
+- `max_valid_source_pitch_rad` (double): The maximum pitch angle in radian to consider the sound source valid.
 
 #### Subscribed Topics
 
