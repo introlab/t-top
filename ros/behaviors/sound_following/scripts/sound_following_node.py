@@ -19,6 +19,8 @@ class SoundFollowingNode:
         self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
         self._max_head_pitch = rospy.get_param('~max_head_pitch_rad')
         self._min_activity = rospy.get_param('~min_activity')
+        self._min_valid_source_pitch = rospy.get_param('~min_valid_source_pitch_rad')
+        self._max_valid_source_pitch = rospy.get_param('~max_valid_source_pitch_rad')
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
@@ -28,16 +30,17 @@ class SoundFollowingNode:
         self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
     def _sst_cb(self, sst):
+        if self._movement_commands.is_filtering_all_messages:
+            return
         if len(sst.sources) > 1:
             rospy.logerr(f'Invalid sst (len(sst.sources)={len(sst.sources)})')
             return
-
-        if len(sst.sources) == 0:
-            yaw, pitch = None, None
-        elif sst.sources[0].activity < self._min_activity:
+        if len(sst.sources) == 0 or sst.sources[0].activity < self._min_activity:
             return
-        else:
-            yaw, pitch = vector_to_angles(sst.sources[0])
+
+        yaw, pitch = vector_to_angles(sst.sources[0])
+        if pitch < self._min_valid_source_pitch or pitch > self._max_valid_source_pitch:
+            return
 
         with self._target_lock:
             self._target_torso_yaw = yaw
