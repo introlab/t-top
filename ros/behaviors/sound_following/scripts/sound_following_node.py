@@ -21,6 +21,7 @@ class SoundFollowingNode:
         self._min_activity = rospy.get_param('~min_activity')
         self._min_valid_source_pitch = rospy.get_param('~min_valid_source_pitch_rad')
         self._max_valid_source_pitch = rospy.get_param('~max_valid_source_pitch_rad')
+        self._direction_frame_id = rospy.get_param('~direction_frame_id')
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
@@ -30,11 +31,13 @@ class SoundFollowingNode:
         self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
     def _sst_cb(self, sst):
-        # TODO check frame id
         if self._movement_commands.is_filtering_all_messages:
             return
         if len(sst.sources) > 1:
             rospy.logerr(f'Invalid sst (len(sst.sources)={len(sst.sources)})')
+            return
+        if sst.header.frame_id != self._direction_frame_id:
+            rospy.logerr(f'Invalid direction frame id ({sst.header.frame_id} != {self._direction_frame_id})')
             return
         if len(sst.sources) == 0 or sst.sources[0].activity < self._min_activity:
             return

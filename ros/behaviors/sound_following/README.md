@@ -20,6 +20,7 @@ This node makes T-Top follow the loudest sound.
 - `min_activity` (double): The minimum activity level to consider the sound source valid.
 - `min_valid_source_pitch_rad` (double): The minimum pitch angle in radian to consider the sound source valid.
 - `max_valid_source_pitch_rad` (double): The maximum pitch angle in radian to consider the sound source valid.
+- `direction_frame_id` (string): The audio analysis frame id.
 
 #### Subscribed Topics
 
