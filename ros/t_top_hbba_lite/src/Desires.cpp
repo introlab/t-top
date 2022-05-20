@@ -24,7 +24,13 @@ FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desi
 
 SoundFollowingDesire::SoundFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
-FaceFollowingDesire::FaceFollowingDesire(uint16_t intensity) : Desire(intensity) {}
+NearestFaceFollowingDesire::NearestFaceFollowingDesire(uint16_t intensity) : Desire(intensity) {}
+
+SpecificFaceFollowingDesire::SpecificFaceFollowingDesire(string targetName, uint16_t intensity)
+    : Desire(intensity),
+      m_targetName(move(targetName))
+{
+}
 
 TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(move(text)) {}
 

@@ -21,5 +21,5 @@ perceptual nodes and widgets to show their result.
 ![Avatar](images/tab_avatar.png)
 ![Speech](images/tab_speech.png)
 ![Gesture](images/tab_gesture.png)
-![Behavior](images/tab_behaviors.png)
+![Behavior](images/tab_behaviors.png) TODO update image
 ![Perceptions](images/tab_perceptions.png)

@@ -8,7 +8,7 @@
         <param name="direction_frame_id" value="odas"/>
         <param name="direction_angle_threshold_rad" value="0.15"/>
         <param name="ignore_direction_z" value="true"/>
-        <param name="search_frequency" value="1"/>
+        <param name="search_frequency" value="0.25"/> <!-- TODO cahnge to 2-->
     </node>
 
 </launch>

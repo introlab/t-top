@@ -8,7 +8,8 @@
 inline void removeAllMovementDesires(DesireSet& desireSet)
 {
     desireSet.removeDesires(std::type_index(typeid(GestureDesire)));
-    desireSet.removeDesires(std::type_index(typeid(FaceFollowingDesire)));
+    desireSet.removeDesires(std::type_index(typeid(NearestFaceFollowingDesire)));
+    desireSet.removeDesires(std::type_index(typeid(SpecificFaceFollowingDesire)));
     desireSet.removeDesires(std::type_index(typeid(SoundFollowingDesire)));
     desireSet.removeDesires(std::type_index(typeid(DanceDesire)));
     desireSet.removeDesires(std::type_index(typeid(ExploreDesire)));

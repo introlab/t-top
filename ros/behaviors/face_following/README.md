@@ -4,7 +4,7 @@ This folder contains the node to make T-Top follow the nearest face.
 
 ## Nodes
 
-### `face_following_node.py`
+### `nearest_face_following_node.py`
 
 This node makes T-Top follow the nearest face.
 

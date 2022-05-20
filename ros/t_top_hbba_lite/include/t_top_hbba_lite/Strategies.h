@@ -24,6 +24,24 @@ protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
 };
 
+class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
+{
+    ros::NodeHandle& m_nodeHandle;
+    ros::Publisher m_targetNamePublisher;
+
+public:
+    SpecificFaceFollowingStrategy(
+        uint16_t utility,
+        std::shared_ptr<FilterPool> filterPool,
+        ros::NodeHandle& nodeHandle);
+
+    DECLARE_NOT_COPYABLE(SpecificFaceFollowingStrategy);
+    DECLARE_NOT_MOVABLE(SpecificFaceFollowingStrategy);
+
+protected:
+    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+};
+
 class TalkStrategy : public Strategy<TalkDesire>
 {
     ros::NodeHandle& m_nodeHandle;
@@ -88,7 +106,12 @@ std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createSoundFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createFaceFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createNearestFaceFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createTalkStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>

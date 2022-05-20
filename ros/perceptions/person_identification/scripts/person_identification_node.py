@@ -26,9 +26,10 @@ def calculate_angle(a, b):
 
 
 class FaceDescriptorData:
-    def __init__(self, descriptor, position, direction):
+    def __init__(self, descriptor, position_2d, position_3d, direction):
         self.descriptor = descriptor
-        self.position = position
+        self.position_2d = position_2d
+        self.position_3d = position_3d
         self.direction = direction
 
 
@@ -80,11 +81,15 @@ class PersonIdentificationNode:
                         or object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < self._nose_confidence_threshold:
                     continue
 
-                position, direction = self._get_face_position_and_direction(object.person_pose_3d[PERSON_POSE_NOSE_INDEX], msg.header)
+                position_2d = object.person_pose_2d[PERSON_POSE_NOSE_INDEX]
+                position_3d, direction = self._get_face_position_3d_and_direction(object.person_pose_3d[PERSON_POSE_NOSE_INDEX], msg.header)
                 if np.isfinite(direction).all():
-                    self._face_descriptor_data.append(FaceDescriptorData(np.array(object.face_descriptor), position, direction))
+                    self._face_descriptor_data.append(FaceDescriptorData(np.array(object.face_descriptor),
+                                                                         position_2d,
+                                                                         position_3d,
+                                                                         direction))
 
-    def _get_face_position_and_direction(self, point, header):
+    def _get_face_position_3d_and_direction(self, point, header):
         temp_in_point = PointStamped()
         temp_in_point.header = header
         temp_in_point.point.x = point.x
@@ -153,7 +158,9 @@ class PersonIdentificationNode:
             self._voice_descriptor_data = None
             del self._face_descriptor_data[face_descriptor_index]
             return [self._create_person_name(name,
-                                             position=face_descriptor_data.position,
+                                             'face_and_voice',
+                                             position_2d=face_descriptor_data.position_2d,
+                                             position_3d=face_descriptor_data.position_3d,
                                              direction=face_descriptor_data.direction)]
         else:
             return []
@@ -170,7 +177,9 @@ class PersonIdentificationNode:
 
             if distance <= self._face_descriptor_threshold:
                 names.append(self._create_person_name(name,
-                                                      position=face_descriptor_data.position,
+                                                      'face',
+                                                      position_2d=face_descriptor_data.position_2d,
+                                                      position_3d=face_descriptor_data.position_3d,
                                                       direction=face_descriptor_data.direction))
 
         return names # filter names
@@ -185,16 +194,20 @@ class PersonIdentificationNode:
 
         if distance <= self._voice_descriptor_threshold:
             return [self._create_person_name(name,
+                                             'voice',
                                              direction=self._voice_descriptor_data.direction)]
         else:
             return []
 
-    def _create_person_name(self, name, position=None, direction=None):
+    def _create_person_name(self, name, detection_type, position_2d=None, position_3d=None, direction=None):
         person_name = PersonName()
         person_name.name = name
+        person_name.detection_type = detection_type
         person_name.frame_id = self._direction_frame_id
-        if position is not None:
-            person_name.position.append(Point(x=position[0], y=position[1], z=position[2]))
+        if position_2d is not None:
+            person_name.position_2d.append(Point(x=position_2d[0], y=position_2d[1], z=position_2d[2]))
+        if position_3d is not None:
+            person_name.position_3d.append(Point(x=position_3d[0], y=position_3d[1], z=position_3d[2]))
         if direction is not None:
             person_name.direction.append(Vector3(x=direction[0], y=direction[1], z=direction[2]))
 

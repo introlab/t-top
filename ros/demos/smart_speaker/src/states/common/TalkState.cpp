@@ -23,7 +23,7 @@ void TalkState::enable(const string& parameter, const type_index& previousStageT
 {
     State::enable(parameter, previousStageType);
 
-    auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
+    auto faceFollowingDesire = make_unique<NearestFaceFollowingDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
     auto talkDesire = make_unique<TalkDesire>(generateText(parameter));
     m_talkDesireId = talkDesire->id();

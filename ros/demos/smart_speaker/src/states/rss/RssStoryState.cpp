@@ -45,7 +45,7 @@ void RssStoryState::enable(const string& parameter, const type_index& previousSt
     m_talkDesireId = MAX_DESIRE_ID;
     m_faceAnimationDesireId = MAX_DESIRE_ID;
 
-    auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
+    auto faceFollowingDesire = make_unique<NearestFaceFollowingDesire>();
 
     m_desireIds.emplace_back(faceFollowingDesire->id());
 
