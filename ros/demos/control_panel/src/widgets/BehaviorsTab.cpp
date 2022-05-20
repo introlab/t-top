@@ -38,88 +38,106 @@ void BehaviorsTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>
 
 void BehaviorsTab::onNearestFaceFollowingButtonToggled(bool checked)
 {
-    onButtonToggled(checked, [&]()
-    {
-        uncheckOtherButtons(m_nearestFaceFollowingButton);
+    onButtonToggled(
+        checked,
+        [&]()
+        {
+            uncheckOtherButtons(m_nearestFaceFollowingButton);
 
-        auto transaction = m_desireSet->beginTransaction();
-        removeAllMovementDesires(*m_desireSet);
+            auto transaction = m_desireSet->beginTransaction();
+            removeAllMovementDesires(*m_desireSet);
 
-        auto desire = make_unique<NearestFaceFollowingDesire>();
-        m_desireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    });
+            auto desire = make_unique<NearestFaceFollowingDesire>();
+            m_desireId = static_cast<qint64>(desire->id());
+            m_desireSet->addDesire(std::move(desire));
+        });
 }
 
 void BehaviorsTab::onSpecificFaceFollowingButtonToggled(bool checked)
 {
-    onButtonToggled(checked, [&]()
-    {
-        uncheckOtherButtons(m_specificFaceFollowingButton);
+    onButtonToggled(
+        checked,
+        [&]()
+        {
+            uncheckOtherButtons(m_specificFaceFollowingButton);
 
-        auto transaction = m_desireSet->beginTransaction();
-        removeAllMovementDesires(*m_desireSet);
+            auto transaction = m_desireSet->beginTransaction();
+            removeAllMovementDesires(*m_desireSet);
 
-        auto desire = make_unique<SpecificFaceFollowingDesire>(m_personNameLineEdit->text().toStdString());
-        m_desireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    });
+            auto desire = make_unique<SpecificFaceFollowingDesire>(m_personNameLineEdit->text().toStdString());
+            m_desireId = static_cast<qint64>(desire->id());
+            m_desireSet->addDesire(std::move(desire));
+        });
 }
 
 void BehaviorsTab::onSoundFollowingButtonToggled(bool checked)
 {
-    onButtonToggled(checked, [&]()
-    {
-        uncheckOtherButtons(m_soundFollowingButton);
+    onButtonToggled(
+        checked,
+        [&]()
+        {
+            uncheckOtherButtons(m_soundFollowingButton);
 
-        auto transaction = m_desireSet->beginTransaction();
-        removeAllMovementDesires(*m_desireSet);
+            auto transaction = m_desireSet->beginTransaction();
+            removeAllMovementDesires(*m_desireSet);
 
-        auto desire = make_unique<SoundFollowingDesire>();
-        m_desireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    });
+            auto desire = make_unique<SoundFollowingDesire>();
+            m_desireId = static_cast<qint64>(desire->id());
+            m_desireSet->addDesire(std::move(desire));
+        });
 }
 
 void BehaviorsTab::onDanceButtonToggled(bool checked)
 {
-    onButtonToggled(checked, [&]()
-    {
-        uncheckOtherButtons(m_danceButton);
+    onButtonToggled(
+        checked,
+        [&]()
+        {
+            uncheckOtherButtons(m_danceButton);
 
-        auto transaction = m_desireSet->beginTransaction();
-        removeAllMovementDesires(*m_desireSet);
+            auto transaction = m_desireSet->beginTransaction();
+            removeAllMovementDesires(*m_desireSet);
 
-        auto desire = make_unique<DanceDesire>();
-        m_desireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    });
+            auto desire = make_unique<DanceDesire>();
+            m_desireId = static_cast<qint64>(desire->id());
+            m_desireSet->addDesire(std::move(desire));
+        });
 }
 
 void BehaviorsTab::onExploreButtonToggled(bool checked)
 {
-    onButtonToggled(checked, [&]()
-    {
-        uncheckOtherButtons(m_exploreAllButton);
+    onButtonToggled(
+        checked,
+        [&]()
+        {
+            uncheckOtherButtons(m_exploreAllButton);
 
-        auto transaction = m_desireSet->beginTransaction();
-        removeAllMovementDesires(*m_desireSet);
+            auto transaction = m_desireSet->beginTransaction();
+            removeAllMovementDesires(*m_desireSet);
 
-        auto desire = make_unique<ExploreDesire>();
-        m_desireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    });
+            auto desire = make_unique<ExploreDesire>();
+            m_desireId = static_cast<qint64>(desire->id());
+            m_desireSet->addDesire(std::move(desire));
+        });
 }
 
 void BehaviorsTab::createUi()
 {
     m_nearestFaceFollowingButton = new QPushButton("Nearest Face Following");
     m_nearestFaceFollowingButton->setCheckable(true);
-    connect(m_nearestFaceFollowingButton, &QPushButton::toggled, this, &BehaviorsTab::onNearestFaceFollowingButtonToggled);
+    connect(
+        m_nearestFaceFollowingButton,
+        &QPushButton::toggled,
+        this,
+        &BehaviorsTab::onNearestFaceFollowingButtonToggled);
 
     m_specificFaceFollowingButton = new QPushButton("Specific Face Following");
     m_specificFaceFollowingButton->setCheckable(true);
-    connect(m_specificFaceFollowingButton, &QPushButton::toggled, this, &BehaviorsTab::onSpecificFaceFollowingButtonToggled);
+    connect(
+        m_specificFaceFollowingButton,
+        &QPushButton::toggled,
+        this,
+        &BehaviorsTab::onSpecificFaceFollowingButtonToggled);
 
     m_soundFollowingButton = new QPushButton("Sound Following");
     m_soundFollowingButton->setCheckable(true);
