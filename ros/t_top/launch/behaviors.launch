@@ -2,6 +2,7 @@
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
     <arg name="simulation"/>
+    <arg name="open_browser" default="true"/>
     <arg name="fullscreen_face" default="false"/>
 
     <!-- Telepresence -->
@@ -10,6 +11,7 @@
     <!-- Emotions -->
     <!-- See user_interface -->
     <include file="$(find t_top)/launch/behaviors/face.launch">
+        <arg name="open_browser" value="$(arg open_browser)"/>
         <arg name="fullscreen" value="$(arg fullscreen_face)"/>
     </include>
 

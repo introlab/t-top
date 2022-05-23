@@ -104,14 +104,33 @@ public:
 };
 
 
-class FaceFollowingDesire : public Desire
+class NearestFaceFollowingDesire : public Desire
 {
 public:
-    explicit FaceFollowingDesire(uint16_t intensity = 1);
-    ~FaceFollowingDesire() override = default;
+    explicit NearestFaceFollowingDesire(uint16_t intensity = 1);
+    ~NearestFaceFollowingDesire() override = default;
 
-    DECLARE_DESIRE_METHODS(FaceFollowingDesire)
+    DECLARE_DESIRE_METHODS(NearestFaceFollowingDesire)
 };
+
+
+class SpecificFaceFollowingDesire : public Desire
+{
+    std::string m_targetName;
+
+public:
+    explicit SpecificFaceFollowingDesire(std::string targetName, uint16_t intensity = 1);
+    ~SpecificFaceFollowingDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(SpecificFaceFollowingDesire)
+
+    const std::string& targetName() const;
+};
+
+inline const std::string& SpecificFaceFollowingDesire::targetName() const
+{
+    return m_targetName;
+}
 
 
 class TalkDesire : public Desire

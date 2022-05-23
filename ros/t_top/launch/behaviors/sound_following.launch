@@ -13,6 +13,7 @@
         <param name="min_activity" value="$(arg min_activity)"/>
         <param name="min_valid_source_pitch_rad" value="-1.4"/>
         <param name="max_valid_source_pitch_rad" value="1.4"/>
+        <param name="direction_frame_id" value="odas"/>
 
         <remap from="sst" to="audio_sst"/>
         <remap from="pose/filter_state" to="sound_following/filter_state"/>

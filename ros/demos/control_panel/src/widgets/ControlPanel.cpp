@@ -22,11 +22,7 @@ ControlPanel::ControlPanel(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> de
 
     createUi();
 
-    m_batterySubscriber = nodeHandle.subscribe(
-        "opencr/base_status",
-        1,
-        &ControlPanel::batterySubscriberCallback,
-        this);
+    m_batterySubscriber = nodeHandle.subscribe("opencr/base_status", 1, &ControlPanel::batterySubscriberCallback, this);
 }
 
 void ControlPanel::onVolumeChanged(int volume)

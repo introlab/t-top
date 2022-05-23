@@ -37,7 +37,7 @@ void WaitAnswerState::enable(const string& parameter, const type_index& previous
     m_transcriptReceived = false;
 
     auto speechToTextDesire = make_unique<SpeechToTextDesire>();
-    auto faceFollowingDesire = make_unique<FaceFollowingDesire>();
+    auto faceFollowingDesire = make_unique<NearestFaceFollowingDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
 
     m_desireIds.emplace_back(speechToTextDesire->id());

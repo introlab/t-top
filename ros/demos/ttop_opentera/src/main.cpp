@@ -56,7 +56,7 @@ Node::Node(ros::NodeHandle& nodeHandle)
     strategies.emplace_back(createTelepresenceStrategy(m_filterPool));
     strategies.emplace_back(createTeleoperationStrategy(m_filterPool));
     strategies.emplace_back(createSoundFollowingStrategy(m_filterPool));
-    strategies.emplace_back(createFaceFollowingStrategy(m_filterPool));
+    strategies.emplace_back(createNearestFaceFollowingStrategy(m_filterPool));
 
     m_hbbaLite = make_unique<HbbaLite>(
         m_desireSet,
@@ -119,7 +119,7 @@ bool Node::setMovementModeCb(
     }
     else if (request.data == "face")
     {
-        setMovementModeDesire<FaceFollowingDesire>();
+        setMovementModeDesire<NearestFaceFollowingDesire>();
     }
     else
     {

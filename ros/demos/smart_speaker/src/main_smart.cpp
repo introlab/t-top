@@ -51,7 +51,7 @@ void startNode(
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
     strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
-    strategies.emplace_back(createFaceFollowingStrategy(filterPool));
+    strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createTalkStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createGestureStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createDanceStrategy(filterPool));

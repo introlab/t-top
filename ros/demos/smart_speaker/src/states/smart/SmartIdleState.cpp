@@ -122,7 +122,7 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
 
 double SmartIdleState::personNameDistance(const person_identification::PersonName& name)
 {
-    if (name.position.size() == 0)
+    if (name.position_3d.size() == 0)
     {
         return numeric_limits<double>::infinity();
     }
@@ -132,7 +132,7 @@ double SmartIdleState::personNameDistance(const person_identification::PersonNam
         tf::StampedTransform transform;
         m_tfListener.lookupTransform(m_personDistanceFrameId, name.frame_id, ros::Time(0), transform);
 
-        tf::Vector3 p(name.position[0].x, name.position[0].y, name.position[0].z);
+        tf::Vector3 p(name.position_3d[0].x, name.position_3d[0].y, name.position_3d[0].z);
         p = transform * p;
         return p.length();
     }

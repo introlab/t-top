@@ -30,6 +30,34 @@ void FaceAnimationStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
+SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    ros::NodeHandle& nodeHandle)
+    : Strategy<SpecificFaceFollowingDesire>(
+          utility,
+          {{"motor", 1}},
+          {{"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+           {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_nodeHandle(nodeHandle)
+{
+    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
+}
+
+void SpecificFaceFollowingStrategy::onEnabling(const unique_ptr<Desire>& desire)
+{
+    Strategy<SpecificFaceFollowingDesire>::onEnabling(desire);
+
+    auto specificFaceFollowingDesire = dynamic_cast<SpecificFaceFollowingDesire*>(desire.get());
+    if (specificFaceFollowingDesire != nullptr)
+    {
+        std_msgs::String msg;
+        msg.data = specificFaceFollowingDesire->targetName();
+        m_targetNamePublisher.publish(msg);
+    }
+}
+
 TalkStrategy::TalkStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
     : Strategy<TalkDesire>(
           utility,
@@ -193,15 +221,23 @@ unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> fil
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createFaceFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<FaceFollowingDesire>>(
+    return make_unique<Strategy<NearestFaceFollowingDesire>>(
         utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
-            {"face_following/filter_state", FilterConfiguration::onOff()}},
+            {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
+    shared_ptr<FilterPool> filterPool,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility)
+{
+    return make_unique<SpecificFaceFollowingStrategy>(utility, move(filterPool), nodeHandle);
 }
 
 unique_ptr<BaseStrategy>
@@ -235,18 +271,16 @@ unique_ptr<BaseStrategy>
     return make_unique<PlaySoundStrategy>(utility, move(filterPool), nodeHandle);
 }
 
-unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility)
+unique_ptr<BaseStrategy> createTelepresenceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<TelepresenceDesire>>(
         utility,
         unordered_map<string, uint16_t>{{"sound", 1}},
-        unordered_map<string, FilterConfiguration>{
-            {"ego_noise_reduction/filter_state", FilterConfiguration::onOff()}
-        },
+        unordered_map<string, FilterConfiguration>{{"ego_noise_reduction/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility)
+unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<TeleoperationDesire>>(
         utility,

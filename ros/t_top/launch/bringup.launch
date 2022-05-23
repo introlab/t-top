@@ -6,6 +6,7 @@
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
     <arg name="simulation" default="false"/>
+    <arg name="open_browser" default="true"/>
     <arg name="fullscreen_face" default="false"/>
     <arg name="output" default="log"/>
 
@@ -24,6 +25,7 @@
         <arg name="language" value="$(arg language)"/>
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
         <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="open_browser" value="$(arg open_browser)"/>
         <arg name="fullscreen_face" value="$(arg fullscreen_face)"/>
     </include>
 
