@@ -38,8 +38,11 @@ class SpecificFaceFollowingNode(FaceFollowingNode):
                 if person_name.frame_id != self._direction_frame_id:
                     rospy.logerr(f'Invalid direction frame id ({person_name.frame_id} != {self._direction_frame_id})')
                     return
+                if len(person_name.direction) == 0:
+                    rospy.logerr(f'The direction must not be empty.')
+                    return
 
-                yaw, _ = vector_to_angles(person_name.direction)
+                yaw, _ = vector_to_angles(person_name.direction[0])
                 head_image_y = person_name.position_2d.y
                 self._update(yaw, head_image_y)
                 break
