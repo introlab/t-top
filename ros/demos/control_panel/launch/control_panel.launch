@@ -8,6 +8,7 @@
     <include file="$(find t_top)/launch/bringup.launch">
         <arg name="language" value="$(arg language)"/>
         <arg name="slam" value="false"/>
+        <arg name="open_browser" value="false"/>
         <arg name="output" value="$(arg output)"/>
     </include>
 </launch>
