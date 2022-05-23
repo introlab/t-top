@@ -205,7 +205,7 @@ class PersonIdentificationNode:
         person_name.detection_type = detection_type
         person_name.frame_id = self._direction_frame_id
         if position_2d is not None:
-            person_name.position_2d.append(Point(x=position_2d[0], y=position_2d[1], z=position_2d[2]))
+            person_name.position_2d.append(position_2d)
         if position_3d is not None:
             person_name.position_3d.append(Point(x=position_3d[0], y=position_3d[1], z=position_3d[2]))
         if direction is not None:
