@@ -37,7 +37,8 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     : Strategy<SpecificFaceFollowingDesire>(
           utility,
           {{"motor", 1}},
-          {{"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
+          {{"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+           {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
