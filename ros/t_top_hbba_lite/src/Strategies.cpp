@@ -42,7 +42,7 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
           move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("specific_face_following/target_name", 1);
+    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
 }
 
 void SpecificFaceFollowingStrategy::onEnabling(const unique_ptr<Desire>& desire)
