@@ -1,0 +1,1 @@
+from ego_noise.trainers.ego_noise_autoencoder_extractor_trainer import EgoNoiseAutoencoderTrainer
