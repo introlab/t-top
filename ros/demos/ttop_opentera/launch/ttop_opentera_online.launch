@@ -1,8 +1,6 @@
 <launch>
-    <arg name="output" default="log"/>
 
     <include file="$(find ttop_opentera)/launch/ttop_opentera.launch">
         <arg name="online" value="true"/>
-        <arg name="output" value="$(arg output)"/>
     </include>
 </launch>

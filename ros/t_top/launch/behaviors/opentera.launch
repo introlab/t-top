@@ -4,8 +4,6 @@
     <arg name="signaling_server_password" default="abc"/>
     <arg name="is_stand_alone" default="false"/>
 
-    <arg name="output" default="log"/>
-
     <!-- Signaling server (if stand_alone)-->
     <include if="$(arg is_stand_alone)" file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
         <arg name="signaling_server_port" value="$(arg signaling_server_port)" />
@@ -15,19 +13,16 @@
         <arg name="use_tls" value="true" />
         <arg name="certificate" value="~/.ros/opentera/certs/server-cert.pem" />
         <arg name="key" value="~/.ros/opentera/certs/server-key.pem" />
-        <arg name="output" value="$(arg output)" />
     </include>
 
     <!-- OpenTera Client (if not stand_alone)-->
     <include unless="$(arg is_stand_alone)" file="$(find opentera_client_ros)/launch/client.launch">
         <arg name="opentera_client_config_file" value="~/.ros/opentera/client_config.json"/>
-        <arg name="output" value="$(arg output)"/>
     </include>
 
     <!-- Front camera -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_stream_client.launch">
         <arg name="name" value="topic_streamer1"/>
-        <arg name="output" value="$(arg output)"/>
         <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
         <arg name="can_send_audio_stream" value="true"/>
         <arg name="can_receive_audio_stream" value="true"/>
@@ -48,7 +43,6 @@
     <!-- Data Channel  -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_data_channel_client.launch">
         <arg name="name" value="data_streamer"/>
-        <arg name="output" value="$(arg output)"/>
         <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
 
         <arg name="server_url" value="https://localhost:$(arg signaling_server_port)"/>
@@ -61,7 +55,6 @@
     <!-- Json Message Handler -->
     <include file="$(find opentera_webrtc_ros)/launch/ros_json_data_handler.launch">
         <arg name="name" value="json_data_handler"/>
-        <arg name="output" value="$(arg output)"/>
         <arg name="input_topic" value="/webrtc_data_incoming"/>
         <arg name="linear_multiplier" value="0.5"/>
         <arg name="angular_multiplier" value="0.35"/>
@@ -98,7 +91,7 @@
     <node name="robot_status" type="robot_status.py" pkg="t_top" />
 
     <!-- OpenTera Robot GUI -->
-    <node pkg="opentera_webrtc_robot_gui" type="opentera_webrtc_robot_gui_node" name="robot_gui" output="$(arg output)" respawn="true">
+    <node pkg="opentera_webrtc_robot_gui" type="opentera_webrtc_robot_gui_node" name="robot_gui" respawn="true">
         <remap from="/front_camera/image_raw" to="/camera/color/image_raw"/>
     </node>
 
