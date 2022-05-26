@@ -75,9 +75,14 @@ class PersonIdentificationNode:
                 self._face_voice_descriptors_by_name[name] = np.array(descriptors['face'] + descriptors['voice'])
 
     def _video_analysis_cb(self, msg):
+        if not msg.contains_3d_positions:
+            rospy.logerr('The video analysis must contain 3d positions.')
+            return
+
         with self._descriptors_lock:
             for object in msg.objects:
-                if len(object.face_descriptor) == 0 or len(object.person_pose_3d) == 0 or len(object.person_pose_confidence) == 0 \
+                if len(object.face_descriptor) == 0 or len(object.person_pose_2d) == 0 or len(object.person_pose_3d) == 0 \
+                        or len(object.person_pose_confidence) == 0 \
                         or object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < self._nose_confidence_threshold:
                     continue
 

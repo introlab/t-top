@@ -15,6 +15,9 @@
         <arg name="depth_fps" value="15"/>
 
         <arg name="filters" value="pointcloud"/>
+
+        <arg name="enable_gyro" value="false"/>
+        <arg name="enable_accel" value="false"/>
     </include>
 
     <node unless="$(arg use_echo_cancellation)" pkg="audio_utils" type="capture_node" name="capture_node" output="screen">

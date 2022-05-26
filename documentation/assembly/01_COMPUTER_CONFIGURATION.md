@@ -50,7 +50,8 @@ sudo apt install -y python3-rosinstall \
     ros-noetic-ddynamic-reconfigure \
     ros-noetic-imu-filter-madgwick \
     ros-noetic-cv-bridge \
-    ros-noetic-rtabmap-ros
+    ros-noetic-rtabmap-ros \
+    ros-noetic-cv-camera
 ```
 
 ### D. Install System Dependancies

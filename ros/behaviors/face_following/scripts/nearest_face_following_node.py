@@ -24,6 +24,9 @@ class NearestFaceFollowingNode(FaceFollowingNode):
     def _video_analysis_cb(self, msg):
         if self._movement_commands.is_filtering_all_messages:
             return
+        if not msg.contains_3d_positions:
+            rospy.logerr('The video analysis must contain 3d positions.')
+            return
 
         yaw, head_image_y = self._find_nearest_face_yaw_head_image_y(msg.objects, msg.header)
         self._update(yaw, head_image_y)

@@ -61,7 +61,7 @@ class VideoAnalysisVisualizerNode:
         object_image = self._cv_bridge.imgmsg_to_cv2(o.object_image, 'rgb8')
         pose_image = None
         face_image = None
-        if len(o.person_pose_3d) > 0:
+        if len(o.person_pose_2d) > 0:
             pose_image = self._cv_bridge.imgmsg_to_cv2(o.person_pose_image, 'rgb8')
             face_image = self._cv_bridge.imgmsg_to_cv2(o.face_image, 'rgb8')
 
