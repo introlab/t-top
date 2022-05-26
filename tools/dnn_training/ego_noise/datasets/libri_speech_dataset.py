@@ -39,4 +39,4 @@ class LibriSpeechDataset(Dataset):
         if self._transforms is not None:
             waveform, _ = self._transforms(waveform, metadata)
 
-        return waveform, waveform
+        return waveform, waveform.clone()

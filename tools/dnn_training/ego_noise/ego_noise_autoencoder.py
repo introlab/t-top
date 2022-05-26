@@ -1,5 +1,19 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+
+class ReLuLinearGrad(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x):
+        return F.relu(x)
+
+    @staticmethod
+    def backward(ctx, grad_out):
+        return grad_out
+
+
+relu_linear_grad = ReLuLinearGrad.apply
 
 
 class PcaEgoNoiseAutoEncoderModel(nn.Module):
@@ -10,7 +24,7 @@ class PcaEgoNoiseAutoEncoderModel(nn.Module):
         self._decoder = nn.Linear(embedding_size, input_size, bias=False)
 
     def forward(self, x):
-        return F.relu(self._decoder(self._encoder(x)))
+        return relu_linear_grad(self._decoder(self._encoder(x)))
 
 
 class TwoLayerNoiseAutoEncoderModel(nn.Module):
@@ -25,9 +39,8 @@ class TwoLayerNoiseAutoEncoderModel(nn.Module):
         self._decoder = nn.Sequential(
             nn.Linear(embedding_size, 2 * embedding_size),
             nn.ReLU(inplace=True),
-            nn.Linear(2 * embedding_size, input_size),
-            nn.ReLU(inplace=True),
+            nn.Linear(2 * embedding_size, input_size)
         )
 
     def forward(self, x):
-        return self._decoder(self._encoder(x))
+        return relu_linear_grad(self._decoder(self._encoder(x)))
