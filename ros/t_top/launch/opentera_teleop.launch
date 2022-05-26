@@ -6,6 +6,7 @@
     <arg name="rviz" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="is_stand_alone" default="false"/>
+    <arg name="verify_ssl" default="true"/>
 
 
     <!-- Platform nodes -->
@@ -35,6 +36,7 @@
 
     <include file="$(find t_top)/launch/behaviors/opentera.launch">
         <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
     </include>
 
     <include file="$(find t_top)/launch/behaviors/sound_following.launch">

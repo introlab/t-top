@@ -3,6 +3,7 @@
     <arg name="signaling_server_port" default="8080"/>
     <arg name="signaling_server_password" default="abc"/>
     <arg name="is_stand_alone" default="false"/>
+    <arg name="verify_ssl" default="true"/>
 
     <!-- Signaling server (if stand_alone)-->
     <include if="$(arg is_stand_alone)" file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
@@ -37,7 +38,7 @@
         <arg name="input_camera_topic" value="/camera/color/image_raw"/>
         <arg name="input_audio_topic" value="/audio_webrtc_outgoing_signed_16_48000"/>
         <arg name="output_audio_mixed_topic" value="/audio_webrtc_incoming_signed_16_48000"/>
-        <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
     </include>
 
     <!-- Data Channel  -->
