@@ -50,7 +50,7 @@
         <arg name="client_name" value="Robot Data Channel"/>
         <arg name="room_name" value="Teleop"/>
         <arg name="room_password" value="$(arg signaling_server_password)"/>
-        <arg name="verify_ssl" value="$(eval not arg('is_stand_alone'))"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
     </include>
 
     <!-- Json Message Handler -->
