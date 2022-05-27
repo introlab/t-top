@@ -1,11 +1,11 @@
 <launch>
-    <arg name="output" default="log"/>
     <arg name="online" default="false"/>
+    <arg name="verify_ssl" default="false"/>
 
     <include file="$(find t_top)/launch/opentera_teleop.launch">
         <arg name="is_stand_alone" value="$(eval not arg('online'))"/>
-        <arg name="output" value="$(arg output)"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
     </include>
 
-    <node pkg="ttop_opentera" type="ttop_opentera_node" name="ttop_opentera_node" output="$(arg output)" launch-prefix="bash -c 'sleep 20; $0 $@' "/>
+    <node pkg="ttop_opentera" type="ttop_opentera_node" name="ttop_opentera_node" launch-prefix="bash -c 'sleep 20; $0 $1 $2 $3 $4 $5 $6' "/>
 </launch>

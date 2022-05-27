@@ -1,8 +1,8 @@
 <launch>
-    <arg name="output" default="log"/>
+    <arg name="verify_ssl" default="true"/>
 
     <include file="$(find ttop_opentera)/launch/ttop_opentera.launch">
         <arg name="online" value="true"/>
-        <arg name="output" value="$(arg output)"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
     </include>
 </launch>

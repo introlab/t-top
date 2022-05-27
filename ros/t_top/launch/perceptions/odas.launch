@@ -5,10 +5,8 @@
     <arg name="rviz_cfg" default="-d $(find odas_ros)/config/rviz/odas_rviz.rviz"/>
     <arg name="use_echo_cancellation" default="false"/>
 
-    <arg name="output" default="log"/>
-
     <!-- ODAS -->
-    <node unless="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_server_node.py" name="odas_server_node" respawn="true" output="$(arg output)">
+    <node unless="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_server_node.py" name="odas_server_node" respawn="true">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 
@@ -17,8 +15,8 @@
         <remap from="sst" to="audio_sst"/>
         <remap from="sss" to="audio_signed_16_44100"/>
     </node>
-    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_echocancel_filter_server_node.py" name="odas_server_node" respawn="true" output="$(arg output)">
-        <param name="configuration_path" value="$(arg odas_configuration_ec_path)"/>
+    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_echocancel_filter_server_node.py" name="odas_server_node" respawn="true">
+        <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 
         <remap from="raw" to="odas_audio_signed_32_44100"/>
