@@ -3,8 +3,9 @@
     <arg name="speaking_rate" default="0.85"/> <!-- Range: [0.25, 4.0] -->
     <arg name="single_task_per_person" default="false"/>
     <arg name="record_session" default="false"/>
+    <arg name="use_after_task_delay_duration_topic" default="true"/>
 
-    <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 45; $0 $@' ">
+    <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 45; $0 $1 $2 $3 $4 $5 $6' ">
         <param name="language" value="$(arg language)"/>
 
         <param name="person_distance_threshold" value="1.5"/>
@@ -14,7 +15,7 @@
         <param name="video_analysis_message_count_threshold" value="5"/>
         <param name="video_analysis_message_count_tolerance" value="2"/>
 
-        <param name="use_after_task_delay_duration_topic" value="true"/>
+        <param name="use_after_task_delay_duration_topic" value="$(arg use_after_task_delay_duration_topic)"/>
         <param name="after_task_delay_duration_s" value="30"/> <!-- Useless when use_after_task_delay_duration_topic=true -->
         <param name="single_task_per_person" value="$(arg single_task_per_person)"/>
 

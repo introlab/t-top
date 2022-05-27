@@ -1,9 +1,9 @@
 <launch>
     <arg name="use_echo_cancellation" default="false"/>
-    <arg name="echo_cancellation_source" default="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input" />
-    <arg name="echo_cancellation_sink" default="alsa_output.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.analog-surround-40" />
-    <arg name="echo_cancellation_dest" default="odas_echo_cancelled" />
-    <arg name="ec_volume_percent" default="90" />
+    <arg name="pulse_audio_source"/>
+    <arg name="pulse_audio_sink"/>
+    <arg name="echo_cancellation_dest"/>
+    <arg name="ec_volume_percent"/>
 
     <include file="$(find realsense2_camera)/launch/rs_camera.launch">
         <arg name="color_width" value="1280"/>
@@ -17,36 +17,24 @@
         <arg name="filters" value="pointcloud"/>
     </include>
 
-    <node unless="$(arg use_echo_cancellation)" pkg="audio_utils" type="capture_node" name="capture_node" output="screen">
-        <param name="backend" value="alsa"/>
-        <param name="device" value="default"/>
+    <!-- Sound interface echo cancellation -->
+    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg pulse_audio_source) $(arg pulse_audio_sink) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
+
+    <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen" launch-prefix="bash -c 'sleep 5; $0 $1 $2 $3 $4 $5 $6' ">
+        <param name="backend" value="pulse_audio"/>
+        <param unless="$(arg use_echo_cancellation)" name="device" value="$(arg pulse_audio_source)"/>
+        <param if="$(arg use_echo_cancellation)" name="device" value="$(arg echo_cancellation_dest)_ec"/>
         <param name="format" value="signed_32"/>
         <param name="channel_count" value="16"/>
         <param name="sampling_frequency" value="44100"/>
         <param name="frame_sample_count" value="2048"/>
         <param name="merge" value="false"/>
         <param name="gain" value="1.0"/>
-        <param name="latency_us" value="40000"/>
 
         <remap from="audio_out" to="before_ego_audio_signed_32_44100"/>
-    </node>
 
-    <!-- Sound interface echo cancellation -->
-    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg echo_cancellation_source) $(arg echo_cancellation_sink) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
-
-    <node if="$(arg use_echo_cancellation)" pkg="audio_utils" type="capture_node" name="capture_node" output="screen">
-        <param name="backend" value="pulse_audio"/>
-        <param name="device" value="$(arg echo_cancellation_dest)"/>
-        <param name="format" value="signed_32"/>
-        <param name="channel_count" value="16"/>
-        <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="2048"/>
-        <param name="merge" value="false"/>
-        <param name="gain" value="1.0"/>
         <rosparam param="channel_map">
             [front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]
-        </rosparam>
-
-        <remap from="audio_out" to="before_ego_audio_signed_32_44100"/>
+        </rosparam>        
     </node>
 </launch>
