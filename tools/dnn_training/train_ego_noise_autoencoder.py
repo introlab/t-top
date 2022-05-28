@@ -3,7 +3,8 @@ import os
 
 import torch
 
-from ego_noise.ego_noise_autoencoder import PcaEgoNoiseAutoEncoderModel, TwoLayerNoiseAutoEncoderModel
+from ego_noise.ego_noise_autoencoder import PcaEgoNoiseAutoEncoderModel, TwoLayerNoiseAutoEncoderModel, \
+    FourLayerNoiseAutoEncoderModel
 from ego_noise.trainers import EgoNoiseAutoencoderTrainer
 
 
@@ -13,7 +14,8 @@ def main():
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
     parser.add_argument('--dataset_root', type=str, help='Choose the dataset root path (LibriSpeech)', required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
-    parser.add_argument('--model_type', choices=['pca', 'two_layer'], help='Choose the model type', required=True)
+    parser.add_argument('--model_type', choices=['pca', 'two_layer', 'four_layer'],
+                        help='Choose the model type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the margin', required=True)
     parser.add_argument('--sample_rate', type=int, help='Set the sample rate', required=True)
     parser.add_argument('--n_fft', type=int, help='Set the N FFT', required=True)
@@ -52,6 +54,8 @@ def create_model(model_type, n_fft, embedding_size):
         return PcaEgoNoiseAutoEncoderModel(input_size, embedding_size)
     elif model_type == 'two_layer':
         return TwoLayerNoiseAutoEncoderModel(input_size, embedding_size)
+    elif model_type == 'four_layer':
+        return FourLayerNoiseAutoEncoderModel(input_size, embedding_size)
     else:
         raise ValueError('Invalid model type')
 
