@@ -47,6 +47,8 @@ This node uses RGB-D images, so the 3D positions are set.
 
 #### Subscribed Topics
  - `image_raw` ([sensor_msgs/Image](http://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/Image.html)): The color image.
+ - `depth_image_raw` ([sensor_msgs/Image](http://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/Image.html)): The depth image.
+ - `depth_camera_info` ([sensor_msgs/CameraInfo](http://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/CameraInfo.html)): The depth camera info used to preject 2D point in 3D.
 
 #### Published Topics
  - `video_analysis` ([video_analyzer/VideoAnalysis](msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
