@@ -29,6 +29,8 @@ class YoloV4Prediction:
         self.class_index = torch.argmax(class_probabilities, dim=0).item()
         self.class_probabilities = class_probabilities.tolist()
 
+        self.descriptor = []
+
 
 class YoloV4(DnnModel):
     def __init__(self, confidence_threshold=0.99, nms_threshold=0.5, inference_type=None):

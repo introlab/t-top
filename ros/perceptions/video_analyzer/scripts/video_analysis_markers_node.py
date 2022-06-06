@@ -44,6 +44,10 @@ class VideoAnalysisMarkersNode:
         return marker
 
     def _video_analysis_cb(self, msg):
+        if not msg.contains_3d_positions:
+            rospy.logerr('The video analysis must contain 3d positions.')
+            return
+
         self._delete_markers()
 
         markerArray = MarkerArray()

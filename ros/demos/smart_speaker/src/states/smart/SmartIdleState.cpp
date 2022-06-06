@@ -81,6 +81,11 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
     {
         return;
     }
+    if (!msg->contains_3d_positions)
+    {
+        ROS_ERROR("The video analysis must contain 3d positions.");
+        return;
+    }
 
     tf::StampedTransform transform;
     try
