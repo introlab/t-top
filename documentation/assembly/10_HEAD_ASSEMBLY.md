@@ -78,3 +78,5 @@
    the following picture.
 
 ![Cable Rolling](images/assemblies/10B%20cable%20rolling.jpg)
+
+TODO Add wide angle camera steps
