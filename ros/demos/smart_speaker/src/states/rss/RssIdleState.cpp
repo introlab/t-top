@@ -28,7 +28,7 @@ void RssIdleState::enable(const string& parameter, const type_index& previousSta
     State::enable(parameter, previousStageType);
 
     auto robotNameDetectorDesire = make_unique<RobotNameDetectorDesire>();
-    auto videoAnalyzerDesire = make_unique<SlowVideoAnalyzerDesire>();
+    auto videoAnalyzerDesire = make_unique<SlowVideoAnalyzer3dDesire>();
     auto exploreDesire = make_unique<ExploreDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
 

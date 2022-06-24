@@ -1,6 +1,7 @@
 <launch>
     <arg name="visualization" default="false"/>
     <arg name="simulation" default="false"/>
+    <arg name="camera_2d_wide_enabled" default="true"/>
     <arg name="use_echo_cancellation" default="true"/>
     <arg name="ec_volume_percent" default="90" />
     <arg name="rviz" default="false"/>
@@ -24,6 +25,7 @@
     </include>
 
     <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
     </include>

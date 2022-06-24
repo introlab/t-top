@@ -13,8 +13,8 @@
     </node>
 
     <node name="image_uncompress" pkg="image_transport" type="republish" output="screen" respawn="true"
-        args="compressed in:=/camera/color/image_raw raw out:=/camera/color/image_raw"/>
+        args="compressed in:=/camera_3d/color/image_raw raw out:=/camera_3d/color/image_raw"/>
 
-    <name="rqt_image_view" type="rqt_image_view" pkg="rqt_image_view" args="/camera/color/image_raw" output="screen" respawn="true"/>
+    <name="rqt_image_view" type="rqt_image_view" pkg="rqt_image_view" args="/camera_3d/color/image_raw" output="screen" respawn="true"/>
 
 </launch>

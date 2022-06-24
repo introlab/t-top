@@ -24,41 +24,68 @@ class PerceptionsTab : public QWidget
     Q_OBJECT
 
     ros::NodeHandle& m_nodeHandle;
-    ros::Subscriber m_analyzedImageSubscriber;
+    ros::Subscriber m_analyzedImage3dSubscriber;
+    ros::Subscriber m_analyzedImage2dWideSubscriber;
     ros::Subscriber m_audioAnalysisSubscriber;
     ros::Subscriber m_robotNameDetectedSubscriber;
     ros::Subscriber m_personNamesSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
-    QVariant m_videoAnalyzerDesireId;
+    QVariant m_videoAnalyzer3dDesireId;
+    QVariant m_videoAnalyzer2dWideDesireId;
     QVariant m_audioAnalyzerDesireId;
     QVariant m_robotNameDetectorDesireId;
 
+    bool m_camera2dWideEnabled;
+
 public:
-    PerceptionsTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    PerceptionsTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent = nullptr);
 
 private slots:
-    void onVideoAnalyzerButtonToggled(bool checked);
+    void onVideoAnalyzer3dButtonToggled(bool checked);
+    void onVideoAnalyzer2dWideButtonToggled(bool checked);
     void onAudioAnalyzerButtonToggled(bool checked);
     void onRobotNameDetectorButtonToggled(bool checked);
 
 private:
-    void analyzedImageSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
+    void analyzedImage3dSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
+    void analyzedImage2dWideSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
     void audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
     void robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg);
     void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
 
     void createUi();
 
+    template <class D>
+    void toggleDesire(bool checked, QVariant& desireId);
+
     // UI members
-    QPushButton* m_videoAnalyzerButton;
+    QPushButton* m_videoAnalyzer3dButton;
+    QPushButton* m_videoAnalyzer2dWideButton;
     QPushButton* m_audioAnalyzerButton;
     QPushButton* m_robotNameDetectorButton;
 
-    ImageDisplay* m_videoAnalyzerImageDisplay;
+    ImageDisplay* m_videoAnalyzer3dImageDisplay;
+    ImageDisplay* m_videoAnalyzer2dWideImageDisplay;
     QLineEdit* m_soundClassesLineEdit;
     QLineEdit* m_robotNameDetectionTimeLineEdit;
     QLineEdit* m_identifiedPersonsLineEdit;
 };
+
+template <class D>
+void PerceptionsTab::toggleDesire(bool checked, QVariant& desireId)
+{
+    if (checked)
+    {
+        auto desire = std::make_unique<D>();
+        desireId = static_cast<qint64>(desire->id());
+        m_desireSet->addDesire(std::move(desire));
+    }
+    else if (desireId.isValid())
+    {
+        m_desireSet->removeDesire(desireId.toULongLong());
+        desireId.clear();
+    }
+}
 
 #endif

@@ -4,9 +4,9 @@
     <arg unless="$(arg localization)" name="rtabmap_args" default="-d"/>
 
     <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync">
-        <remap from="rgb/image" to="/camera/color/image_raw"/>
-        <remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/>
-        <remap from="rgb/camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+        <remap from="rgb/image" to="/camera_3d/color/image_raw"/>
+        <remap from="depth/image" to="/camera_3d/aligned_depth_to_color/image_raw"/>
+        <remap from="rgb/camera_info" to="/camera_3d/aligned_depth_to_color/camera_info"/>
 
         <param name="approx_sync" value="true"/>
     </node>

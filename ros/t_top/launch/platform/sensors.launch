@@ -1,10 +1,12 @@
 <launch>
+    <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="pulse_audio_source"/>
     <arg name="pulse_audio_sink"/>
     <arg name="echo_cancellation_dest"/>
     <arg name="ec_volume_percent"/>
 
+    <!-- Camera 3d -->
     <include file="$(find realsense2_camera)/launch/rs_camera.launch">
         <arg name="color_width" value="1280"/>
         <arg name="color_height" value="720"/>
@@ -18,9 +20,43 @@
 
         <arg name="enable_gyro" value="false"/>
         <arg name="enable_accel" value="false"/>
+
+        <arg name="camera" value="camera_3d"/>
     </include>
 
-    <!-- Sound interface echo cancellation -->
+
+    <!-- Camera 2d -->
+    <node if="$(arg camera_2d_wide_enabled)" pkg="cv_camera" type="cv_camera_node" name="cv_camera_node">
+        <param name="rate" value="5"/>
+        <param name="device_path" value="/dev/camera_2d_wide"/>
+        <param name="image_width" value="1920"/>
+        <param name="image_height" value="1080"/>
+
+        <remap from="cv_camera_node/image_raw" to="camera_2d_wide/image_full_hd"/>
+        <remap from="cv_camera_node/camera_info" to="camera_2d_wide/camera_info_full_hd"/>
+    </node>
+
+    <node if="$(arg camera_2d_wide_enabled)" pkg="nodelet" type="nodelet" args="manager" name="camera_2d_nodelet_manager"/>
+    <node if="$(arg camera_2d_wide_enabled)" pkg="nodelet" type="nodelet" args="load image_proc/resize camera_2d_nodelet_manager" name="camera_2d_resize">
+        <param name="interpolation" value="0"/> <!-- Nearest neighbor -->
+        <param name="use_scale" value="false"/>
+        <param name="width" value="1280"/>
+        <param name="height" value="720"/>
+
+        <remap from="image" to="camera_2d_wide/image_full_hd"/>
+        <remap from="~image" to="camera_2d_wide/image"/>
+        <remap from="~camera_info" to="camera_2d_wide/camera_info"/>
+    </node>
+    <node if="$(arg camera_2d_wide_enabled)" pkg="nodelet" type="nodelet" args="load image_proc/rectify camera_2d_nodelet_manager" name="camera_2d_rectify">
+        <param name="interpolation" value="0"/> <!-- Nearest neighbor -->
+
+        <remap from="image_mono" to="camera_2d_wide/image"/>
+        <remap from="camera_info" to="camera_2d_wide/image"/>
+        <remap from="image_rect" to="camera_2d_wide/image_rect"/>
+    </node>
+
+
+    <!-- Sound -->
     <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg pulse_audio_source) $(arg pulse_audio_sink) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
 
     <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen" launch-prefix="bash -c 'sleep 5; $0 $1 $2 $3 $4 $5 $6' ">
@@ -38,6 +74,6 @@
 
         <rosparam param="channel_map">
             [front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]
-        </rosparam>        
+        </rosparam>
     </node>
 </launch>

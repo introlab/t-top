@@ -43,7 +43,7 @@ void SmartIdleState::enable(const string& parameter, const type_index& previousS
 {
     State::enable(parameter, previousStageType);
 
-    auto videoAnalyzerDesire = make_unique<FastVideoAnalyzerDesire>();
+    auto videoAnalyzerDesire = make_unique<FastVideoAnalyzer3dDesire>();
     auto gestureDesire = make_unique<GestureDesire>("origin_all");
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
 

@@ -2,6 +2,7 @@
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
@@ -10,11 +11,13 @@
     <arg name="fullscreen_face" default="false"/>
 
     <include file="$(find t_top)/launch/platform.launch">
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
     </include>
 
     <include file="$(find t_top)/launch/perceptions.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="slam" value="$(arg slam)"/>

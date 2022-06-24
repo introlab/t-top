@@ -1,5 +1,6 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="camera_2d_wide_enabled"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
     <arg name="visualization" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
@@ -10,6 +11,7 @@
 
     <!-- Video Analyzer -->
     <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
         <arg name="visualization" value="$(arg visualization)"/>
     </include>

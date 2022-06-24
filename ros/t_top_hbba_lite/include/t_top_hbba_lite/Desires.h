@@ -15,33 +15,62 @@ public:
 };
 
 
-class SlowVideoAnalyzerDesire : public Desire
+class SlowVideoAnalyzer3dDesire : public Desire
 {
 public:
-    explicit SlowVideoAnalyzerDesire(uint16_t intensity = 1);
-    ~SlowVideoAnalyzerDesire() override = default;
+    explicit SlowVideoAnalyzer3dDesire(uint16_t intensity = 1);
+    ~SlowVideoAnalyzer3dDesire() override = default;
 
-    DECLARE_DESIRE_METHODS(SlowVideoAnalyzerDesire)
+    DECLARE_DESIRE_METHODS(SlowVideoAnalyzer3dDesire)
 };
 
 
-class FastVideoAnalyzerDesire : public Desire
+class FastVideoAnalyzer3dDesire : public Desire
 {
 public:
-    explicit FastVideoAnalyzerDesire(uint16_t intensity = 1);
-    ~FastVideoAnalyzerDesire() override = default;
+    explicit FastVideoAnalyzer3dDesire(uint16_t intensity = 1);
+    ~FastVideoAnalyzer3dDesire() override = default;
 
-    DECLARE_DESIRE_METHODS(FastVideoAnalyzerDesire)
+    DECLARE_DESIRE_METHODS(FastVideoAnalyzer3dDesire)
 };
 
 
-class FastVideoAnalyzerWithAnalyzedImageDesire : public Desire
+class FastVideoAnalyzer3dWithAnalyzedImageDesire : public Desire
 {
 public:
-    explicit FastVideoAnalyzerWithAnalyzedImageDesire(uint16_t intensity = 1);
-    ~FastVideoAnalyzerWithAnalyzedImageDesire() override = default;
+    explicit FastVideoAnalyzer3dWithAnalyzedImageDesire(uint16_t intensity = 1);
+    ~FastVideoAnalyzer3dWithAnalyzedImageDesire() override = default;
 
-    DECLARE_DESIRE_METHODS(FastVideoAnalyzerWithAnalyzedImageDesire)
+    DECLARE_DESIRE_METHODS(FastVideoAnalyzer3dWithAnalyzedImageDesire)
+};
+
+class SlowVideoAnalyzer2dWideDesire : public Desire
+{
+public:
+    explicit SlowVideoAnalyzer2dWideDesire(uint16_t intensity = 1);
+    ~SlowVideoAnalyzer2dWideDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(SlowVideoAnalyzer2dWideDesire)
+};
+
+
+class FastVideoAnalyzer2dWideDesire : public Desire
+{
+public:
+    explicit FastVideoAnalyzer2dWideDesire(uint16_t intensity = 1);
+    ~FastVideoAnalyzer2dWideDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(FastVideoAnalyzer2dWideDesire)
+};
+
+
+class FastVideoAnalyzer2dWideWithAnalyzedImageDesire : public Desire
+{
+public:
+    explicit FastVideoAnalyzer2dWideWithAnalyzedImageDesire(uint16_t intensity = 1);
+    ~FastVideoAnalyzer2dWideWithAnalyzedImageDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(FastVideoAnalyzer2dWideWithAnalyzedImageDesire)
 };
 
 

@@ -1,11 +1,18 @@
 <launch>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
+    <arg name="camera_2d_wide_enabled" default="true"/>
 
-    <node pkg="control_panel" type="control_panel_node" name="control_panel_node" output="screen"/>
+    <node pkg="control_panel" type="control_panel_node" name="control_panel_node" output="screen">
+        <param name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+    </node>
 
     <include file="$(find t_top)/launch/bringup.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="slam" value="false"/>
         <arg name="open_browser" value="false"/>
+
+        <remap from="analysed_image_3d" to="camera_3d/analysed_image"/>
+        <remap from="analysed_image_2d_wide" to="camera_2d_wide/analysed_image"/>
     </include>
 </launch>

@@ -21,13 +21,17 @@ int main(int argc, char* argv[])
 {
     ros::init(argc, argv, "control_panel_node");
     ros::NodeHandle nodeHandle;
+    ros::NodeHandle privateNodeHandle("~");
+
+    bool camera2dWideEnabled = false;
+    privateNodeHandle.param("camera_2d_wide_enabled", camera2dWideEnabled, false);
 
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));
-    strategies.emplace_back(createFastVideoAnalyzerWithAnalyzedImageStrategy(filterPool));
+    strategies.emplace_back(createFastVideoAnalyzer3dWithAnalyzedImageStrategy(filterPool));
     strategies.emplace_back(createAudioAnalyzerStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
@@ -40,11 +44,16 @@ int main(int argc, char* argv[])
     strategies.emplace_back(createGestureStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createDanceStrategy(filterPool));
 
+    if (camera2dWideEnabled)
+    {
+        strategies.emplace_back(createFastVideoAnalyzer2dWideWithAnalyzedImageStrategy(filterPool));
+    }
+
     auto solver = make_unique<GecodeSolver>();
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
     QApplication a(argc, argv);
-    ControlPanel controlPanel(nodeHandle, desireSet);
+    ControlPanel controlPanel(nodeHandle, desireSet, camera2dWideEnabled);
     controlPanel.show();
 
     ros::AsyncSpinner spinner(1);

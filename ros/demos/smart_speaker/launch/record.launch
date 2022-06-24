@@ -1,5 +1,5 @@
 <launch>
 
-    <node pkg="rosbag" type="record" name="record_session" args="-o $(env HOME)/.ros/ttop/recordings/session /camera/color/image_raw/compressed /audio_signed_16_44100"/>
+    <node pkg="rosbag" type="record" name="record_session" args="-o $(env HOME)/.ros/ttop/recordings/session /camera_3d/color/image_raw/compressed /audio_signed_16_44100"/>
 
 </launch>

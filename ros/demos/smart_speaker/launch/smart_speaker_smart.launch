@@ -52,6 +52,8 @@
                 - locomotion
               path: ~/.ros/ttop/audio/en/Little_Eva_The_Locomotion_30s.mp3
         </rosparam>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
     </node>
 
     <include file="$(find t_top)/launch/bringup.launch">

@@ -10,8 +10,9 @@ TODO Software install
 
 ### A. OpenCR Dev Rule
 
-1. Copy [100-opencr-custom.rules](../../firmwares/opencr_firmware/100-opencr-custom.rules) in `/etc/udev/rules.d/`.
-2. Copy [100-teensy.rules](../../firmwares/psu_control/100-teensy.rules) in `/etc/udev/rules.d/`.
+1. Copy [99-opencr-custom.rules](../../tools/udev_rules/99-opencr-custom.rules) in `/etc/udev/rules.d/`.
+2. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
+2. Copy [99-camera-2d-wide.rules](../../tools/udev_rules/camera-2d-wide.rules) in `/etc/udev/rules.d/`.
 3. Add the user to the `dialout` group.
 
 ```bash
@@ -71,7 +72,8 @@ sudo apt install -y libasound2-dev \
     portaudio19-dev \
     python3-all-dev \
     libgecode-dev \
-    qt5-default
+    qt5-default \
+    v4l-utils
 ```
 
 ### E. Install Python Dependancies

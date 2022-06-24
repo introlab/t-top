@@ -25,15 +25,22 @@ QString mergeStdStrings(const vector<string> values)
     return mergedValues;
 }
 
-PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent)
     : QWidget(parent),
       m_nodeHandle(nodeHandle),
-      m_desireSet(std::move(desireSet))
+      m_desireSet(std::move(desireSet)),
+      m_camera2dWideEnabled(camera2dWideEnabled)
 {
     createUi();
 
-    m_analyzedImageSubscriber =
-        nodeHandle.subscribe("analysed_image", 1, &PerceptionsTab::analyzedImageSubscriberCallback, this);
+    m_analyzedImage3dSubscriber =
+        nodeHandle.subscribe("analysed_image_3d", 1, &PerceptionsTab::analyzedImage3dSubscriberCallback, this);
+    if (m_camera2dWideEnabled)
+    {
+        m_analyzedImage2dWideSubscriber =
+            nodeHandle.subscribe("analysed_image_2d_wide", 1, &PerceptionsTab::analyzedImage2dWideSubscriberCallback, this);
+    }
+
     m_audioAnalysisSubscriber =
         nodeHandle.subscribe("audio_analysis", 1, &PerceptionsTab::audioAnalysisSubscriberCallback, this);
     m_robotNameDetectedSubscriber =
@@ -42,52 +49,27 @@ PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet
         nodeHandle.subscribe("person_names", 1, &PerceptionsTab::personNamesSubscriberCallback, this);
 }
 
-void PerceptionsTab::onVideoAnalyzerButtonToggled(bool checked)
+void PerceptionsTab::onVideoAnalyzer3dButtonToggled(bool checked)
 {
-    if (checked)
-    {
-        auto desire = make_unique<FastVideoAnalyzerWithAnalyzedImageDesire>();
-        m_videoAnalyzerDesireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    }
-    else if (m_videoAnalyzerDesireId.isValid())
-    {
-        m_desireSet->removeDesire(m_videoAnalyzerDesireId.toULongLong());
-        m_videoAnalyzerDesireId.clear();
-    }
+    toggleDesire<FastVideoAnalyzer3dWithAnalyzedImageDesire>(checked, m_videoAnalyzer3dDesireId);
+}
+
+void PerceptionsTab::onVideoAnalyzer2dWideButtonToggled(bool checked)
+{
+    toggleDesire<FastVideoAnalyzer2dWideWithAnalyzedImageDesire>(checked, m_videoAnalyzer2dWideDesireId);
 }
 
 void PerceptionsTab::onAudioAnalyzerButtonToggled(bool checked)
 {
-    if (checked)
-    {
-        auto desire = make_unique<AudioAnalyzerDesire>();
-        m_audioAnalyzerDesireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    }
-    else if (m_audioAnalyzerDesireId.isValid())
-    {
-        m_desireSet->removeDesire(m_audioAnalyzerDesireId.toULongLong());
-        m_audioAnalyzerDesireId.clear();
-    }
+    toggleDesire<AudioAnalyzerDesire>(checked, m_audioAnalyzerDesireId);
 }
 
 void PerceptionsTab::onRobotNameDetectorButtonToggled(bool checked)
 {
-    if (checked)
-    {
-        auto desire = make_unique<RobotNameDetectorDesire>();
-        m_robotNameDetectorDesireId = static_cast<qint64>(desire->id());
-        m_desireSet->addDesire(std::move(desire));
-    }
-    else if (m_robotNameDetectorDesireId.isValid())
-    {
-        m_desireSet->removeDesire(m_robotNameDetectorDesireId.toULongLong());
-        m_robotNameDetectorDesireId.clear();
-    }
+    toggleDesire<RobotNameDetectorDesire>(checked, m_robotNameDetectorDesireId);
 }
 
-void PerceptionsTab::analyzedImageSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg)
+void PerceptionsTab::analyzedImage3dSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg)
 {
     if (msg->encoding != "rgb8")
     {
@@ -96,7 +78,21 @@ void PerceptionsTab::analyzedImageSubscriberCallback(const sensor_msgs::Image::C
 
     invokeLater(
         [this, msg]() {
-            m_videoAnalyzerImageDisplay->setImage(
+            m_videoAnalyzer3dImageDisplay->setImage(
+                QImage(msg->data.data(), msg->width, msg->height, QImage::Format_RGB888));
+        });
+}
+
+void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg)
+{
+    if (msg->encoding != "rgb8")
+    {
+        return;
+    }
+
+    invokeLater(
+        [this, msg]() {
+            m_videoAnalyzer2dWideImageDisplay->setImage(
                 QImage(msg->data.data(), msg->width, msg->height, QImage::Format_RGB888));
         });
 }
@@ -128,9 +124,9 @@ void PerceptionsTab::personNamesSubscriberCallback(const person_identification::
 
 void PerceptionsTab::createUi()
 {
-    m_videoAnalyzerButton = new QPushButton("Video Analyzer");
-    m_videoAnalyzerButton->setCheckable(true);
-    connect(m_videoAnalyzerButton, &QPushButton::toggled, this, &PerceptionsTab::onVideoAnalyzerButtonToggled);
+    m_videoAnalyzer3dButton = new QPushButton("Video Analyzer 3D");
+    m_videoAnalyzer3dButton->setCheckable(true);
+    connect(m_videoAnalyzer3dButton, &QPushButton::toggled, this, &PerceptionsTab::onVideoAnalyzer3dButtonToggled);
 
     m_audioAnalyzerButton = new QPushButton("Audio Analyzer");
     m_audioAnalyzerButton->setCheckable(true);
@@ -140,7 +136,21 @@ void PerceptionsTab::createUi()
     m_robotNameDetectorButton->setCheckable(true);
     connect(m_robotNameDetectorButton, &QPushButton::toggled, this, &PerceptionsTab::onRobotNameDetectorButtonToggled);
 
-    m_videoAnalyzerImageDisplay = new ImageDisplay;
+    m_videoAnalyzer3dImageDisplay = new ImageDisplay;
+
+    if (m_camera2dWideEnabled)
+    {
+        m_videoAnalyzer2dWideButton = new QPushButton("Video Analyzer 2D Wide");
+        m_videoAnalyzer2dWideButton->setCheckable(true);
+        connect(m_videoAnalyzer2dWideButton, &QPushButton::toggled, this, &PerceptionsTab::onVideoAnalyzer2dWideButtonToggled);
+
+        m_videoAnalyzer2dWideImageDisplay = new ImageDisplay;
+    }
+    else
+    {
+        m_videoAnalyzer2dWideButton = nullptr;
+        m_videoAnalyzer2dWideImageDisplay = nullptr;
+    }
 
     m_soundClassesLineEdit = new QLineEdit;
     m_soundClassesLineEdit->setReadOnly(true);
@@ -152,11 +162,19 @@ void PerceptionsTab::createUi()
     m_identifiedPersonsLineEdit->setReadOnly(true);
 
     auto globalLayout = new QVBoxLayout;
-    globalLayout->addWidget(m_videoAnalyzerButton);
+    globalLayout->addWidget(m_videoAnalyzer3dButton);
+    if (m_videoAnalyzer2dWideButton != nullptr)
+    {
+        globalLayout->addWidget(m_videoAnalyzer2dWideButton);
+    }
     globalLayout->addWidget(m_audioAnalyzerButton);
     globalLayout->addWidget(m_robotNameDetectorButton);
     globalLayout->addWidget(new QLabel("Video Analyzer Image:"));
-    globalLayout->addWidget(m_videoAnalyzerImageDisplay, 1);
+    globalLayout->addWidget(m_videoAnalyzer3dImageDisplay, 1);
+    if (m_videoAnalyzer2dWideImageDisplay != nullptr)
+    {
+        globalLayout->addWidget(m_videoAnalyzer2dWideImageDisplay, 1);
+    }
     globalLayout->addWidget(new QLabel("Sound Classes:"));
     globalLayout->addWidget(m_soundClassesLineEdit);
     globalLayout->addWidget(new QLabel("Last Robot Name Detection Time:"));

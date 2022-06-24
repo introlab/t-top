@@ -5,16 +5,25 @@
         <param name="baud" value="1000000"/>
     </node>
 
+
     <!--Static tf broadcast launch-->
     <node pkg="tf" type="static_transform_publisher" name="stewart_base_tf_publisher" args="0 0 0.05975 0 0 0 torso_base stewart_base 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="opencr_tf_publisher" args="-0.028881 0 0.005936 0 0 0 stewart_base opencr 100"/> <!-- TODO fix -->
-    <node pkg="tf" type="static_transform_publisher" name="opencr_imu_tf_publisher" args="0 0 0 1.570796 0 1.570796 opencr opencr_imu 100"/> <!-- TODO fix -->
-    <node pkg="tf" type="static_transform_publisher" name="cam_link_tf_publisher" args="0.076980 0 0.134850 0 0 0 head camera_link 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cam_depth_tf_publisher" args="0.012505 0 0 0 0 0 camera_link camera_depth_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cam_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_depth_frame camera_depth_optical_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cam_color_tf_publisher" args="0 0 0 0 0 0 camera_depth_frame camera_color_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cam_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_color_frame camera_color_optical_frame 100"/>
+
+    <node pkg="tf" type="static_transform_publisher" name="opencr_tf_publisher" args="-0.028881 0 0.005936 0 0 0 stewart_base opencr 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="opencr_imu_tf_publisher" args="0 0 0 1.570796 3.141592 1.570796 opencr opencr_imu 100"/>
+
+    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_link_tf_publisher" args="0.06396 0 0.15139 0 0 0 head camera_3d_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_depth_tf_publisher" args="0.01995 0 0 0 0 0 camera_3d_link camera_3d_depth_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_depth_frame camera_3d_depth_optical_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_color_tf_publisher" args="0 0 0 0 0 0 camera_3d_depth_frame camera_3d_color_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_color_frame camera_3d_color_optical_frame 100"/>
+
+    <node pkg="tf" type="static_transform_publisher" name="cammera_2d_wide_link_tf_publisher" args="0.06728 0 0.11968 0 0 0 head camera_2d_wide_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="cammera_2d_wide_frame_tf_publisher" args="0.0015 0 0 0 0 0 camera_2d_wide_link camera_2d_wide_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="cammera_2d_wide_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_2d_wide_frame camera_2d_wide_optical_frame 100"/>
+
     <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.37968650962 0 0 0 base_link odas 100"/>
+
 
     <!-- IMU filter launch -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node" name="opencr_imu_filter_node">
@@ -27,7 +36,7 @@
         <remap from="imu/data" to="opencr_imu/data"/>
     </node>
 
-    <!--Dynamic tf broadcast and odom launch-->
+    <!--Dynamic tf broadcast and odom launch -->
     <node pkg="t_top" type="opencr_raw_data_interpreter.py" name="opencr_raw_data_interpreter">
         <param name="base_link_torso_base_delta_z" value="0.151"/>
     </node>

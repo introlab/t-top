@@ -1,8 +1,9 @@
 <launch>
+    <arg name="camera_2d_wide_enabled"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
     <arg name="visualization" default="false"/>
 
-    <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_node">
+    <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_3d_node">
         <param name="use_descriptor_yolo_v4" value="false"/>
         <param name="confidence_threshold" value="0.70"/>
         <param name="nms_threshold" value="0.5"/>
@@ -16,13 +17,37 @@
 
         <param name="depth_mean_offset" value="2"/>
 
-        <remap from="color_image_raw" to="/camera/color/image_raw"/>
-        <remap from="depth_image_raw" to="/camera/aligned_depth_to_color/image_raw"/>
-        <remap from="depth_camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+        <remap from="color_image_raw" to="camera_3d/color/image_raw"/>
+        <remap from="depth_image_raw" to="camera_3d/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="camera_3d/aligned_depth_to_color/camera_info"/>
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+        <remap from="analysed_image" to="camera_3d/analysed_image"/>
 
-        <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
-        <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>
+        <remap from="analysed_image/filter_state" to="video_analyzer_3d/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer_3d/image_raw/filter_state"/>
     </node>
-    <node if="$(arg visualization)" pkg="video_analyzer" name="video_analysis_markers" type="video_analysis_markers_node.py"/>
+    <node if="$(arg visualization)" pkg="video_analyzer" name="video_analysis_markers" type="video_analysis_markers_node.py">
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+        <remap from="video_analysis_markers" to="camera_3d/video_analysis_markers"/>
+    </node>
 
+    <node if="$(arg camera_2d_wide_enabled)" pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node">
+        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="confidence_threshold" value="0.70"/>
+        <param name="nms_threshold" value="0.5"/>
+        <param name="person_probability_threshold" value="0.75"/>
+        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
+
+        <param name="pose_enabled" value="false"/>
+        <param name="face_descriptor_enabled" value="false"/>
+        <param name="cropped_image_enabled" value="false"/>
+
+        <remap from="image_raw" to="camera_2d_wide/image_rect"/>
+        <remap from="video_analysis" to="camera_2d_wide/video_analysis"/>
+        <remap from="analysed_image" to="camera_2d_wide/analysed_image"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer_2d_wide/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer_2d_wide/image_raw/filter_state"/>
+    </node>
 </launch>
