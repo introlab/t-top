@@ -162,6 +162,16 @@ inline const std::string& SpecificFaceFollowingDesire::targetName() const
 }
 
 
+class SoundObjectPersonFollowingDesire : public Desire
+{
+public:
+    explicit SoundObjectPersonFollowingDesire(uint16_t intensity = 1);
+    ~SoundObjectPersonFollowingDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(SoundObjectPersonFollowingDesire)
+};
+
+
 class TalkDesire : public Desire
 {
     std::string m_text;

@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
     strategies.emplace_back(createSoundFollowingStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createSpecificFaceFollowingStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createSoundObjectPersonFollowingStrategy(filterPool));
     strategies.emplace_back(createTalkStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createGestureStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createDanceStrategy(filterPool));

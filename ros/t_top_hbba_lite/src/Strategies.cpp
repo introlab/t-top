@@ -37,7 +37,7 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     : Strategy<SpecificFaceFollowingDesire>(
           utility,
           {{"motor", 1}},
-          {{"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+          {{"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
            {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_nodeHandle(nodeHandle)
@@ -262,7 +262,7 @@ unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPoo
         utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
         unordered_map<string, FilterConfiguration>{
-            {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+            {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
@@ -273,6 +273,17 @@ unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     uint16_t utility)
 {
     return make_unique<SpecificFaceFollowingStrategy>(utility, move(filterPool), nodeHandle);
+}
+
+unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<SoundObjectPersonFollowingDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, FilterConfiguration>{
+            {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
+            {"sound_object_person_following/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
 }
 
 unique_ptr<BaseStrategy>

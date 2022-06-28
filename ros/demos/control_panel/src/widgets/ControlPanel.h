@@ -30,7 +30,11 @@ class ControlPanel : public QWidget
     std::shared_ptr<DesireSet> m_desireSet;
 
 public:
-    ControlPanel(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent = nullptr);
+    ControlPanel(
+        ros::NodeHandle& nodeHandle,
+        std::shared_ptr<DesireSet> desireSet,
+        bool camera2dWideEnabled,
+        QWidget* parent = nullptr);
 
 private slots:
     void onVolumeChanged(int volume);

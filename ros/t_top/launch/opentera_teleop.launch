@@ -50,4 +50,10 @@
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
 
+    <include file="$(find t_top)/launch/behaviors/sound_object_person_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+        <arg name="min_sst_activity" value="0.3"/>
+    </include>
+
 </launch>

@@ -1,6 +1,5 @@
 #include "BehaviorsTab.h"
 #include "../QtUtils.h"
-#include "../DesireUtils.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -10,9 +9,10 @@
 
 using namespace std;
 
-BehaviorsTab::BehaviorsTab(shared_ptr<DesireSet> desireSet, QWidget* parent)
+BehaviorsTab::BehaviorsTab(shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent)
     : QWidget(parent),
-      m_desireSet(std::move(desireSet))
+      m_desireSet(std::move(desireSet)),
+      m_camera2dWideEnabled(camera2dWideEnabled)
 {
     createUi();
     m_desireSet->addObserver(this);
@@ -38,87 +38,35 @@ void BehaviorsTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>
 
 void BehaviorsTab::onNearestFaceFollowingButtonToggled(bool checked)
 {
-    onButtonToggled(
-        checked,
-        [&]()
-        {
-            uncheckOtherButtons(m_nearestFaceFollowingButton);
-
-            auto transaction = m_desireSet->beginTransaction();
-            removeAllMovementDesires(*m_desireSet);
-
-            auto desire = make_unique<NearestFaceFollowingDesire>();
-            m_desireId = static_cast<qint64>(desire->id());
-            m_desireSet->addDesire(std::move(desire));
-        });
+    onButtonToggled<NearestFaceFollowingDesire>(checked, m_nearestFaceFollowingButton);
 }
 
 void BehaviorsTab::onSpecificFaceFollowingButtonToggled(bool checked)
 {
-    onButtonToggled(
+    onButtonToggled<SpecificFaceFollowingDesire>(
         checked,
-        [&]()
-        {
-            uncheckOtherButtons(m_specificFaceFollowingButton);
-
-            auto transaction = m_desireSet->beginTransaction();
-            removeAllMovementDesires(*m_desireSet);
-
-            auto desire = make_unique<SpecificFaceFollowingDesire>(m_personNameLineEdit->text().toStdString());
-            m_desireId = static_cast<qint64>(desire->id());
-            m_desireSet->addDesire(std::move(desire));
-        });
+        m_specificFaceFollowingButton,
+        m_personNameLineEdit->text().toStdString());
 }
 
 void BehaviorsTab::onSoundFollowingButtonToggled(bool checked)
 {
-    onButtonToggled(
-        checked,
-        [&]()
-        {
-            uncheckOtherButtons(m_soundFollowingButton);
+    onButtonToggled<SoundFollowingDesire>(checked, m_soundFollowingButton);
+}
 
-            auto transaction = m_desireSet->beginTransaction();
-            removeAllMovementDesires(*m_desireSet);
-
-            auto desire = make_unique<SoundFollowingDesire>();
-            m_desireId = static_cast<qint64>(desire->id());
-            m_desireSet->addDesire(std::move(desire));
-        });
+void BehaviorsTab::onSoundObjectPersonFollowingButtonToggled(bool checked)
+{
+    onButtonToggled<SoundObjectPersonFollowingDesire>(checked, m_soundObjectPersonFollowingButton);
 }
 
 void BehaviorsTab::onDanceButtonToggled(bool checked)
 {
-    onButtonToggled(
-        checked,
-        [&]()
-        {
-            uncheckOtherButtons(m_danceButton);
-
-            auto transaction = m_desireSet->beginTransaction();
-            removeAllMovementDesires(*m_desireSet);
-
-            auto desire = make_unique<DanceDesire>();
-            m_desireId = static_cast<qint64>(desire->id());
-            m_desireSet->addDesire(std::move(desire));
-        });
+    onButtonToggled<DanceDesire>(checked, m_danceButton);
 }
 
 void BehaviorsTab::onExploreButtonToggled(bool checked)
 {
-    onButtonToggled(
-        checked,
-        [&]()
-        {
-            uncheckOtherButtons(m_exploreAllButton);
-
-            auto transaction = m_desireSet->beginTransaction();
-            removeAllMovementDesires(*m_desireSet);
-
-            auto desire = make_unique<ExploreDesire>();
-            m_desireId = static_cast<qint64>(desire->id());
-            m_desireSet->addDesire(std::move(desire));
-        });
+    onButtonToggled<ExploreDesire>(checked, m_exploreButton);
 }
 
 void BehaviorsTab::createUi()
@@ -143,13 +91,28 @@ void BehaviorsTab::createUi()
     m_soundFollowingButton->setCheckable(true);
     connect(m_soundFollowingButton, &QPushButton::toggled, this, &BehaviorsTab::onSoundFollowingButtonToggled);
 
+    if (m_camera2dWideEnabled)
+    {
+        m_soundObjectPersonFollowingButton = new QPushButton("Sound Object Person Following");
+        m_soundObjectPersonFollowingButton->setCheckable(true);
+        connect(
+            m_soundObjectPersonFollowingButton,
+            &QPushButton::toggled,
+            this,
+            &BehaviorsTab::onSoundObjectPersonFollowingButtonToggled);
+    }
+    else
+    {
+        m_soundObjectPersonFollowingButton = nullptr;
+    }
+
     m_danceButton = new QPushButton("Dance");
     m_danceButton->setCheckable(true);
     connect(m_danceButton, &QPushButton::toggled, this, &BehaviorsTab::onDanceButtonToggled);
 
-    m_exploreAllButton = new QPushButton("Explore");
-    m_exploreAllButton->setCheckable(true);
-    connect(m_exploreAllButton, &QPushButton::toggled, this, &BehaviorsTab::onExploreButtonToggled);
+    m_exploreButton = new QPushButton("Explore");
+    m_exploreButton->setCheckable(true);
+    connect(m_exploreButton, &QPushButton::toggled, this, &BehaviorsTab::onExploreButtonToggled);
 
     m_personNameLineEdit = new QLineEdit();
     auto personNameLayout = new QHBoxLayout;
@@ -160,8 +123,12 @@ void BehaviorsTab::createUi()
     globalLayout->addWidget(m_nearestFaceFollowingButton);
     globalLayout->addWidget(m_specificFaceFollowingButton);
     globalLayout->addWidget(m_soundFollowingButton);
+    if (m_soundObjectPersonFollowingButton != nullptr)
+    {
+        globalLayout->addWidget(m_soundObjectPersonFollowingButton);
+    }
     globalLayout->addWidget(m_danceButton);
-    globalLayout->addWidget(m_exploreAllButton);
+    globalLayout->addWidget(m_exploreButton);
     globalLayout->addSpacing(20);
     globalLayout->addLayout(personNameLayout);
     globalLayout->addStretch();
@@ -188,8 +155,8 @@ void BehaviorsTab::uncheckOtherButtons(QPushButton* current)
     {
         m_danceButton->setChecked(false);
     }
-    if (m_exploreAllButton != current)
+    if (m_exploreButton != current)
     {
-        m_exploreAllButton->setChecked(false);
+        m_exploreButton->setChecked(false);
     }
 }

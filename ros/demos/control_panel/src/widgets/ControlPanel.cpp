@@ -13,7 +13,11 @@ constexpr int AUDIO_POWER_AMPLIFIER_MIN_VOLUME = 0;
 constexpr int AUDIO_POWER_AMPLIFIER_MAX_VOLUME = 63;
 constexpr int AUDIO_POWER_AMPLIFIER_DEFAULT_VOLUME = 24;
 
-ControlPanel::ControlPanel(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent)
+ControlPanel::ControlPanel(
+    ros::NodeHandle& nodeHandle,
+    shared_ptr<DesireSet> desireSet,
+    bool camera2dWideEnabled,
+    QWidget* parent)
     : QWidget(parent),
       m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet))
@@ -48,7 +52,7 @@ void ControlPanel::createUi(bool camera2dWideEnabled)
     m_avatarTab = new AvatarTab(m_desireSet);
     m_speechTab = new SpeechTab(m_nodeHandle, m_desireSet);
     m_gestureTab = new GestureTab(m_nodeHandle, m_desireSet);
-    m_behaviorsTab = new BehaviorsTab(m_desireSet);
+    m_behaviorsTab = new BehaviorsTab(m_desireSet, camera2dWideEnabled);
     m_perceptionsTab = new PerceptionsTab(m_nodeHandle, m_desireSet, camera2dWideEnabled);
 
     m_tabWidget = new QTabWidget;

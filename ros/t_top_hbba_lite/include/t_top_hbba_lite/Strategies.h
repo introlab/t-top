@@ -100,8 +100,9 @@ std::unique_ptr<BaseStrategy>
     createSlowVideoAnalyzer2dWideStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createFastVideoAnalyzer2dWideStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createFastVideoAnalyzer2dWideWithAnalyzedImageStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideWithAnalyzedImageStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
@@ -118,6 +119,8 @@ std::unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     std::shared_ptr<FilterPool> filterPool,
     ros::NodeHandle& nodeHandle,
     uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createSoundObjectPersonFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createTalkStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>

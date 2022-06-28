@@ -39,7 +39,11 @@ class PerceptionsTab : public QWidget
     bool m_camera2dWideEnabled;
 
 public:
-    PerceptionsTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent = nullptr);
+    PerceptionsTab(
+        ros::NodeHandle& nodeHandle,
+        std::shared_ptr<DesireSet> desireSet,
+        bool camera2dWideEnabled,
+        QWidget* parent = nullptr);
 
 private slots:
     void onVideoAnalyzer3dButtonToggled(bool checked);
@@ -56,7 +60,7 @@ private:
 
     void createUi();
 
-    template <class D>
+    template<class D>
     void toggleDesire(bool checked, QVariant& desireId);
 
     // UI members
@@ -72,7 +76,7 @@ private:
     QLineEdit* m_identifiedPersonsLineEdit;
 };
 
-template <class D>
+template<class D>
 void PerceptionsTab::toggleDesire(bool checked, QVariant& desireId)
 {
     if (checked)

@@ -25,7 +25,11 @@ QString mergeStdStrings(const vector<string> values)
     return mergedValues;
 }
 
-PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent)
+PerceptionsTab::PerceptionsTab(
+    ros::NodeHandle& nodeHandle,
+    shared_ptr<DesireSet> desireSet,
+    bool camera2dWideEnabled,
+    QWidget* parent)
     : QWidget(parent),
       m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet)),
@@ -37,8 +41,11 @@ PerceptionsTab::PerceptionsTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet
         nodeHandle.subscribe("analysed_image_3d", 1, &PerceptionsTab::analyzedImage3dSubscriberCallback, this);
     if (m_camera2dWideEnabled)
     {
-        m_analyzedImage2dWideSubscriber =
-            nodeHandle.subscribe("analysed_image_2d_wide", 1, &PerceptionsTab::analyzedImage2dWideSubscriberCallback, this);
+        m_analyzedImage2dWideSubscriber = nodeHandle.subscribe(
+            "analysed_image_2d_wide",
+            1,
+            &PerceptionsTab::analyzedImage2dWideSubscriberCallback,
+            this);
     }
 
     m_audioAnalysisSubscriber =
@@ -91,7 +98,8 @@ void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::Im
     }
 
     invokeLater(
-        [this, msg]() {
+        [this, msg]()
+        {
             m_videoAnalyzer2dWideImageDisplay->setImage(
                 QImage(msg->data.data(), msg->width, msg->height, QImage::Format_RGB888));
         });
@@ -142,7 +150,11 @@ void PerceptionsTab::createUi()
     {
         m_videoAnalyzer2dWideButton = new QPushButton("Video Analyzer 2D Wide");
         m_videoAnalyzer2dWideButton->setCheckable(true);
-        connect(m_videoAnalyzer2dWideButton, &QPushButton::toggled, this, &PerceptionsTab::onVideoAnalyzer2dWideButtonToggled);
+        connect(
+            m_videoAnalyzer2dWideButton,
+            &QPushButton::toggled,
+            this,
+            &PerceptionsTab::onVideoAnalyzer2dWideButtonToggled);
 
         m_videoAnalyzer2dWideImageDisplay = new ImageDisplay;
     }

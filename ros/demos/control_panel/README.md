@@ -18,8 +18,10 @@ speech to text. The result of the speech to text is shown below the Listen butto
 perform gestures. The Behaviors tab contains buttons to enable behaviors. The Perception tab contains buttons to enable
 perceptual nodes and widgets to show their result.
 
-![Avatar](images/tab_avatar.png)
-![Speech](images/tab_speech.png)
-![Gesture](images/tab_gesture.png)
-![Behavior](images/tab_behaviors.png)
-![Perceptions](images/tab_perceptions.png)
+| Without the 2d wide camera                 | With the 2d wide camera                                        |
+| ------------------------------------------ | -------------------------------------------------------------- |
+| ![Avatar](images/tab_avatar.png)           | ![Avatar](images/tab_avatar.png)                               |
+| ![Speech](images/tab_speech.png)           | ![Speech](images/tab_speech.png)                               |
+| ![Gesture](images/tab_gesture.png)         | ![Gesture](images/tab_gesture.png)                             |
+| ![Behavior](images/tab_behaviors.png)      | ![Behavior](images/tab_behaviors_with_camera_2d_wide.png)      |
+| ![Perceptions](images/tab_perceptions.png) | ![Perceptions](images/tab_perceptions_with_camera_2d_wide.png) |

@@ -41,6 +41,8 @@ SpecificFaceFollowingDesire::SpecificFaceFollowingDesire(string targetName, uint
 {
 }
 
+SoundObjectPersonFollowingDesire::SoundObjectPersonFollowingDesire(uint16_t intensity) : Desire(intensity) {}
+
 TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(move(text)) {}
 
 GestureDesire::GestureDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
