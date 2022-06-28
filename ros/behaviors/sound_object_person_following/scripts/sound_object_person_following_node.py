@@ -6,7 +6,7 @@ import math
 import threading
 
 import numpy as np
-from scipy.optimize import minimize, Bounds
+from scipy.optimize import dual_annealing
 
 import rospy
 from odas_ros.msg import OdasSstArrayStamped
@@ -89,6 +89,7 @@ class ObjectPersonFollower(Follower):
 
         self._object_classes = set(rospy.get_param('~object_classes'))
         self._padding = rospy.get_param('~padding')
+        self._target_lambda = rospy.get_param('~target_lambda')
 
         self._target_lock = threading.Lock()
         self._target = None
@@ -133,19 +134,43 @@ class ObjectPersonFollower(Follower):
         if min_y > max_y:
             min_y = max_y
 
-        return (min_x, max_x, min_y, max_y)
+        return min_x, max_x, min_y, max_y
 
-    def _find_target(self, objects, person):
+    def _find_target(self, objects, person, eps=1e-6):
         min_x, max_x, min_y, max_y = self._find_target_range(person)
         bounding_boxes = self.get_object_bounding_boxes(objects)
 
-        # TODO
+        def cost(variables):
+            target_x, target_y = variables
 
-    def get_object_bounding_boxes(objects):
+            person_center_loss = (person.center_2d.x - target_x)**2 + (person.center_2d.y - target_y)**2
+
+            if len(bounding_boxes) > 0:
+                wx0 = target_x - self._camera_3d_calibration.half_width
+                wy0 = target_y - self._camera_3d_calibration.half_height
+                wx1 = target_x + self._camera_3d_calibration.half_width
+                wy1 = target_y + self._camera_3d_calibration.half_height
+
+                intersection_w = np.minimum(bounding_boxes[:, 2], wx1) - np.maximum(bounding_boxes[:, 0], wx0)
+                intersection_h = np.minimum(bounding_boxes[:, 3], wy1) - np.maximum(bounding_boxes[:, 1], wy0)
+                intersection_w = np.clip(intersection_w, a_min=0., a_max=None)
+                intersection_h = np.clip(intersection_h, a_min=0., a_max=None)
+                intersection = (intersection_w * intersection_h).sum()
+            else:
+                intersection = 0
+
+            return self._target_lambda * person_center_loss - intersection
+
+        bounds = [(min_x, max_x + eps), (min_y, max_y + eps)]
+        result = dual_annealing(cost, bounds, maxiter=50)
+
+        return Target.from_object_person_following(result.x[0], result.x[1])
+
+    def get_object_bounding_boxes(self, objects):
         bounding_boxes = []
         for o in objects:
-            half_width = o.width_2d / 2
-            half_height = o.height_2d / 2
+            half_width = o.width_2d / 2 + self._padding
+            half_height = o.height_2d / 2 + self._padding
 
             top_lelf_x = o.center_2d.x - half_width
             top_lelf_y = o.center_2d.y - half_height
@@ -194,6 +219,7 @@ class SoundObjectPersonFollowingNode:
             self._update_torso_from_yaw(target.yaw)
         elif target.image_x is not None:
             self._update_torso_from_image_x(target.image_x)
+
         if target.image_y is not None:
             self._update_head_from_image_y(target.image_y)
 

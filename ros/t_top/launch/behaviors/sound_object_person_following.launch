@@ -21,6 +21,7 @@
             [bottle, 'wine glass', cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, 'hot dog', pizza, donut, cake]
         </rosparam>
         <param name="padding" value="0.02"/>
+        <param name="target_lambda" values="0.005"/>
 
         <remap from="sst" to="audio_sst"/>
         <remap from="video_analysis" to="camera_2d_wide/video_analysis"/>

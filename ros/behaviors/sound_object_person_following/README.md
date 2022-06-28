@@ -38,7 +38,8 @@ This node makes T-Top follow the loudest sound, the biggest (nearest) person and
 
 - `object_classes` (list of strings): The followed object classes. In launch files, use this syntax :
   `<rosparam param="object_classes">[]</rosparam>`.
-- `padding` (double): 3d camera padding.
+- `padding` (double): The padding of the person and the objects.
+- `target_lambda` (double): The loss scale factor centering the person.
 
 #### Subscribed Topics
 
