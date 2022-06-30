@@ -119,7 +119,9 @@ void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::Empty::
 
 void PerceptionsTab::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
 {
-    vector<string> names(msg->names.size());
+    vector<string> names;
+    names.reserve(msg->names.size());
+
     transform(
         msg->names.begin(),
         msg->names.end(),
