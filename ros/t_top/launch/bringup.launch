@@ -24,6 +24,7 @@
     </include>
     <include file="$(find t_top)/launch/behaviors.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
         <arg name="simulation" value="$(arg simulation)"/>
         <arg name="open_browser" value="$(arg open_browser)"/>
