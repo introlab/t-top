@@ -4,7 +4,7 @@
         <arg name="use_echo_cancellation" value="false"/>
     </include>
 
-    <node pkg="sound_object_person_following" type="calibrate_sound_object_person_following_node.py" name="calibrate_sound_object_person_following_node">
+    <node pkg="sound_object_person_following" type="calibrate_sound_object_person_following_node.py" name="calibrate_sound_object_person_following_node" output="screen">
         <param name="match_count" value="100"/>
     </node>
 </launch>

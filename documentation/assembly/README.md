@@ -30,3 +30,4 @@
 10. [Head Assembly](10_HEAD_ASSEMBLY.md)
 11. [Robot Assembly](11_ROBOT_ASSEMBLY.md)
 12. [MCU Configuration](12_MCU_CONFIGURATION.md)
+13. [Calibration](13_CALIBRATION.md)
