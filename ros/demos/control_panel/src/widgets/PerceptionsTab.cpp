@@ -38,11 +38,11 @@ PerceptionsTab::PerceptionsTab(
     createUi();
 
     m_analyzedImage3dSubscriber =
-        nodeHandle.subscribe("analysed_image_3d", 1, &PerceptionsTab::analyzedImage3dSubscriberCallback, this);
+        nodeHandle.subscribe("camera_3d/analysed_image", 1, &PerceptionsTab::analyzedImage3dSubscriberCallback, this);
     if (m_camera2dWideEnabled)
     {
         m_analyzedImage2dWideSubscriber = nodeHandle.subscribe(
-            "analysed_image_2d_wide",
+            "camera_2d_wide/analysed_image",
             1,
             &PerceptionsTab::analyzedImage2dWideSubscriberCallback,
             this);
