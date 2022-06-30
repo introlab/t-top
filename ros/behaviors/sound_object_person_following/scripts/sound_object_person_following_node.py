@@ -198,8 +198,8 @@ class SoundObjectPersonFollowingNode:
         self._camera_3d_calibration = Camera3dCalibration.load_json_file()
 
         self._movement_commands = MovementCommands(self._simulation)
-        self._sound_follower = SoundFollower()
-        self._object_person_follower = ObjectPersonFollower(self._camera_3d_calibration)
+        self._sound_follower = SoundFollower(self._movement_commands)
+        self._object_person_follower = ObjectPersonFollower(self._camera_3d_calibration, self._movement_commands)
 
     def run(self):
         while not rospy.is_shutdown():
