@@ -16,7 +16,7 @@ from video_analyzer.lib_video_analyzer_node import VideoAnalyzerNode, convert_po
 class VideoAnalyzer2dNode(VideoAnalyzerNode):
     def __init__(self):
         super().__init__()
-        self._image_sub = hbba_lite.ThrottlingHbbaSubscriber('image_raw', Image, self._image_cb)
+        self._image_sub = hbba_lite.ThrottlingHbbaSubscriber('image_raw', Image, self._image_cb, queue_size=1)
 
     def _image_cb(self, color_image_msg):
         try:
@@ -44,6 +44,8 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
     def _object_analysis_to_msg(self, object_analysis, image_height, image_width):
         o = VideoAnalysisObject()
         o.center_2d = Point(x=object_analysis.center_x / image_width, y=object_analysis.center_y / image_height)
+        o.width_2d = object_analysis.width / image_width
+        o.height_2d = object_analysis.height / image_height
         o.object_class = object_analysis.object_class
         o.object_confidence = object_analysis.object_confidence
         if object_analysis.object_image is not None:

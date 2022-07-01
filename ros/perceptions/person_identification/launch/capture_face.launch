@@ -31,9 +31,9 @@
 
         <param name="depth_mean_offset" value="2"/>
 
-        <remap from="color_image_raw" to="/camera/color/image_raw"/>
-        <remap from="depth_image_raw" to="/camera/aligned_depth_to_color/image_raw"/>
-        <remap from="depth_camera_info" to="/camera/aligned_depth_to_color/camera_info"/>
+        <remap from="color_image_raw" to="/camera_3d/color/image_raw"/>
+        <remap from="depth_image_raw" to="/camera_3d/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="/camera_3d/aligned_depth_to_color/camera_info"/>
 
         <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
         <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>

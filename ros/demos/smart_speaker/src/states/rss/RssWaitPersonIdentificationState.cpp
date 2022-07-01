@@ -26,7 +26,7 @@ void RssWaitPersonIdentificationState::enable(const string& parameter, const typ
     State::enable(parameter, previousStageType);
 
     auto audioAnalyzerDesire = make_unique<AudioAnalyzerDesire>();
-    auto videoAnalyzerDesire = make_unique<FastVideoAnalyzerDesire>();
+    auto videoAnalyzerDesire = make_unique<FastVideoAnalyzer3dDesire>();
     auto soundFollowingDesire = make_unique<SoundFollowingDesire>();
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
 

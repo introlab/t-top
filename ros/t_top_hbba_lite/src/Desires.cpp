@@ -4,11 +4,20 @@ using namespace std;
 
 RobotNameDetectorDesire::RobotNameDetectorDesire(uint16_t intensity) : Desire(intensity) {}
 
-SlowVideoAnalyzerDesire::SlowVideoAnalyzerDesire(uint16_t intensity) : Desire(intensity) {}
+SlowVideoAnalyzer3dDesire::SlowVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}
 
-FastVideoAnalyzerDesire::FastVideoAnalyzerDesire(uint16_t intensity) : Desire(intensity) {}
+FastVideoAnalyzer3dDesire::FastVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}
 
-FastVideoAnalyzerWithAnalyzedImageDesire::FastVideoAnalyzerWithAnalyzedImageDesire(uint16_t intensity)
+FastVideoAnalyzer3dWithAnalyzedImageDesire::FastVideoAnalyzer3dWithAnalyzedImageDesire(uint16_t intensity)
+    : Desire(intensity)
+{
+}
+
+SlowVideoAnalyzer2dWideDesire::SlowVideoAnalyzer2dWideDesire(uint16_t intensity) : Desire(intensity) {}
+
+FastVideoAnalyzer2dWideDesire::FastVideoAnalyzer2dWideDesire(uint16_t intensity) : Desire(intensity) {}
+
+FastVideoAnalyzer2dWideWithAnalyzedImageDesire::FastVideoAnalyzer2dWideWithAnalyzedImageDesire(uint16_t intensity)
     : Desire(intensity)
 {
 }
@@ -31,6 +40,8 @@ SpecificFaceFollowingDesire::SpecificFaceFollowingDesire(string targetName, uint
       m_targetName(move(targetName))
 {
 }
+
+SoundObjectPersonFollowingDesire::SoundObjectPersonFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
 TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(move(text)) {}
 

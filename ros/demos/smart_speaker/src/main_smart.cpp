@@ -47,7 +47,7 @@ void startNode(
     auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
-    strategies.emplace_back(createFastVideoAnalyzerStrategy(filterPool));
+    strategies.emplace_back(createFastVideoAnalyzer3dStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
     strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));

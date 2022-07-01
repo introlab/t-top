@@ -13,14 +13,18 @@ constexpr int AUDIO_POWER_AMPLIFIER_MIN_VOLUME = 0;
 constexpr int AUDIO_POWER_AMPLIFIER_MAX_VOLUME = 63;
 constexpr int AUDIO_POWER_AMPLIFIER_DEFAULT_VOLUME = 24;
 
-ControlPanel::ControlPanel(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+ControlPanel::ControlPanel(
+    ros::NodeHandle& nodeHandle,
+    shared_ptr<DesireSet> desireSet,
+    bool camera2dWideEnabled,
+    QWidget* parent)
     : QWidget(parent),
       m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet))
 {
     m_volumePublisher = nodeHandle.advertise<std_msgs::Int8>("opencr/audio_power_amplifier_volume", 1);
 
-    createUi();
+    createUi(camera2dWideEnabled);
 
     m_batterySubscriber = nodeHandle.subscribe("opencr/base_status", 1, &ControlPanel::batterySubscriberCallback, this);
 }
@@ -41,15 +45,15 @@ void ControlPanel::batterySubscriberCallback(const std_msgs::Float32MultiArray::
     }
 }
 
-void ControlPanel::createUi()
+void ControlPanel::createUi(bool camera2dWideEnabled)
 {
     setWindowTitle("Control Panel");
 
     m_avatarTab = new AvatarTab(m_desireSet);
     m_speechTab = new SpeechTab(m_nodeHandle, m_desireSet);
     m_gestureTab = new GestureTab(m_nodeHandle, m_desireSet);
-    m_behaviorsTab = new BehaviorsTab(m_desireSet);
-    m_perceptionsTab = new PerceptionsTab(m_nodeHandle, m_desireSet);
+    m_behaviorsTab = new BehaviorsTab(m_desireSet, camera2dWideEnabled);
+    m_perceptionsTab = new PerceptionsTab(m_nodeHandle, m_desireSet, camera2dWideEnabled);
 
     m_tabWidget = new QTabWidget;
     m_tabWidget->addTab(m_avatarTab, "Avatar");

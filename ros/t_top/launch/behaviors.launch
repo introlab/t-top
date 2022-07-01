@@ -1,5 +1,6 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="camera_2d_wide_enabled"/>
     <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
     <arg name="simulation"/>
     <arg name="open_browser" default="true"/>
@@ -26,9 +27,20 @@
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
 
+    <!-- Sound Following -->
+    <include file="$(find t_top)/launch/behaviors/sound_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+    </include>
+
     <!-- Face Following -->
     <include file="$(find t_top)/launch/behaviors/face_following.launch">
         <arg name="simulation" value="$(arg simulation)"/>
+    </include>
+
+    <!-- Sound Object Person Following -->
+    <include file="$(find t_top)/launch/behaviors/sound_object_person_following.launch">
+        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
     </include>
 
     <!-- Dance -->
@@ -36,11 +48,6 @@
 
     <!-- Explore -->
     <include file="$(find t_top)/launch/behaviors/explore.launch">
-        <arg name="simulation" value="$(arg simulation)"/>
-    </include>
-
-    <!-- Sound Following -->
-    <include file="$(find t_top)/launch/behaviors/sound_following.launch">
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
 

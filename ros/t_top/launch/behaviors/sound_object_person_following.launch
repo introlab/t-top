@@ -1,0 +1,32 @@
+<launch>
+    <arg name="simulation"/>
+    <arg name="camera_2d_wide_enabled" default="false"/>
+    <arg name="min_sst_activity" default="0.1"/>
+
+    <node if="$(arg camera_2d_wide_enabled)" pkg="sound_object_person_following" type="sound_object_person_following_node.py" name="sound_object_person_following">
+        <param name="simulation" value="$(arg simulation)"/>
+        <param name="control_frequency" value="30"/>
+        <param name="torso_control_alpha" value="0.2"/>
+        <param name="torso_control_p_gain" value="0.45"/>
+        <param name="head_control_p_gain" value="0.45"/>
+        <param name="min_head_pitch_rad" value="-0.35"/>
+        <param name="max_head_pitch_rad" value="0.35"/>
+
+        <param name="min_sst_activity" value="$(arg min_sst_activity)"/>
+        <param name="min_valid_sst_pitch" value="-1.4"/>
+        <param name="max_valid_sst_pitch" value="1.4"/>
+        <param name="direction_frame_id" value="odas"/>
+
+        <rosparam param="object_classes">
+            [bottle, 'wine glass', cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, 'hot dog', pizza, donut, cake]
+        </rosparam>
+        <param name="padding" value="0.075"/>
+        <param name="target_lambda" value="0.005"/>
+
+        <remap from="sst" to="audio_sst"/>
+        <remap from="video_analysis" to="camera_2d_wide/video_analysis"/>
+
+        <remap from="pose/filter_state" to="sound_object_person_following/filter_state"/>
+    </node>
+
+</launch>

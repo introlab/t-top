@@ -1,0 +1,1 @@
+SUBSYSTEM=="video4linux", SUBSYSTEMS=="usb", ATTRS{idVendor}=="0c45", ATTRS{idProduct}=="6366", ATTR{index}=="0", SYMLINK="camera_2d_wide", PROGRAM="/usr/bin/v4l2-ctl --set-ctrl power_line_frequency=2 --device /dev/%k"

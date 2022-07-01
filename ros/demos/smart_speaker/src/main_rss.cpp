@@ -44,8 +44,8 @@ void startNode(
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));
-    strategies.emplace_back(createSlowVideoAnalyzerStrategy(filterPool));
-    strategies.emplace_back(createFastVideoAnalyzerStrategy(filterPool));
+    strategies.emplace_back(createSlowVideoAnalyzer3dStrategy(filterPool));
+    strategies.emplace_back(createFastVideoAnalyzer3dStrategy(filterPool));
     strategies.emplace_back(createAudioAnalyzerStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 

@@ -1,6 +1,9 @@
 geometry_msgs/Point center_2d # Normalized
 geometry_msgs/Point center_3d
 
+float32 width_2d # Normalized
+float32 height_2d # Normalized
+
 string object_class
 float32 object_confidence
 float32[] object_descriptor

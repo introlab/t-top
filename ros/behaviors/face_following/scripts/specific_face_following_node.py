@@ -20,7 +20,7 @@ class SpecificFaceFollowingNode(FaceFollowingNode):
         self._target_name = None
 
         self._target_name_sub = rospy.Subscriber('target_name', String, self._target_name_cb, queue_size=1)
-        self._video_analysis_sub = rospy.Subscriber('person_names', PersonNames, self._person_names_cb, queue_size=1)
+        self._person_names_sub = rospy.Subscriber('person_names', PersonNames, self._person_names_cb, queue_size=1)
 
     def _target_name_cb(self, msg):
         with self._target_name_lock:

@@ -26,7 +26,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         depth_image_sub = message_filters.Subscriber('depth_image_raw', Image)
         depth_camera_info_sub = message_filters.Subscriber('depth_camera_info', CameraInfo)
         self._image_ts = hbba_lite.ThrottlingHbbaApproximateTimeSynchronizer([color_image_sub, depth_image_sub, depth_camera_info_sub],
-                                                                             5, 0.03, self._image_cb, 'image_raw/filter_state')
+                                                                             1, 0.03, self._image_cb, 'image_raw/filter_state')
 
     def _image_cb(self, color_image_msg, depth_image_msg, depth_camera_info):
         if depth_image_msg.encoding != '16UC1':
@@ -65,6 +65,8 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         o.center_2d = Point(x=object_analysis.center_x / image_width, y=object_analysis.center_y / image_height)
         o.center_3d = self._project_2d_to_3d(object_analysis.center_x, object_analysis.center_y,
                                              depth_image, depth_camera_info)
+        o.width_2d = object_analysis.width / image_width
+        o.height_2d = object_analysis.height / image_height
         o.object_class = object_analysis.object_class
         o.object_confidence = object_analysis.object_confidence
         if object_analysis.object_image is not None:

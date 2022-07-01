@@ -37,7 +37,7 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     : Strategy<SpecificFaceFollowingDesire>(
           utility,
           {{"motor", 1}},
-          {{"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+          {{"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
            {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_nodeHandle(nodeHandle)
@@ -143,37 +143,72 @@ unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> 
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createSlowVideoAnalyzerStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+unique_ptr<BaseStrategy> createSlowVideoAnalyzer3dStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<SlowVideoAnalyzerDesire>>(
+    return make_unique<Strategy<SlowVideoAnalyzer3dDesire>>(
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
-            {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(15)},
+            {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(15)},
         },
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createFastVideoAnalyzerStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+unique_ptr<BaseStrategy> createFastVideoAnalyzer3dStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<FastVideoAnalyzerDesire>>(
+    return make_unique<Strategy<FastVideoAnalyzer3dDesire>>(
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
-            {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+            {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
         },
         move(filterPool));
 }
 
 unique_ptr<BaseStrategy>
-    createFastVideoAnalyzerWithAnalyzedImageStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+    createFastVideoAnalyzer3dWithAnalyzedImageStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<FastVideoAnalyzerWithAnalyzedImageDesire>>(
+    return make_unique<Strategy<FastVideoAnalyzer3dWithAnalyzedImageDesire>>(
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
-            {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
-            {"video_analyzer/analysed_image/filter_state", FilterConfiguration::onOff()},
+            {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
+            {"video_analyzer_3d/analysed_image/filter_state", FilterConfiguration::onOff()},
+        },
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createSlowVideoAnalyzer2dWideStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<SlowVideoAnalyzer2dWideDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(5)},
+        },
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<FastVideoAnalyzer2dWideDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
+        },
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy>
+    createFastVideoAnalyzer2dWideWithAnalyzedImageStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<FastVideoAnalyzer2dWideWithAnalyzedImageDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
+            {"video_analyzer_2d_wide/analysed_image/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));
 }
@@ -227,7 +262,7 @@ unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPoo
         utility,
         unordered_map<string, uint16_t>{{"motor", 1}},
         unordered_map<string, FilterConfiguration>{
-            {"video_analyzer/image_raw/filter_state", FilterConfiguration::throttling(3)},
+            {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
@@ -238,6 +273,17 @@ unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     uint16_t utility)
 {
     return make_unique<SpecificFaceFollowingStrategy>(utility, move(filterPool), nodeHandle);
+}
+
+unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<SoundObjectPersonFollowingDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, FilterConfiguration>{
+            {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
+            {"sound_object_person_following/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
 }
 
 unique_ptr<BaseStrategy>

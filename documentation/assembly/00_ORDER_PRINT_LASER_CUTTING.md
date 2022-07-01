@@ -32,6 +32,7 @@ In order to assemble the robot, you need to buy the following Items.
 
 | Part                                 | Quantity | Quantity per Package | Package Quantity | Link                                        |
 | ------------------------------------ | -------- | -------------------- | ---------------- | ------------------------------------------- |
+| Plastic Screw - M2.5x5mm             | 4        | 25                   | 1                | [Link](https://www.mcmaster.com/96817A263/) |
 | Plastic Screw - M2.5x8mm             | 42       | 25                   | 2                | [Link](https://www.mcmaster.com/96817A268/) |
 | Plastic Screw - M2.5x12mm            | 2        | 25                   | 1                | [Link](https://www.mcmaster.com/96817A274/) |
 | Plastic Screw - M3x5mm               | 72       | 25                   | 3                | [Link](https://www.mcmaster.com/96817A300/) |
@@ -112,6 +113,8 @@ In order to assemble the robot, you need to buy the following Items.
 | Battery - RRC2054-2                    | 1        | 1                    | 1                | [Link](https://www.mouser.ca/ProductDetail/RRC-Power-Solutions/RRC2054-2?qs=%2Fha2pyFadujRgjrFBN7rdOZC0mBI1spzNmbngU%2FMNZA%3D)                   |
 | 16SoundsUSB                            | 1        | 1                    | 1                | [Link](https://github.com/introlab/16SoundsUSB)                                                                                                   |
 | xSoundsMicrophones                     | 16       | 1                    | 16               | [Link](https://github.com/introlab/xSoundsMicrophones)                                                                                            |
+| Wide Angle Camera                      | 1        | 1                    | 1                | [Link](https://www.uctronics.com/arducam-1080p-hd-wide-angle-wdr-usb-camera-module-for-computer-2mp-1-2-7-cmos-ar0230-100-degree-mini-uvc-usb2-0-spy-webcam-board-with-3-3ft-1m-cable-for-windows-linux-mac-os-android.html) |
+| Wide Angle Camera Lens                 | 1        | 1                    | 1                | [Link](https://www.uctronics.com/arducam-1-95mm-m12-lens-m27195h15-for-usb-camera.html)                                                           |
 
 ## Bill of Materials of Custom PCBs
 
