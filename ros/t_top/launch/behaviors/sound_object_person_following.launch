@@ -7,8 +7,8 @@
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>
         <param name="torso_control_alpha" value="0.2"/>
-        <param name="torso_control_p_gain" value="0.175"/>
-        <param name="head_control_p_gain" value="0.175"/>
+        <param name="torso_control_p_gain" value="0.45"/>
+        <param name="head_control_p_gain" value="0.45"/>
         <param name="min_head_pitch_rad" value="-0.35"/>
         <param name="max_head_pitch_rad" value="0.35"/>
 
@@ -20,7 +20,7 @@
         <rosparam param="object_classes">
             [bottle, 'wine glass', cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, 'hot dog', pizza, donut, cake]
         </rosparam>
-        <param name="padding" value="0.02"/>
+        <param name="padding" value="0.075"/>
         <param name="target_lambda" value="0.005"/>
 
         <remap from="sst" to="audio_sst"/>

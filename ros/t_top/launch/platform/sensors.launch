@@ -34,6 +34,8 @@
         <param name="camera_info_url" value="package://t_top/calibration/camera_2d_wide.yaml"/>
 
         <param name="cv_cap_prop_fourcc" value="1196444237"/> <!-- MJPG -->
+        <param name="property_0_code" value="38"/> <!-- CAP_PROP_BUFFERSIZE -->
+        <param name="property_0_value" value="1"/>
 
         <remap from="cv_camera_node/image_raw" to="camera_2d_wide_full_hd/image"/>
         <remap from="cv_camera_node/camera_info" to="camera_2d_wide_full_hd/camera_info"/>

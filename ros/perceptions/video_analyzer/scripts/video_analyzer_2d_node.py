@@ -16,7 +16,7 @@ from video_analyzer.lib_video_analyzer_node import VideoAnalyzerNode, convert_po
 class VideoAnalyzer2dNode(VideoAnalyzerNode):
     def __init__(self):
         super().__init__()
-        self._image_sub = hbba_lite.ThrottlingHbbaSubscriber('image_raw', Image, self._image_cb)
+        self._image_sub = hbba_lite.ThrottlingHbbaSubscriber('image_raw', Image, self._image_cb, queue_size=1)
 
     def _image_cb(self, color_image_msg):
         try:
