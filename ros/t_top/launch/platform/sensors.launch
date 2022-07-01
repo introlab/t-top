@@ -33,6 +33,8 @@
         <param name="image_height" value="1080"/>
         <param name="camera_info_url" value="package://t_top/calibration/camera_2d_wide.yaml"/>
 
+        <param name="cv_cap_prop_fourcc" value="1196444237"/> <!-- MJPG -->
+
         <remap from="cv_camera_node/image_raw" to="camera_2d_wide_full_hd/image"/>
         <remap from="cv_camera_node/camera_info" to="camera_2d_wide_full_hd/camera_info"/>
         <remap from="cv_camera_node/set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>

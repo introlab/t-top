@@ -111,7 +111,7 @@ class ObjectPersonFollower(Follower):
             self._target = target
 
     def _find_biggest_person(self, objects):
-        person_area_pairs = ((o, o.width_2d * o.height_2d) for o in objects if o.object_class == PERSON_CLASS)
+        person_area_pairs = [(o, o.width_2d * o.height_2d) for o in objects if o.object_class == PERSON_CLASS]
         if len(person_area_pairs) == 0:
             return None
 
