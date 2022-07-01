@@ -26,7 +26,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         depth_image_sub = message_filters.Subscriber('depth_image_raw', Image)
         depth_camera_info_sub = message_filters.Subscriber('depth_camera_info', CameraInfo)
         self._image_ts = hbba_lite.ThrottlingHbbaApproximateTimeSynchronizer([color_image_sub, depth_image_sub, depth_camera_info_sub],
-                                                                             5, 0.03, self._image_cb, 'image_raw/filter_state')
+                                                                             1, 0.03, self._image_cb, 'image_raw/filter_state')
 
     def _image_cb(self, color_image_msg, depth_image_msg, depth_camera_info):
         if depth_image_msg.encoding != '16UC1':

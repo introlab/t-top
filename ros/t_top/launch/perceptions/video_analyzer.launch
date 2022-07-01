@@ -5,7 +5,7 @@
 
     <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_3d_node">
         <param name="use_descriptor_yolo_v4" value="false"/>
-        <param name="confidence_threshold" value="0.70"/>
+        <param name="confidence_threshold" value="0.5"/>
         <param name="nms_threshold" value="0.5"/>
         <param name="person_probability_threshold" value="0.75"/>
         <param name="pose_confidence_threshold" value="0.4"/>
@@ -33,7 +33,7 @@
 
     <node if="$(arg camera_2d_wide_enabled)" pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node">
         <param name="use_descriptor_yolo_v4" value="false"/>
-        <param name="confidence_threshold" value="0.70"/>
+        <param name="confidence_threshold" value="0.5"/>
         <param name="nms_threshold" value="0.5"/>
         <param name="person_probability_threshold" value="0.75"/>
         <param name="pose_confidence_threshold" value="0.4"/>
