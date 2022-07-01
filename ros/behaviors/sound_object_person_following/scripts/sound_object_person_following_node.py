@@ -104,7 +104,7 @@ class ObjectPersonFollower(Follower):
         if person is None:
             target = None
         else:
-            objects = list(filter(lambda o: o.object_class in self._object_classes, msg.objects))
+            objects = self._filter_objects(msg.objects)
             target = self._find_target(objects, person)
 
         with self._target_lock:
@@ -117,24 +117,11 @@ class ObjectPersonFollower(Follower):
 
         return max(person_area_pairs, key= lambda x: x[1])[0]
 
-    def _find_target_range(self, person):
-        half_person_width = person.width_2d / 2
-        half_person_height = person.height_2d / 2
-
-        x_offset = half_person_width - self._camera_3d_calibration.half_width + self._padding
-        min_x = person.center_2d.x + x_offset
-        max_x = person.center_2d.x - x_offset
-        if min_x > max_x:
-            min_x = person.center_2d.x
-            max_x = min_x
-
-        y_offset = half_person_height - self._camera_3d_calibration.half_height + self._padding
-        min_y = person.center_2d.y + y_offset
-        max_y = person.center_2d.y - y_offset
-        if min_y > max_y:
-            min_y = max_y
-
-        return min_x, max_x, min_y, max_y
+    def _filter_objects(self, objects):
+        if self._object_classes == set(['all']):
+            return objects
+        else:
+            return list(filter(lambda o: o.object_class in self._object_classes, objects))
 
     def _find_target(self, objects, person, eps=1e-6):
         min_x, max_x, min_y, max_y = self._find_target_range(person)
@@ -165,6 +152,25 @@ class ObjectPersonFollower(Follower):
         result = dual_annealing(cost, bounds, maxiter=50)
 
         return Target.from_object_person_following(result.x[0], result.x[1])
+
+    def _find_target_range(self, person):
+        half_person_width = person.width_2d / 2
+        half_person_height = person.height_2d / 2
+
+        x_offset = half_person_width - self._camera_3d_calibration.half_width + self._padding
+        min_x = person.center_2d.x + x_offset
+        max_x = person.center_2d.x - x_offset
+        if min_x > max_x:
+            min_x = person.center_2d.x
+            max_x = min_x
+
+        y_offset = half_person_height - self._camera_3d_calibration.half_height + self._padding
+        min_y = person.center_2d.y + y_offset
+        max_y = person.center_2d.y - y_offset
+        if min_y > max_y:
+            min_y = max_y
+
+        return min_x, max_x, min_y, max_y
 
     def get_object_bounding_boxes(self, objects):
         bounding_boxes = []
