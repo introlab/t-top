@@ -19,6 +19,8 @@ def main():
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
     parser.add_argument('--batch_size', type=int, help='Set the batch size for the training', required=True)
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
+    parser.add_argument('--criterion_type', choices=['cross_entropy_loss', 'ohem_cross_entropy_loss'],
+                        help='Choose the criterion type', required=True)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
     parser.add_argument('--optimizer_checkpoint', type=str, help='Choose the optimizer checkpoint file', default=None)
@@ -33,8 +35,9 @@ def main():
                               epoch_count=args.epoch_count,
                               learning_rate=args.learning_rate,
                               dataset_root=args.dataset_root,
-                              output_path=os.path.join(args.output_path, args.model_type),
+                              output_path=os.path.join(args.output_path, args.model_type + '_' + args.criterion_type),
                               batch_size=args.batch_size,
+                              criterion_type=args.criterion_type,
                               model_checkpoint=args.model_checkpoint,
                               optimizer_checkpoint=args.optimizer_checkpoint,
                               scheduler_checkpoint=args.scheduler_checkpoint)

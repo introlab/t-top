@@ -11,17 +11,7 @@ CLASS_COUNT_WITHOUT_HUMAN_BODY_PART = 589
 
 class ObjectDetectionOpenImages(OpenImages):
     def _list_available_class_ids(self, root):
-        class_ids = set()
-
-        with open(os.path.join(root, 'labels', 'detections.csv'), newline='') as detection_file:
-            detection_reader = csv.reader(detection_file, delimiter=',', quotechar='"')
-            next(detection_reader)
-
-            for row in detection_reader:
-                class_id = row[2]
-                class_ids.add(class_id)
-
-        return class_ids
+        return self._list_available_class_ids_from_csv(root, 'detections.csv', class_id_index=2)
 
     def _list_images(self):
         image_ids = set()
@@ -51,20 +41,7 @@ class ObjectDetectionOpenImages(OpenImages):
                     'y_max': y_max,
                 })
 
-        image_ids = list(image_ids)
-        image_ids.sort()
-
-        images = []
-        for i, image_id in enumerate(image_ids):
-            path = os.path.join(self._root, 'data', '{}.jpg'.format(image_id))
-            if not self._is_valid_image_path(path):
-                continue
-            images.append({
-                'image_id': image_id,
-                'path': path,
-                'rotation': self._rotation_by_image_id[image_id]
-            })
-
+        images = self._image_ids_to_images(image_ids)
         return images, dict(bboxes)
 
     def _rotate_target(self, target, rotation):

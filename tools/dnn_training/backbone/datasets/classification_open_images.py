@@ -17,17 +17,7 @@ class ClassificationOpenImages(OpenImages):
             raise ValueError('Invalid dataset root')
 
     def _list_available_class_ids(self, root):
-        class_ids = set()
-
-        with open(os.path.join(root, 'labels', 'classifications.csv'), newline='') as detection_file:
-            detection_reader = csv.reader(detection_file, delimiter=',', quotechar='"')
-            next(detection_reader)
-
-            for row in detection_reader:
-                class_id = row[2]
-                class_ids.add(class_id)
-
-        return class_ids
+        return self._list_available_class_ids_from_csv(root, 'classifications.csv', class_id_index=2)
 
     def _list_images(self):
         images = []

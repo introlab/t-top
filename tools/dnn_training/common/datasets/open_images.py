@@ -34,6 +34,19 @@ class OpenImages(Dataset):
     def _list_available_class_ids(self, root):
         raise NotImplementedError()
 
+    def _list_available_class_ids_from_csv(self, root, label_filename, class_id_index):
+        class_ids = set()
+
+        with open(os.path.join(root, 'labels', label_filename), newline='') as detection_file:
+            detection_reader = csv.reader(detection_file, delimiter=',', quotechar='"')
+            next(detection_reader)
+
+            for row in detection_reader:
+                class_id = row[class_id_index]
+                class_ids.add(class_id)
+
+        return class_ids
+
     def _list_classes(self, available_class_ids, ignored_class_names=None):
         if ignored_class_names is None:
             ignored_class_names = []
@@ -80,6 +93,21 @@ class OpenImages(Dataset):
     def _list_images(self):
         raise NotImplementedError()
 
+    def _image_ids_to_images(self, image_ids):
+        image_ids = list(image_ids)
+        image_ids.sort()
+
+        images = []
+        for i, image_id in enumerate(image_ids):
+            path = os.path.join(self._root, 'data', '{}.jpg'.format(image_id))
+            if not self._is_valid_image_path(path):
+                continue
+            images.append({
+                'image_id': image_id,
+                'path': path,
+                'rotation': self._rotation_by_image_id[image_id]
+            })
+
     def _is_valid_image_path(self, path):
         try:
             _ = Image.open(path).verify()
@@ -102,8 +130,8 @@ class OpenImages(Dataset):
     def __getitem__(self, index):
         image = Image.open(self._images[index]['path']).convert('RGB')
         target = self._targets_by_image_id[self._images[index]['image_id']]
+        target = self._load_target(target)
 
-        target = copy.deepcopy(target)
         image = self._rotate_image(image, self._images[index]['rotation'])
         target = self._rotate_target(target, self._images[index]['rotation'])
 
@@ -118,3 +146,6 @@ class OpenImages(Dataset):
         metadata.update(transforms_metadata)
 
         return image, target, metadata
+
+    def _load_target(self, target):
+        return copy.deepcopy(target)

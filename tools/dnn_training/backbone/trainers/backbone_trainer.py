@@ -1,6 +1,7 @@
 import os
 
 import torch
+import torch.nn as nn
 import torch.utils.data
 
 import torchvision.transforms as transforms
@@ -21,7 +22,9 @@ IMAGE_SIZE = (224, 224)
 
 class BackboneTrainer(Trainer):
     def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
-                 batch_size=128, model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 batch_size=128, criterion_type='cross_entropy_loss',
+                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+        self._criterion_type = criterion_type
         super(BackboneTrainer, self).__init__(device, model,
                                               dataset_root=dataset_root,
                                               output_path=output_path,
@@ -43,7 +46,12 @@ class BackboneTrainer(Trainer):
         self._validation_accuracy_metric = ClassificationAccuracyMetric()
 
     def _create_criterion(self, model):
-        return OhemCrossEntropyLoss()
+        if self._criterion_type == 'cross_entropy_loss':
+            return nn.CrossEntropyLoss()
+        elif self._criterion_type == 'ohem_cross_entropy_loss':
+            return OhemCrossEntropyLoss()
+        else:
+            raise ValueError('Invalid criterion type')
 
     def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         transforms = create_training_image_transform()
