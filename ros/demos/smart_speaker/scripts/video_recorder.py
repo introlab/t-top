@@ -139,12 +139,8 @@ if __name__ == '__main__':
         recorder.stop_recording()
 
 
+    rospy.on_shutdown(on_shutdown)
     rospy.Subscriber(image_topic, Image, image_callback)
     rospy.Subscriber(audio_topic, AudioFrame, audio_callback)
 
     rospy.spin()
-
-    rospy.on_shutdown(on_shutdown)
-
-    # Stopping recording
-    recorder.stop_recording()
