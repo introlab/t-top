@@ -1,0 +1,6 @@
+<launch>
+    <arg name="filename"/>
+    <node pkg="rosbag" type="play" name="rosbag" args="$(arg filename)" required="true"/>
+    <node name="image_uncompress" pkg="image_transport" type="republish" output="screen" respawn="true" args="compressed in:=/camera/color/image_raw raw out:=/camera/color/image_raw"/>
+    <node name="transcode" pkg="t_top" type="video_recorder.py" output="screen"/>
+</launch>
