@@ -106,39 +106,41 @@ class Recorder:
          # Convert to GST Buffer and send to encoder
         self._video_src.emit("push-buffer", Recorder.numpy_to_gst_buffer(frame, timestamp_ns, duration))
 
-
-# Recorder
-recorder = Recorder(1280,720, '/tmp/test.mp4')
-
-
-def image_callback(image: Image):
-    # print('image callback', image.width, image.height)
-    recorder.push_video_frame(image)
-
-
-def audio_callback(frame: AudioFrame):
-    # print('audio callback',frame.format, frame.sampling_frequency)
-    recorder.push_audio_frame(frame)
-
-
-def on_shutdown():
-    recorder.stop_recording()
-
-
 if __name__ == '__main__':
 
-    print('init')
-    rospy.init_node('recorder')
+    rospy.init_node('video_recorder')
+
+    filename_out = rospy.get_param('~filename_out')
+    image_topic = rospy.get_param('~image_topic', '/camera/color/image_raw')
+    audio_topic = rospy.get_param('~audio_topic', '/audio_signed_16_44100')
+    image_width = rospy.get_param('~image_width', 1280)
+    image_height = rospy.get_param('~image_height', 720)
+
+    # Recorder
+    recorder = Recorder(image_width, image_height, filename_out)
+
+
     Gst.init(None)
     Gst.debug_set_active(True)
     Gst.debug_set_default_threshold(3)
 
-    image_topic = '/camera/color/image_raw'
-    audio_topic = '/audio_signed_16_44100'
+
+    def image_callback(image: Image):
+        # print('image callback', image.width, image.height)
+        recorder.push_video_frame(image)
+
+
+    def audio_callback(frame: AudioFrame):
+        # print('audio callback',frame.format, frame.sampling_frequency)
+        recorder.push_audio_frame(frame)
+
+
+    def on_shutdown():
+        recorder.stop_recording()
+
 
     rospy.Subscriber(image_topic, Image, image_callback)
     rospy.Subscriber(audio_topic, AudioFrame, audio_callback)
-
 
     rospy.spin()
 
@@ -146,6 +148,3 @@ if __name__ == '__main__':
 
     # Stopping recording
     recorder.stop_recording()
-
-
-
