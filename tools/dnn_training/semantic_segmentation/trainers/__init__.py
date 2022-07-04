@@ -1,0 +1,1 @@
+from semantic_segmentation.trainers.semantic_segmentation_trainer import SemanticSegmentationTrainer

@@ -24,10 +24,10 @@ class ClassificationOpenImages(OpenImages):
         class_indexes_by_image_id = {}
 
         with open(os.path.join(self._root, 'labels', 'classifications.csv'), newline='') as detection_file:
-            detection_reader = csv.reader(detection_file, delimiter=',', quotechar='"')
-            next(detection_reader)
+            classification_reader = csv.reader(detection_file, delimiter=',', quotechar='"')
+            next(classification_reader)
 
-            for row in detection_reader:
+            for row in classification_reader:
                 image_id = row[0]
                 class_id = row[2]
 

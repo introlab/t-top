@@ -108,6 +108,8 @@ class OpenImages(Dataset):
                 'rotation': self._rotation_by_image_id[image_id]
             })
 
+        return images
+
     def _is_valid_image_path(self, path):
         try:
             _ = Image.open(path).verify()

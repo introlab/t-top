@@ -48,7 +48,7 @@ def create_model(model_type):
     if model_type == 'stdc1':
         return Stdc1(class_count=CLASS_COUNT)
     elif model_type == 'stdc2':
-        return Stdc1(class_count=CLASS_COUNT)
+        return Stdc2(class_count=CLASS_COUNT)
     else:
         raise ValueError('Invalid backbone type')
 
