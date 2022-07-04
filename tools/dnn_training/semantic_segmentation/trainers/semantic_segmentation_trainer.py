@@ -95,9 +95,9 @@ class SemanticSegmentationTrainer(Trainer):
         self._validation_mean_iou_metric.add(model_output[-1], target)
 
     def _print_performances(self):
-        print('\nTraining : Loss={}, Accuracy={}'.format(self._training_loss_metric.get_loss(),
+        print('\nTraining : Loss={}, Mean IoU={}'.format(self._training_loss_metric.get_loss(),
                                                          self._training_mean_iou_metric.get_mean_iou()))
-        print('Validation : Loss={}, Accuracy={}\n'.format(self._validation_loss_metric.get_loss(),
+        print('Validation : Loss={}, Mean IoU={}\n'.format(self._validation_loss_metric.get_loss(),
                                                            self._validation_mean_iou_metric.get_mean_iou()))
 
     def _save_learning_curves(self):

@@ -53,11 +53,7 @@ class SemanticSegmentationTransforms(nn.Module):
 
         for mask, class_index in target:
             mask_tensor = F.to_tensor(mask)[0]
-            mask_index = mask_tensor >= 0.5
-            if torch.logical_and(target_tensor[mask_index] != 0, target_tensor[mask_index] != class_index).all():
-                print('Warning overlapping mask (class_index={}, min={}, max={})'.format(class_index, target_tensor[mask_index].min(), target_tensor[mask_index].max()))
-
-            target_tensor[mask_index] = class_index
+            target_tensor[mask_tensor >= 0.5] = class_index
 
         return target_tensor
 

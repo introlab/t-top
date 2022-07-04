@@ -118,7 +118,7 @@ class PpLiteSeg(nn.Module):
             segmentation3 = self._head3(y3, input_size)
             return [segmentation1, segmentation2, segmentation3]
         else:
-            segmentation = self._head3(y3)
+            segmentation = self._head3(y3, input_size)
             return [segmentation]
 
     def get_class_count(self):
