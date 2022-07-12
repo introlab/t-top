@@ -17,7 +17,7 @@ from keyword_spotting.datasets import KeywordSpottingTrainingTransforms
 def main():
     parser = argparse.ArgumentParser(description='Test exported keyword spotter')
 
-    parser.add_argument('--database_type', choices=['google_speech_commands', 'ttop_keyword'],
+    parser.add_argument('--dataset_type', choices=['google_speech_commands', 'ttop_keyword'],
                         help='Choose the database type', required=True)
     parser.add_argument('--dataset_root', type=str, help='Choose the dataset root path', required=True)
     parser.add_argument('--mfcc_feature_count', type=int, help='Choose the MFCC feature count', required=True)
@@ -43,7 +43,7 @@ def main():
         print('"torch_script_path" or "trt_path" is required.')
         sys.exit()
 
-    transforms = KeywordSpottingTrainingTransforms(get_noise_root(args.database_type, args.dataset_root),
+    transforms = KeywordSpottingTrainingTransforms(get_noise_root(args.dataset_type, args.dataset_root),
                                                    n_mfcc=args.mfcc_feature_count)
     dataset = create_dataset(args.database_type, args.dataset_root, 'testing', transforms)
     dataset_loader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)

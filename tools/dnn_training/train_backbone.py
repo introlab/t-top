@@ -3,6 +3,8 @@ import os
 
 import torch
 
+from common.program_arguments import save_arguments
+
 from backbone.stdc import Stdc1, Stdc2
 from backbone.trainers import BackboneTrainer
 from backbone.datasets.classification_image_net import CLASS_COUNT as IMAGE_NET_CLASS_COUNT
@@ -27,8 +29,6 @@ def main():
                         help='Choose the criterion type', required=True)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
-    parser.add_argument('--optimizer_checkpoint', type=str, help='Choose the optimizer checkpoint file', default=None)
-    parser.add_argument('--scheduler_checkpoint', type=str, help='Choose the scheduler checkpoint file', default=None)
 
     args = parser.parse_args()
 
@@ -37,6 +37,8 @@ def main():
 
     output_path = os.path.join(args.output_path, args.model_type + '_' + args.criterion_type + '_' +
                                args.dataset_type + '_lr' + str(args.learning_rate))
+    save_arguments(output_path, args)
+
     trainer = BackboneTrainer(device, model,
                               dataset_type=args.dataset_type,
                               epoch_count=args.epoch_count,
@@ -45,9 +47,7 @@ def main():
                               output_path=output_path,
                               batch_size=args.batch_size,
                               criterion_type=args.criterion_type,
-                              model_checkpoint=args.model_checkpoint,
-                              optimizer_checkpoint=args.optimizer_checkpoint,
-                              scheduler_checkpoint=args.scheduler_checkpoint)
+                              model_checkpoint=args.model_checkpoint)
     trainer.train()
 
 

@@ -21,7 +21,7 @@ class SemanticSegmentationTrainer(Trainer):
     def __init__(self, device, model, dataset_type='coco', dataset_root='', output_path='',
                  epoch_count=10, learning_rate=0.01,
                  batch_size=128, criterion_type='cross_entropy_loss',
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 model_checkpoint=None):
         self._dataset_type = dataset_type
         self._class_count = model.get_class_count()
         self._criterion_type = criterion_type
@@ -32,9 +32,7 @@ class SemanticSegmentationTrainer(Trainer):
                                               learning_rate=learning_rate,
                                               batch_size=batch_size,
                                               batch_size_division=1,
-                                              model_checkpoint=model_checkpoint,
-                                              optimizer_checkpoint=optimizer_checkpoint,
-                                              scheduler_checkpoint=scheduler_checkpoint)
+                                              model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 
@@ -124,7 +122,8 @@ class SemanticSegmentationTrainer(Trainer):
         self._learning_curves.add_training_mean_iou_value(self._training_mean_iou_metric.get_mean_iou())
         self._learning_curves.add_validation_mean_iou_value(self._validation_mean_iou_metric.get_mean_iou())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation - Semantic Segmentation', flush=True)

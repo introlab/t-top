@@ -24,7 +24,7 @@ class BackboneTrainer(Trainer):
     def __init__(self, device, model, dataset_type='image_net', dataset_root='', output_path='',
                  epoch_count=10, learning_rate=0.01,
                  batch_size=128, criterion_type='cross_entropy_loss',
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 model_checkpoint=None):
         self._dataset_type = dataset_type
         self._criterion_type = criterion_type
         super(BackboneTrainer, self).__init__(device, model,
@@ -34,9 +34,7 @@ class BackboneTrainer(Trainer):
                                               learning_rate=learning_rate,
                                               batch_size=batch_size,
                                               batch_size_division=1,
-                                              model_checkpoint=model_checkpoint,
-                                              optimizer_checkpoint=optimizer_checkpoint,
-                                              scheduler_checkpoint=scheduler_checkpoint)
+                                              model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 
@@ -118,7 +116,8 @@ class BackboneTrainer(Trainer):
         self._learning_curves.add_training_accuracy_value(self._training_accuracy_metric.get_accuracy())
         self._learning_curves.add_validation_accuracy_value(self._validation_accuracy_metric.get_accuracy())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation - Classification', flush=True)

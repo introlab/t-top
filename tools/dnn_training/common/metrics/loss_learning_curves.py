@@ -1,3 +1,5 @@
+import json
+
 import matplotlib.pyplot as plt
 
 
@@ -16,7 +18,11 @@ class LossLearningCurves:
     def add_validation_loss_value(self, value):
         self._validation_loss_values.append(value)
 
-    def save_figure(self, output_path):
+    def save(self, figure_path, data_path):
+        self._save_figure(figure_path)
+        self._save_data(data_path)
+
+    def _save_figure(self, path):
         fig = plt.figure(figsize=(5, 5), dpi=300)
         ax1 = fig.add_subplot(111)
 
@@ -28,5 +34,13 @@ class LossLearningCurves:
         ax1.set_ylabel(u'Loss')
         ax1.legend()
 
-        fig.savefig(output_path)
+        fig.savefig(path)
         plt.close(fig)
+
+    def _save_data(self, path):
+        with open(path, 'w') as file:
+            data = {
+                'training_loss_values': self._training_loss_values,
+                'validation_loss_values': self._validation_loss_values
+            }
+            json.dump(data, file)

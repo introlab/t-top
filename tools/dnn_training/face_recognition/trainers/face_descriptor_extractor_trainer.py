@@ -18,7 +18,7 @@ import torch.utils.data
 class FaceDescriptorExtractorTrainer(Trainer):
     def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
                  batch_size=128, margin=0.2,
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 model_checkpoint=None):
         self._margin = margin
 
         super(FaceDescriptorExtractorTrainer, self).__init__(device, model,
@@ -28,9 +28,7 @@ class FaceDescriptorExtractorTrainer(Trainer):
                                                              learning_rate=learning_rate,
                                                              batch_size=batch_size,
                                                              batch_size_division=1,
-                                                             model_checkpoint=model_checkpoint,
-                                                             optimizer_checkpoint=optimizer_checkpoint,
-                                                             scheduler_checkpoint=scheduler_checkpoint)
+                                                             model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 
@@ -83,7 +81,8 @@ class FaceDescriptorExtractorTrainer(Trainer):
         self._learning_curves.add_training_loss_value(self._training_loss_metric.get_loss())
         self._learning_curves.add_validation_loss_value(self._validation_loss_metric.get_loss())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation', flush=True)

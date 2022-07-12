@@ -16,7 +16,7 @@ from keyword_spotting.datasets import GoogleSpeechCommands, TtopKeyword, \
 class KeywordSpotterTrainer(Trainer):
     def __init__(self, device, model, dataset_type='google_speech_commands', mfcc_feature_count=40, dataset_root='',
                  output_path='', epoch_count=10, learning_rate=0.01, batch_size=128, batch_size_division=4,
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 model_checkpoint=None):
         self._dataset_type = dataset_type
         self._mfcc_feature_count = mfcc_feature_count
 
@@ -27,9 +27,7 @@ class KeywordSpotterTrainer(Trainer):
                                                     learning_rate=learning_rate,
                                                     batch_size=batch_size,
                                                     batch_size_division=batch_size_division,
-                                                    model_checkpoint=model_checkpoint,
-                                                    optimizer_checkpoint=optimizer_checkpoint,
-                                                    scheduler_checkpoint=scheduler_checkpoint)
+                                                    model_checkpoint=model_checkpoint)
 
         self._training_loss_metric = LossMetric()
         self._training_accuracy_metric = ClassificationAccuracyMetric()
@@ -108,7 +106,8 @@ class KeywordSpotterTrainer(Trainer):
         self._learning_curves.add_validation_loss_value(self._validation_loss_metric.get_loss())
         self._learning_curves.add_validation_accuracy_value(self._validation_accuracy_metric.get_accuracy())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation', flush=True)

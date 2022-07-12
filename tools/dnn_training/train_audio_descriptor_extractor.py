@@ -2,6 +2,8 @@ import argparse
 
 import torch
 
+from common.program_arguments import save_arguments
+
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
 from audio_descriptor.trainers import AudioDescriptorExtractorTrainer
@@ -38,10 +40,9 @@ def main():
                         default=None)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
-    parser.add_argument('--optimizer_checkpoint', type=str, help='Choose the optimizer checkpoint file', default=None)
-    parser.add_argument('--scheduler_checkpoint', type=str, help='Choose the scheduler checkpoint file', default=None)
 
     args = parser.parse_args()
+    save_arguments(args.output_path, args)
 
     if args.criterion_type == 'triplet_loss' and args.dataset_class_count is None:
         model = create_model(args.backbone_type, args.embedding_size, vlad=args.vlad)
@@ -69,9 +70,7 @@ def main():
                                               enable_pitch_shifting=args.enable_pitch_shifting,
                                               enable_time_stretching=args.enable_time_stretching,
                                               margin=args.margin,
-                                              model_checkpoint=args.model_checkpoint,
-                                              optimizer_checkpoint=args.optimizer_checkpoint,
-                                              scheduler_checkpoint=args.scheduler_checkpoint)
+                                              model_checkpoint=args.model_checkpoint)
     trainer.train()
 
 

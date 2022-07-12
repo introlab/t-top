@@ -1,3 +1,5 @@
+import json
+
 import matplotlib.pyplot as plt
 
 
@@ -26,7 +28,11 @@ class LossAccuracyLearningCurves:
     def add_validation_accuracy_value(self, value):
         self._validation_accuracy_values.append(value)
 
-    def save_figure(self, output_path):
+    def save(self, figure_path, data_path):
+        self._save_figure(figure_path)
+        self._save_data(data_path)
+
+    def _save_figure(self, path):
         fig = plt.figure(figsize=(10, 5), dpi=300)
         ax1 = fig.add_subplot(121)
         ax2 = fig.add_subplot(122)
@@ -47,5 +53,15 @@ class LossAccuracyLearningCurves:
         ax2.set_ylabel(u'Accuracy')
         ax2.legend()
 
-        fig.savefig(output_path)
+        fig.savefig(path)
         plt.close(fig)
+
+    def _save_data(self, path):
+        with open(path, 'w') as file:
+            data = {
+                'training_loss_values': self._training_loss_values,
+                'validation_loss_values': self._validation_loss_values,
+                'training_accuracy_values': self._training_accuracy_values,
+                'validation_accuracy_values': self._validation_accuracy_values
+            }
+            json.dump(data, file, indent=4, sort_keys=True)

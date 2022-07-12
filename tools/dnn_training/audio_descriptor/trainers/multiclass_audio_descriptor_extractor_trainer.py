@@ -21,7 +21,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                  batch_size=128, criterion_type='bce_loss',
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
                  enable_pitch_shifting=False, enable_time_stretching=False,
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 model_checkpoint=None):
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
         self._n_features = n_features
@@ -37,9 +37,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                                                               learning_rate=learning_rate,
                                                               batch_size=batch_size,
                                                               batch_size_division=1,
-                                                              model_checkpoint=model_checkpoint,
-                                                              optimizer_checkpoint=optimizer_checkpoint,
-                                                              scheduler_checkpoint=scheduler_checkpoint)
+                                                              model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 
@@ -130,7 +128,8 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._learning_curves.add_training_accuracy_value(self._training_accuracy_metric.get_accuracy())
         self._learning_curves.add_validation_accuracy_value(self._validation_accuracy_metric.get_accuracy())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation - ROC', flush=True)

@@ -3,6 +3,8 @@ import os
 
 import torch
 
+from common.program_arguments import save_arguments
+
 from pose_estimation.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50
 from pose_estimation.pose_estimator import PoseEstimator
 from pose_estimation.trainers import PoseEstimatorTrainer
@@ -24,24 +26,23 @@ def main():
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
-    parser.add_argument('--optimizer_checkpoint', type=str, help='Choose the optimizer checkpoint file', default=None)
-    parser.add_argument('--scheduler_checkpoint', type=str, help='Choose the scheduler checkpoint file', default=None)
 
     args = parser.parse_args()
 
     model = create_model(args.backbone_type, args.upsampling_count)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
+    output_path = os.path.join(args.output_path, args.backbone_type)
+    save_arguments(output_path, args)
+
     trainer = PoseEstimatorTrainer(device, model,
                                    epoch_count=args.epoch_count,
                                    learning_rate=args.learning_rate,
                                    dataset_root=args.dataset_root,
-                                   output_path=os.path.join(args.output_path, args.backbone_type),
+                                   output_path=output_path,
                                    batch_size=args.batch_size,
                                    batch_size_division=args.batch_size_division,
-                                   model_checkpoint=args.model_checkpoint,
-                                   optimizer_checkpoint=args.optimizer_checkpoint,
-                                   scheduler_checkpoint=args.scheduler_checkpoint)
+                                   model_checkpoint=args.model_checkpoint)
     trainer.train()
 
 

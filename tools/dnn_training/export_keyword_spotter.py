@@ -9,7 +9,7 @@ from train_keyword_spotter import create_model
 
 def main():
     parser = argparse.ArgumentParser(description='Export keyword spotter')
-    parser.add_argument('--database_type', choices=['google_speech_commands', 'ttop_keyword'],
+    parser.add_argument('--dataset_type', choices=['google_speech_commands', 'ttop_keyword'],
                         help='Choose the database type', required=True)
     parser.add_argument('--mfcc_feature_count', type=int, help='Choose the MFCC feature count', required=True)
 
@@ -22,7 +22,7 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.database_type)
+    model = create_model(args.dataset_type)
 
     x = torch.ones((1, 1, args.mfcc_feature_count, 51))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,

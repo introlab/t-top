@@ -2,6 +2,8 @@ import argparse
 
 import torch
 
+from common.program_arguments import save_arguments
+
 from face_recognition.face_descriptor_extractor import FaceDescriptorExtractor
 from face_recognition.trainers import FaceDescriptorExtractorTrainer
 
@@ -19,10 +21,9 @@ def main():
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
-    parser.add_argument('--optimizer_checkpoint', type=str, help='Choose the optimizer checkpoint file', default=None)
-    parser.add_argument('--scheduler_checkpoint', type=str, help='Choose the scheduler checkpoint file', default=None)
 
     args = parser.parse_args()
+    save_arguments(args.output_path, args)
 
     model = create_model(args.embedding_size)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
@@ -34,9 +35,7 @@ def main():
                                              output_path=args.output_path,
                                              batch_size=args.batch_size,
                                              margin=args.margin,
-                                             model_checkpoint=args.model_checkpoint,
-                                             optimizer_checkpoint=args.optimizer_checkpoint,
-                                             scheduler_checkpoint=args.scheduler_checkpoint)
+                                             model_checkpoint=args.model_checkpoint)
     trainer.train()
 
 
