@@ -52,6 +52,9 @@ class ClassificationImageNet(Dataset):
         class_name = tree.getroot().findall("./object/name")[0].text
         return self._class_index_by_class_name[class_name]
 
+    def __len__(self):
+        return len(self._images)
+
     def __getitem__(self, index):
         image = Image.open(self._images[index]['path']).convert('RGB')
         if self._transform is not None:
