@@ -1,15 +1,16 @@
 import os
 
 import torch
+import torch.nn as nn
 import torch.utils.data
 from tqdm import tqdm
 
-from common.criterions import OhemCrossEntropyLoss
+from common.criterions import OhemCrossEntropyLoss, SoftmaxFocalLoss
 from common.trainers import Trainer
 from common.metrics import LossMetric
 
-from semantic_segmentation.datasets import SemanticSegmentationOpenImages, SemanticSegmentationTrainingTransforms, \
-    SemanticSegmentationValidationTransforms
+from semantic_segmentation.datasets import SemanticSegmentationCoco, SemanticSegmentationOpenImages, \
+    SemanticSegmentationTrainingTransforms, SemanticSegmentationValidationTransforms
 from semantic_segmentation.metrics import LossMeanIoULearningCurves, MeanIoUMetric
 
 
@@ -17,9 +18,13 @@ IMAGE_SIZE = (360, 640)
 
 
 class SemanticSegmentationTrainer(Trainer):
-    def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
-                 batch_size=128, model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+    def __init__(self, device, model, dataset_type='coco', dataset_root='', output_path='',
+                 epoch_count=10, learning_rate=0.01,
+                 batch_size=128, criterion_type='cross_entropy_loss',
+                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+        self._dataset_type = dataset_type
         self._class_count = model.get_class_count()
+        self._criterion_type = criterion_type
         super(SemanticSegmentationTrainer, self).__init__(device, model,
                                               dataset_root=dataset_root,
                                               output_path=output_path,
@@ -41,7 +46,14 @@ class SemanticSegmentationTrainer(Trainer):
         self._validation_mean_iou_metric = MeanIoUMetric(self._class_count)
 
     def _create_criterion(self, model):
-        criterion = OhemCrossEntropyLoss()
+        if self._criterion_type == 'cross_entropy_loss':
+            criterion = nn.CrossEntropyLoss()
+        elif self._criterion_type == 'ohem_cross_entropy_loss':
+            criterion = OhemCrossEntropyLoss()
+        elif self._criterion_type == 'softmax_focal_loss':
+            criterion = SoftmaxFocalLoss()
+        else:
+            raise ValueError('Invalid criterion type')
 
         def criterion_mean(predictions, target):
             loss = 0.0
@@ -67,7 +79,13 @@ class SemanticSegmentationTrainer(Trainer):
                                            shuffle=False)
 
     def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms, shuffle):
-        dataset = SemanticSegmentationOpenImages(dataset_root, split=split, transforms=transforms)
+        if self._dataset_type == 'coco':
+            split_mapping = {'training': True, 'validation': False, 'testing': False}
+            dataset = SemanticSegmentationCoco(dataset_root, train=split_mapping[split], transforms=transforms)
+        elif self._dataset_type == 'open_images':
+            dataset = SemanticSegmentationOpenImages(dataset_root, split=split, transforms=transforms)
+        else:
+            raise ValueError('Invalid dataset type')
 
         return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=shuffle,
                                            num_workers=4)

@@ -1,4 +1,5 @@
 from common.criterions.am_softmax_loss import AmSoftmaxLoss
 from common.criterions.ohem_cross_entropy_loss import OhemCrossEntropyLoss
 from common.criterions.sigmoid_focal_loss import SigmoidFocalLossWithLogits, SigmoidFocalLoss
+from common.criterions.softmax_focal_loss import SoftmaxFocalLoss
 from common.criterions.triplet_loss import TripletLoss

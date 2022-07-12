@@ -47,6 +47,7 @@ class SemanticSegmentationTransforms(nn.Module):
 
         self._image_size = image_size
         self._class_count = class_count
+        self._normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def _target_to_tensor(self, target):
         target_tensor = torch.zeros(self._image_size[0], self._image_size[1], dtype=torch.long)
@@ -88,6 +89,7 @@ class SemanticSegmentationTrainingTransforms(SemanticSegmentationTransforms):
             target = [(F.hflip(mask), class_index) for mask, class_index in target]
 
         image_tensor = F.to_tensor(image)
+        image_tensor = self._normalize(image_tensor)
         target_tensor = self._target_to_tensor(target)
 
         return image_tensor, target_tensor, {}
@@ -103,6 +105,7 @@ class SemanticSegmentationValidationTransforms(SemanticSegmentationTransforms):
         target = [(self._resize_transform(mask), class_index) for mask, class_index in target]
 
         image_tensor = F.to_tensor(image)
+        image_tensor = self._normalize(image_tensor)
         target_tensor = self._target_to_tensor(target)
 
         return image_tensor, target_tensor, {}

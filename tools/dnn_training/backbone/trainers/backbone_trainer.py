@@ -8,22 +8,24 @@ import torchvision.transforms as transforms
 
 from tqdm import tqdm
 
-from common.criterions import OhemCrossEntropyLoss
+from common.criterions import OhemCrossEntropyLoss, SoftmaxFocalLoss
 from common.datasets import RandomSharpnessChange, RandomAutocontrast, RandomEqualize, RandomPosterize
 from common.trainers import Trainer
 from common.metrics import ClassificationAccuracyMetric, LossMetric, LossAccuracyLearningCurves, \
     TopNClassificationAccuracyMetric
 
-from backbone.datasets import ClassificationOpenImages
+from backbone.datasets import ClassificationOpenImages, ClassificationImageNet
 
 
 IMAGE_SIZE = (224, 224)
 
 
 class BackboneTrainer(Trainer):
-    def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
+    def __init__(self, device, model, dataset_type='image_net', dataset_root='', output_path='',
+                 epoch_count=10, learning_rate=0.01,
                  batch_size=128, criterion_type='cross_entropy_loss',
                  model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+        self._dataset_type = dataset_type
         self._criterion_type = criterion_type
         super(BackboneTrainer, self).__init__(device, model,
                                               dataset_root=dataset_root,
@@ -50,26 +52,34 @@ class BackboneTrainer(Trainer):
             return nn.CrossEntropyLoss()
         elif self._criterion_type == 'ohem_cross_entropy_loss':
             return OhemCrossEntropyLoss()
+        elif self._criterion_type == 'softmax_focal_loss':
+            return SoftmaxFocalLoss()
         else:
             raise ValueError('Invalid criterion type')
 
     def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = create_training_image_transform()
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms,
+        transform = create_training_image_transform()
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transform,
                                            shuffle=True)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = create_validation_image_transform()
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms,
+        transform = create_validation_image_transform()
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transform,
                                            shuffle=False)
 
     def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = create_validation_image_transform()
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'testing', transforms,
+        transform = create_validation_image_transform()
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'testing', transform,
                                            shuffle=False)
 
-    def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms, shuffle):
-        dataset = ClassificationOpenImages(dataset_root, split=split, image_transforms=transforms)
+    def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transform, shuffle):
+        if self._dataset_type == 'image_net':
+            split_mapping = {'training': True, 'validation': False, 'testing': False}
+            dataset = ClassificationImageNet(dataset_root, train=split_mapping[split], transform=transform)
+        elif self._dataset_type == 'open_images':
+            dataset = ClassificationOpenImages(dataset_root, split=split, image_transform=transform)
+        else:
+            raise ValueError('Invalid dataset type')
 
         return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=shuffle,
                                            num_workers=4)

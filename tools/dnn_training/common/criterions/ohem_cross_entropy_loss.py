@@ -4,12 +4,19 @@ import torch.nn.functional as F
 
 
 class OhemCrossEntropyLoss(nn.Module):
-    def __init__(self, ratio=0.05):
+    def __init__(self, probability_threshold=0.7, min_ratio=0.0625):
         super(OhemCrossEntropyLoss, self).__init__()
-        self._ratio = ratio
+        self._probability_threshold = probability_threshold
+        self._min_ratio = min_ratio
 
     def forward(self, input, target):
-        losses = F.cross_entropy(input, target, reduction='none').view(-1)
-        sorted_losses, _ = torch.sort(losses, descending=True)
+        cross_entropy_losses = F.cross_entropy(input, target, reduction='none').view(-1)
+        probabilities = torch.exp(-cross_entropy_losses)
+        probability_mask = probabilities >= self._probability_threshold
+        min_count = max(1, int(cross_entropy_losses.size(0) * self._min_ratio))
 
-        return sorted_losses[:max(1, int(sorted_losses.size(0) * self._ratio))].mean()
+        if probability_mask.sum() <= min_count:
+            sorted_losses, _ = torch.sort(cross_entropy_losses, descending=True)
+            return sorted_losses[:min_count].mean()
+        else:
+            return cross_entropy_losses[probability_mask].mean()

@@ -8,10 +8,10 @@ CLASS_COUNT = 601
 
 
 class ClassificationOpenImages(OpenImages):
-    def __init__(self, root, split=None, image_transforms=None):
-        def transforms(image, target):
-            return image_transforms(image), target, {}
-        super(ClassificationOpenImages, self).__init__(root, split=split, transforms=transforms)
+    def __init__(self, root, split=None, image_transform=None):
+        def transform(image, target):
+            return image_transform(image), target, {}
+        super(ClassificationOpenImages, self).__init__(root, split=split, transforms=transform)
 
         if len(self._indexes_by_class_id) != CLASS_COUNT:
             raise ValueError('Invalid dataset root')
