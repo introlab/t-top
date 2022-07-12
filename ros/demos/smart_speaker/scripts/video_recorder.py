@@ -28,7 +28,7 @@ class Recorder:
         self._video_src = None
         self._audio_src = None
 
-    def start_recording(self):
+    def start_recording(self, record_start_time_ns):
         if self._pipeline is None:
             video_caps = f'video/x-raw,format=RGB,width={self._width},height={self._height},framerate=1/1'
             audio_caps = f'audio/x-raw,format=S16LE,channels=1,rate={self._encode_audio_rate},layout=interleaved'
@@ -51,7 +51,7 @@ class Recorder:
                 f'mux.'
             try:
                 self._pipeline = Gst.parse_launch(command)
-                self._record_start_time_ns = int(time.time() * 1e9)
+                self._record_start_time_ns = record_start_time_ns
                 self._last_video_frame_timestamp_ns = 0
                 self._video_src = self._pipeline.get_by_name('video_src')
                 self._audio_src = self._pipeline.get_by_name('audio_src')
@@ -87,24 +87,25 @@ class Recorder:
 
     def push_audio_frame(self, frame: AudioFrame):
         if self._pipeline is None:
-            self.start_recording()
+            self.start_recording(frame.header.stamp.to_nsec())
 
         if self._audio_src:
-            timestamp_ns = int(time.time() *  1e9) - self._record_start_time_ns
-            self._audio_src.emit("push-buffer", Recorder.numpy_to_gst_buffer(frame, timestamp_ns, 1/self._encode_audio_rate * frame.frame_sample_count))
+            timestamp_ns = frame.header.stamp.to_nsec() - self._record_start_time_ns
+            duration_ns = 1 / self._encode_audio_rate * frame.frame_sample_count
+            self._audio_src.emit("push-buffer", Recorder.numpy_to_gst_buffer(frame, timestamp_ns, duration_ns))
 
 
 
     def push_video_frame(self, frame: Image):
         if self._pipeline is None:
-            self.start_recording()
+            self.start_recording(frame.header.stamp.to_nsec())
 
-        timestamp_ns = int(time.time() * 1e9 - self._record_start_time_ns)
-        duration = timestamp_ns - self._last_video_frame_timestamp_ns
+        timestamp_ns = frame.header.stamp.to_nsec() - self._record_start_time_ns
+        duration_ns = timestamp_ns - self._last_video_frame_timestamp_ns
         self._last_video_frame_timestamp_ns = timestamp_ns
 
          # Convert to GST Buffer and send to encoder
-        self._video_src.emit("push-buffer", Recorder.numpy_to_gst_buffer(frame, timestamp_ns, duration))
+        self._video_src.emit("push-buffer", Recorder.numpy_to_gst_buffer(frame, timestamp_ns, duration_ns))
 
 if __name__ == '__main__':
 
