@@ -41,7 +41,7 @@
         <remap from="sst" to="audio_sst"/>
     </node>
 
-    <node pkg="person_identification" type="capture_voice_node.py" name="capture_voice_node">
+    <node pkg="person_identification" type="capture_voice_node.py" name="capture_voice_node" output="screen">
         <param name="name" value="$(arg name)"/>
         <param name="mean_size" value="10"/>
     </node>
