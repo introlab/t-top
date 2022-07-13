@@ -4,12 +4,11 @@
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
         <param name="multiclass_audio_descriptor" value="true"/>
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
-        <param name="interval" value="32000"/> <!-- Low quality audio-->
+        <param name="interval" value="32000"/>
         <param name="voice_probability_threshold" value="0.5"/>
         <param name="class_probability_threshold" value="0.5"/>
 
-        <remap from="low_quality_audio_in" to="audio_signed_16_16000"/>
-        <remap from="high_quality_audio_in" to="audio_signed_16_44100"/>
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="audio_analyzer/filter_state"/>
         <remap from="sst" to="audio_sst"/>
     </node>
