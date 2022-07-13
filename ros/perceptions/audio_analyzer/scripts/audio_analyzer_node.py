@@ -105,7 +105,7 @@ class AudioAnalyzerNode:
             voice_descriptor = []
 
         audio_classes = self._get_audio_classes(audio_class_probabilities)
-        self._publish_audio_analysis(audio_classes, audio_descriptor, voice_descriptor)
+        self._publish_audio_analysis(audio_buffer, audio_classes, audio_descriptor, voice_descriptor)
 
     def _get_audio_buffer(self):
         with self._audio_frames_lock:

@@ -6,7 +6,7 @@
         <param name="language" value="$(arg language)"/>
         <param name="speaking_rate" value="$(arg speaking_rate)"/>
         <param name="cache_size" value="2"/>
-        <param name="mouth_signal_gain" value="0.03"/>
+        <param name="mouth_signal_gain" value="0.04"/>
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
 
