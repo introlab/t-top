@@ -2,24 +2,31 @@
     <arg name="name"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
 
+    <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen">
+        <param name="backend" value="pulse_audio"/>
+        <param name="device" value="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="merge" value="false"/>
+        <param name="gain" value="1.0"/>
+
+        <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
+
+        <rosparam param="channel_map">
+            [front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]
+        </rosparam>
+    </node>
+
     <node pkg="odas_ros" type="odas_server_node.py" name="odas_server_node">
         <param name="configuration_path" value="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
         <param name="frame_id" value="odas"/>
 
-        <remap from="sss" to="audio_signed_16_44100"/>
+        <remap from="raw" to="audio_input_before_odas_signed_32_16000"/>
+        <remap from="ssl" to="audio_ssl"/>
         <remap from="sst" to="audio_sst"/>
-    </node>
-
-    <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
-        <param name="input_format" value="signed_16"/>
-        <param name="output_format" value="signed_16"/>
-        <param name="channel_count" value="1"/>
-        <param name="input_sampling_frequency" value="44100"/>
-        <param name="output_sampling_frequency" value="16000"/>
-        <param name="input_frame_sample_count" value="2048"/>
-
-        <remap from="audio_in" to="audio_signed_16_44100"/>
-        <remap from="audio_out" to="audio_signed_16_16000"/>
+        <remap from="sss" to="audio_input_signed_16_16000"/>
     </node>
 
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
@@ -29,8 +36,7 @@
         <param name="voice_probability_threshold" value="0.5"/>
         <param name="class_probability_threshold" value="0.5"/>
 
-        <remap from="low_quality_audio_in" to="audio_signed_16_16000"/>
-        <remap from="high_quality_audio_in" to="audio_signed_16_44100"/>
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="audio_analyzer/filter_state"/>
         <remap from="sst" to="audio_sst"/>
     </node>

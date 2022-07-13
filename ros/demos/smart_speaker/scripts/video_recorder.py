@@ -21,7 +21,7 @@ class Recorder:
         self._width = width
         self._height = height
         self._filename = filename
-        self._encode_audio_rate = 44100
+        self._encode_audio_rate = 16000
         self._record_start_time_ns = int(time.time() * 1e9)
         self._last_video_frame_timestamp_ns = int(time.time() * 1e9)
         self._pipeline = None
