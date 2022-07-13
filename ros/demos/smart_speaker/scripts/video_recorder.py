@@ -112,8 +112,8 @@ if __name__ == '__main__':
     rospy.init_node('video_recorder')
 
     filename_out = rospy.get_param('~filename_out')
-    image_topic = rospy.get_param('~image_topic', '/camera/color/image_raw')
-    audio_topic = rospy.get_param('~audio_topic', '/audio_signed_16_44100')
+    image_topic = rospy.get_param('~image_topic', '/camera_3d/color/image_raw')
+    audio_topic = rospy.get_param('~audio_topic', '/audio_input_signed_16_16000')
     image_width = rospy.get_param('~image_width', 1280)
     image_height = rospy.get_param('~image_height', 720)
 
