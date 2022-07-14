@@ -43,7 +43,8 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_s' + str(args.channel_scale) + '_' +
-                               args.criterion_type + '_' + args.dataset_type + '_lr' + str(args.learning_rate))
+                               args.criterion_type + '_' + args.dataset_type + '_lr' + str(args.learning_rate) +
+                               '_wd' + str(args.weight_decay))
     save_arguments(output_path, args)
 
     trainer = SemanticSegmentationTrainer(device, model,
