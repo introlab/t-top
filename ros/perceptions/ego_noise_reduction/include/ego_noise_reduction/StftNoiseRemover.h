@@ -3,7 +3,7 @@
 
 #include <ego_noise_reduction/NoiseEstimator.h>
 
-#include <MusicBeatDetector/Utils/Data/AudioFrame.h>
+#include <MusicBeatDetector/Utils/Data/PackedAudioFrame.h>
 #include <MusicBeatDetector/Utils/ClassMacro.h>
 
 #include <armadillo>
@@ -55,9 +55,9 @@ public:
     DECLARE_NOT_COPYABLE(StftNoiseRemover);
     DECLARE_NOT_MOVABLE(StftNoiseRemover);
 
-    void replaceLastFrame(const introlab::AudioFrame<float>& input);
+    void replaceLastFrame(const introlab::PackedAudioFrame<float>& input);
 
-    introlab::AudioFrame<float> removeNoise(const introlab::AudioFrame<float>& input);
+    introlab::PackedAudioFrame<float> removeNoise(const introlab::PackedAudioFrame<float>& input);
 
 private:
     void removeNoise(std::size_t channelIndex);
