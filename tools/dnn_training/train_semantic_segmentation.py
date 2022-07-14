@@ -27,6 +27,7 @@ def main():
                         required=True)
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
+    parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
     parser.add_argument('--batch_size', type=int, help='Set the batch size for the training', required=True)
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
     parser.add_argument('--criterion_type',
@@ -49,6 +50,7 @@ def main():
                                           dataset_type=args.dataset_type,
                                           epoch_count=args.epoch_count,
                                           learning_rate=args.learning_rate,
+                                          weight_decay=args.weight_decay,
                                           dataset_root=args.dataset_root,
                                           output_path=output_path,
                                           batch_size=args.batch_size,

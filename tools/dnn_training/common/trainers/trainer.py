@@ -10,8 +10,8 @@ from common.modules import load_checkpoint
 
 
 class Trainer:
-    def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
-                 batch_size=128, batch_size_division=4,
+    def __init__(self, device, model, dataset_root='', output_path='',
+                 epoch_count=10, learning_rate=0.01, weight_decay=0.0, batch_size=128, batch_size_division=4,
                  model_checkpoint=None):
         self._device = device
         self._output_path = output_path
@@ -30,7 +30,7 @@ class Trainer:
             model = nn.DataParallel(model)
 
         self._model = model.to(device)
-        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=learning_rate)
+        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         self._scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self._optimizer, epoch_count)
 
         self._training_dataset_loader = self._create_training_dataset_loader(dataset_root,

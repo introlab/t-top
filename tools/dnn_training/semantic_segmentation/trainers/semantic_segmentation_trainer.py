@@ -19,20 +19,21 @@ IMAGE_SIZE = (360, 640)
 
 class SemanticSegmentationTrainer(Trainer):
     def __init__(self, device, model, dataset_type='coco', dataset_root='', output_path='',
-                 epoch_count=10, learning_rate=0.01,
+                 epoch_count=10, learning_rate=0.01, weight_decay=0.0,
                  batch_size=128, criterion_type='cross_entropy_loss',
                  model_checkpoint=None):
         self._dataset_type = dataset_type
         self._class_count = model.get_class_count()
         self._criterion_type = criterion_type
         super(SemanticSegmentationTrainer, self).__init__(device, model,
-                                              dataset_root=dataset_root,
-                                              output_path=output_path,
-                                              epoch_count=epoch_count,
-                                              learning_rate=learning_rate,
-                                              batch_size=batch_size,
-                                              batch_size_division=1,
-                                              model_checkpoint=model_checkpoint)
+                                                          dataset_root=dataset_root,
+                                                          output_path=output_path,
+                                                          epoch_count=epoch_count,
+                                                          learning_rate=learning_rate,
+                                                          weight_decay=weight_decay,
+                                                          batch_size=batch_size,
+                                                          batch_size_division=1,
+                                                          model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 

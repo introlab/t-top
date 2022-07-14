@@ -22,7 +22,7 @@ IMAGE_SIZE = (224, 224)
 
 class BackboneTrainer(Trainer):
     def __init__(self, device, model, dataset_type='image_net', dataset_root='', output_path='',
-                 epoch_count=10, learning_rate=0.01,
+                 epoch_count=10, learning_rate=0.01, weight_decay=0.0,
                  batch_size=128, criterion_type='cross_entropy_loss',
                  model_checkpoint=None):
         self._dataset_type = dataset_type
@@ -32,6 +32,7 @@ class BackboneTrainer(Trainer):
                                               output_path=output_path,
                                               epoch_count=epoch_count,
                                               learning_rate=learning_rate,
+                                              weight_decay=weight_decay,
                                               batch_size=batch_size,
                                               batch_size_division=1,
                                               model_checkpoint=model_checkpoint)
@@ -136,7 +137,7 @@ class BackboneTrainer(Trainer):
 
 def create_training_image_transform():
     return transforms.Compose([
-        transforms.Resize(IMAGE_SIZE),
+        transforms.RandomResizedCrop(IMAGE_SIZE),
         transforms.ColorJitter(brightness=0.2, saturation=0.2, contrast=0.2, hue=0.2),
         transforms.RandomGrayscale(p=0.1),
         transforms.RandomHorizontalFlip(p=0.5),
