@@ -30,17 +30,16 @@ class Recorder:
 
     def start_recording(self, record_start_time_ns):
         if self._pipeline is None:
-            video_caps = f'video/x-raw,format=RGB,width={self._width},height={self._height},framerate=1/1'
+            video_caps = f'video/x-raw,format=RGB,width={self._width},height={self._height}'
             audio_caps = f'audio/x-raw,format=S16LE,channels=1,rate={self._encode_audio_rate},layout=interleaved'
-            command = f'appsrc name=video_src emit-signals=True  is-live=True format=time caps={video_caps} ! ' \
+            command = f'appsrc name=video_src emit-signals=True is-live=True format=time caps={video_caps} ! ' \
                 f'queue max-size-buffers=100 ! ' \
                 f'videoconvert ! ' \
                 f'videoscale ! ' \
-                f'videorate ! ' \
-                f'capsfilter caps=video/x-raw,framerate=24/1 ! ' \
+                f'capsfilter caps=video/x-raw ! ' \
                 f'x264enc tune=zerolatency ! ' \
                 f'capsfilter caps=video/x-h264,profile=high ! ' \
-                f'mp4mux name=mux !' \
+                f'mp4mux name=mux reserved-bytes-per-sec=100 reserved-max-duration=20184000000000 reserved-moov-update-period=100000000 !' \
                 f'filesink location={self._filename} ' \
                 f'appsrc name=audio_src is-live=True format=time caps={audio_caps} !' \
                 f'queue max-size-buffers=100 ! ' \
@@ -100,8 +99,8 @@ class Recorder:
         if self._pipeline is None:
             self.start_recording(frame.header.stamp.to_nsec())
 
-        timestamp_ns = frame.header.stamp.to_nsec() - self._record_start_time_ns
-        duration_ns = timestamp_ns - self._last_video_frame_timestamp_ns
+        timestamp_ns = frame.header.stamp.to_nsec() - self._record_start_time_ns + int(1e9 * 0.350)
+        duration_ns = max(0,timestamp_ns - self._last_video_frame_timestamp_ns)
         self._last_video_frame_timestamp_ns = timestamp_ns
 
          # Convert to GST Buffer and send to encoder
