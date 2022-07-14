@@ -104,8 +104,8 @@ TEST(SpectralSubtractionNoiseRemoverTests, removeNoise_alternating_shouldNotCrea
         Gamma,
         Beta);
 
-    AudioFrame<float> inputFrame(ChannelCount, FrameSampleCount);
-    AudioFrame<float> expectedOutputFrame(ChannelCount, FrameSampleCount);
+    PackedAudioFrame<float> inputFrame(ChannelCount, FrameSampleCount);
+    PackedAudioFrame<float> expectedOutputFrame(ChannelCount, FrameSampleCount);
 
     const size_t frameCount = min(inputPcmFrames.size(), expectedOutputPcmFrames.size());
     for (size_t i = 0; i < frameCount; i++)
@@ -113,7 +113,7 @@ TEST(SpectralSubtractionNoiseRemoverTests, removeNoise_alternating_shouldNotCrea
         if ((i % (N * 2)) < N)
         {
             inputPcmFrames[i].copyTo(inputFrame);
-            AudioFrame<float> outputFrame = testee.removeNoise(inputFrame);
+            PackedAudioFrame<float> outputFrame = testee.removeNoise(inputFrame);
             expectedOutputPcmFrames[i].copyTo(expectedOutputFrame);
 
             expectFrameNear(outputFrame, expectedOutputFrame, AbsError);

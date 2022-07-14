@@ -87,7 +87,7 @@ class EgoNoiseReductionNode
 
     PcmAudioFrame m_inputPcmAudioFrame;
     size_t m_inputPcmAudioFrameIndex;
-    AudioFrame<float> m_inputAudioFrame;
+    PackedAudioFrame<float> m_inputAudioFrame;
     PcmAudioFrame m_outputPcmAudioFrame;
 
     std::queue<ros::Time> m_timestampQueue;
