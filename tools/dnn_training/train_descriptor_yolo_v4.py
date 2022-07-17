@@ -3,7 +3,7 @@ import os
 
 import torch
 
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from object_detection.datasets.object_detection_coco import CLASS_COUNT as COCO_CLASS_COUNT
 from object_detection.datasets.object_detection_open_images \
@@ -40,6 +40,7 @@ def main():
 
     output_path = os.path.join(args.output_path, 'descriptor_yolo_v4', args.model_type)
     save_arguments(output_path, args)
+    print_arguments(args)
 
     trainer = DescriptorYoloV4Trainer(device, model,
                                       epoch_count=args.epoch_count,

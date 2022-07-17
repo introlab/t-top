@@ -3,7 +3,7 @@ import os
 
 import torch
 
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from backbone.stdc import Stdc1, Stdc2
 from backbone.trainers import BackboneTrainer
@@ -39,6 +39,7 @@ def main():
     output_path = os.path.join(args.output_path, args.model_type + '_' + args.criterion_type + '_' +
                                args.dataset_type + '_lr' + str(args.learning_rate) + '_wd' + str(args.weight_decay))
     save_arguments(output_path, args)
+    print_arguments(args)
 
     trainer = BackboneTrainer(device, model,
                               dataset_type=args.dataset_type,

@@ -78,14 +78,7 @@ class SemanticSegmentationTrainer(Trainer):
                                            shuffle=False)
 
     def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms, shuffle):
-        if self._dataset_type == 'coco':
-            split_mapping = {'training': True, 'validation': False, 'testing': False}
-            dataset = SemanticSegmentationCoco(dataset_root, train=split_mapping[split], transforms=transforms)
-        elif self._dataset_type == 'open_images':
-            dataset = SemanticSegmentationOpenImages(dataset_root, split=split, transforms=transforms)
-        else:
-            raise ValueError('Invalid dataset type')
-
+        dataset = create_dataset(self._dataset_type, dataset_root, split, transforms)
         return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=shuffle,
                                            num_workers=4)
 
@@ -127,12 +120,26 @@ class SemanticSegmentationTrainer(Trainer):
                                    os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
-        print('Evaluation - Semantic Segmentation', flush=True)
-        mean_iou_metric = MeanIoUMetric(self._class_count)
+        evaluate(model, device, dataset_loader, self._class_count)
 
-        for data in tqdm(dataset_loader):
-            model_output = model(data[0].to(device))
-            target = self._move_target_to_device(data[1], device)
-            mean_iou_metric.add(model_output[-1], target)
 
-        print('\nTest : Mean IoU={}'.format(mean_iou_metric.get_mean_iou()))
+def create_dataset(dataset_type, dataset_root, split, transforms):
+    if dataset_type == 'coco':
+        split_mapping = {'training': True, 'validation': False, 'testing': False}
+        return SemanticSegmentationCoco(dataset_root, train=split_mapping[split], transforms=transforms)
+    elif dataset_type == 'open_images':
+        return SemanticSegmentationOpenImages(dataset_root, split=split, transforms=transforms)
+    else:
+        raise ValueError('Invalid dataset type')
+
+
+def evaluate(model, device, dataset_loader, class_count):
+    print('Evaluation - Semantic Segmentation', flush=True)
+    mean_iou_metric = MeanIoUMetric(class_count)
+
+    for data in tqdm(dataset_loader):
+        model_output = model(data[0].to(device))
+        target = data[1].to(device)
+        mean_iou_metric.add(model_output[-1], target)
+
+    print('\nTest : Mean IoU={}'.format(mean_iou_metric.get_mean_iou()))

@@ -4,17 +4,21 @@ import torch
 
 from common.test import load_exported_model
 
-from keyword_spotting.trainers.keyword_spotter_trainer import create_dataset, get_noise_root, evaluate
-from keyword_spotting.datasets import KeywordSpottingTrainingTransforms
+from semantic_segmentation.datasets import SemanticSegmentationValidationTransforms
+from semantic_segmentation.trainers.semantic_segmentation_trainer import IMAGE_SIZE, create_dataset, evaluate
+
+from train_semantic_segmentation_network import get_class_count_from_dataset_type
 
 
 def main():
     parser = argparse.ArgumentParser(description='Test exported keyword spotter')
 
-    parser.add_argument('--dataset_type', choices=['google_speech_commands', 'ttop_keyword'],
+    parser.add_argument('--dataset_type', choices=['coco', 'open_images'],
                         help='Choose the database type', required=True)
     parser.add_argument('--dataset_root', type=str, help='Choose the dataset root path', required=True)
-    parser.add_argument('--mfcc_feature_count', type=int, help='Choose the MFCC feature count', required=True)
+    parser.add_argument('--backbone_type', choices=['stdc1', 'stdc2'], help='Choose the backbone type', required=True)
+    parser.add_argument('--channel_scale', type=int, help='Choose the decoder channel count scale factor',
+                        required=True)
 
     parser.add_argument('--torch_script_path', type=str, help='Choose the TorchScript path')
     parser.add_argument('--trt_path', type=str, help='Choose the TensorRT path')
@@ -22,12 +26,12 @@ def main():
     args = parser.parse_args()
 
     model, device = load_exported_model(args.torch_script_path, args.trt_path)
-    transforms = KeywordSpottingTrainingTransforms(get_noise_root(args.dataset_type, args.dataset_root),
-                                                   n_mfcc=args.mfcc_feature_count)
+    class_count = get_class_count_from_dataset_type(args.dataset_type)
+    transforms = SemanticSegmentationValidationTransforms(IMAGE_SIZE, class_count)
     dataset = create_dataset(args.database_type, args.dataset_root, 'testing', transforms)
     dataset_loader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
 
-    evaluate(model, device, dataset_loader)
+    evaluate(model, device, dataset_loader, class_count)
 
 
 if __name__ == '__main__':

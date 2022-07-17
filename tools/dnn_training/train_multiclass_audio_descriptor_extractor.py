@@ -2,7 +2,7 @@ import argparse
 
 import torch
 
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor
@@ -37,6 +37,7 @@ def main():
 
     args = parser.parse_args()
     save_arguments(args.output_path, args)
+    print_arguments(args)
 
     model = create_model(args.backbone_type, args.embedding_size)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')

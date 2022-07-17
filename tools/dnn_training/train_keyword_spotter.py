@@ -3,7 +3,7 @@ import os
 
 import torch
 
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from keyword_spotting.keyword_spotter import KeywordSpotter
 from keyword_spotting.trainers import KeywordSpotterTrainer
@@ -34,6 +34,7 @@ def main():
     output_path = os.path.join(args.output_path, args.dataset_type,
                                'mfcc_feature_count_' + str(args.mfcc_feature_count))
     save_arguments(output_path, args)
+    print_arguments(args)
 
     trainer = KeywordSpotterTrainer(device, model,
                                     dataset_type=args.dataset_type,

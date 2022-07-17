@@ -2,7 +2,7 @@ import argparse
 
 import torch
 
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from face_recognition.face_descriptor_extractor import FaceDescriptorExtractor
 from face_recognition.trainers import FaceDescriptorExtractorTrainer
@@ -24,6 +24,7 @@ def main():
 
     args = parser.parse_args()
     save_arguments(args.output_path, args)
+    print_arguments(args)
 
     model = create_model(args.embedding_size)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')

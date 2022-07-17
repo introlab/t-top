@@ -3,7 +3,7 @@ import os
 
 import torch
 
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from pose_estimation.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50
 from pose_estimation.pose_estimator import PoseEstimator
@@ -34,6 +34,7 @@ def main():
 
     output_path = os.path.join(args.output_path, args.backbone_type)
     save_arguments(output_path, args)
+    print_arguments(args)
 
     trainer = PoseEstimatorTrainer(device, model,
                                    epoch_count=args.epoch_count,

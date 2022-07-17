@@ -4,7 +4,7 @@ import os
 import torch
 
 from common.modules import load_checkpoint
-from common.program_arguments import save_arguments
+from common.program_arguments import save_arguments, print_arguments
 
 from backbone.stdc import Stdc1, Stdc2
 
@@ -39,13 +39,14 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.backbone_type, args.backbone_checkpoint, args.channel_scale, args.dataset_type)
+    model = create_model(args.backbone_type, args.channel_scale, args.dataset_type, args.backbone_checkpoint)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_s' + str(args.channel_scale) + '_' +
                                args.criterion_type + '_' + args.dataset_type + '_lr' + str(args.learning_rate) +
                                '_wd' + str(args.weight_decay))
     save_arguments(output_path, args)
+    print_arguments(args)
 
     trainer = SemanticSegmentationTrainer(device, model,
                                           dataset_type=args.dataset_type,
@@ -60,18 +61,12 @@ def main():
     trainer.train()
 
 
-def create_model(backbone_type, backbone_checkpoint, channel_scale, dataset_type):
+def create_model(backbone_type, channel_scale, dataset_type, backbone_checkpoint=None):
     backbone = create_backbone(backbone_type)
     if backbone_checkpoint is not None:
         load_checkpoint(backbone, backbone_checkpoint, strict=False)
 
-    if dataset_type == 'coco':
-        class_count = COCO_CLASS_COUNT
-    elif dataset_type == 'open_images':
-        class_count = OPEN_IMAGES_CLASS_COUNT
-    else:
-        raise ValueError('Invalid dataset type')
-
+    class_count = get_class_count_from_dataset_type(dataset_type)
     return PpLiteSeg(backbone, class_count, channel_scale)
 
 
@@ -82,6 +77,15 @@ def create_backbone(backbone_type):
         return Stdc2()
     else:
         raise ValueError('Invalid backbone type')
+
+
+def get_class_count_from_dataset_type(dataset_type):
+    if dataset_type == 'coco':
+        return COCO_CLASS_COUNT
+    elif dataset_type == 'open_images':
+        return OPEN_IMAGES_CLASS_COUNT
+    else:
+        raise ValueError('Invalid dataset type')
 
 
 if __name__ == '__main__':

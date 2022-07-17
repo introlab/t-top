@@ -1,14 +1,6 @@
 import argparse
-import sys
 
-import torch
-
-try:
-    from torch2trt import TRTModule
-
-    torch2trt_found = True
-except ImportError:
-    torch2trt_found = False
+from common.test import load_exported_model
 
 from audio_descriptor.metrics import AudioDescriptorEvaluation
 from audio_descriptor.datasets import AudioDescriptorValidationTransforms
@@ -30,22 +22,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.torch_script_path is not None:
-        device = torch.device('cpu')
-        model = torch.jit.load(args.torch_script_path)
-        model = model.to(device)
-    elif args.trt_path is not None:
-        if not torch2trt_found:
-            print('"torch2trt" is not supported.')
-            sys.exit()
-        else:
-            device = torch.device('cuda')
-            model = TRTModule()
-            model.load_state_dict(torch.load(args.trt_path))
-    else:
-        print('"torch_script_path" or "trt_path" is required.')
-        sys.exit()
-
+    model, device = load_exported_model(args.torch_script_path, args.trt_path)
     transforms = AudioDescriptorValidationTransforms(waveform_size=args.waveform_size,
                                                      n_features=args.n_features,
                                                      n_fft=args.n_fft,

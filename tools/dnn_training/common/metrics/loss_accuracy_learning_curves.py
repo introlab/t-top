@@ -39,6 +39,7 @@ class LossAccuracyLearningCurves:
 
         epochs = range(1, len(self._training_loss_values) + 1)
         ax1.plot(epochs, self._training_loss_values, '-o', color='tab:blue', label='Training')
+        epochs = range(1, len(self._validation_loss_values) + 1)
         ax1.plot(epochs, self._validation_loss_values, '-o', color='tab:orange', label='Validation')
         ax1.set_title(u'Loss')
         ax1.set_xlabel(u'Epoch')
@@ -47,6 +48,7 @@ class LossAccuracyLearningCurves:
 
         epochs = range(1, len(self._training_accuracy_values) + 1)
         ax2.plot(epochs, self._training_accuracy_values, '-o', color='tab:blue', label='Training')
+        epochs = range(1, len(self._validation_accuracy_values) + 1)
         ax2.plot(epochs, self._validation_accuracy_values, '-o', color='tab:orange', label='Validation')
         ax2.set_title(u'Accuracy')
         ax2.set_xlabel(u'Epoch')
