@@ -20,8 +20,8 @@ std::vector<introlab::PcmAudioFrame> getPcmAudioFrames(
 void writePcmAudioFrames(const std::string& path, const std::vector<introlab::PcmAudioFrame>& frames);
 
 void expectFrameNear(
-    const introlab::AudioFrame<float> value,
-    const introlab::AudioFrame<float> expected,
+    const introlab::PackedAudioFrame<float> value,
+    const introlab::PackedAudioFrame<float> expected,
     float absError);
 
 void testNoiseReduction(

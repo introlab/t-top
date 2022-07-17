@@ -18,6 +18,8 @@
 #include <armadillo>
 
 #include <memory>
+#include <queue>
+#include <vector>
 
 using namespace introlab;
 using namespace std;
@@ -85,9 +87,10 @@ class EgoNoiseReductionNode
 
     PcmAudioFrame m_inputPcmAudioFrame;
     size_t m_inputPcmAudioFrameIndex;
-    AudioFrame<float> m_inputAudioFrame;
+    PackedAudioFrame<float> m_inputAudioFrame;
     PcmAudioFrame m_outputPcmAudioFrame;
 
+    std::queue<ros::Time> m_timestampQueue;
     audio_utils::AudioFrame m_audioFrameMsg;
 
     shared_ptr<WeightedAverageWithAPrioriNoiseEstimator> m_noiseEstimator;
@@ -159,6 +162,7 @@ private:
             return;
         }
 
+        m_timestampQueue.push(msg->header.stamp);
         memcpy(m_inputPcmAudioFrame.data() + m_inputPcmAudioFrameIndex, msg->data.data(), msg->data.size());
         m_inputPcmAudioFrameIndex += msg->data.size();
 
@@ -184,8 +188,11 @@ private:
     {
         for (size_t i = 0; i < frame.size(); i += m_audioFrameMsg.data.size())
         {
+            m_audioFrameMsg.header.stamp = m_timestampQueue.front();
             memcpy(m_audioFrameMsg.data.data(), frame.data() + i, m_audioFrameMsg.data.size());
             m_audioPub.publish(m_audioFrameMsg);
+
+            m_timestampQueue.pop();
         }
     }
 

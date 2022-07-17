@@ -1,4 +1,5 @@
 <launch>
+    <arg name="output_path"/>
 
     <node name="audio_capture" type="capture_node" pkg="audio_utils" output="screen">
         <param name="backend" value="alsa"/>
@@ -11,7 +12,7 @@
         <param name="gain" value="1.0" />
         <param name="latency_us" value="40000" />
 
-        <remap from="audio_out" to="audio_signed_16_44100"/>
+        <remap from="audio_out" to="audio_input_signed_16_44100"/>
     </node>
 
     <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
@@ -22,14 +23,14 @@
         <param name="output_sampling_frequency" value="16000"/>
         <param name="input_frame_sample_count" value="2048"/>
 
-        <remap from="audio_in" to="audio_signed_16_44100"/>
-        <remap from="audio_out" to="audio_signed_16_16000"/>
+        <remap from="audio_in" to="audio_input_signed_16_44100"/>
+        <remap from="audio_out" to="audio_input_signed_16_16000"/>
     </node>
 
     <node pkg="audio_utils" type="raw_file_writer_node.py" name="raw_file_writer_node">
-        <param name="output_path" value="/home/marc-antoine/audio_signed_16_16000.raw"/>
+        <param name="output_path" value="$(arg output_path)"/>
 
-        <remap from="audio_in" to="audio_signed_16_16000"/>
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
     </node>
 
 </launch>

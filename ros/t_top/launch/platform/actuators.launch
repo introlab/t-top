@@ -1,6 +1,6 @@
 <launch>
     <arg name="pulse_audio_sink"/>
-   
+
     <!-- Screen -->
     <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
         <arg name="port" value="9090"/>
@@ -12,10 +12,10 @@
         <param name="device" value="$(arg pulse_audio_sink)"/>
         <param name="format" value="float"/>
         <param name="channel_count" value="1"/>
-        <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="2048"/>
-        
-        <remap from="audio_in" to="audio_float_44100"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+
+        <remap from="audio_in" to="audio_output_float_16000"/>
     </node>
 
 </launch>

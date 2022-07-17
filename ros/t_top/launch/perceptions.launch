@@ -28,9 +28,6 @@
     <!-- Music Beat Detector -->
     <include file="$(find t_top)/launch/perceptions/music_beat_detector.launch"/>
 
-    <!-- Audio Resampling -->
-    <include file="$(find t_top)/launch/perceptions/audio_resampling.launch"/>
-
     <!-- Speech to Text -->
     <include file="$(find t_top)/launch/perceptions/speech_to_text.launch">
         <arg name="language" value="$(arg language)"/>
