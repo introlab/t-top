@@ -10,20 +10,20 @@
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 
-        <remap from="raw" to="odas_audio_signed_32_44100"/>
+        <remap from="raw" to="audio_input_before_odas_signed_32_16000"/>
         <remap from="ssl" to="audio_ssl"/>
         <remap from="sst" to="audio_sst"/>
-        <remap from="sss" to="audio_signed_16_44100"/>
+        <remap from="sss" to="audio_input_signed_16_16000"/>
     </node>
     <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_echocancel_filter_server_node.py" name="odas_server_node" respawn="true">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 
-        <remap from="raw" to="odas_audio_signed_32_44100"/>
+        <remap from="raw" to="audio_input_before_odas_signed_32_16000"/>
         <remap from="ssl" to="audio_ssl"/>
         <remap from="sst" to="audio_sst"/>
-        <remap from="sss" to="audio_signed_16_44100"/>
-        <remap from="ec_signal" to="audio_signed_16_44100"/>
+        <remap from="sss" to="audio_input_signed_16_16000"/>
+        <remap from="ec_signal" to="audio_input_signed_16_16000"/>
     </node>
     <node if="$(eval arg('visualization') or arg('rviz'))" pkg="odas_ros" type="odas_visualization_node.py" name="odas_visualization_node">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>

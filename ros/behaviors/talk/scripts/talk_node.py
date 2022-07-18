@@ -92,6 +92,7 @@ class TalkNode:
             mouth_signal_msg.data = max(0.0, min(mouth_signal[0] * self._mouth_signal_gain, 1.0))
             self._mouth_signal_scale_pub.publish(mouth_signal_msg)
 
+            audio_frame.header.stamp = rospy.Time.now()
             audio_frame.data = frame.tobytes()
             self._audio_pub.publish(audio_frame)
 

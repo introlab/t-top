@@ -19,7 +19,6 @@ import hbba_lite
 
 SUPPORTED_AUDIO_FORMAT = 'signed_16'
 SUPPORTED_CHANNEL_COUNT = 1
-SUPPORTED_HIGH_QUALITY_AUDIO_SAMPLING_FREQUENCY = 44100
 
 
 class AudioAnalyzerNode:
@@ -35,18 +34,15 @@ class AudioAnalyzerNode:
 
         if self._audio_descriptor_extractor.get_supported_sampling_frequency() != self._voice_descriptor_extractor.get_supported_sampling_frequency():
             raise ValueError('Not compatible models (sampling frequency)')
+        self._supported_sampling_frequency = self._audio_descriptor_extractor.get_supported_sampling_frequency()
 
-        self._low_quality_audio_analysis_interval = rospy.get_param('~interval')
-        self._high_quality_audio_analysis_interval = int(self._low_quality_audio_analysis_interval \
-            * SUPPORTED_HIGH_QUALITY_AUDIO_SAMPLING_FREQUENCY / self._audio_descriptor_extractor.get_supported_sampling_frequency())
+        self._audio_analysis_interval = rospy.get_param('~interval')
         self._voice_probability_threshold = rospy.get_param('~voice_probability_threshold')
         self._class_probability_threshold = rospy.get_param('~class_probability_threshold')
 
-        self._low_quality_audio_buffer_duration = max(self._audio_descriptor_extractor.get_supported_duration(),
+        self._audio_buffer_duration = max(self._audio_descriptor_extractor.get_supported_duration(),
                                           self._voice_descriptor_extractor.get_supported_duration(),
-                                          self._low_quality_audio_analysis_interval)
-        self._high_quality_audio_buffer_duration = int(self._low_quality_audio_buffer_duration \
-            * SUPPORTED_HIGH_QUALITY_AUDIO_SAMPLING_FREQUENCY / self._audio_descriptor_extractor.get_supported_sampling_frequency())
+                                          self._audio_analysis_interval)
 
         self._class_names = self._audio_descriptor_extractor.get_class_names()
         if self._multiclass_audio_descriptor:
@@ -55,9 +51,7 @@ class AudioAnalyzerNode:
             self._voice_class_index = self._class_names.index('Speech')
 
         self._audio_frames_lock = threading.Lock()
-        self._low_quality_audio_frames = []
-        self._high_quality_audio_frames = []
-        self._high_quality_audio_frames = []
+        self._audio_frames = []
         self._audio_analysis_count = 0
 
         self._audio_direction_lock = threading.Lock()
@@ -69,81 +63,57 @@ class AudioAnalyzerNode:
         self._sst_id = -1
 
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('audio_in/filter_state')
-        self._high_quality_audio_sub = rospy.Subscriber('high_quality_audio_in', AudioFrame, self._high_quality_audio_cb, queue_size=100)
-        self._low_quality_audio_sub = rospy.Subscriber('low_quality_audio_in', AudioFrame, self._low_quality_audio_cb, queue_size=100)
+        self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
 
         self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
-    def _high_quality_audio_cb(self, msg):
+    def _audio_cb(self, msg):
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
                 msg.channel_count != SUPPORTED_CHANNEL_COUNT or \
-                msg.sampling_frequency != SUPPORTED_HIGH_QUALITY_AUDIO_SAMPLING_FREQUENCY:
-            rospy.logerr('Invalid high quality audio frame (msg.format={}, msg.channel_count={}, msg.sampling_frequency={}})'
-                .format(msg.format, msg.channel_count, msg.sampling_frequency))
-            return
-
-        with torch.no_grad():
-            with self._audio_frames_lock:
-                high_quality_audio_frame = np.frombuffer(msg.data, dtype=np.int16).astype(np.float32) / -np.iinfo(np.int16).min
-                self._high_quality_audio_frames.append(torch.from_numpy(high_quality_audio_frame))
-                if (len(self._high_quality_audio_frames) - 1) * high_quality_audio_frame.shape[0] >= self._high_quality_audio_buffer_duration:
-                    self._high_quality_audio_frames.pop(0)
-
-    def _low_quality_audio_cb(self, msg):
-        if msg.format != SUPPORTED_AUDIO_FORMAT or \
-                msg.channel_count != SUPPORTED_CHANNEL_COUNT or \
-                msg.sampling_frequency != self._audio_descriptor_extractor.get_supported_sampling_frequency():
+                msg.sampling_frequency != self._supported_sampling_frequency:
             rospy.logerr('Invalid low quality audio frame (msg.format={}, msg.channel_count={}, msg.sampling_frequency={}})'
                 .format(msg.format, msg.channel_count, msg.sampling_frequency))
             return
 
         with torch.no_grad():
             with self._audio_frames_lock:
-                low_quality_audio_frame = np.frombuffer(msg.data, dtype=np.int16).astype(np.float32) / -np.iinfo(np.int16).min
-                self._low_quality_audio_frames.append(torch.from_numpy(low_quality_audio_frame))
-                if (len(self._low_quality_audio_frames) - 1) * low_quality_audio_frame.shape[0] >= self._low_quality_audio_buffer_duration:
-                    self._low_quality_audio_frames.pop(0)
+                audio_frame = np.frombuffer(msg.data, dtype=np.int16).astype(np.float32) / -np.iinfo(np.int16).min
+                self._audio_frames.append(torch.from_numpy(audio_frame))
+                if (len(self._audio_frames) - 1) * audio_frame.shape[0] >= self._audio_buffer_duration:
+                    self._audio_frames.pop(0)
 
             if not self._hbba_filter_state.is_filtering_all_messages:
-                if self._audio_analysis_count >= self._low_quality_audio_analysis_interval:
+                if self._audio_analysis_count >= self._audio_analysis_interval:
                     self._audio_analysis_count = 0
                     self._analyse()
                 else:
-                    self._audio_analysis_count += low_quality_audio_frame.shape[0]
+                    self._audio_analysis_count += audio_frame.shape[0]
             else:
-                self._audio_analysis_count = self._low_quality_audio_analysis_interval
+                self._audio_analysis_count = self._audio_analysis_interval
 
     def _analyse(self):
-        low_quality_audio_buffer = self._get_low_quality_audio_buffer()
-        audio_descriptor_buffer = low_quality_audio_buffer[-self._audio_descriptor_extractor.get_supported_duration():]
+        audio_buffer = self._get_audio_buffer()
+        audio_descriptor_buffer = audio_buffer[-self._audio_descriptor_extractor.get_supported_duration():]
         audio_descriptor, audio_class_probabilities = self._audio_descriptor_extractor(audio_descriptor_buffer)
         audio_descriptor = audio_descriptor.tolist()
 
         print('Voice prob:', audio_class_probabilities[self._voice_class_index].item())
         if audio_class_probabilities[self._voice_class_index].item() >= self._voice_probability_threshold:
-            voice_descriptor_buffer = low_quality_audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
+            voice_descriptor_buffer = audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
             voice_descriptor = self._voice_descriptor_extractor(voice_descriptor_buffer).tolist()
         else:
             voice_descriptor = []
 
         audio_classes = self._get_audio_classes(audio_class_probabilities)
-        self._publish_audio_analysis(audio_classes, audio_descriptor, voice_descriptor)
+        self._publish_audio_analysis(audio_buffer, audio_classes, audio_descriptor, voice_descriptor)
 
-    def _get_low_quality_audio_buffer(self):
+    def _get_audio_buffer(self):
         with self._audio_frames_lock:
-            audio_buffer = torch.cat(self._low_quality_audio_frames, dim=0)
-        if audio_buffer.size()[0] < self._low_quality_audio_buffer_duration:
-            return torch.cat([torch.zeros(self._low_quality_audio_buffer_duration - audio_buffer.size()[0]), audio_buffer], dim=0)
+            audio_buffer = torch.cat(self._audio_frames, dim=0)
+        if audio_buffer.size()[0] < self._audio_buffer_duration:
+            return torch.cat([torch.zeros(self._audio_buffer_duration - audio_buffer.size()[0]), audio_buffer], dim=0)
         else:
-            return audio_buffer[-self._low_quality_audio_buffer_duration:]
-
-    def _get_high_quality_audio_buffer(self):
-        with self._audio_frames_lock:
-            audio_buffer = torch.cat(self._high_quality_audio_frames, dim=0)
-        if audio_buffer.size()[0] < self._high_quality_audio_buffer_duration:
-            return torch.cat([torch.zeros(self._high_quality_audio_buffer_duration - audio_buffer.size()[0]), audio_buffer], dim=0)
-        else:
-            return audio_buffer[-self._high_quality_audio_buffer_duration:]
+            return audio_buffer[-self._audio_buffer_duration:]
 
     def _get_audio_classes(self, audio_class_probabilities):
         if self._multiclass_audio_descriptor:
@@ -156,12 +126,9 @@ class AudioAnalyzerNode:
             else:
                 return []
 
-    def _publish_audio_analysis(self, audio_classes, audio_descriptor, voice_descriptor):
+    def _publish_audio_analysis(self, audio_buffer, audio_classes, audio_descriptor, voice_descriptor):
         with self._audio_direction_lock:
             frame_id, direction_x, direction_y, direction_z = self._audio_direction
-
-        audio_buffer = self._get_high_quality_audio_buffer()
-        audio_buffer = audio_buffer[-self._high_quality_audio_analysis_interval:]
 
         msg = AudioAnalysis()
         msg.header.seq = self._audio_analysis_seq
@@ -170,7 +137,7 @@ class AudioAnalyzerNode:
 
         msg.audio_frame.format = 'float'
         msg.audio_frame.channel_count = SUPPORTED_CHANNEL_COUNT
-        msg.audio_frame.sampling_frequency = SUPPORTED_HIGH_QUALITY_AUDIO_SAMPLING_FREQUENCY
+        msg.audio_frame.sampling_frequency = self._supported_sampling_frequency
         msg.audio_frame.frame_sample_count = audio_buffer.numel()
         msg.audio_frame.data = audio_buffer.cpu().detach().numpy().tobytes()
 
@@ -197,8 +164,7 @@ class AudioAnalyzerNode:
             print('New source')
             self._sst_id = sst.sources[0].id
             with self._audio_frames_lock:
-                self._low_quality_audio_frames = []
-                self._high_quality_audio_frames = []
+                self._audio_frames = []
 
         with self._audio_direction_lock:
             self._audio_direction = (sst.header.frame_id, sst.sources[0].x, sst.sources[0].y, sst.sources[0].z)

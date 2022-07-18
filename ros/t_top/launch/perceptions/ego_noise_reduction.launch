@@ -4,13 +4,13 @@
         <param name="type" value="log_mmse"/>
         <param name="format" value="signed_32"/>
         <param name="channel_count" value="16"/>
-        <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="2048"/>
-        <param name="n_fft" value="2048"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="n_fft" value="1024"/>
         <param name="noise_directory" value="$(find ego_noise_reduction)/noise_data"/>
 
-        <remap from="audio_in" to="before_ego_audio_signed_32_44100"/>
-        <remap from="audio_out" to="odas_audio_signed_32_44100"/>
+        <remap from="audio_in" to="audio_input_before_ego_noise_signed_32_16000"/>
+        <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
     </node>
 
 </launch>

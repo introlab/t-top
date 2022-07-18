@@ -69,7 +69,7 @@ StftNoiseRemover::~StftNoiseRemover()
     fftwf_destroy_plan(m_ifftPlan);
 }
 
-void StftNoiseRemover::replaceLastFrame(const introlab::AudioFrame<float>& input)
+void StftNoiseRemover::replaceLastFrame(const PackedAudioFrame<float>& input)
 {
     if (input.channelCount() != m_channelCount || input.sampleCount() != m_frameSampleCount)
     {
@@ -83,7 +83,7 @@ void StftNoiseRemover::replaceLastFrame(const introlab::AudioFrame<float>& input
         inputMat.rows(m_step, m_frameSampleCount - 1).eval().each_col() % m_window.rows(m_step, m_frameSampleCount - 1);
 }
 
-AudioFrame<float> StftNoiseRemover::removeNoise(const AudioFrame<float>& input)
+PackedAudioFrame<float> StftNoiseRemover::removeNoise(const PackedAudioFrame<float>& input)
 {
     if (input.channelCount() != m_channelCount || input.sampleCount() != m_frameSampleCount)
     {
@@ -105,7 +105,7 @@ AudioFrame<float> StftNoiseRemover::removeNoise(const AudioFrame<float>& input)
     m_outputBuffer.rows(0, m_step - 1) = m_outputBuffer.rows(m_frameSampleCount, m_outputBuffer.n_rows - 1);
 
 
-    return AudioFrame<float>(m_channelCount, m_frameSampleCount, m_output.memptr());
+    return PackedAudioFrame<float>(m_channelCount, m_frameSampleCount, m_output.memptr());
 }
 
 void StftNoiseRemover::removeNoise(size_t channelIndex)

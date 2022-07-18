@@ -5,16 +5,16 @@
         <param name="device" value="default"/>
         <param name="format" value="signed_16"/>
         <param name="channel_count" value="1"/>
-        <param name="sampling_frequency" value="44100"/>
-        <param name="frame_sample_count" value="2048"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
         <param name="latency_us"  value="4000" />
 
-        <remap from="audio_in" to="/audio_signed_16_44100"/>
+        <remap from="audio_in" to="/audio_input_signed_16_16000"/>
     </node>
 
     <node name="image_uncompress" pkg="image_transport" type="republish" output="screen" respawn="true"
         args="compressed in:=/camera_3d/color/image_raw raw out:=/camera_3d/color/image_raw"/>
 
-    <name="rqt_image_view" type="rqt_image_view" pkg="rqt_image_view" args="/camera_3d/color/image_raw" output="screen" respawn="true"/>
+    <node name="rqt_image_view" type="rqt_image_view" pkg="rqt_image_view" args="/camera_3d/color/image_raw" output="screen" respawn="true"/>
 
 </launch>
