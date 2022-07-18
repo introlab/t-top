@@ -25,6 +25,63 @@ QString mergeStdStrings(const vector<string> values)
     return mergedValues;
 }
 
+vector<QColor> getSemanticSegmentationPaletteFromClassCount(size_t classCount)
+{
+    constexpr int MAX_PIXEL_VALUE = 255;
+    vector<QColor> palette(classCount);
+    int colorStep = static_cast<int>(ceil(MAX_PIXEL_VALUE / pow(classCount, 1.f / 3.f)));
+    int r = 0;
+    int g = 0;
+    int b = 0;
+    for (size_t i = 0; i < classCount; i++)
+    {
+        palette[i] = QColor(r, g, b);
+
+        r += colorStep;
+        if (r > MAX_PIXEL_VALUE)
+        {
+            r = 0;
+            g += colorStep;
+            if (g > MAX_PIXEL_VALUE)
+            {
+                g = 0;
+                b += colorStep;
+            }
+        }
+    }
+
+    return palette;
+}
+
+QImage semanticSegmentationToImage(const video_analyzer::SemanticSegmentation& semanticSegmentation)
+{
+    int width = semanticSegmentation.width;
+    int height = semanticSegmentation.height;
+    if (semanticSegmentation.class_indexes.size() != width * height)
+    {
+        ROS_ERROR("Invalid semantic segmentation (class_indexes.size() != width * height)");
+        return QImage();
+    }
+
+    QImage image(width, height, QImage::Format_RGB32);
+    image.fill(QColor(0, 0, 0));
+    vector<QColor> palette = getSemanticSegmentationPaletteFromClassCount(semanticSegmentation.class_names.size());
+
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            int classIndex = semanticSegmentation.class_indexes[y * width + x];
+            if (classIndex < palette.size())
+            {
+                image.setPixelColor(x, y, palette[classIndex]);
+            }
+        }
+    }
+
+    return image;
+}
+
 PerceptionsTab::PerceptionsTab(
     ros::NodeHandle& nodeHandle,
     shared_ptr<DesireSet> desireSet,
@@ -45,6 +102,11 @@ PerceptionsTab::PerceptionsTab(
             "camera_2d_wide/analysed_image",
             1,
             &PerceptionsTab::analyzedImage2dWideSubscriberCallback,
+            this);
+        m_videoAnalysis2dWideSubscriber = nodeHandle.subscribe(
+            "camera_2d_wide/video_analysis",
+            1,
+            &PerceptionsTab::videoAnalysis2dWideSubscriberCallback,
             this);
     }
 
@@ -105,6 +167,21 @@ void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::Im
         });
 }
 
+void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+{
+    if (msg->semantic_segmentation.empty())
+    {
+        return;
+    }
+
+    invokeLater(
+        [this, msg]()
+        {
+            m_videoAnalyzer2dWideSegmentationcImageDisplay->setImage(
+                semanticSegmentationToImage(msg->semantic_segmentation[0]));
+        });
+}
+
 void PerceptionsTab::audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
 {
     QString classes = mergeStdStrings(msg->audio_classes);
@@ -159,11 +236,13 @@ void PerceptionsTab::createUi()
             &PerceptionsTab::onVideoAnalyzer2dWideButtonToggled);
 
         m_videoAnalyzer2dWideImageDisplay = new ImageDisplay;
+        m_videoAnalyzer2dWideSegmentationcImageDisplay = new ImageDisplay;
     }
     else
     {
         m_videoAnalyzer2dWideButton = nullptr;
         m_videoAnalyzer2dWideImageDisplay = nullptr;
+        m_videoAnalyzer2dWideSegmentationcImageDisplay = nullptr;
     }
 
     m_soundClassesLineEdit = new QLineEdit;
@@ -183,17 +262,19 @@ void PerceptionsTab::createUi()
     }
     globalLayout->addWidget(m_audioAnalyzerButton);
     globalLayout->addWidget(m_robotNameDetectorButton);
-    globalLayout->addWidget(new QLabel("Video Analyzer Image:"));
+    globalLayout->addWidget(new QLabel("Video Analyzer 3D Image:"));
     globalLayout->addWidget(m_videoAnalyzer3dImageDisplay, 1);
     if (m_videoAnalyzer2dWideImageDisplay != nullptr)
     {
+        globalLayout->addWidget(new QLabel("Video Analyzer 2D Image:"));
         globalLayout->addWidget(m_videoAnalyzer2dWideImageDisplay, 1);
+        globalLayout->addWidget(m_videoAnalyzer2dWideSegmentationcImageDisplay, 1);
     }
     globalLayout->addWidget(new QLabel("Sound Classes:"));
     globalLayout->addWidget(m_soundClassesLineEdit);
     globalLayout->addWidget(new QLabel("Last Robot Name Detection Time:"));
     globalLayout->addWidget(m_robotNameDetectionTimeLineEdit);
-    globalLayout->addWidget(new QLabel("Identified Person:"));
+    globalLayout->addWidget(new QLabel("Identified Persons:"));
     globalLayout->addWidget(m_identifiedPersonsLineEdit);
 
     setLayout(globalLayout);
