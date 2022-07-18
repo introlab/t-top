@@ -28,6 +28,7 @@ if [ $NEW_TIME -gt $OLD_TIME ]; then
 
     python3 export_pose_estimator.py --backbone_type resnet18 --upsampling_count 3 --output_dir $SCRIPT_PATH/../models --torch_script_filename pose_estimator.ts.pth --trt_filename pose_estimator.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/pose_estimator_resnet18_upsampling_count_3.pth --trt_fp16
     python3 export_face_descriptor_extractor.py --embedding_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename face_descriptor_extractor.ts.pth --trt_filename face_descriptor_extractor.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/face_descriptor_extractor_embedding_size_128.pth --trt_fp16
+    python3 export_semantic_segmentation_network.py --dataset_type open_images --backbone_type stdc1 --channel_scale 1 --output_dir $SCRIPT_PATH/../models --torch_script_filename semantic_segmentation_network.ts.pth --trt_filename semantic_segmentation_network.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/semantic_segmentation_network_open_images_stdc1_s1.pth --trt_fp16
 
     python3 export_keyword_spotter.py --dataset_type ttop_keyword --mfcc_feature_count 20 --output_dir $SCRIPT_PATH/../models --torch_script_filename ttop_keyword_spotter.ts.pth --trt_filename ttop_keyword_spotter.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/ttop_keyword_spotter_mfcc_20.pth --trt_fp16
 

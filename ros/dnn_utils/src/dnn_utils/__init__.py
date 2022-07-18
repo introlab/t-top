@@ -8,3 +8,4 @@ from dnn_utils.voice_descriptor_extractor import VoiceDescriptorExtractor
 from dnn_utils.audio_descriptor_extractor import AudioDescriptorExtractor
 from dnn_utils.multiclass_audio_descriptor_extractor import MulticlassAudioDescriptorExtractor
 from dnn_utils.yolo_v4 import YoloV4, YoloV4Prediction
+from dnn_utils.semantic_segmentation_network import SemanticSegmentationNetwork
