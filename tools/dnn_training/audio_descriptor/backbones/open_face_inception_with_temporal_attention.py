@@ -67,6 +67,7 @@ class OpenFaceInceptionWithTemporalAttention(nn.Module):
                             out_channels=[256, 64],
                             reduce_size=[128, 32, None, None],
                             pool=nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
+            TemporalAttention(n_features // 16),
 
             InceptionModule(in_channels=640,
                             kernel_size=[3, 5],
@@ -80,6 +81,7 @@ class OpenFaceInceptionWithTemporalAttention(nn.Module):
                             out_channels=[256, 128],
                             reduce_size=[160, 64, None, None],
                             pool=nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
+            TemporalAttention(n_features // 32),
 
             InceptionModule(in_channels=1024,
                             kernel_size=[3],
