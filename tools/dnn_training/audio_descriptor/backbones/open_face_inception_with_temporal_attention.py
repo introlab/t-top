@@ -1,17 +1,39 @@
+import torch
 import torch.nn as nn
 
 from common.modules import InceptionModule, PaddedLPPool2d, Lrn2d
 
 
+class TemporalAttention(nn.Module):
+    def __init__(self, n_features):
+        super(TemporalAttention, self).__init__()
+
+        self._attention_layers = nn.Sequential(
+            nn.Conv2d(in_channels=2, out_channels=2, kernel_size=(n_features, 3), padding=(0, 1), bias=False),
+            nn.BatchNorm2d(num_features=2),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=2, out_channels=1, kernel_size=(1, 3), padding=(0, 1)),
+            nn.BatchNorm2d(1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        features = torch.cat([torch.mean(x, dim=1, keepdim=True),
+                              torch.max(x, dim=1, keepdim=True)[0]], dim=1)
+        attention = self._attention_layers(features)
+        return x * attention
+
+
 # Based on OpenFace (https://cmusatyalab.github.io/openface/)
-class OpenFaceInception(nn.Module):
-    def __init__(self):
-        super(OpenFaceInception, self).__init__()
+class OpenFaceInceptionWithTemporalAttention(nn.Module):
+    def __init__(self, n_features):
+        super(OpenFaceInceptionWithTemporalAttention, self).__init__()
 
         self._feature_extractor = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=64, kernel_size=7, stride=2, padding=3, bias=False),
             nn.BatchNorm2d(num_features=64),
             nn.ReLU(inplace=True),
+            TemporalAttention(n_features // 2),
 
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             Lrn2d(size=5, alpha=0.0001, beta=0.75),
@@ -22,8 +44,9 @@ class OpenFaceInception(nn.Module):
             nn.Conv2d(in_channels=64, out_channels=192, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(num_features=192),
             nn.ReLU(inplace=True),
+            TemporalAttention(n_features // 4),
 
-            Lrn2d(5, alpha=0.0001, beta=0.75),
+            Lrn2d(size=5, alpha=0.0001, beta=0.75),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
 
             InceptionModule(in_channels=192,

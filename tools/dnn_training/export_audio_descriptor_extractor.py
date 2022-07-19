@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description='Export audio descriptor extractor')
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
-                                                    'open_face_inception'],
+                                                    'open_face_inception', 'open_face_inception_temporal_attention'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--vlad', action='store_true', help='Use VLAD pooling layer')
@@ -39,8 +39,8 @@ def main():
     args = parser.parse_args()
 
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
-    model = create_model(args.backbone_type, args.embedding_size, args.dataset_class_count, args.am_softmax_linear,
-                         args.vlad)
+    model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.dataset_class_count,
+                         args.am_softmax_linear, args.vlad)
     x = torch.ones((1, 1, image_size[0], image_size[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16)

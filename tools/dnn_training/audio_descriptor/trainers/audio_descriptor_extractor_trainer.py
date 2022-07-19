@@ -6,16 +6,24 @@ import torch.utils.data
 
 from tqdm import tqdm
 
-from common.criterions import TripletLoss
+from common.criterions import TripletLoss, AmSoftmaxLoss, SoftmaxFocalLoss
 from common.datasets import TripletLossBatchSampler
 from common.trainers import Trainer
 from common.metrics import ClassificationAccuracyMetric, LossMetric, LossLearningCurves, LossAccuracyLearningCurves, \
     TopNClassificationAccuracyMetric, ClassificationMeanAveragePrecisionMetric
 
-from audio_descriptor.criterions import AudioDescriptorAmSoftmaxLoss
 from audio_descriptor.datasets import AudioDescriptorDataset, \
     AudioDescriptorTrainingTransforms, AudioDescriptorValidationTransforms
 from audio_descriptor.metrics import AudioDescriptorEvaluation
+
+
+class ClassificationLossWrapper(nn.Module):
+    def __init__(self, criterion):
+        super(ClassificationLossWrapper, self).__init__()
+        self._criterion = criterion
+
+    def forward(self, model_output, target):
+        return self._criterion(model_output[1], target)
 
 
 class AudioDescriptorExtractorTrainer(Trainer):
@@ -58,12 +66,13 @@ class AudioDescriptorExtractorTrainer(Trainer):
         if self._criterion_type == 'triplet_loss':
             return TripletLoss(margin=self._margin)
         elif self._criterion_type == 'cross_entropy_loss':
-            criterion = nn.CrossEntropyLoss()
-            return lambda model_output, target: criterion(model_output[1], target)
+            return ClassificationLossWrapper(nn.CrossEntropyLoss())
+        elif self._criterion_type == 'softmax_focal_loss':
+            return ClassificationLossWrapper(SoftmaxFocalLoss())
         elif self._criterion_type == 'am_softmax_loss':
-            return AudioDescriptorAmSoftmaxLoss(s=10.0, m=0.2,
-                                                start_annealing_epoch=0,
-                                                end_annealing_epoch=self._epoch_count // 2)
+            return ClassificationLossWrapper(AmSoftmaxLoss(s=10.0, m=0.2,
+                                                           start_annealing_epoch=0,
+                                                           end_annealing_epoch=self._epoch_count // 2))
         else:
             raise ValueError('Invalid criterion type')
 
