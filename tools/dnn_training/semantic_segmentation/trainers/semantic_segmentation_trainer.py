@@ -14,7 +14,7 @@ from semantic_segmentation.datasets import SemanticSegmentationCoco, SemanticSeg
 from semantic_segmentation.metrics import LossMeanIoULearningCurves, MeanIoUMetric
 
 
-IMAGE_SIZE = (360, 640)
+IMAGE_SIZE = (270, 480)
 
 
 class SemanticSegmentationTrainer(Trainer):

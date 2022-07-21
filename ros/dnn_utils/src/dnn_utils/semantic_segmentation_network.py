@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 
 
-IMAGE_SIZE = (360, 640)
+IMAGE_SIZE = (270, 480)
 
 
 class SemanticSegmentationNetwork(DnnModel):
