@@ -18,6 +18,8 @@ This folder contains the tools to train the neural networks used by T-Top.
       is `audio_descriptor_extractor`.
     - The [train_pose_estimator.py](train_pose_estimator.py) script trains a neural network that estimates the pose of a
       person. The network name is `pose_estimator`.
+    - The [train_semantic_segmentation_network.py](train_semantic_segmentation_network.py) script trains a neural 
+      network that performs semantic segmentation. The network name is `semantic_segmentation_network`.
 - Export scripts
     - The [export_audio_descriptor_extractor.py](export_audio_descriptor_extractor.py) script exports
       the `audio_descriptor_extractor` network to a TorchScript file and a TensorRT file.
@@ -31,6 +33,8 @@ This folder contains the tools to train the neural networks used by T-Top.
       TorchScript file and a TensorRT file.
     - The [export_yolo_v4.py](export_yolo_v4.py) script exports the `yolo_v4` network to a TorchScript file and a
       TensorRT file.
+    - The [export_semantic_segmentation_network.py](export_semantic_segmentation_network.py) script exports the 
+      `semantic_segmentation_network` network to a TorchScript file and a TensorRT file.
 - Test scripts
     - The [test_exported_audio_descriptor_extractor.py](test_exported_audio_descriptor_extractor.py) script tests the
       exported `audio_descriptor_extractor` network.
@@ -46,6 +50,8 @@ This folder contains the tools to train the neural networks used by T-Top.
       the `audio_descriptor_extractor` network and the `face_descriptor_extractor` network.
     - The [test_pose_estimator_with_yolo_v4.py](test_pose_estimator_with_yolo_v4.py) script tests the `pose_estimator`
       network with the `yolo_v4` network on the COCO dataset.
+    - The [test_exported_semantic_segmentation_network.py](test_exported_semantic_segmentation_network.py) script tests 
+      the exported `semantic_segmentation_network` network.
 
 ## Setup
 
