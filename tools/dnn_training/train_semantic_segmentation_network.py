@@ -14,7 +14,6 @@ from semantic_segmentation.datasets.semantic_segmentation_coco import CLASS_COUN
 from semantic_segmentation.datasets.semantic_segmentation_open_images import CLASS_COUNT as OPEN_IMAGES_CLASS_COUNT
 
 
-# Train a model like : https://github.com/microsoft/human-pose-estimation.pytorch
 def main():
     parser = argparse.ArgumentParser(description='Train semantic segmentation')
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')

@@ -13,7 +13,6 @@ from backbone.trainers import BackboneDistillationTrainer
 from backbone.datasets.classification_image_net import CLASS_COUNT
 
 
-# Train a model like : https://github.com/microsoft/human-pose-estimation.pytorch
 def main():
     parser = argparse.ArgumentParser(description='Train Backbone')
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
