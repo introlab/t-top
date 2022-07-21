@@ -26,6 +26,11 @@ class ClassificationLossWrapper(nn.Module):
         return self._criterion(model_output[1], target)
 
 
+class AudioDescriptorAmSoftmaxLoss(AmSoftmaxLoss):
+    def forward(self, model_output, target):
+        return super(AudioDescriptorAmSoftmaxLoss, self).forward(model_output[1], target)
+
+
 class AudioDescriptorExtractorTrainer(Trainer):
     def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
                  batch_size=128, criterion_type='triplet_loss',
@@ -70,9 +75,9 @@ class AudioDescriptorExtractorTrainer(Trainer):
         elif self._criterion_type == 'softmax_focal_loss':
             return ClassificationLossWrapper(SoftmaxFocalLoss())
         elif self._criterion_type == 'am_softmax_loss':
-            return ClassificationLossWrapper(AmSoftmaxLoss(s=10.0, m=0.2,
-                                                           start_annealing_epoch=0,
-                                                           end_annealing_epoch=self._epoch_count // 2))
+            return AudioDescriptorAmSoftmaxLoss(s=10.0, m=0.2,
+                                                start_annealing_epoch=0,
+                                                end_annealing_epoch=self._epoch_count // 2)
         else:
             raise ValueError('Invalid criterion type')
 
