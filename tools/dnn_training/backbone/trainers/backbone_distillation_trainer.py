@@ -35,7 +35,7 @@ class BackboneDistillationTrainer:
         if device.type == 'cuda' and torch.cuda.device_count() > 1:
             print('DataParallel - GPU count:', torch.cuda.device_count())
             student_model = nn.DataParallel(student_model)
-            teacher_model = nn.DataParallel(student_model)
+            teacher_model = nn.DataParallel(teacher_model)
 
         self._student_model = student_model.to(device)
         self._teacher_model = teacher_model.to(device)

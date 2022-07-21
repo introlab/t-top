@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--student_model_type', choices=['stdc1', 'stdc2'], help='Choose the student model type', required=True)
     parser.add_argument('--teacher_model_type', choices=['efficientnet-b0', 'efficientnet-b2',
                                                          'efficientnet-b4', 'efficientnet-b7'],
-                        help='Choose the teracher model type', required=True)
+                        help='Choose the teacher model type', required=True)
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
     parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
