@@ -29,6 +29,7 @@ using namespace std;
 constexpr bool WAIT_FOR_SERVICE = true;
 
 void startNode(
+    bool recordSession,
     Language language,
     ros::NodeHandle& nodeHandle,
     double personDistanceThreshold,
@@ -47,6 +48,8 @@ void startNode(
     auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
+    strategies.emplace_back(createCamera3dRecordingStrategy(filterPool));
+
     strategies.emplace_back(createFastVideoAnalyzer3dStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
@@ -103,6 +106,11 @@ void startNode(
         afterTaskDelayDuration));
 
     stateManager.switchTo<SmartIdleState>();
+
+    if (recordSession)
+    {
+        desireSet->addDesire(make_unique<Camera3dRecordingDesire>());
+    }
 
     ros::spin();
 }
@@ -169,6 +177,13 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "smart_speaker_smart_node");
     ros::NodeHandle nodeHandle;
     ros::NodeHandle privateNodeHandle("~");
+
+    bool recordSession;
+    if (!privateNodeHandle.getParam("record_session", recordSession))
+    {
+        ROS_ERROR("The parameter record_session must be set.");
+        return -1;
+    }
 
     string languageString;
     Language language;
@@ -239,6 +254,7 @@ int main(int argc, char** argv)
     }
 
     startNode(
+        recordSession,
         language,
         nodeHandle,
         personDistanceThreshold,

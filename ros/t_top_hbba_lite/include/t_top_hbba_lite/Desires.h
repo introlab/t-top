@@ -5,6 +5,26 @@
 #include <hbba_lite/core/DesireSet.h>
 #include <string>
 
+class Camera3dRecordingDesire : public Desire
+{
+public:
+    explicit Camera3dRecordingDesire(uint16_t intensity = 1);
+    ~Camera3dRecordingDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(Camera3dRecordingDesire)
+};
+
+
+class Camera2dWideRecordingDesire : public Desire
+{
+public:
+    explicit Camera2dWideRecordingDesire(uint16_t intensity = 1);
+    ~Camera2dWideRecordingDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(Camera2dWideRecordingDesire)
+};
+
+
 class RobotNameDetectorDesire : public Desire
 {
 public:

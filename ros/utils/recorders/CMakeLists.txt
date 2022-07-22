@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(smart_speaker)
+project(recorders)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,20 +8,10 @@ project(smart_speaker)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-        audio_analyzer
-        cloud_data
-        gesture
-        hbba_lite
-        person_identification
-        rospy
-        roscpp
-        sensor_msgs
-        std_msgs
-        talk
-        video_analyzer
-        t_top_hbba_lite
-        tf
-        speech_to_text
+  audio_utils
+  rospy
+  sensor_msgs
+  hbba_lite
 )
 
 ## System dependencies are found with CMake's conventions
@@ -81,7 +71,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   sensor_msgs#   std_msgs
+#   sensor_msgs
 # )
 
 ################################################
@@ -114,10 +104,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-        #  INCLUDE_DIRS include
-        #  LIBRARIES smart_speaker
-        #  CATKIN_DEPENDS audio_analyzer cloud_data gesture hbba_lite person_identification roscpp sensor_msgs std_msgs talk video_analyzer
-        #  DEPENDS system_lib
+#  INCLUDE_DIRS include
+#  LIBRARIES recorders
+#  CATKIN_DEPENDS audio_utils rospy sensor_msgs
+#  DEPENDS system_lib
 )
 
 ###########
@@ -127,13 +117,13 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-        # include
-        ${catkin_INCLUDE_DIRS}
+# include
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/smart_speaker.cpp
+#   src/${PROJECT_NAME}/recorders.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -144,47 +134,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_rss_node
-        src/main_rss.cpp
-        src/StringUtils.cpp
-        src/states/State.cpp
-        src/states/StateManager.cpp
-        src/states/common/TalkState.cpp
-        src/states/common/WaitAnswerState.cpp
-        src/states/common/ValidTaskState.cpp
-        src/states/common/InvalidTaskState.cpp
-        src/states/common/AfterTaskDelayState.cpp
-        src/states/task/CurrentWeatherState.cpp
-        src/states/task/WeatherForecastState.cpp
-        src/states/task/DanceState.cpp
-        src/states/task/DancePlayedSongState.cpp
-        src/states/rss/RssIdleState.cpp
-        src/states/rss/RssWaitPersonIdentificationState.cpp
-        src/states/rss/RssAskTaskState.cpp
-        src/states/rss/RssWaitAnswerState.cpp
-        src/states/rss/RssValidTaskState.cpp
-        src/states/rss/RssStoryState.cpp
-)
-
-add_executable(${PROJECT_NAME}_smart_node
-        src/main_smart.cpp
-        src/StringUtils.cpp
-        src/states/State.cpp
-        src/states/StateManager.cpp
-        src/states/common/TalkState.cpp
-        src/states/common/WaitAnswerState.cpp
-        src/states/common/ValidTaskState.cpp
-        src/states/common/InvalidTaskState.cpp
-        src/states/common/AfterTaskDelayState.cpp
-        src/states/task/CurrentWeatherState.cpp
-        src/states/task/DancePlayedSongState.cpp
-        src/states/smart/SmartIdleState.cpp
-        src/states/smart/SmartAskTaskState.cpp
-        src/states/smart/SmartWaitAnswerState.cpp
-        src/states/smart/SmartValidTaskState.cpp
-        src/states/smart/SmartAskOtherTaskState.cpp
-        src/states/smart/SmartThankYouState.cpp
-)
+# add_executable(${PROJECT_NAME}_node src/recorders_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -197,13 +147,9 @@ add_executable(${PROJECT_NAME}_smart_node
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_rss_node
-        ${catkin_LIBRARIES}
-)
-
-target_link_libraries(${PROJECT_NAME}_smart_node
-        ${catkin_LIBRARIES}
-)
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -214,10 +160,10 @@ target_link_libraries(${PROJECT_NAME}_smart_node
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/script.py
-#    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/video_recorder_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -252,7 +198,7 @@ target_link_libraries(${PROJECT_NAME}_smart_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_smart_speaker.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_recorders.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -2,6 +2,10 @@
 
 using namespace std;
 
+Camera3dRecordingDesire::Camera3dRecordingDesire(uint16_t intensity) : Desire(intensity) {}
+
+Camera2dWideRecordingDesire::Camera2dWideRecordingDesire(uint16_t intensity) : Desire(intensity) {}
+
 RobotNameDetectorDesire::RobotNameDetectorDesire(uint16_t intensity) : Desire(intensity) {}
 
 SlowVideoAnalyzer3dDesire::SlowVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}

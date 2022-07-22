@@ -134,6 +134,26 @@ void PlaySoundStrategy::onEnabling(const unique_ptr<Desire>& desire)
 }
 
 
+unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<Camera3dRecordingDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"video_recorder_camera_3d/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createCamera2dWideRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<Camera2dWideRecordingDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"video_recorder_camera_camera_2d_wide/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
+}
+
 unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<RobotNameDetectorDesire>>(

@@ -87,6 +87,10 @@ protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
 };
 
+std::unique_ptr<BaseStrategy>
+    createCamera3dRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createCamera2dWideRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
 std::unique_ptr<BaseStrategy>
     createRobotNameDetectorStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
