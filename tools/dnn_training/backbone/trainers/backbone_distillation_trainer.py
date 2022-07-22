@@ -19,7 +19,7 @@ IMAGE_SIZE = (224, 224)
 
 
 class BackboneDistillationTrainer:
-    def __init__(self, device, student_model, teacher_model, image_net_root='', open_images_root='', output_path='',
+    def __init__(self, device, student_model, teacher_model, image_net_root='', open_images_root=None, output_path='',
                  epoch_count=10, learning_rate=0.01, weight_decay=0.0,
                  batch_size=128, student_model_checkpoint=None):
         self._device = device
@@ -57,9 +57,12 @@ class BackboneDistillationTrainer:
 
     def _create_training_dataset_loader(self, image_net_root, open_images_root, batch_size):
         transform = create_training_image_transform()
-        image_net_dataset = ClassificationImageNet(image_net_root, train=True, transform=transform)
-        open_images_dataset = ClassificationOpenImages(open_images_root, split='training', image_transform=transform)
-        dataset = torch.utils.data.ConcatDataset([image_net_dataset, open_images_dataset])
+        datasets = []
+        datasets.append(ClassificationImageNet(image_net_root, train=True, transform=transform))
+        if open_images_root is not None:
+            datasets.append(ClassificationOpenImages(open_images_root, split='training', image_transform=transform))
+
+        dataset = torch.utils.data.ConcatDataset(datasets)
         return torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 
     def _create_validation_dataset_loader(self, image_net_root, batch_size):

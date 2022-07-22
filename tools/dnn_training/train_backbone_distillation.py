@@ -17,9 +17,10 @@ def main():
     parser = argparse.ArgumentParser(description='Train Backbone')
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
     parser.add_argument('--image_net_root', type=str, help='Choose the image net root path', required=True)
-    parser.add_argument('--open_images_root', type=str, help='Choose the open images root path', required=True)
+    parser.add_argument('--open_images_root', type=str, help='Choose the open images root path', default=None)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
-    parser.add_argument('--student_model_type', choices=['stdc1', 'stdc2'], help='Choose the student model type', required=True)
+    parser.add_argument('--student_model_type', choices=['stdc1', 'stdc2'],
+                        help='Choose the student model type', required=True)
     parser.add_argument('--teacher_model_type', choices=['efficientnet-b0', 'efficientnet-b2',
                                                          'efficientnet-b4', 'efficientnet-b7'],
                         help='Choose the teacher model type', required=True)
