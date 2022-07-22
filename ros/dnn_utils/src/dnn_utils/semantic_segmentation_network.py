@@ -40,5 +40,5 @@ class SemanticSegmentationNetwork(DnnModel):
             image_tensor = self._normalization(image_tensor.squeeze(0))
 
             prediction = super(SemanticSegmentationNetwork, self).__call__(image_tensor.unsqueeze(0))[0]
-            semantic_segmentation = prediction.argmax(dim=0)
+            semantic_segmentation = prediction[0].argmax(dim=0)
             return semantic_segmentation.cpu()
