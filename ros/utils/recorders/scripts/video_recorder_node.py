@@ -265,38 +265,48 @@ class VideoRecorder:
 
     def _start_if_not_started(self, record_start_time_ns: int):
         if self._pipeline is not None:
-            self._record_start_time_ns = record_start_time_ns
-            self._last_video_frame_timestamp_ns = 0
+            return
 
-            mux_pipeline = VideoRecorder._create_mux_pipeline(self._configuration)
-            video_pipeline = VideoRecorder._create_video_pipeline(self._configuration)
-            audio_pipeline = VideoRecorder._create_audio_pipeline(self._configuration)
+        self._record_start_time_ns = record_start_time_ns
+        self._last_video_frame_timestamp_ns = 0
 
-            try:
-                pipeline = Gst.parse_launch(f'{mux_pipeline} {video_pipeline} {audio_pipeline}')
-                video_src = self._pipeline.get_by_name('video_src')
-                audio_src = self._pipeline.get_by_name('audio_src')
-                pipeline.set_state(Gst.State.PLAYING)
+        mux_pipeline = VideoRecorder._create_mux_pipeline(self._configuration)
+        video_pipeline = VideoRecorder._create_video_pipeline(self._configuration)
+        audio_pipeline = VideoRecorder._create_audio_pipeline(self._configuration)
 
-                self._pipeline = pipeline
-                self._video_src = video_src
-                self._audio_src = audio_src
-            except gi.repository.GLib.Error as e:
-                rospy.logerr(f'GStreamer pipeline failed({e})')
+        try:
+            pipeline = Gst.parse_launch(f'{video_pipeline} ! {mux_pipeline} {audio_pipeline} ! mux.')
+            video_src = pipeline.get_by_name('video_src')
+            audio_src = pipeline.get_by_name('audio_src')
+            pipeline.set_state(Gst.State.PLAYING)
+
+            self._pipeline = pipeline
+            self._video_src = video_src
+            self._audio_src = audio_src
+            self._bus = self._pipeline.get_bus()
+            self._bus.add_watch(0, self._on_bus_message_cb)
+        except gi.repository.GLib.Error as e:
+            rospy.logerr(f'GStreamer pipeline failed({e})')
 
     def _stop_if_started(self):
-        if self._pipeline is not None:
-            self._video_src.emit("end-of-stream")
-            self._audio_src.emit("end-of-stream")
-            bus = self._pipeline.get_bus()
-            msg = bus.timed_pop_filtered(
-                Gst.CLOCK_TIME_NONE,
-                Gst.MessageType.ERROR | Gst.MessageType.EOS
-            )
-            self._pipeline.set_state(Gst.State.NULL)
-            self._pipeline = None
-            self._video_src = None
-            self._audio_src = None
+        if self._pipeline is None:
+            return
+
+        self._video_src.emit("end-of-stream")
+        self._audio_src.emit("end-of-stream")
+
+        self._bus.timed_pop_filtered(
+            Gst.CLOCK_TIME_NONE,
+            Gst.MessageType.ERROR | Gst.MessageType.EOS
+        )
+        self._pipeline.set_state(Gst.State.NULL)
+        self._pipeline = None
+        self._video_src = None
+        self._audio_src = None
+        self._bus = None
+
+    def _on_bus_message_cb(self, bus, msg):
+        rospy.log(f'Gstreamer bus message: {msg}')
 
     @staticmethod
     def _create_mux_pipeline(configuration: VideoRecorderConfiguration):
@@ -320,18 +330,19 @@ class VideoRecorder:
             encoder = configuration.video_codec.to_nvidia_hardware_encoder()
             pipeline += ' ! videoconvert ! nvvidconv ! capsfilter caps=video/x-raw(memory:NVMM),format=(string)I420'
             pipeline += f' ! {encoder} bitrate={configuration.video_bitrate}'
-            if configuration.video_codec == VideoCodec.H264:
-                pipeline += ' ! h264parse'
-            elif configuration.video_codec == VideoCodec.H265:
-                pipeline += ' ! h265parse'
         else:
             rospy.logwarn('NVIDIA hardware encoder are not available.')
 
             encoder = configuration.video_codec.to_software_encoder()
             bitrate_attribute = configuration.video_codec.get_software_bitrate_attribute()
-            pipeline += f'videoconvert ! {encoder} {bitrate_attribute}={configuration.video_bitrate}'
+            pipeline += f' ! videoconvert ! capsfilter caps=video/x-raw,format=I420'
+            pipeline += f' ! {encoder} {bitrate_attribute}={configuration.video_bitrate}'
 
-        pipeline += ' ! mux.'
+        if configuration.video_codec == VideoCodec.H264:
+            pipeline += ' ! h264parse'
+        elif configuration.video_codec == VideoCodec.H265:
+            pipeline += ' ! h265parse'
+
         return pipeline
 
     @staticmethod
@@ -350,7 +361,7 @@ class VideoRecorder:
         pipeline = VideoRecorder._create_audio_input_pipeline(configuration)
 
         encoder = configuration.audio_codec.to_encoder()
-        pipeline += f' ! audioconvert ! capsfilter caps=audio/x-raw,channels=1 ! audiorate ! {encoder} ! mux.'
+        pipeline += f' ! audioconvert ! capsfilter caps=audio/x-raw,channels=1 ! audiorate ! {encoder}'
         return pipeline
 
     @staticmethod
