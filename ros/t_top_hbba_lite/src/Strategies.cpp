@@ -150,7 +150,7 @@ unique_ptr<BaseStrategy> createCamera2dWideRecordingStrategy(shared_ptr<FilterPo
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
-            {"video_recorder_camera_camera_2d_wide/filter_state", FilterConfiguration::onOff()}},
+            {"video_recorder_camera_2d_wide/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
 

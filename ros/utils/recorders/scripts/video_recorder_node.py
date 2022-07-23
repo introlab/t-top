@@ -358,14 +358,24 @@ class VideoRecorder:
     def _create_audio_pipeline(configuration: VideoRecorderConfiguration):
         pipeline = VideoRecorder._create_audio_input_pipeline(configuration)
 
+        audioconvert_attributes = ''
+        if configuration.audio_channel_count > 1 :
+            values = [f'(float){1 / configuration.audio_channel_count}'] * configuration.audio_channel_count
+            audioconvert_attributes = 'mix-matrix="<<' + ','.join(values) + '>>"'
+
         encoder = configuration.audio_codec.to_encoder()
-        pipeline += f' ! audioconvert ! capsfilter caps=audio/x-raw,channels=1 ! audiorate ! {encoder}'
+        pipeline += f' ! audioconvert {audioconvert_attributes}'
+        pipeline += f' ! capsfilter caps=audio/x-raw,channels=1 ! audiorate ! {encoder}'
         return pipeline
 
     @staticmethod
     def _create_audio_input_pipeline(configuration: VideoRecorderConfiguration):
+        channel_mask = ''
+        if configuration.audio_channel_count > 2:
+            channel_mask = ',channel-mask=0'
+
         caps = f'audio/x-raw,format={configuration.audio_format.value},channels={configuration.audio_channel_count}'
-        caps += f',rate={configuration.audio_sampling_frequency},layout=interleaved'
+        caps += f',rate={configuration.audio_sampling_frequency},layout=interleaved{channel_mask}'
         return f'appsrc name=audio_src is-live=True format=time caps={caps} ! queue max-size-buffers=100'
 
     @staticmethod
