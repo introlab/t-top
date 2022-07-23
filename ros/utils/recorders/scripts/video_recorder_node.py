@@ -278,15 +278,16 @@ class VideoRecorder:
             pipeline = Gst.parse_launch(f'{video_pipeline} ! {mux_pipeline} {audio_pipeline} ! mux.')
             video_src = pipeline.get_by_name('video_src')
             audio_src = pipeline.get_by_name('audio_src')
+            bus = pipeline.get_bus()
+            bus.add_watch(0, self._on_bus_message_cb)
             pipeline.set_state(Gst.State.PLAYING)
 
             self._pipeline = pipeline
             self._video_src = video_src
             self._audio_src = audio_src
-            self._bus = self._pipeline.get_bus()
-            self._bus.add_watch(0, self._on_bus_message_cb)
+            self._bus = bus
         except gi.repository.GLib.Error as e:
-            rospy.logerr(f'GStreamer pipeline failed({e})')
+            rospy.loginfo(f'GStreamer pipeline failed({e})')
 
     def _stop_if_started(self):
         if self._pipeline is None:
@@ -295,10 +296,7 @@ class VideoRecorder:
         self._video_src.emit("end-of-stream")
         self._audio_src.emit("end-of-stream")
 
-        self._bus.timed_pop_filtered(
-            Gst.CLOCK_TIME_NONE,
-            Gst.MessageType.ERROR | Gst.MessageType.EOS
-        )
+        self._bus.remove_watch()
         self._pipeline.set_state(Gst.State.NULL)
         self._pipeline = None
         self._video_src = None
