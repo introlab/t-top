@@ -10,7 +10,7 @@
         <param name="video_width" value="1280"/>
         <param name="video_height" value="720"/>
         <param name="video_codec" value="h265"/>
-        <param name="video_bitrate" value="250000"/>
+        <param name="video_bitrate" value="1000000"/>
         <param name="video_delay_s" value="0.35"/>
 
         <param name="audio_format" value="signed_16"/>
@@ -31,7 +31,7 @@
         <param name="video_width" value="1280"/>
         <param name="video_height" value="720"/>
         <param name="video_codec" value="h265"/>
-        <param name="video_bitrate" value="250000"/>
+        <param name="video_bitrate" value="1000000"/>
         <param name="video_delay_s" value="0.0"/>
 
         <param name="audio_format" value="signed_32"/>

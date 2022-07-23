@@ -295,6 +295,7 @@ class VideoRecorder:
 
         self._video_src.emit("end-of-stream")
         self._audio_src.emit("end-of-stream")
+        self._bus.timed_pop_filtered(Gst.CLOCK_TIME_NONE, Gst.MessageType.ERROR | Gst.MessageType.EOS)
 
         self._bus.remove_watch()
         self._pipeline.set_state(Gst.State.NULL)
@@ -372,7 +373,7 @@ class VideoRecorder:
     def _create_audio_input_pipeline(configuration: VideoRecorderConfiguration):
         channel_mask = ''
         if configuration.audio_channel_count > 2:
-            channel_mask = ',channel-mask=0'
+            channel_mask = ',channel-mask=(bitmask)0x0'
 
         caps = f'audio/x-raw,format={configuration.audio_format.value},channels={configuration.audio_channel_count}'
         caps += f',rate={configuration.audio_sampling_frequency},layout=interleaved{channel_mask}'
@@ -416,8 +417,6 @@ def main():
     rospy.init_node('video_recorder_node')
 
     Gst.init(None)
-    Gst.debug_set_active(True)
-    Gst.debug_set_default_threshold(3)
 
     video_recorder_node = VideoRecorderNode()
     video_recorder_node.run()
