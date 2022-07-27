@@ -318,7 +318,7 @@ class VideoRecorder:
 
     @staticmethod
     def _get_filename(configuration: VideoRecorderConfiguration):
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcfromtimestamp(rospy.Time.now().to_sec())
         return configuration.filename_prefix + now.strftime("%Y-%m-%d_%H-%M-%S")
 
     @staticmethod

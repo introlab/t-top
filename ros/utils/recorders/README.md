@@ -25,3 +25,14 @@ This node records an image topic and an audio topic.
 
 #### Services
  - `video_recorder/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the recording.
+
+### `perception_logger_node`
+This node logs the video analysis messages and the audio analysis messages into a SQLite database.
+
+#### Parameters
+ - `database_path` (string): The database path of the SQLite database.
+ - `frame_id` (string): The frame id of the positions and directions in the database.
+
+#### Subscribed Topics
+ - `video_analysis` ([video_analyzer/VideoAnalysis](../../perceptions/video_analyzer/msg/VideoAnalysis.msg)): The video analysis containing the detected objects. The video analysis must contain 3d positions.
+ - `audio_analysis` ([audio_analyzer/AudioAnalysis](../../perceptions/audio_analyzer/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, voice embedding and the sound direction.

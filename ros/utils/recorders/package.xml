@@ -53,14 +53,26 @@
   <build_depend>rospy</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>hbba_lite</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>video_analyzer</build_depend>
+  <build_depend>audio_analyser</build_depend>
+  <build_depend>tf</build_depend>
   <build_export_depend>audio_utils</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
   <build_export_depend>hbba_lite</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>video_analyzer</build_export_depend>
+  <build_export_depend>audio_analyser</build_export_depend>
+  <build_export_depend>tf</build_export_depend>
   <exec_depend>audio_utils</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>hbba_lite</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>video_analyzer</exec_depend>
+  <exec_depend>audio_analyser</exec_depend>
+  <exec_depend>tf</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

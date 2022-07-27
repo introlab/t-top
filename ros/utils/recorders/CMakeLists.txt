@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(recorders)
 
+add_subdirectory(3rd_party/SQLiteCpp)
+add_subdirectory(3rd_party/optional)
+
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -12,6 +15,10 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   hbba_lite
+  roscpp
+  video_analyzer
+  audio_analyzer
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -117,24 +124,31 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
+  3rd_party/SQLiteCpp/include
+  3rd_party/optional/include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/recorders.cpp
-# )
+add_library(perception_logger
+  src/perception_logger/AudioAnalysisLogger.cpp
+  src/perception_logger/VideoAnalysisLogger.cpp
+  src/perception_logger/sqlite/SQLiteMigration.cpp
+  src/perception_logger/sqlite/SQLitePerceptionLogger.cpp
+  src/perception_logger/sqlite/SQLiteAudioAnalysisLogger.cpp
+  src/perception_logger/sqlite/SQLiteVideoAnalysisLogger.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(perception_logger ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/recorders_node.cpp)
+add_executable(perception_logger_node src/perception_logger_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -147,9 +161,16 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(perception_logger
+  ${catkin_LIBRARIES}
+  SQLiteCpp
+)
+
+target_link_libraries(perception_logger_node
+  ${catkin_LIBRARIES}
+  SQLiteCpp
+  perception_logger
+)
 
 #############
 ## Install ##
@@ -198,10 +219,17 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_recorders.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+catkin_add_gtest(perception_logger-test
+  test/perception_logger/main.cpp
+  test/perception_logger/PerceptionLoggerTests.cpp
+  test/perception_logger/sqlite/SQLiteMigrationTests.cpp
+  test/perception_logger/sqlite/SQLitePerceptionLoggerTests.cpp
+  test/perception_logger/sqlite/SQLiteAudioAnalysisLoggerTests.cpp
+  test/perception_logger/sqlite/SQLiteVideoAnalysisLoggerTests.cpp
+)
+if(TARGET perception_logger-test)
+  target_link_libraries(perception_logger-test perception_logger ${catkin_LIBRARIES})
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
