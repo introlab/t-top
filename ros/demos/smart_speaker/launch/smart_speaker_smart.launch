@@ -6,7 +6,7 @@
     <arg name="use_after_task_delay_duration_topic" default="true"/>
 
     <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 45; $0 $1 $2 $3 $4 $5 $6' ">
-        <param name="record_session" value="$(arg record_session)">
+        <param name="record_session" value="$(arg record_session)"/>
 
         <param name="language" value="$(arg language)"/>
 

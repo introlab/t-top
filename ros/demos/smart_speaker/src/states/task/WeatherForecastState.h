@@ -1,19 +1,13 @@
 #ifndef SMART_SPEAKER_STATES_TASK_WEATHER_FORECAST_STATE_H
 #define SMART_SPEAKER_STATES_TASK_WEATHER_FORECAST_STATE_H
 
-#include "../State.h"
+#include "../common/TalkState.h"
 
 #include <cloud_data/LocalWeatherForecast.h>
 #include <talk/Done.h>
 
-class WeatherForecastState : public State
+class WeatherForecastState : public TalkState
 {
-    std::type_index m_nextStateType;
-
-    ros::Subscriber m_talkDoneSubscriber;
-
-    uint64_t m_talkDesireId;
-
 public:
     WeatherForecastState(
         Language language,
@@ -29,14 +23,11 @@ public:
 protected:
     std::type_index type() const override;
 
-    void enable(const std::string& parameter, const std::type_index& previousStageType) override;
-    void disable() override;
+    std::string generateEnglishText(const std::string& _) override;
+    std::string generateFrenchText(const std::string& _) override;
 
 private:
-    std::string generateText();
-    std::string generateEnglishText(bool ok, const cloud_data::LocalWeatherForecast& srv);
-    std::string generateFrenchText(bool ok, const cloud_data::LocalWeatherForecast& srv);
-    void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
+    void getLocalWeatherForecast(bool& ok, cloud_data::LocalWeatherForecast& srv);
 };
 
 inline std::type_index WeatherForecastState::type() const

@@ -58,15 +58,21 @@ void SpecificFaceFollowingStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
-TalkStrategy::TalkStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+TalkStrategy::TalkStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle)
     : Strategy<TalkDesire>(
           utility,
           {{"sound", 1}},
           {{"talk/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
+      m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
     m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1);
+    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
 }
 
 void TalkStrategy::onEnabling(const unique_ptr<Desire>& desire)
@@ -83,15 +89,30 @@ void TalkStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
-GestureStrategy::GestureStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+void TalkStrategy::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+{
+    if (msg->id == desireId())
+    {
+        m_desireSet->removeDesire(msg->id);
+    }
+}
+
+GestureStrategy::GestureStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle)
     : Strategy<GestureDesire>(
           utility,
           {{"motor", 1}},
           {{"gesture/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
+      m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
     m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1);
+    m_gestureDoneSubscriber =
+        nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
 }
 
 void GestureStrategy::onEnabling(const unique_ptr<Desire>& desire)
@@ -108,15 +129,30 @@ void GestureStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
-PlaySoundStrategy::PlaySoundStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+void GestureStrategy::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
+{
+    if (msg->id == desireId())
+    {
+        m_desireSet->removeDesire(msg->id);
+    }
+}
+
+PlaySoundStrategy::PlaySoundStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle)
     : Strategy<PlaySoundDesire>(
           utility,
           {{"sound", 1}},
           {{"sound_player/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
+      m_desireSet(desireSet),
       m_nodeHandle(nodeHandle)
 {
     m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1);
+    m_soundDoneSubscriber =
+        nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
 }
 
 void PlaySoundStrategy::onEnabling(const unique_ptr<Desire>& desire)
@@ -130,6 +166,14 @@ void PlaySoundStrategy::onEnabling(const unique_ptr<Desire>& desire)
         msg.path = playSoundDesire->path();
         msg.id = playSoundDesire->id();
         m_pathPublisher.publish(msg);
+    }
+}
+
+void PlaySoundStrategy::soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg)
+{
+    if (msg->id == desireId())
+    {
+        m_desireSet->removeDesire(msg->id);
     }
 }
 
@@ -306,16 +350,22 @@ unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<Fil
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy>
-    createTalkStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+unique_ptr<BaseStrategy> createTalkStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility)
 {
-    return make_unique<TalkStrategy>(utility, move(filterPool), nodeHandle);
+    return make_unique<TalkStrategy>(utility, move(filterPool), move(desireSet), nodeHandle);
 }
 
-unique_ptr<BaseStrategy>
-    createGestureStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+unique_ptr<BaseStrategy> createGestureStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility)
 {
-    return make_unique<GestureStrategy>(utility, move(filterPool), nodeHandle);
+    return make_unique<GestureStrategy>(utility, move(filterPool), move(desireSet), nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -331,10 +381,13 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
         move(filterPool));
 }
 
-unique_ptr<BaseStrategy>
-    createPlaySoundStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+unique_ptr<BaseStrategy> createPlaySoundStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility)
 {
-    return make_unique<PlaySoundStrategy>(utility, move(filterPool), nodeHandle);
+    return make_unique<PlaySoundStrategy>(utility, move(filterPool), move(desireSet), nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createTelepresenceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)

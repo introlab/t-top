@@ -14,60 +14,16 @@ WeatherForecastState::WeatherForecastState(
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     std::type_index nextStateType)
-    : State(language, stateManager, desireSet, nodeHandle),
-      m_nextStateType(nextStateType),
-      m_talkDesireId(MAX_DESIRE_ID)
+    : TalkState(language, stateManager, desireSet, nodeHandle, nextStateType)
 {
-    m_talkDoneSubscriber =
-        nodeHandle.subscribe("talk/done", 1, &WeatherForecastState::talkDoneSubscriberCallback, this);
 }
 
-void WeatherForecastState::enable(const string& parameter, const type_index& previousStageType)
+string WeatherForecastState::generateEnglishText(const string& _)
 {
-    State::enable(parameter, previousStageType);
-
-    auto faceFollowingDesire = make_unique<NearestFaceFollowingDesire>();
-    auto faceAnimationDesire = make_unique<FaceAnimationDesire>("blink");
-    auto talkDesire = make_unique<TalkDesire>(generateText());
-    m_talkDesireId = talkDesire->id();
-
-    m_desireIds.emplace_back(faceFollowingDesire->id());
-    m_desireIds.emplace_back(faceAnimationDesire->id());
-    m_desireIds.emplace_back(talkDesire->id());
-
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->addDesire(move(faceFollowingDesire));
-    m_desireSet->addDesire(move(faceAnimationDesire));
-    m_desireSet->addDesire(move(talkDesire));
-}
-
-void WeatherForecastState::disable()
-{
-    State::disable();
-    m_talkDesireId = MAX_DESIRE_ID;
-}
-
-string WeatherForecastState::generateText()
-{
-    ros::ServiceClient service =
-        m_nodeHandle.serviceClient<cloud_data::LocalWeatherForecast>("cloud_data/local_weather_forecast");
+    bool ok;
     cloud_data::LocalWeatherForecast srv;
-    srv.request.relative_day = 1;  // tomorow
-    bool ok = service.exists() && service.call(srv);
+    getLocalWeatherForecast(ok, srv);
 
-    switch (language())
-    {
-        case Language::ENGLISH:
-            return generateEnglishText(ok, srv);
-        case Language::FRENCH:
-            return generateFrenchText(ok, srv);
-    }
-
-    return "";
-}
-
-string WeatherForecastState::generateEnglishText(bool ok, const cloud_data::LocalWeatherForecast& srv)
-{
     stringstream ss;
     ss.precision(FLOAT_NUMBER_PRECISION);
 
@@ -97,8 +53,12 @@ string WeatherForecastState::generateEnglishText(bool ok, const cloud_data::Loca
     return ss.str();
 }
 
-string WeatherForecastState::generateFrenchText(bool ok, const cloud_data::LocalWeatherForecast& srv)
+string WeatherForecastState::generateFrenchText(const string& _)
 {
+    bool ok;
+    cloud_data::LocalWeatherForecast srv;
+    getLocalWeatherForecast(ok, srv);
+
     stringstream ss;
     ss.precision(FLOAT_NUMBER_PRECISION);
 
@@ -127,12 +87,11 @@ string WeatherForecastState::generateFrenchText(bool ok, const cloud_data::Local
     return ss.str();
 }
 
-void WeatherForecastState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+void WeatherForecastState::getLocalWeatherForecast(bool& ok, cloud_data::LocalWeatherForecast& srv)
 {
-    if (!enabled() || msg->id != m_talkDesireId)
-    {
-        return;
-    }
+    ros::ServiceClient service =
+        m_nodeHandle.serviceClient<cloud_data::LocalWeatherForecast>("cloud_data/local_weather_forecast");
 
-    m_stateManager.switchTo(m_nextStateType);
+    srv.request.relative_day = 1;  // tomorow
+    ok = service.exists() && service.call(srv);
 }

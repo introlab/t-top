@@ -24,8 +24,8 @@ public:
 protected:
     std::type_index type() const override;
 
-    std::string generateEnglishText(const std::string& personName) override;
-    std::string generateFrenchText(const std::string& personName) override;
+    std::string generateEnglishText(const std::string& _) override;
+    std::string generateFrenchText(const std::string& _) override;
 };
 
 inline std::type_index SmartThankYouState::type() const

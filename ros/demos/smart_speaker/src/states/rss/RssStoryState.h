@@ -15,10 +15,8 @@ struct StoryLine
     StoryLine(std::string faceAnimation, std::string text);
 };
 
-class RssStoryState : public State
+class RssStoryState : public State, public DesireSetObserver
 {
-    ros::Subscriber m_talkDoneSubscriber;
-
     std::queue<StoryLine> m_storyLines;
     uint64_t m_talkDesireId;
     uint64_t m_faceAnimationDesireId;
@@ -31,10 +29,12 @@ public:
         ros::NodeHandle& nodeHandle,
         const std::string& englishStoryPath,
         const std::string& frenchStoryPath);
-    ~RssStoryState() override = default;
+    ~RssStoryState() override;
 
     DECLARE_NOT_COPYABLE(RssStoryState);
     DECLARE_NOT_MOVABLE(RssStoryState);
+
+    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 protected:
     std::type_index type() const override;
@@ -45,7 +45,6 @@ protected:
 private:
     void readStory(const std::string& storyPath);
     bool setNextLineDesire();
-    void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
 };
 
 inline std::type_index RssStoryState::type() const

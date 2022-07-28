@@ -15,21 +15,29 @@ InvalidTaskState::InvalidTaskState(
     : State(language, stateManager, desireSet, nodeHandle),
       m_nextStateType(nextStateType),
       m_talkDesireId(MAX_DESIRE_ID),
-      m_gestureDesireId(MAX_DESIRE_ID),
-      m_talkDone(false),
-      m_gestureDone(false)
+      m_gestureDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &InvalidTaskState::talkDoneSubscriberCallback, this);
-    m_gestureDoneSubscriber =
-        nodeHandle.subscribe("gesture/done", 1, &InvalidTaskState::gestureDoneSubscriberCallback, this);
+    m_desireSet->addObserver(this);
+}
+
+InvalidTaskState::~InvalidTaskState()
+{
+    m_desireSet->removeObserver(this);
+}
+
+void InvalidTaskState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+{
+    if (!enabled() || m_desireSet->contains(m_talkDesireId) || m_desireSet->contains(m_gestureDesireId))
+    {
+        return;
+    }
+
+    m_stateManager.switchTo(m_nextStateType);
 }
 
 void InvalidTaskState::enable(const string& parameter, const type_index& previousStageType)
 {
     State::enable(parameter, previousStageType);
-
-    m_talkDone = false;
-    m_gestureDone = false;
 
     auto gestureDesire = make_unique<GestureDesire>("no");
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("sad");
@@ -66,34 +74,4 @@ string InvalidTaskState::generateText()
     }
 
     return "";
-}
-
-void InvalidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_talkDesireId)
-    {
-        return;
-    }
-
-    m_talkDone = true;
-    switchState();
-}
-
-void InvalidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_gestureDesireId)
-    {
-        return;
-    }
-
-    m_gestureDone = true;
-    switchState();
-}
-
-void InvalidTaskState::switchState()
-{
-    if (m_talkDone && m_gestureDone)
-    {
-        m_stateManager.switchTo(m_nextStateType);
-    }
 }

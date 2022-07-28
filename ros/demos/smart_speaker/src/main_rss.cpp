@@ -53,10 +53,10 @@ void startNode(
     strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createSoundFollowingStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
-    strategies.emplace_back(createTalkStrategy(filterPool, nodeHandle));
-    strategies.emplace_back(createGestureStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, nodeHandle));
+    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, nodeHandle));
     strategies.emplace_back(createDanceStrategy(filterPool));
-    strategies.emplace_back(createPlaySoundStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
 
     auto solver = make_unique<GecodeSolver>();
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));

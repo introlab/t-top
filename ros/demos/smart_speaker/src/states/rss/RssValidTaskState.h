@@ -3,9 +3,6 @@
 
 #include "../common/ValidTaskState.h"
 
-#include <talk/Done.h>
-#include <gesture/Done.h>
-
 constexpr const char* CURRENT_WEATHER_TASK = "CURRENT_WEATHER";
 constexpr const char* WEATHER_FORECAST_TASK = "WEATHER_FORECAST";
 constexpr const char* STORY_TASK = "STORY";
