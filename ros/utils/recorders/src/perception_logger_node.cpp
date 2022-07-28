@@ -146,6 +146,8 @@ private:
         {
             videoAnalysis.faceDescriptor = msg.face_descriptor;
         }
+
+        return videoAnalysis;
     }
 
     AudioAnalysis msgToAnalysis(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
