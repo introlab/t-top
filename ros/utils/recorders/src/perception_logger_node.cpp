@@ -102,6 +102,10 @@ public:
                 "Invalid direction frame id (" << msg->header.frame_id << " ! = " << m_configuration.frameId);
             return;
         }
+        if (msg->audio_classes.empty())
+        {
+            return;
+        }
 
         m_audioAnalysisLogger->log(msgToAnalysis(msg));
     }
