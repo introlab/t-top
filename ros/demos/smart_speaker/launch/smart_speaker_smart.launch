@@ -63,6 +63,6 @@
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
         <arg name="slam" value="false"/>
         <arg name="fullscreen_face" value="true"/>
-        <arg name="record_session" value="$(arg record_session)">
+        <arg name="record_session" value="$(arg record_session)"/>
     </include>
 </launch>
