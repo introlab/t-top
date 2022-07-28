@@ -41,6 +41,7 @@ class PerceptionLoggerNode
     ros::NodeHandle& m_nodeHandle;
     PerceptionLoggerNodeConfiguration m_configuration;
 
+    SQLite::Database m_database;
     unique_ptr<VideoAnalysisLogger> m_videoAnalysisLogger;
     unique_ptr<AudioAnalysisLogger> m_audioAnalysisLogger;
 
@@ -53,12 +54,11 @@ class PerceptionLoggerNode
 public:
     PerceptionLoggerNode(ros::NodeHandle& nodeHandle, PerceptionLoggerNodeConfiguration configuration)
         : m_nodeHandle(nodeHandle),
-          m_configuration(move(configuration))
+          m_configuration(move(configuration)),
+          m_database(m_configuration.databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE)
     {
-        SQLite::Database database(m_configuration.databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-
-        m_videoAnalysisLogger = make_unique<SQLiteVideoAnalysisLogger>(database);
-        m_audioAnalysisLogger = make_unique<SQLiteAudioAnalysisLogger>(database);
+        m_videoAnalysisLogger = make_unique<SQLiteVideoAnalysisLogger>(m_database);
+        m_audioAnalysisLogger = make_unique<SQLiteAudioAnalysisLogger>(m_database);
 
         m_videoAnalysis3dSubscriber =
             m_nodeHandle.subscribe("video_analysis", 10, &PerceptionLoggerNode::videoAnalysisSubscriberCallback, this);
