@@ -25,6 +25,11 @@ void columnToVector(const SQLite::Column& column, std::vector<T>& vec)
 bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp);
 bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp, Position position);
 bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp, Direction direction);
-bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp, Position position, Direction direction);
+bool perceptionExists(
+    SQLite::Database& database,
+    int64_t id,
+    Timestamp timestamp,
+    Position position,
+    Direction direction);
 
 #endif

@@ -6,7 +6,8 @@ using namespace std;
 
 bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp)
 {
-    SQLite::Statement query(database,
+    SQLite::Statement query(
+        database,
         "SELECT COUNT(*) FROM perception "
         "WHERE id=? AND timestamp=? AND "
         "      position_x is NULL AND position_y is NULL AND position_z is NULL AND "
@@ -21,7 +22,8 @@ bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestam
 
 bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp, Position position)
 {
-    SQLite::Statement query(database,
+    SQLite::Statement query(
+        database,
         "SELECT COUNT(*) FROM perception "
         "WHERE id=? AND timestamp=? AND "
         "      position_x=? AND position_y=? AND position_z=? AND "
@@ -38,7 +40,8 @@ bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestam
 
 bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp, Direction direction)
 {
-    SQLite::Statement query(database,
+    SQLite::Statement query(
+        database,
         "SELECT COUNT(*) FROM perception "
         "WHERE id=? AND timestamp=? AND "
         "      position_x is NULL AND position_y is NULL AND position_z is NULL AND "
@@ -53,9 +56,15 @@ bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestam
     return static_cast<int>(query.getColumn(0)) != 0;
 }
 
-bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestamp, Position position, Direction direction)
+bool perceptionExists(
+    SQLite::Database& database,
+    int64_t id,
+    Timestamp timestamp,
+    Position position,
+    Direction direction)
 {
-    SQLite::Statement query(database,
+    SQLite::Statement query(
+        database,
         "SELECT COUNT(*) FROM perception "
         "WHERE id=? AND timestamp=? AND "
         "      position_x=? AND position_y=? AND position_z=? AND "

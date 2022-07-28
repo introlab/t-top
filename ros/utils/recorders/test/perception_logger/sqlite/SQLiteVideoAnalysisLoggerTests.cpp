@@ -6,9 +6,18 @@
 
 using namespace std;
 
-void readVideoAnalysis(SQLite::Database& database, int64_t id, string& objectClass, vector<Position>& personPose, vector<float>& personPoseConfidence, vector<float>& faceDescriptor)
+void readVideoAnalysis(
+    SQLite::Database& database,
+    int64_t id,
+    string& objectClass,
+    vector<Position>& personPose,
+    vector<float>& personPoseConfidence,
+    vector<float>& faceDescriptor)
 {
-    SQLite::Statement query(database, "SELECT object_class, person_pose, person_pose_confidence, face_descriptor FROM video_analysis WHERE perception_id=?");
+    SQLite::Statement query(
+        database,
+        "SELECT object_class, person_pose, person_pose_confidence, face_descriptor FROM video_analysis WHERE "
+        "perception_id=?");
 
     query.bind(1, id);
     if (!query.executeStep())
@@ -38,8 +47,21 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     SQLiteVideoAnalysisLogger logger(database);
 
     int64_t id0 = logger.log(VideoAnalysis(Timestamp(101), Position(1, 2, 3), Direction(4, 5, 6), "banana"));
-    int64_t id1 = logger.log(VideoAnalysis(Timestamp(102), Position(7, 8, 9), Direction(10, 11, 12), "person", {Position(13, 14, 15)}, {0.5}));
-    int64_t id2 = logger.log(VideoAnalysis(Timestamp(103), Position(16, 17, 18), Direction(19, 20, 21), "person", {Position(22, 23, 24)}, {0.75}, {7, 8}));
+    int64_t id1 = logger.log(VideoAnalysis(
+        Timestamp(102),
+        Position(7, 8, 9),
+        Direction(10, 11, 12),
+        "person",
+        {Position(13, 14, 15)},
+        {0.5}));
+    int64_t id2 = logger.log(VideoAnalysis(
+        Timestamp(103),
+        Position(16, 17, 18),
+        Direction(19, 20, 21),
+        "person",
+        {Position(22, 23, 24)},
+        {0.75},
+        {7, 8}));
 
     EXPECT_TRUE(perceptionExists(database, id0, Timestamp(101), Position(1, 2, 3), Direction(4, 5, 6)));
     EXPECT_TRUE(perceptionExists(database, id1, Timestamp(102), Position(7, 8, 9), Direction(10, 11, 12)));

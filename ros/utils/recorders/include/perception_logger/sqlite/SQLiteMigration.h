@@ -20,6 +20,9 @@ public:
 };
 
 int getLoggerVersion(SQLite::Database& database, const std::string& loggerName);
-void applyMigrations(SQLite::Database& database, const std::string& loggerName, const std::vector<SQLiteMigration>& migrations);
+void applyMigrations(
+    SQLite::Database& database,
+    const std::string& loggerName,
+    const std::vector<SQLiteMigration>& migrations);
 
 #endif

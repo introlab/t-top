@@ -22,8 +22,21 @@ struct VideoAnalysis
     tl::optional<std::vector<float>> faceDescriptor;
 
     VideoAnalysis(Timestamp timestamp, Position position, Direction direction, std::string objectClass);
-    VideoAnalysis(Timestamp timestamp, Position position, Direction direction, std::string objectClass, std::vector<Position> personPose, std::vector<float> personPoseConfidence);
-    VideoAnalysis(Timestamp timestamp, Position position, Direction direction, std::string objectClass, std::vector<Position> personPose, std::vector<float> personPoseConfidence, std::vector<float> faceDescriptor);
+    VideoAnalysis(
+        Timestamp timestamp,
+        Position position,
+        Direction direction,
+        std::string objectClass,
+        std::vector<Position> personPose,
+        std::vector<float> personPoseConfidence);
+    VideoAnalysis(
+        Timestamp timestamp,
+        Position position,
+        Direction direction,
+        std::string objectClass,
+        std::vector<Position> personPose,
+        std::vector<float> personPoseConfidence,
+        std::vector<float> faceDescriptor);
 };
 
 class VideoAnalysisLogger

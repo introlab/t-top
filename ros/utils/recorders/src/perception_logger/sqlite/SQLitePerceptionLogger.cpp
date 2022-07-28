@@ -6,34 +6,31 @@ using namespace std;
 
 SQLitePerceptionLogger::SQLitePerceptionLogger(SQLite::Database& database) : m_database(database)
 {
-    vector<SQLiteMigration> migrations
-    {
-        SQLiteMigration(
-            "BEGIN;"
-            "CREATE TABLE perception("
-            "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            "    timestamp INTEGER,"
-            "    position_x REAL,"
-            "    position_y REAL,"
-            "    position_z REAL,"
-            "    direction_x REAL,"
-            "    direction_y REAL,"
-            "    direction_z REAL"
-            ");"
-            "COMMIT;"
-        )
-    };
+    vector<SQLiteMigration> migrations{SQLiteMigration("BEGIN;"
+                                                       "CREATE TABLE perception("
+                                                       "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                                       "    timestamp INTEGER,"
+                                                       "    position_x REAL,"
+                                                       "    position_y REAL,"
+                                                       "    position_z REAL,"
+                                                       "    direction_x REAL,"
+                                                       "    direction_y REAL,"
+                                                       "    direction_z REAL"
+                                                       ");"
+                                                       "COMMIT;")};
 
     applyMigrations(database, "perception", migrations);
 }
 
-SQLitePerceptionLogger::~SQLitePerceptionLogger()
-{
-}
+SQLitePerceptionLogger::~SQLitePerceptionLogger() {}
 
-int64_t SQLitePerceptionLogger::insertPerception(Timestamp timestamp, tl::optional<Position> position, tl::optional<Direction> direction)
+int64_t SQLitePerceptionLogger::insertPerception(
+    Timestamp timestamp,
+    tl::optional<Position> position,
+    tl::optional<Direction> direction)
 {
-    SQLite::Statement insert(m_database,
+    SQLite::Statement insert(
+        m_database,
         "INSERT INTO perception(timestamp, position_x, position_y, position_z, direction_x, direction_y, direction_z) "
         "VALUES(?, ?, ?, ?, ?, ?, ?)");
     insert.clearBindings();

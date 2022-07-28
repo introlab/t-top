@@ -63,12 +63,11 @@ public:
         m_videoAnalysis3dSubscriber =
             m_nodeHandle.subscribe("video_analysis", 10, &PerceptionLoggerNode::videoAnalysisSubscriberCallback, this);
         m_audioAnalysisSubscriber =
-            m_nodeHandle.subscribe("audio_analysis", 10, &PerceptionLoggerNode::audioAnalysisSubscriberCallback, this);;
+            m_nodeHandle.subscribe("audio_analysis", 10, &PerceptionLoggerNode::audioAnalysisSubscriberCallback, this);
+        ;
     }
 
-    virtual ~PerceptionLoggerNode()
-    {
-    }
+    virtual ~PerceptionLoggerNode() {}
 
     void videoAnalysisSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg)
     {
@@ -99,7 +98,8 @@ public:
     {
         if (msg->header.frame_id != m_configuration.frameId)
         {
-            ROS_ERROR_STREAM("Invalid direction frame id (" << msg->header.frame_id << " ! = " << m_configuration.frameId);
+            ROS_ERROR_STREAM(
+                "Invalid direction frame id (" << msg->header.frame_id << " ! = " << m_configuration.frameId);
             return;
         }
 
@@ -109,7 +109,7 @@ public:
     void run() { ros::spin(); }
 
 private:
-    Position pointToPosition(const geometry_msgs::Point &point, const tf::StampedTransform& transform)
+    Position pointToPosition(const geometry_msgs::Point& point, const tf::StampedTransform& transform)
     {
         tf::Point transformedPoint = transform * tf::Point(point.x, point.y, point.z);
         return Position(transformedPoint.x(), transformedPoint.y(), transformedPoint.z());
@@ -117,11 +117,14 @@ private:
 
     Direction positionToDirection(const Position& p)
     {
-        double n = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+        double n = sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
         return Direction(p.x / n, p.y / n, p.z / n);
     }
 
-    VideoAnalysis msgToAnalysis(const video_analyzer::VideoAnalysisObject& msg, const ros::Time& timestamp, const tf::StampedTransform& transform)
+    VideoAnalysis msgToAnalysis(
+        const video_analyzer::VideoAnalysisObject& msg,
+        const ros::Time& timestamp,
+        const tf::StampedTransform& transform)
     {
         Position position = pointToPosition(msg.center_3d, transform);
         VideoAnalysis videoAnalysis(timestamp, position, positionToDirection(position), msg.object_class);
@@ -147,7 +150,8 @@ private:
 
     AudioAnalysis msgToAnalysis(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
     {
-        AudioAnalysis audioAnalysis(msg->header.stamp,
+        AudioAnalysis audioAnalysis(
+            msg->header.stamp,
             Direction(msg->direction_x, msg->direction_y, msg->direction_z),
             mergeClasses(msg->audio_classes));
 

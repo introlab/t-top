@@ -2,17 +2,11 @@
 
 using namespace std;
 
-SQLiteMigration::SQLiteMigration()
-{
-}
+SQLiteMigration::SQLiteMigration() {}
 
-SQLiteMigration::SQLiteMigration(const string& sql) : m_sql(sql)
-{
-}
+SQLiteMigration::SQLiteMigration(const string& sql) : m_sql(sql) {}
 
-SQLiteMigration::~SQLiteMigration()
-{
-}
+SQLiteMigration::~SQLiteMigration() {}
 
 void SQLiteMigration::apply(SQLite::Database& database) const
 {
@@ -22,10 +16,9 @@ void SQLiteMigration::apply(SQLite::Database& database) const
 
 static void createVersionTable(SQLite::Database& database)
 {
-    database.exec(
-        "BEGIN;"
-        "CREATE TABLE version(logger TEXT PRIMARY KEY, version INTEGER);"
-        "COMMIT;");
+    database.exec("BEGIN;"
+                  "CREATE TABLE version(logger TEXT PRIMARY KEY, version INTEGER);"
+                  "COMMIT;");
 }
 
 static bool hasLoggerVersion(SQLite::Database& database, const string& loggerName)

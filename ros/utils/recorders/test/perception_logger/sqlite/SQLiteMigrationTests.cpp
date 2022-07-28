@@ -11,13 +11,12 @@ TEST(SQLiteMigrationTests, applyMigrations_shouldApplyAllMigrationsOnlyOnce)
 
     vector<SQLiteMigration> migrations = {
         SQLiteMigration("BEGIN;"
-                "CREATE TABLE data(id INTEGER PRIMARY KEY);"
-                "INSERT INTO data (id) VALUES(0);"
-                "INSERT INTO data (id) VALUES(1);"
-                "INSERT INTO data (id) VALUES(2);"
-                "COMMIT;"),
-        SQLiteMigration("INSERT INTO data (id) VALUES(3);")
-    };
+                        "CREATE TABLE data(id INTEGER PRIMARY KEY);"
+                        "INSERT INTO data (id) VALUES(0);"
+                        "INSERT INTO data (id) VALUES(1);"
+                        "INSERT INTO data (id) VALUES(2);"
+                        "COMMIT;"),
+        SQLiteMigration("INSERT INTO data (id) VALUES(3);")};
 
     applyMigrations(database, loggerName, migrations);
     EXPECT_EQ(2, getLoggerVersion(database, loggerName));
