@@ -27,11 +27,11 @@ int64_t SQLiteAudioAnalysisLogger::log(const AudioAnalysis& analysis)
         "INSERT INTO audio_analysis(perception_id, classes, voice_descriptor) VALUES(?, ?, ?)");
     insert.clearBindings();
     insert.bind(1, id);
-    insert.bind(2, analysis.classes);
+    insert.bindNoCopy(2, analysis.classes);
 
     if (analysis.voiceDescriptor.has_value())
     {
-        insert.bind(
+        insert.bindNoCopy(
             3,
             reinterpret_cast<const void*>(analysis.voiceDescriptor.value().data()),
             analysis.voiceDescriptor.value().size() * sizeof(float));

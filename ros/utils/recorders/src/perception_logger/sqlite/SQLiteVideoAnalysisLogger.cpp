@@ -31,25 +31,25 @@ int64_t SQLiteVideoAnalysisLogger::log(const VideoAnalysis& analysis)
 
     insert.clearBindings();
     insert.bind(1, id);
-    insert.bind(2, analysis.objectClass);
+    insert.bindNoCopy(2, analysis.objectClass);
 
     if (analysis.personPose.has_value())
     {
-        insert.bind(
+        insert.bindNoCopy(
             3,
             reinterpret_cast<const void*>(analysis.personPose.value().data()),
             analysis.personPose.value().size() * sizeof(Position));
     }
     if (analysis.personPoseConfidence.has_value())
     {
-        insert.bind(
+        insert.bindNoCopy(
             4,
             reinterpret_cast<const void*>(analysis.personPoseConfidence.value().data()),
             analysis.personPoseConfidence.value().size() * sizeof(float));
     }
     if (analysis.faceDescriptor.has_value())
     {
-        insert.bind(
+        insert.bindNoCopy(
             5,
             reinterpret_cast<const void*>(analysis.faceDescriptor.value().data()),
             analysis.faceDescriptor.value().size() * sizeof(float));
