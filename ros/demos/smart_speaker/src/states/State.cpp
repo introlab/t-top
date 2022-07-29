@@ -31,4 +31,5 @@ void State::disable()
     {
         m_desireSet->removeDesire(id);
     }
+    m_desireIds.clear();
 }

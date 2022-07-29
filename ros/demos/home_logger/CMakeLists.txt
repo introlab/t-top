@@ -146,6 +146,9 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node
   src/home_logger_node.cpp
+  src/states/State.cpp
+  src/states/StateManager.cpp
+  src/states/SoundFaceFollowingState.cpp
 )
 
 ## Rename C++ executable without prefix

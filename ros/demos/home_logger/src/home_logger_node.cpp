@@ -1,3 +1,5 @@
+#include "states/StateManager.h"
+
 #include <ros/ros.h>
 
 #include <hbba_lite/core/DesireSet.h>
@@ -13,10 +15,7 @@ using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
-void startNode(
-    ros::NodeHandle& nodeHandle,
-    bool camera2dWideEnabled,
-    bool recordSession)
+void startNode(ros::NodeHandle& nodeHandle, bool camera2dWideEnabled, bool recordSession)
 {
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
@@ -42,6 +41,24 @@ void startNode(
     strategies.emplace_back(createTalkStrategy(filterPool, desireSet, nodeHandle));
     strategies.emplace_back(createGestureStrategy(filterPool, desireSet, nodeHandle));
     strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
+
+    auto solver = make_unique<GecodeSolver>();
+    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
+
+    StateManager stateManager(desireSet, nodeHandle);
+    // TODO add states to the state manager
+
+
+    if (recordSession)
+    {
+        desireSet->addDesire(make_unique<Camera3dRecordingDesire>());
+    }
+    if (recordSession && camera2dWideEnabled)
+    {
+        desireSet->addDesire(make_unique<Camera2dWideRecordingDesire>());
+    }
+
+    // TODO Set idle state
 
     ros::spin();
 }
