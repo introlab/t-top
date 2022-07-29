@@ -1,11 +1,14 @@
 #include <perception_logger/sqlite/SQLiteVideoAnalysisLogger.h>
 #include <perception_logger/sqlite/SQLiteAudioAnalysisLogger.h>
+#include <perception_logger/sqlite/SQLiteSpeechLogger.h>
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 
 #include <video_analyzer/VideoAnalysis.h>
 #include <audio_analyzer/AudioAnalysis.h>
+#include <talk/Text.h>
+#include <speech_to_text/Transcript.h>
 
 #include <memory>
 #include <sstream>
@@ -44,12 +47,14 @@ class PerceptionLoggerNode
     SQLite::Database m_database;
     unique_ptr<VideoAnalysisLogger> m_videoAnalysisLogger;
     unique_ptr<AudioAnalysisLogger> m_audioAnalysisLogger;
+    unique_ptr<SpeechLogger> m_speechLogger;
 
     tf::TransformListener m_listener;
 
     ros::Subscriber m_videoAnalysis3dSubscriber;
-    ros::Subscriber m_videoAnalysis2dWideSubscriber;
     ros::Subscriber m_audioAnalysisSubscriber;
+    ros::Subscriber m_talkTextSubscriber;
+    ros::Subscriber m_speechToTextTranscriptSubscriber;
 
 public:
     PerceptionLoggerNode(ros::NodeHandle& nodeHandle, PerceptionLoggerNodeConfiguration configuration)
@@ -59,12 +64,19 @@ public:
     {
         m_videoAnalysisLogger = make_unique<SQLiteVideoAnalysisLogger>(m_database);
         m_audioAnalysisLogger = make_unique<SQLiteAudioAnalysisLogger>(m_database);
+        m_speechLogger = make_unique<SQLiteSpeechLogger>(m_database);
 
         m_videoAnalysis3dSubscriber =
             m_nodeHandle.subscribe("video_analysis", 10, &PerceptionLoggerNode::videoAnalysisSubscriberCallback, this);
         m_audioAnalysisSubscriber =
             m_nodeHandle.subscribe("audio_analysis", 10, &PerceptionLoggerNode::audioAnalysisSubscriberCallback, this);
-        ;
+        m_talkTextSubscriber =
+            m_nodeHandle.subscribe("talk/text", 10, &PerceptionLoggerNode::talkTextSubscriberCallback, this);
+        m_speechToTextTranscriptSubscriber = m_nodeHandle.subscribe(
+            "speech_to_text/transcript",
+            10,
+            &PerceptionLoggerNode::speechToTextTranscriptSubscriberCallback,
+            this);
     }
 
     virtual ~PerceptionLoggerNode() {}
@@ -108,6 +120,19 @@ public:
         }
 
         m_audioAnalysisLogger->log(msgToAnalysis(msg));
+    }
+
+    void talkTextSubscriberCallback(const talk::Text::ConstPtr& msg)
+    {
+        m_speechLogger->log(Speech(Timestamp(ros::Time::now().sec), SpeechSource::ROBOT, msg->text));
+    }
+
+    void speechToTextTranscriptSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
+    {
+        if (msg->is_final)
+        {
+            m_speechLogger->log(Speech(Timestamp(ros::Time::now().sec), SpeechSource::HUMAN, msg->text));
+        }
     }
 
     void run() { ros::spin(); }

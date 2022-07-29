@@ -18,6 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   video_analyzer
   audio_analyzer
+  talk
+  speech_to_text
   tf
 )
 
@@ -134,10 +136,12 @@ include_directories(
 add_library(perception_logger
   src/perception_logger/AudioAnalysisLogger.cpp
   src/perception_logger/VideoAnalysisLogger.cpp
+  src/perception_logger/SpeechLogger.cpp
   src/perception_logger/sqlite/SQLiteMigration.cpp
   src/perception_logger/sqlite/SQLitePerceptionLogger.cpp
   src/perception_logger/sqlite/SQLiteAudioAnalysisLogger.cpp
   src/perception_logger/sqlite/SQLiteVideoAnalysisLogger.cpp
+  src/perception_logger/sqlite/SQLiteSpeechLogger.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -222,10 +226,14 @@ catkin_install_python(PROGRAMS
 catkin_add_gtest(perception_logger-test
   test/perception_logger/main.cpp
   test/perception_logger/PerceptionLoggerTests.cpp
+  test/perception_logger/AudioAnalysisLoggerTests.cpp
+  test/perception_logger/VideoAnalysisLoggerTests.cpp
+  test/perception_logger/SpeechLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteMigrationTests.cpp
   test/perception_logger/sqlite/SQLitePerceptionLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteAudioAnalysisLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteVideoAnalysisLoggerTests.cpp
+  test/perception_logger/sqlite/SQLiteSpeechLoggerTests.cpp
 )
 if(TARGET perception_logger-test)
   target_link_libraries(perception_logger-test perception_logger ${catkin_LIBRARIES})

@@ -35,11 +35,6 @@ void readVideoAnalysis(
     columnToVector(query.getColumn(3), faceDescriptor);
 }
 
-bool operator==(const Position& l, const Position& r)
-{
-    return l.x == r.x && l.y == r.y && l.z == r.z;
-}
-
 TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
 {
     SQLite::Database database(":memory:", SQLite::OPEN_READWRITE);

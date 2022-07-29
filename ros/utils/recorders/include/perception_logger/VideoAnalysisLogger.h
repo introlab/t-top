@@ -39,6 +39,11 @@ struct VideoAnalysis
         std::vector<float> faceDescriptor);
 };
 
+inline bool operator==(const Position& l, const Position& r)
+{
+    return l.x == r.x && l.y == r.y && l.z == r.z;
+}
+
 class VideoAnalysisLogger
 {
 public:
