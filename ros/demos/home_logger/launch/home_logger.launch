@@ -1,0 +1,10 @@
+<launch>
+
+    <node pkg="recorders" type="perception_logger_node" name="perception_logger_node" output="screen">
+        <param name="database_path" value="/home/introlab/log.db"/>
+        <param name="frame_id" value="odas"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+    </node>
+
+</launch>

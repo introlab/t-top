@@ -7,5 +7,5 @@
         <arg name="verify_ssl" value="$(arg verify_ssl)"/>
     </include>
 
-    <node pkg="ttop_opentera" type="ttop_opentera_node" name="ttop_opentera_node"/>
+    <node pkg="t_top_opentera" type="t_top_opentera_node" name="t_top_opentera_node"/>
 </launch>

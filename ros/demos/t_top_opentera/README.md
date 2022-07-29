@@ -1,4 +1,4 @@
-# ttop_opentera
+# t_top_opentera
 
 This folder contains a node that makes T-Top a telepresence robot using OpenTera.
 
@@ -17,7 +17,7 @@ To launch in stand-alone mode, you will need to generate CA certificates and key
 1. Start the ROS stack.
 ```bash
 export DISPLAY=:0.0
-roslaunch ttop_opentera ttop_opentera.launch
+roslaunch t_top_opentera t_top_opentera.launch
 ```
 2. On your developpement machine, navigate to `https://<ROBOT_IP>:8080/index.html#/user?pwd=abc&robot=TTOP`, where `<ROBOT_IP>` is the IP address of your robot on the LAN.
 
@@ -35,7 +35,7 @@ cp $(rospack find opentera_client_ros)/config/client_config.json ~/.ros/opentera
 1. Start the ROS stack.
 ```bash
 export DISPLAY=:0.0
-roslaunch ttop_opentera ttop_opentera_online.launch
+roslaunch t_top_opentera t_top_opentera_online.launch
 ```
 
 2. On your developpement machine, navigate to `https://telesante.3it.usherbrooke.ca:40075/robot/#/login`.

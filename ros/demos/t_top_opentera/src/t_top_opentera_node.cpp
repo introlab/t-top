@@ -146,7 +146,7 @@ void Node::setMovementModeDesire()
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "ttop_opentera_node");
+    ros::init(argc, argv, "t_top_opentera_node");
     ros::NodeHandle nodeHandle;
     ros::NodeHandle privateNodeHandle("~");
 
