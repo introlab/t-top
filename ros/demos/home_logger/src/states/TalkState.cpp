@@ -76,16 +76,16 @@ void TalkState::onEnabling(const StateParameter& parameter, const StateType& pre
 
     m_parameter = dynamic_cast<TalkStateParameter>(parameter);
 
-    m_faceFollowingDesireId = m_desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
-    m_talkDesireId = m_desireSet->addDesire(make_unique<TalkDesire>(m_parameter.text));
+    m_faceFollowingDesireId = m_desireSet->addDesire<NearestFaceFollowingDesire>();
+    m_talkDesireId = m_desireSet->addDesire<TalkDesire>(m_parameter.text);
 
     if (m_parameter.gestureName != "")
     {
-        m_gestureDesireId = m_desireSet->addDesire(make_unique<GestureDesire>(m_parameter.gestureName));
+        m_gestureDesireId = m_desireSet->addDesire<GestureDesire>(m_parameter.gestureName, 2);
     }
     if (m_parameter.faceAnimationName != "")
     {
-        m_faceAnimationDesireId = m_desireSet->addDesire(make_unique<FaceAnimationDesire>(m_parameter.faceAnimationName));
+        m_faceAnimationDesireId = m_desireSet->addDesire<FaceAnimationDesire>(m_parameter.faceAnimationName);
     }
 }
 

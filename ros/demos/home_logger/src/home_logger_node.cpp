@@ -51,11 +51,11 @@ void startNode(ros::NodeHandle& nodeHandle, bool camera2dWideEnabled, bool recor
 
     if (recordSession)
     {
-        desireSet->addDesire(make_unique<Camera3dRecordingDesire>());
+        desireSet->addDesire<Camera3dRecordingDesire>();
     }
     if (recordSession && camera2dWideEnabled)
     {
-        desireSet->addDesire(make_unique<Camera2dWideRecordingDesire>());
+        desireSet->addDesire<Camera2dWideRecordingDesire>();
     }
 
     // TODO Set idle state
