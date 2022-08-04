@@ -3,10 +3,12 @@
 
 #include "State.h"
 
+#include <tl/optional.hpp>
+
 class SoundFaceFollowingState : public State
 {
     std::type_index m_followingDesireType;
-    uint64_t m_followingDesireId;
+    tl::optional<uint64_t> m_followingDesireId;
     uint64_t m_videoAnalysisWithoutPersonCount;
 
 public:
@@ -17,6 +19,8 @@ public:
     ~SoundFaceFollowingState() override;
 
 protected:
+    DECLARE_STATE_PROTECTED_METHODS(SoundFaceFollowingState)
+
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 

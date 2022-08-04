@@ -12,7 +12,6 @@ SoundFaceFollowingState::SoundFaceFollowingState(
     ros::NodeHandle& nodeHandle)
     : State(stateManager, desireSet, nodeHandle),
       m_followingDesireType(typeid(nullptr_t)),
-      m_followingDesireId(MAX_DESIRE_ID),
       m_videoAnalysisWithoutPersonCount(0)
 {
 }
@@ -51,9 +50,9 @@ void SoundFaceFollowingState::onVideoAnalysisReceived(const video_analyzer::Vide
 
 void SoundFaceFollowingState::setFollowingDesire(unique_ptr<Desire> desire)
 {
-    if (m_followingDesireId != MAX_DESIRE_ID)
+    if (m_followingDesireId.has_value())
     {
-        m_desireSet->removeDesire(m_followingDesireId);
+        m_desireSet->removeDesire(m_followingDesireId.value());
     }
 
     if (desire != nullptr)
@@ -64,7 +63,7 @@ void SoundFaceFollowingState::setFollowingDesire(unique_ptr<Desire> desire)
     else
     {
         m_followingDesireType = type_index(typeid(nullptr_t));
-        m_followingDesireId = MAX_DESIRE_ID;
+        m_followingDesireId = tl::nullopt;
     }
 }
 

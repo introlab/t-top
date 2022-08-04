@@ -3,6 +3,8 @@
 
 #include "State.h"
 
+#include <tl/optional.hpp>
+
 class TalkStateParameter : public StateParameter
 {
 public:
@@ -31,16 +33,18 @@ class TalkState : public State
 {
     TalkStateParameter m_parameter;
 
-    uint64_t m_faceFollowingDesireId;
-    uint64_t m_talkDesireId;
-    uint64_t m_gestureDesireId;
-    uint64_t m_faceAnimationDesireId;
+    tl::optional<uint64_t> m_faceFollowingDesireId;
+    tl::optional<uint64_t> m_talkDesireId;
+    tl::optional<uint64_t> m_gestureDesireId;
+    tl::optional<uint64_t> m_faceAnimationDesireId;
 
 public:
     TalkState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);
     ~TalkState() override;
 
 protected:
+    DECLARE_STATE_PROTECTED_METHODS(TalkState)
+
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 

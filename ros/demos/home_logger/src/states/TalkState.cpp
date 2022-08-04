@@ -61,10 +61,7 @@ string TalkStateParameter::toString() const
 
 
 TalkState::TalkState(StateManager& stateManager, shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle)
-    : State(stateManager, desireSet, nodeHandle),
-      m_talkDesireId(MAX_DESIRE_ID),
-      m_gestureDesireId(MAX_DESIRE_ID),
-      m_faceAnimationDesireId(MAX_DESIRE_ID)
+    : State(stateManager, desireSet, nodeHandle)
 {
 }
 
@@ -98,17 +95,18 @@ void TalkState::onDisabling() override
     m_desireSet->removeDesire(m_gestureDesireId);
     m_desireSet->removeDesire(m_faceAnimationDesireId);
 
-    m_faceFollowingDesireId = MAX_DESIRE_ID;
-    m_talkDesireId = MAX_DESIRE_ID;
-    m_gestureDesireId = MAX_DESIRE_ID;
-    m_faceAnimationDesireId = MAX_DESIRE_ID;
+    m_faceFollowingDesireId = tl::nullopt;
+    m_talkDesireId = tl::nullopt;
+    m_gestureDesireId = tl::nullopt;
+    m_faceAnimationDesireId = tl::nullopt;
 
     m_parameter = TalkStateParameter();
 }
 
 void TalkState::onDesireSetChanged(const vector<unique_ptr<Desire>>& _)
 {
-    if (!m_desireSet->contains(m_talkDesireId) && !m_disireSet->contains(m_gestureDesireId))
+    if (!(m_talkDesireId.has_value() && m_desireSet->contains(m_talkDesireId.value())) &&
+        !(m_gestureDesireId.has_value() && m_disireSet->contains(m_gestureDesireId.value())))
     {
         m_stateManager.switchTo(m_parameter.nextState, *m_parameter.nextStateParameter);
     }

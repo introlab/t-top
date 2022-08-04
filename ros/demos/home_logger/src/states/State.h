@@ -19,8 +19,6 @@
 #include <typeindex>
 #include <numeric>
 
-constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max();  // TODO change to optional with C++17
-
 class StateManager;
 
 class StateParameter
@@ -36,7 +34,7 @@ class StateType
 {
     std::type_index m_type;
 
-    StateType(std::type_index type);
+    explicit StateType(std::type_index type);
 
 public:
     template<class T>
@@ -113,6 +111,9 @@ namespace std
         inline std::size_t operator()(const StateType& type) const { return type.hashCode(); }
     };
 }
+
+#define DECLARE_STATE_PROTECTED_METHODS(className)                                                                     \
+    StateType type() const override { return StateType::get<className>(); }
 
 class State
 {

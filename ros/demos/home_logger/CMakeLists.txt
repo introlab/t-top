@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
   talk
   tf
   video_analyzer
+  recorders
 )
 
 ## System dependencies are found with CMake's conventions
@@ -127,14 +128,19 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/home_logger.cpp
-# )
+add_library(home_logger_common
+  src/home_logger_common/DateTime.cpp
+  src/home_logger_common/Properties.cpp
+  src/home_logger_common/commands/Command.cpp
+  src/home_logger_common/commands/CommandParser.cpp
+  src/home_logger_common/commands/AllCommandParser.cpp
+  src/home_logger_common/language/StringRessources.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -213,10 +219,22 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_home_logger.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+catkin_add_gtest(home_logger_common-test
+  test/home_logger_common/main.cpp
+  test/home_logger_common/loadStringResources.cpp
+  test/home_logger_common/StringUtilsTests.cpp
+  test/home_logger_common/DateTimeTests.cpp
+  test/home_logger_common/PropertiesTests.cpp
+  test/home_logger_common/commands/CommandTests.cpp
+  test/home_logger_common/commands/CommandParserTests.cpp
+  test/home_logger_common/commands/AllCommandParserTests.cpp
+  test/home_logger_common/language/LanguageTests.cpp
+  test/home_logger_common/language/StringRessourcesTests.cpp
+)
+if(TARGET home_logger_common-test)
+  find_package(Boost REQUIRED COMPONENTS system filesystem)
+  target_link_libraries(home_logger_common-test home_logger_common ${Boost_LIBRARIES})
+endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

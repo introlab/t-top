@@ -113,10 +113,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES recorders
-#  CATKIN_DEPENDS audio_utils rospy sensor_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/SQLiteCpp/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/optional/include
+  LIBRARIES SQLiteCpp
+  # CATKIN_DEPENDS audio_utils rospy sensor_msgs
+  # DEPENDS system_lib
 )
 
 ###########
