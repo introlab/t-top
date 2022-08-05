@@ -33,6 +33,10 @@ void loadResources(Language language, const string& englishStringResourcePath, c
     {
         StringRessources::loadFromFile(frenchStringResourcesPath, Language::FRENCH);
     }
+    else
+    {
+        throw runtime_error("Invalid language");
+    }
 }
 
 void startNode(

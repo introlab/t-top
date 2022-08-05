@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(home_logger)
 
+add_subdirectory(3rd_party/fmt)
+
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -130,6 +132,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  3rd_party/fmt/include
 )
 
 ## Declare a C++ library
@@ -140,6 +143,7 @@ add_library(home_logger_common
   src/home_logger_common/commands/CommandParser.cpp
   src/home_logger_common/commands/AllCommandParser.cpp
   src/home_logger_common/language/StringRessources.cpp
+  src/home_logger_common/language/Formatter.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -175,6 +179,7 @@ add_executable(${PROJECT_NAME}_node
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
   home_logger_common
+  fmt
 )
 
 #############
@@ -235,10 +240,11 @@ catkin_add_gtest(home_logger_common-test
   test/home_logger_common/commands/AllCommandParserTests.cpp
   test/home_logger_common/language/LanguageTests.cpp
   test/home_logger_common/language/StringRessourcesTests.cpp
+  test/home_logger_common/language/FormatterTests.cpp
 )
 if(TARGET home_logger_common-test)
   find_package(Boost REQUIRED COMPONENTS system filesystem)
-  target_link_libraries(home_logger_common-test home_logger_common ${Boost_LIBRARIES})
+  target_link_libraries(home_logger_common-test home_logger_common ${Boost_LIBRARIES} fmt)
 endif()
 
 ## Add folders to be run by python nosetests

@@ -16,3 +16,6 @@
 [submodule "ros/utils/recorders/3rd_party/SQLiteCpp"]
 	path = ros/utils/recorders/3rd_party/SQLiteCpp
 	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "ros/demos/home_logger/3rd_party/fmt"]
+	path = ros/demos/home_logger/3rd_party/fmt
+	url = https://github.com/fmtlib/fmt.git
