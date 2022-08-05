@@ -19,6 +19,18 @@ Time Time::now()
     return Time(buffer.tm_hour, buffer.tm_min);
 }
 
+bool Time::between(const Time& lowerBound, const Time& upperBound)
+{
+    if (lowerBound <= upperBound)
+    {
+        return lowerBound <= *this && *this <= upperBound;
+    }
+    else
+    {
+        return *this >= lowerBound || *this <= upperBound;
+    }
+}
+
 
 Date::Date() : year(0), month(0), day(0) {}
 

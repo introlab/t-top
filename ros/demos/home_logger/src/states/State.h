@@ -166,4 +166,6 @@ inline bool State::enabled() const
     return m_enabled;
 }
 
+bool containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+
 #endif

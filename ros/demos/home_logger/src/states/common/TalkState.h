@@ -1,7 +1,7 @@
-#ifndef HOME_LOGGER_STATES_TALK_STATE_H
-#define HOME_LOGGER_STATES_TALK_STATE_H
+#ifndef HOME_LOGGER_STATES_COMMON_TALK_STATE_H
+#define HOME_LOGGER_STATES_COMMON_TALK_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <tl/optional.hpp>
 
@@ -12,18 +12,18 @@ public:
     std::string gestureName;
     std::string faceAnimationName;
     StateType nextState;
-    std::unique_ptr<StateParameter> nextStateParameter;
+    std::shared_ptr<StateParameter> nextStateParameter;
 
     TalkStateParameter();
     TalkStateParameter(std::string text, StateType nextState);
-    TalkStateParameter(std::string text, StateType nextState, std::unique_ptr<StateParameter> nextStateParameter);
+    TalkStateParameter(std::string text, StateType nextState, std::shared_ptr<StateParameter> nextStateParameter);
     TalkStateParameter(std::string text, std::string gestureName, std::string faceAnimationName, StateType nextState);
     TalkStateParameter(
         std::string text,
         std::string gestureName,
         std::string faceAnimationName,
         StateType nextState,
-        std::unique_ptr<StateParameter> nextStateParameter);
+        std::shared_ptr<StateParameter> nextStateParameter);
     ~TalkStateParameter() override;
 
     std::string toString() const;

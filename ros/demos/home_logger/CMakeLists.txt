@@ -152,9 +152,13 @@ add_library(home_logger_common
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node
   src/home_logger_node.cpp
+  src/managers/VolumeManager.cpp
   src/states/State.cpp
   src/states/StateManager.cpp
-  src/states/SoundFaceFollowingState.cpp
+  src/states/common/SoundFaceFollowingState.cpp
+  src/states/common/TalkState.cpp
+  src/states/specific/IdleState.cpp
+  src/states/specific/SleepState.cpp
 )
 
 ## Rename C++ executable without prefix
@@ -170,6 +174,7 @@ add_executable(${PROJECT_NAME}_node
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
+  home_logger_common
 )
 
 #############

@@ -1,4 +1,5 @@
 #include "TalkState.h"
+#include "../StateManager.h"
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -6,17 +7,16 @@
 
 using namespace std;
 
-TalkStateParameter::TalkStateParameter()
-    : nextState(StateType::null())
+TalkStateParameter::TalkStateParameter() : nextState(StateType::null()) {}
 
-          TalkStateParameter::TalkStateParameter(string text, StateType nextState)
+TalkStateParameter::TalkStateParameter(string text, StateType nextState)
     : text(move(text)),
       nextState(nextState),
       nextStateParameter(make_unique<StateParameter>())
 {
 }
 
-TalkStateParameter(string text, StateType nextState, unique_ptr<StateParameter> nextStateParameter)
+TalkStateParameter::TalkStateParameter(string text, StateType nextState, shared_ptr<StateParameter> nextStateParameter)
     : text(move(text)),
       nextState(nextState),
       nextStateParameter(move(nextStateParameter))
@@ -33,11 +33,11 @@ TalkStateParameter::TalkStateParameter(string text, string gestureName, string f
 }
 
 TalkStateParameter::TalkStateParameter(
-    std::string text,
-    std::string gestureName,
-    std::string faceAnimationName,
+    string text,
+    string gestureName,
+    string faceAnimationName,
     StateType nextState,
-    std::unique_ptr<StateParameter> nextStateParameter)
+    shared_ptr<StateParameter> nextStateParameter)
     : text(move(text)),
       gestureName(move(gestureName)),
       faceAnimationName(move(faceAnimationName)),
@@ -46,7 +46,7 @@ TalkStateParameter::TalkStateParameter(
 {
 }
 
-TalkStateParameter::~TalkStateParameter() override {}
+TalkStateParameter::~TalkStateParameter() {}
 
 string TalkStateParameter::toString() const
 {
@@ -67,11 +67,9 @@ TalkState::TalkState(StateManager& stateManager, shared_ptr<DesireSet> desireSet
 
 TalkState::~TalkState() {}
 
-void TalkState::onEnabling(const StateParameter& parameter, const StateType& previousStateType) override
+void TalkState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
 {
-    SoundFaceFollowingState::onEnabling(parameter, previousStateType);
-
-    m_parameter = dynamic_cast<TalkStateParameter>(parameter);
+    m_parameter = dynamic_cast<const TalkStateParameter&>(parameter);
 
     m_faceFollowingDesireId = m_desireSet->addDesire<NearestFaceFollowingDesire>();
     m_talkDesireId = m_desireSet->addDesire<TalkDesire>(m_parameter.text);
@@ -86,19 +84,28 @@ void TalkState::onEnabling(const StateParameter& parameter, const StateType& pre
     }
 }
 
-void TalkState::onDisabling() override
+void TalkState::onDisabling()
 {
-    SoundFaceFollowingState::onDisabling();
-
-    m_desireSet->removeDesire(m_faceFollowingDesireId);
-    m_desireSet->removeDesire(m_talkDesireId);
-    m_desireSet->removeDesire(m_gestureDesireId);
-    m_desireSet->removeDesire(m_faceAnimationDesireId);
-
-    m_faceFollowingDesireId = tl::nullopt;
-    m_talkDesireId = tl::nullopt;
-    m_gestureDesireId = tl::nullopt;
-    m_faceAnimationDesireId = tl::nullopt;
+    if (m_faceFollowingDesireId.has_value())
+    {
+        m_desireSet->removeDesire(m_faceFollowingDesireId.value());
+        m_faceFollowingDesireId = tl::nullopt;
+    }
+    if (m_talkDesireId.has_value())
+    {
+        m_desireSet->removeDesire(m_talkDesireId.value());
+        m_talkDesireId = tl::nullopt;
+    }
+    if (m_gestureDesireId.has_value())
+    {
+        m_desireSet->removeDesire(m_gestureDesireId.value());
+        m_gestureDesireId = tl::nullopt;
+    }
+    if (m_faceAnimationDesireId.has_value())
+    {
+        m_desireSet->removeDesire(m_faceAnimationDesireId.value());
+        m_faceAnimationDesireId = tl::nullopt;
+    }
 
     m_parameter = TalkStateParameter();
 }
@@ -106,7 +113,7 @@ void TalkState::onDisabling() override
 void TalkState::onDesireSetChanged(const vector<unique_ptr<Desire>>& _)
 {
     if (!(m_talkDesireId.has_value() && m_desireSet->contains(m_talkDesireId.value())) &&
-        !(m_gestureDesireId.has_value() && m_disireSet->contains(m_gestureDesireId.value())))
+        !(m_gestureDesireId.has_value() && m_desireSet->contains(m_gestureDesireId.value())))
     {
         m_stateManager.switchTo(m_parameter.nextState, *m_parameter.nextStateParameter);
     }

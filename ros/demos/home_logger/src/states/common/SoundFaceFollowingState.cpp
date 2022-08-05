@@ -66,16 +66,3 @@ void SoundFaceFollowingState::setFollowingDesire(unique_ptr<Desire> desire)
         m_followingDesireId = tl::nullopt;
     }
 }
-
-bool SoundFaceFollowingState::containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg)
-{
-    for (auto object : msg->objects)
-    {
-        if (object.object_class == "person")
-        {
-            return true;
-        }
-    }
-
-    return false;
-}

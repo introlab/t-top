@@ -1,5 +1,13 @@
 #include "states/StateManager.h"
 
+#include "managers/VolumeManager.h"
+
+#include "states/common/TalkState.h"
+#include "states/specific/IdleState.h"
+
+#include <home_logger_common/language/Language.h>
+#include <home_logger_common/language/StringRessources.h>
+
 #include <ros/ros.h>
 
 #include <hbba_lite/core/DesireSet.h>
@@ -15,8 +23,31 @@ using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
-void startNode(ros::NodeHandle& nodeHandle, bool camera2dWideEnabled, bool recordSession)
+void loadResources(Language language, const string& englishStringResourcePath, const string& frenchStringResourcesPath)
 {
+    if (language == Language::ENGLISH)
+    {
+        StringRessources::loadFromFile(englishStringResourcePath, Language::ENGLISH);
+    }
+    else if (language == Language::FRENCH)
+    {
+        StringRessources::loadFromFile(frenchStringResourcesPath, Language::FRENCH);
+    }
+}
+
+void startNode(
+    ros::NodeHandle& nodeHandle,
+    Language language,
+    const string& englishStringResourcePath,
+    const string& frenchStringResourcesPath,
+    bool camera2dWideEnabled,
+    bool recordSession,
+    bool logPerceptions,
+    Time sleepTime,
+    Time wakeUpTime)
+{
+    loadResources(language, englishStringResourcePath, frenchStringResourcesPath);
+
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
@@ -45,7 +76,13 @@ void startNode(ros::NodeHandle& nodeHandle, bool camera2dWideEnabled, bool recor
     auto solver = make_unique<GecodeSolver>();
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
+    VolumeManager volumeManager(nodeHandle);
+
     StateManager stateManager(desireSet, nodeHandle);
+    stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
+
+    stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
+
     // TODO add states to the state manager
 
 
@@ -58,7 +95,13 @@ void startNode(ros::NodeHandle& nodeHandle, bool camera2dWideEnabled, bool recor
         desireSet->addDesire<Camera2dWideRecordingDesire>();
     }
 
-    // TODO Set idle state
+    if (logPerceptions)
+    {
+        desireSet->addDesire<AudioAnalyzerDesire>();
+        desireSet->addDesire<FastVideoAnalyzer3dDesire>();
+    }
+
+    stateManager.switchTo<IdleState>();
 
     ros::spin();
 }
@@ -68,6 +111,53 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "home_logger_node");
     ros::NodeHandle nodeHandle;
     ros::NodeHandle privateNodeHandle("~");
+
+    string languageString;
+    Language language;
+    privateNodeHandle.param<std::string>("language", languageString, "");
+    if (!languageFromString(languageString, language))
+    {
+        ROS_ERROR("Language must be English (language=en) or French (language=fr).");
+        return -1;
+    }
+
+    string englishStringResourcePath;
+    if (!privateNodeHandle.getParam("english_string_resource_path", englishStringResourcePath))
+    {
+        ROS_ERROR("The parameter english_string_resource_path must be set.");
+        return -1;
+    }
+    string frenchStringResourcesPath;
+    if (!privateNodeHandle.getParam("french_string_resources_path", frenchStringResourcesPath))
+    {
+        ROS_ERROR("The parameter french_string_resources_path must be set.");
+        return -1;
+    }
+
+    int sleepTimeHour;
+    int sleepTimeMinute;
+    int wakeUpTimeHour;
+    int wakeUpTimeMinute;
+    if (!privateNodeHandle.getParam("sleep_time_hour", sleepTimeHour))
+    {
+        ROS_ERROR("The parameter sleep_time_hour must be set.");
+        return -1;
+    }
+    if (!privateNodeHandle.getParam("sleep_time_minute", sleepTimeMinute))
+    {
+        ROS_ERROR("The parameter sleep_time_minute must be set.");
+        return -1;
+    }
+    if (!privateNodeHandle.getParam("wake_up_time_hour", wakeUpTimeHour))
+    {
+        ROS_ERROR("The parameter wake_up_time_hour must be set.");
+        return -1;
+    }
+    if (!privateNodeHandle.getParam("wake_up_time_minute", wakeUpTimeMinute))
+    {
+        ROS_ERROR("The parameter wake_up_time_minute must be set.");
+        return -1;
+    }
 
     bool camera2dWideEnabled;
     if (!privateNodeHandle.getParam("camera_2d_wide_enabled", camera2dWideEnabled))
@@ -83,7 +173,23 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    startNode(nodeHandle, camera2dWideEnabled, recordSession);
+    bool logPerceptions;
+    if (!privateNodeHandle.getParam("log_perceptions", logPerceptions))
+    {
+        ROS_ERROR("The parameter log_perceptions must be set.");
+        return -1;
+    }
+
+    startNode(
+        nodeHandle,
+        language,
+        englishStringResourcePath,
+        frenchStringResourcesPath,
+        camera2dWideEnabled,
+        recordSession,
+        logPerceptions,
+        Time(sleepTimeHour, sleepTimeMinute),
+        Time(wakeUpTimeHour, wakeUpTimeMinute));
 
     return 0;
 }

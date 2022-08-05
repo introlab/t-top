@@ -9,6 +9,8 @@ struct Time
     Time();
     Time(int hour, int minute);
 
+    bool between(const Time& lowerBound, const Time& upperBound);
+
     static Time now();
 
     bool operator==(const Time& other) const;

@@ -27,6 +27,22 @@ TEST(DateTimeTests, timeNow_shouldSetAllAttributes)
     EXPECT_GE(testee.minute, 0);
 }
 
+TEST(DateTimeTests, timeBetween_shouldReturnTheRightValue)
+{
+    EXPECT_TRUE(Time(13, 30).between(Time(13, 30), Time(14, 00)));
+    EXPECT_TRUE(Time(13, 30).between(Time(13, 00), Time(13, 30)));
+    EXPECT_TRUE(Time(13, 30).between(Time(13, 00), Time(14, 00)));
+    EXPECT_FALSE(Time(12, 30).between(Time(13, 00), Time(14, 00)));
+    EXPECT_FALSE(Time(14, 30).between(Time(13, 00), Time(14, 00)));
+
+    EXPECT_TRUE(Time(22, 30).between(Time(22, 30), Time(7, 00)));
+    EXPECT_TRUE(Time(7, 00).between(Time(22, 30), Time(7, 00)));
+    EXPECT_TRUE(Time(23, 00).between(Time(22, 30), Time(7, 00)));
+    EXPECT_TRUE(Time(6, 00).between(Time(22, 30), Time(7, 00)));
+    EXPECT_FALSE(Time(7, 30).between(Time(22, 30), Time(7, 00)));
+    EXPECT_FALSE(Time(22, 00).between(Time(22, 30), Time(7, 00)));
+}
+
 TEST(DateTimeTests, timeComparisonOperators_shouldReturnTheRightValue)
 {
     EXPECT_TRUE(Time(10, 30) == Time(10, 30));

@@ -1,7 +1,7 @@
-#ifndef HOME_LOGGER_STATES_SOUND_FACE_FOLLOWING_STATE_H
-#define HOME_LOGGER_STATES_SOUND_FACE_FOLLOWING_STATE_H
+#ifndef HOME_LOGGER_STATES_COMMON_SOUND_FACE_FOLLOWING_STATE_H
+#define HOME_LOGGER_STATES_COMMON_SOUND_FACE_FOLLOWING_STATE_H
 
-#include "State.h"
+#include "../State.h"
 
 #include <tl/optional.hpp>
 
@@ -28,7 +28,6 @@ protected:
 
 private:
     void setFollowingDesire(std::unique_ptr<Desire> desire);
-    bool containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg);
 };
 
 #endif
