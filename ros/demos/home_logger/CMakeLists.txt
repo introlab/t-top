@@ -163,6 +163,7 @@ add_executable(${PROJECT_NAME}_node
   src/states/common/TalkState.cpp
   src/states/specific/IdleState.cpp
   src/states/specific/SleepState.cpp
+  src/states/specific/WaitCommandState.cpp
 )
 
 ## Rename C++ executable without prefix

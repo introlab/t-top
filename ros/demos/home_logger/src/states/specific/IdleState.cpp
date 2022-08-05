@@ -1,5 +1,6 @@
 #include "IdleState.h"
 #include "SleepState.h"
+#include "WaitCommandState.h"
 #include "../StateManager.h"
 #include "../common/TalkState.h"
 
@@ -13,7 +14,7 @@ constexpr float LOW_STATE_OF_CHARGE = 25;
 constexpr chrono::minutes BATTERY_LOW_MESSAGE_INTERVAL(5);
 
 IdleState::IdleState(StateManager& stateManager, shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle, Time sleepTime, Time wakeUpTime)
-    : SoundFaceFollowingState(stateManager, desireSet, nodeHandle),
+    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
       m_sleepTime(sleepTime),
       m_wakeUpTime(wakeUpTime),
       m_chargeNeeded(false)
@@ -55,7 +56,7 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
     {
         m_lastChargingMessageTime = now;
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.low_battery"),
+            StringRessources::getValue("dialogs.idle_state.low_battery"),
             "",  // No gesture
             "fear",
             StateType::get<IdleState>()));
@@ -67,7 +68,11 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
 
 void IdleState::onRobotNameDetected()
 {
-    // TODO Wait command
+    m_stateManager.switchTo<TalkState>(TalkStateParameter(
+            StringRessources::getValue("dialogs.idle_state.ask_command"),
+            "",  // No gesture
+            "blink",
+            StateType::get<WaitCommandState>()));
 }
 
 void IdleState::onBaseStatusChanged(

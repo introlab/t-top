@@ -47,7 +47,7 @@ void StateManager::switchTo(StateType type, const StateParameter& parameter)
     StateType previousStateType = StateType::null();
     if (m_currentState != nullptr)
     {
-        ROS_INFO("Disabling %s", m_currentState->type().name());
+        ROS_INFO_STREAM("Disabling " << m_currentState->type().name());
         m_currentState->disable();
         previousStateType = m_currentState->type();
     }

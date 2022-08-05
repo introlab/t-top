@@ -164,6 +164,17 @@ TEST_F(AllCommandParserFrenchTests, parse_RemoveReminderCommand_shouldReturnOneR
     EXPECT_ONE_COMMAND(parser->parse("Peux-tu enlever un aide-mémoire?"), RemoveReminderCommand);
 }
 
+TEST_F(AllCommandParserFrenchTests, parse_ListCommandsCommand_shouldReturnOneListCommandsCommand)
+{
+    EXPECT_ONE_COMMAND(parser->parse("liste tes commandes"), ListCommandsCommand);
+    EXPECT_ONE_COMMAND(parser->parse("Que peux-tu faire?"), ListCommandsCommand);
+}
+
+TEST_F(AllCommandParserFrenchTests, parse_NothingCommand_shouldReturnOneNothingCommand)
+{
+    EXPECT_ONE_COMMAND(parser->parse("rien"), NothingCommand);
+}
+
 
 TEST_F(AllCommandParserEnglishTests, parse_WeatherCommand_shouldReturnOneWeatherCommand)
 {
@@ -273,4 +284,15 @@ TEST_F(AllCommandParserEnglishTests, parse_RemoveReminderCommand_shouldReturnOne
 {
     EXPECT_ONE_COMMAND(parser->parse("remove a reminder"), RemoveReminderCommand);
     EXPECT_ONE_COMMAND(parser->parse("delete a reminder"), RemoveReminderCommand);
+}
+
+TEST_F(AllCommandParserEnglishTests, parse_ListCommandsCommand_shouldReturnOneListCommandsCommand)
+{
+    EXPECT_ONE_COMMAND(parser->parse("list the commands"), ListCommandsCommand);
+    EXPECT_ONE_COMMAND(parser->parse("What can you do?"), ListCommandsCommand);
+}
+
+TEST_F(AllCommandParserEnglishTests, parse_NothingCommand_shouldReturnOneNothingCommand)
+{
+    EXPECT_ONE_COMMAND(parser->parse("nothing"), NothingCommand);
 }

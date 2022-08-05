@@ -393,4 +393,23 @@ inline tl::optional<int64_t> RemoveReminderCommand::id() const
     return m_id;
 }
 
+
+class ListCommandsCommand : public Command
+{
+public:
+    explicit ListCommandsCommand(std::string transcript);
+    ~ListCommandsCommand() override;
+
+    DECLARE_COMMAND_PUBLIC_METHODS(ListCommandsCommand)
+};
+
+class NothingCommand : public Command
+{
+public:
+    explicit NothingCommand(std::string transcript);
+    ~NothingCommand() override;
+
+    DECLARE_COMMAND_PUBLIC_METHODS(NothingCommand)
+};
+
 #endif

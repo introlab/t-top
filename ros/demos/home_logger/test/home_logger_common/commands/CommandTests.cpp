@@ -168,3 +168,17 @@ TEST(CommandTests, removeReminderCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee1.type(), CommandType::get<RemoveReminderCommand>());
     EXPECT_EQ(testee1.id(), 10);
 }
+
+TEST(CommandTests, listCommandsCommand_constructor_shouldSetAttributes)
+{
+    ListCommandsCommand testee("t0");
+    EXPECT_EQ(testee.transcript(), "t0");
+    EXPECT_EQ(testee.type(), CommandType::get<ListCommandsCommand>());
+}
+
+TEST(CommandTests, nothingCommand_constructor_shouldSetAttributes)
+{
+    NothingCommand testee("t0");
+    EXPECT_EQ(testee.transcript(), "t0");
+    EXPECT_EQ(testee.type(), CommandType::get<NothingCommand>());
+}

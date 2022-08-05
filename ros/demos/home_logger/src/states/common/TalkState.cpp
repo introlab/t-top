@@ -61,7 +61,7 @@ string TalkStateParameter::toString() const
 
 
 TalkState::TalkState(StateManager& stateManager, shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle)
-    : State(stateManager, desireSet, nodeHandle)
+    : State(stateManager, move(desireSet), nodeHandle)
 {
 }
 

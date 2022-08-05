@@ -7,7 +7,7 @@
 using namespace std;
 
 SleepState::SleepState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle, Time sleepTime, Time wakeUpTime)
-: State(stateManager, desireSet, nodeHandle),
+: State(stateManager, move(desireSet), nodeHandle),
       m_sleepTime(sleepTime),
       m_wakeUpTime(wakeUpTime)
 {
@@ -23,6 +23,11 @@ void SleepState::onEnabling(const StateParameter& parameter, const StateType& pr
     m_hadCamera2dWideRecordingDesire = m_desireSet->containsAnyDesiresOfType<Camera2dWideRecordingDesire>();
     m_hadAudioAnalyzerDesire = m_desireSet->containsAnyDesiresOfType<AudioAnalyzerDesire>();
     m_hadFastVideoAnalyzer3dDesire = m_desireSet->containsAnyDesiresOfType<FastVideoAnalyzer3dDesire>();
+
+    m_desireSet->removeAllDesiresOfType<Camera3dRecordingDesire>();
+    m_desireSet->removeAllDesiresOfType<Camera2dWideRecordingDesire>();
+    m_desireSet->removeAllDesiresOfType<AudioAnalyzerDesire>();
+    m_desireSet->removeAllDesiresOfType<FastVideoAnalyzer3dDesire>();
 
     m_faceAnimationDesireId = m_desireSet->addDesire<FaceAnimationDesire>("sleep");
 }

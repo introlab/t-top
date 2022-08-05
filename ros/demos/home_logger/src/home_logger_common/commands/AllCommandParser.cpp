@@ -92,6 +92,16 @@ AllCommandParser::AllCommandParser()
             {StringRessources::getVector("remove_reminder_command.remove"),
              StringRessources::getVector("remove_reminder_command.reminder")}),
         vector<string>({})));
+
+    m_parsers.emplace_back(make_unique<KeywordCommandParser<ListCommandsCommand>>(
+        vector<SynonymKeywords>(
+            {StringRessources::getVector("list_commands_command.list"),
+             StringRessources::getVector("list_commands_command.commands")}),
+        vector<string>({})));
+    m_parsers.emplace_back(make_unique<KeywordCommandParser<NothingCommand>>(
+        vector<SynonymKeywords>(
+            {StringRessources::getVector("nothing_command.nothing")}),
+        vector<string>({})));
 }
 
 AllCommandParser::~AllCommandParser() {}

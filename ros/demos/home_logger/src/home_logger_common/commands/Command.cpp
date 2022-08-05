@@ -131,3 +131,12 @@ RemoveReminderCommand::RemoveReminderCommand(std::string transcript, tl::optiona
 }
 
 RemoveReminderCommand::~RemoveReminderCommand() {}
+
+
+ListCommandsCommand::ListCommandsCommand(std::string transcript) : Command(move(transcript)) {}
+
+ListCommandsCommand::~ListCommandsCommand() {}
+
+NothingCommand::NothingCommand(std::string transcript) : Command(move(transcript)) {}
+
+NothingCommand::~NothingCommand() {}

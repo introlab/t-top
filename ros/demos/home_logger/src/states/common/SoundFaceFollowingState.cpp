@@ -10,7 +10,7 @@ SoundFaceFollowingState::SoundFaceFollowingState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
-    : State(stateManager, desireSet, nodeHandle),
+    : State(stateManager, move(desireSet), nodeHandle),
       m_followingDesireType(typeid(nullptr_t)),
       m_videoAnalysisWithoutPersonCount(0)
 {

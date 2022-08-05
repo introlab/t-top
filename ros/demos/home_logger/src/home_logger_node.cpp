@@ -4,9 +4,12 @@
 
 #include "states/common/TalkState.h"
 #include "states/specific/IdleState.h"
+#include "states/specific/SleepState.h"
+#include "states/specific/WaitCommandState.h"
 
 #include <home_logger_common/language/Language.h>
 #include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/Formatter.h>
 
 #include <ros/ros.h>
 
@@ -51,6 +54,7 @@ void startNode(
     Time wakeUpTime)
 {
     loadResources(language, englishStringResourcePath, frenchStringResourcesPath);
+    Formatter::initialize(language);
 
     auto desireSet = make_shared<DesireSet>();
     auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
@@ -86,6 +90,8 @@ void startNode(
     stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
 
     stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
+    stateManager.addState(make_unique<SleepState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
+    stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, nodeHandle));
 
     // TODO add states to the state manager
 
