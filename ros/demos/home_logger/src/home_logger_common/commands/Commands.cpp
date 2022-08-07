@@ -1,4 +1,4 @@
-#include <home_logger_common/commands/Command.h>
+#include <home_logger_common/commands/Commands.h>
 
 using namespace std;
 
@@ -7,6 +7,11 @@ CommandType::CommandType(std::type_index type) : m_type(type) {}
 Command::Command(string transcript) : m_transcript(move(transcript)) {}
 
 Command::~Command() {}
+
+bool Command::isComplete() const
+{
+    return true;
+}
 
 
 WeatherCommand::WeatherCommand(string transcript) : Command(move(transcript)) {}
@@ -18,6 +23,11 @@ WeatherCommand::WeatherCommand(string transcript, tl::optional<WeatherTime> time
 }
 
 WeatherCommand::~WeatherCommand() {}
+
+bool WeatherCommand::isComplete() const
+{
+    return m_time.has_value();
+}
 
 
 IncreaseVolumeCommand::IncreaseVolumeCommand(string transcript) : Command(move(transcript)) {}
@@ -42,6 +52,11 @@ SetVolumeCommand::SetVolumeCommand(string transcript, tl::optional<float> volume
     : Command(move(transcript)),
       m_volumePercent(volumePercent)
 {
+}
+
+bool SetVolumeCommand::isComplete() const
+{
+    return m_volumePercent.has_value();
 }
 
 GetVolumeCommand::GetVolumeCommand(string transcript) : Command(move(transcript)) {}
@@ -89,6 +104,33 @@ AddAlarmCommand::AddAlarmCommand(
 
 AddAlarmCommand::~AddAlarmCommand() {}
 
+bool AddAlarmCommand::isComplete() const
+{
+    if (!m_alarmType.has_value())
+    {
+        return false;
+    }
+    if (m_alarmType == AlarmType::PUNCTUAL)
+    {
+        return m_date.has_value() && m_time.has_value();
+    }
+
+    if (!m_frequency.has_value())
+    {
+        return false;
+    }
+    if (m_frequency == AlarmFrequency::DAYLY)
+    {
+        return m_time.has_value();
+    }
+    else
+    {
+        return m_time.has_value() && m_weekDay.has_value();
+    }
+
+    return false;
+}
+
 ListAlarmsCommand::ListAlarmsCommand(std::string transcript) : Command(move(transcript)) {}
 
 ListAlarmsCommand::~ListAlarmsCommand() {}
@@ -102,6 +144,11 @@ RemoveAlarmCommand::RemoveAlarmCommand(std::string transcript, tl::optional<int6
 }
 
 RemoveAlarmCommand::~RemoveAlarmCommand() {}
+
+bool RemoveAlarmCommand::isComplete() const
+{
+    return m_id.has_value();
+}
 
 
 AddReminderCommand::AddReminderCommand(std::string transcript) : Command(move(transcript)) {}
@@ -118,6 +165,11 @@ AddReminderCommand::AddReminderCommand(
 
 AddReminderCommand::~AddReminderCommand() {}
 
+bool AddReminderCommand::isComplete() const
+{
+    return m_text.has_value() && m_datetime.has_value();
+}
+
 ListRemindersCommand::ListRemindersCommand(std::string transcript) : Command(move(transcript)) {}
 
 ListRemindersCommand::~ListRemindersCommand() {}
@@ -131,6 +183,11 @@ RemoveReminderCommand::RemoveReminderCommand(std::string transcript, tl::optiona
 }
 
 RemoveReminderCommand::~RemoveReminderCommand() {}
+
+bool RemoveReminderCommand::isComplete() const
+{
+    return m_id.has_value();
+}
 
 
 ListCommandsCommand::ListCommandsCommand(std::string transcript) : Command(move(transcript)) {}

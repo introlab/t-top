@@ -139,8 +139,8 @@ include_directories(
 add_library(home_logger_common
   src/home_logger_common/DateTime.cpp
   src/home_logger_common/Properties.cpp
-  src/home_logger_common/commands/Command.cpp
-  src/home_logger_common/commands/CommandParser.cpp
+  src/home_logger_common/commands/Commands.cpp
+  src/home_logger_common/commands/CommandParsers.cpp
   src/home_logger_common/commands/AllCommandParser.cpp
   src/home_logger_common/language/StringRessources.cpp
   src/home_logger_common/language/Formatter.cpp
@@ -236,8 +236,8 @@ catkin_add_gtest(home_logger_common-test
   test/home_logger_common/StringUtilsTests.cpp
   test/home_logger_common/DateTimeTests.cpp
   test/home_logger_common/PropertiesTests.cpp
-  test/home_logger_common/commands/CommandTests.cpp
-  test/home_logger_common/commands/CommandParserTests.cpp
+  test/home_logger_common/commands/CommandsTests.cpp
+  test/home_logger_common/commands/CommandParsersTests.cpp
   test/home_logger_common/commands/AllCommandParserTests.cpp
   test/home_logger_common/language/LanguageTests.cpp
   test/home_logger_common/language/StringRessourcesTests.cpp

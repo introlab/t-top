@@ -2,7 +2,7 @@
 #define HOME_LOGGER_COMMON_COMMANDS_COMMAND_PARSER_H
 
 #include <home_logger_common/StringUtils.h>
-#include <home_logger_common/commands/Command.h>
+#include <home_logger_common/commands/Commands.h>
 
 #include <memory>
 #include <vector>

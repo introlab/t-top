@@ -104,6 +104,7 @@ public:
 
     const std::string& transcript() const;
     virtual CommandType type() const = 0;
+    virtual bool isComplete() const;
 };
 
 inline const std::string& Command::transcript() const
@@ -131,6 +132,7 @@ public:
 
     DECLARE_COMMAND_PUBLIC_METHODS(WeatherCommand)
 
+    bool isComplete() const override;
     tl::optional<WeatherTime> time() const;
 };
 
@@ -187,6 +189,7 @@ public:
 
     DECLARE_COMMAND_PUBLIC_METHODS(SetVolumeCommand)
 
+    bool isComplete() const override;
     tl::optional<float> volumePercent() const;
 };
 
@@ -246,7 +249,7 @@ public:
 enum class AlarmType
 {
     PUNCTUAL,
-    REPETTIIVE
+    REPETITIVE
 };
 
 enum class AlarmFrequency
@@ -276,6 +279,8 @@ public:
     ~AddAlarmCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(AddAlarmCommand)
+
+    bool isComplete() const override;
 
     tl::optional<AlarmType> alarmType() const;
     tl::optional<AlarmFrequency> frequency() const;
@@ -330,6 +335,7 @@ public:
 
     DECLARE_COMMAND_PUBLIC_METHODS(RemoveAlarmCommand)
 
+    bool isComplete() const override;
     tl::optional<int64_t> id() const;
 };
 
@@ -351,6 +357,7 @@ public:
 
     DECLARE_COMMAND_PUBLIC_METHODS(AddReminderCommand)
 
+    bool isComplete() const override;
     tl::optional<std::string> text() const;
     tl::optional<DateTime> datetime() const;
 };
@@ -385,6 +392,7 @@ public:
 
     DECLARE_COMMAND_PUBLIC_METHODS(RemoveReminderCommand)
 
+    bool isComplete() const override;
     tl::optional<int64_t> id() const;
 };
 

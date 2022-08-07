@@ -1,5 +1,5 @@
 #include <home_logger_common/commands/AllCommandParser.h>
-#include <home_logger_common/commands/Command.h>
+#include <home_logger_common/commands/Commands.h>
 
 #include "../loadStringResources.h"
 
