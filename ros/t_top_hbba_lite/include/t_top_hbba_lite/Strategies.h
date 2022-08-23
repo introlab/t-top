@@ -26,6 +26,7 @@ public:
 
 protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onDisabling() override;
 };
 
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>

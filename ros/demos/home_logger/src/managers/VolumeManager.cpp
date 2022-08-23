@@ -13,13 +13,13 @@ VolumeManager::~VolumeManager() {}
 
 void VolumeManager::setVolume(float volume)
 {
+    volume = max(0.f, min(volume, 100.f));
     if (volume == 0)
     {
         mute();
         return;
     }
-
-    m_currentVolumePercent = max(0.f, min(volume, 100.f));
+    m_currentVolumePercent = volume;
     m_isMuted = false;
 
     m_volumePublisher.publish(volumeToMsg(m_currentVolumePercent));

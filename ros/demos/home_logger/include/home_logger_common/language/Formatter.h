@@ -17,11 +17,11 @@
 template<>
 struct fmt::formatter<Time>
 {
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx);
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
 
-  template<typename FormatContext>
-  auto format(Time const& time, FormatContext& ctx);
+    template<typename FormatContext>
+    auto format(Time const& time, FormatContext& ctx);
 };
 
 template<typename ParseContext>
@@ -34,11 +34,11 @@ constexpr auto fmt::formatter<Time>::parse(ParseContext& ctx)
 template<>
 struct fmt::formatter<Date>
 {
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx);
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
 
-  template<typename FormatContext>
-  auto format(Date const& date, FormatContext& ctx);
+    template<typename FormatContext>
+    auto format(Date const& date, FormatContext& ctx);
 };
 
 template<typename ParseContext>

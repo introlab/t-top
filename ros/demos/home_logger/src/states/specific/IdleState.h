@@ -20,7 +20,12 @@ class IdleState : public SoundFaceFollowingState
     std::chrono::time_point<std::chrono::system_clock> m_lastChargingMessageTime;
 
 public:
-    IdleState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle, Time sleepTime, Time wakeUpTime);
+    IdleState(
+        StateManager& stateManager,
+        std::shared_ptr<DesireSet> desireSet,
+        ros::NodeHandle& nodeHandle,
+        Time sleepTime,
+        Time wakeUpTime);
     ~IdleState() override;
 
 protected:

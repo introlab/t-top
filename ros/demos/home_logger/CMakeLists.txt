@@ -157,6 +157,13 @@ add_library(home_logger_common
 add_executable(${PROJECT_NAME}_node
   src/home_logger_node.cpp
   src/managers/VolumeManager.cpp
+  src/executors/CommandExecutor.cpp
+  src/executors/AllCommandExecutor.cpp
+  src/executors/WeatherCommandExecutor.cpp
+  src/executors/VolumeCommandExecutors.cpp
+  src/executors/SleepCommandExecutor.cpp
+  src/executors/DateTimeCommandExecutors.cpp
+  src/executors/ListCommandsCommandExecutor.cpp
   src/states/State.cpp
   src/states/StateManager.cpp
   src/states/common/SoundFaceFollowingState.cpp
@@ -164,6 +171,7 @@ add_executable(${PROJECT_NAME}_node
   src/states/specific/IdleState.cpp
   src/states/specific/SleepState.cpp
   src/states/specific/WaitCommandState.cpp
+  src/states/specific/ExecuteCommandState.cpp
 )
 
 ## Rename C++ executable without prefix

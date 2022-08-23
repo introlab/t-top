@@ -6,19 +6,29 @@
 
 using namespace std;
 
-SleepState::SleepState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle, Time sleepTime, Time wakeUpTime)
-: State(stateManager, move(desireSet), nodeHandle),
+SleepState::SleepState(
+    StateManager& stateManager,
+    std::shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    Time sleepTime,
+    Time wakeUpTime)
+    : State(stateManager, move(desireSet), nodeHandle),
       m_sleepTime(sleepTime),
-      m_wakeUpTime(wakeUpTime)
+      m_wakeUpTime(wakeUpTime),
+      m_wasForced(false),
+      m_hadCamera3dRecordingDesire(false),
+      m_hadCamera2dWideRecordingDesire(false),
+      m_hadAudioAnalyzerDesire(false),
+      m_hadFastVideoAnalyzer3dDesire(false)
 {
 }
 
-SleepState::~SleepState()
-{
-}
+SleepState::~SleepState() {}
 
 void SleepState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
 {
+    m_wasForced = previousStateType != StateType::get<IdleState>();
+
     m_hadCamera3dRecordingDesire = m_desireSet->containsAnyDesiresOfType<Camera3dRecordingDesire>();
     m_hadCamera2dWideRecordingDesire = m_desireSet->containsAnyDesiresOfType<Camera2dWideRecordingDesire>();
     m_hadAudioAnalyzerDesire = m_desireSet->containsAnyDesiresOfType<AudioAnalyzerDesire>();
@@ -61,7 +71,11 @@ void SleepState::onDisabling()
 void SleepState::onEveryMinuteTimeout()
 {
     Time now = Time::now();
-    if (now.between(m_wakeUpTime, m_sleepTime))
+    if (now.between(m_sleepTime, m_wakeUpTime) && m_wasForced)
+    {
+        m_wasForced = false;
+    }
+    if (now.between(m_wakeUpTime, m_sleepTime) && !m_wasForced)
     {
         m_stateManager.switchTo<IdleState>();
         return;

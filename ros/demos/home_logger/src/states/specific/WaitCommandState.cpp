@@ -1,5 +1,6 @@
 #include "WaitCommandState.h"
 #include "IdleState.h"
+#include "ExecuteCommandState.h"
 #include "../StateManager.h"
 #include "../common/TalkState.h"
 
@@ -9,13 +10,16 @@
 
 using namespace std;
 
-WaitCommandState::WaitCommandState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle) : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle), m_transcriptReceived(false)
+WaitCommandState::WaitCommandState(
+    StateManager& stateManager,
+    std::shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle)
+    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+      m_transcriptReceived(false)
 {
 }
 
-WaitCommandState::~WaitCommandState()
-{
-}
+WaitCommandState::~WaitCommandState() {}
 
 void WaitCommandState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
 {
@@ -77,7 +81,7 @@ void WaitCommandState::switchState()
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
             StringRessources::getValue("dialogs.wait_command_state.many_commands"),
-            "", // No gesture
+            "",  // No gesture
             "skeptic",
             StateType::get<WaitCommandState>()));
     }
@@ -87,6 +91,6 @@ void WaitCommandState::switchState()
     }
     else
     {
-        // TODO switch to ExecuteCommandState
+        m_stateManager.switchTo<ExecuteCommandState>(ExecuteCommandStateParameter(move(m_commands[0])));
     }
 }

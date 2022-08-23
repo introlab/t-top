@@ -30,6 +30,15 @@ void FaceAnimationStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
+void FaceAnimationStrategy::onDisabling()
+{
+    std_msgs::String msg;
+    msg.data = "normal";
+    m_animationPublisher.publish(msg);
+
+    Strategy<FaceAnimationDesire>::onDisabling();
+}
+
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,

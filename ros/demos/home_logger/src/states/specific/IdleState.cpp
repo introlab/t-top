@@ -13,7 +13,12 @@ using namespace std;
 constexpr float LOW_STATE_OF_CHARGE = 25;
 constexpr chrono::minutes BATTERY_LOW_MESSAGE_INTERVAL(5);
 
-IdleState::IdleState(StateManager& stateManager, shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle, Time sleepTime, Time wakeUpTime)
+IdleState::IdleState(
+    StateManager& stateManager,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    Time sleepTime,
+    Time wakeUpTime)
     : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
       m_sleepTime(sleepTime),
       m_wakeUpTime(wakeUpTime),
@@ -69,10 +74,10 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
 void IdleState::onRobotNameDetected()
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.idle_state.ask_command"),
-            "",  // No gesture
-            "blink",
-            StateType::get<WaitCommandState>()));
+        StringRessources::getValue("dialogs.idle_state.ask_command"),
+        "",  // No gesture
+        "blink",
+        StateType::get<WaitCommandState>()));
 }
 
 void IdleState::onBaseStatusChanged(

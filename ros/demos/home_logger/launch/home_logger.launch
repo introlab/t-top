@@ -1,10 +1,38 @@
 <launch>
+    <arg name="language" default="en"/>  <!-- Options: fr or en -->
+    <arg name="camera_2d_wide_enabled" default="false"/>
+    <param name="record_session" value="false"/>
+    <param name="log_perceptions" value="false"/>
 
-    <node pkg="recorders" type="perception_logger_node" name="perception_logger_node" output="screen">
-        <param name="database_path" value="/home/introlab/log.db"/>
+    <node pkg="recorders" type="perception_logger_node" name="perception_logger_node">
+        <param name="database_path" value="$(env HOME)/.ros/ttop/recordings/perception_log.db"/>
         <param name="frame_id" value="odas"/>
 
         <remap from="video_analysis" to="camera_3d/video_analysis"/>
     </node>
+
+    <node pkg="home_logger" type="home_logger_node" name="home_logger_node" output="screen">
+        <param name="language" value="$(arg language)"/>
+
+        <param name="english_string_resource_path" value="$(find home_logger)/resources/strings_en.properties"/>
+        <param name="french_string_resources_path" value="$(find home_logger)/resources/strings_fr.properties"/>
+
+        <param name="sleep_time_hour" value="22"/>
+        <param name="sleep_time_minute" value="0"/>
+        <param name="wake_up_time_hour" value="7"/>
+        <param name="wake_up_time_minute" value="0"/>
+
+        <param name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+
+        <param name="record_session" value="$(arg record_session)"/>
+        <param name="log_perceptions" value="$(arg log_perceptions)"/>
+    </node>
+
+    <!--
+    <include file="$(find t_top)/launch/bringup.launch">
+        <arg name="language" value="$(arg language)"/>
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+        <arg name="slam" value="false"/>
+    </include>-->
 
 </launch>

@@ -99,8 +99,7 @@ AllCommandParser::AllCommandParser()
              StringRessources::getVector("list_commands_command.commands")}),
         vector<string>({})));
     m_parsers.emplace_back(make_unique<KeywordCommandParser<NothingCommand>>(
-        vector<SynonymKeywords>(
-            {StringRessources::getVector("nothing_command.nothing")}),
+        vector<SynonymKeywords>({StringRessources::getVector("nothing_command.nothing")}),
         vector<string>({})));
 }
 

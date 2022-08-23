@@ -14,6 +14,8 @@ class SleepState : public State
     Time m_sleepTime;
     Time m_wakeUpTime;
 
+    bool m_wasForced;
+
     bool m_hadCamera3dRecordingDesire;
     bool m_hadCamera2dWideRecordingDesire;
     bool m_hadAudioAnalyzerDesire;
@@ -22,7 +24,12 @@ class SleepState : public State
     tl::optional<uint64_t> m_faceAnimationDesireId;
 
 public:
-    SleepState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle, Time sleepTime, Time wakeUpTime);
+    SleepState(
+        StateManager& stateManager,
+        std::shared_ptr<DesireSet> desireSet,
+        ros::NodeHandle& nodeHandle,
+        Time sleepTime,
+        Time wakeUpTime);
     ~SleepState() override;
 
 protected:
