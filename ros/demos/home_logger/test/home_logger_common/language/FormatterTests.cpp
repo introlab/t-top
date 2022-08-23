@@ -51,7 +51,9 @@ TEST_F(FormatterFrenchTests, format_int_shouldReturnOneWeatherCommand)
 {
     EXPECT_EQ(Formatter::format("hello {}", 10), "hello 10");
     EXPECT_EQ(Formatter::format("hello {name:05d}", fmt::arg("name", 42)), "hello 00042");
-    EXPECT_EQ(Formatter::format("this is a big number: {number}", fmt::arg("number", 42000)), "this is a big number: 42000");
+    EXPECT_EQ(
+        Formatter::format("this is a big number: {number}", fmt::arg("number", 42000)),
+        "this is a big number: 42000");
 }
 
 TEST_F(FormatterFrenchTests, format_float_shouldReturnOneWeatherCommand)
@@ -93,7 +95,9 @@ TEST_F(FormatterEnglishTests, format_int_shouldReturnOneWeatherCommand)
 {
     EXPECT_EQ(Formatter::format("hello {}", 10), "hello 10");
     EXPECT_EQ(Formatter::format("hello {name:05d}", fmt::arg("name", 42)), "hello 00042");
-    EXPECT_EQ(Formatter::format("this is a big number: {number}", fmt::arg("number", 42000)), "this is a big number: 42000");
+    EXPECT_EQ(
+        Formatter::format("this is a big number: {number}", fmt::arg("number", 42000)),
+        "this is a big number: 42000");
 }
 
 TEST_F(FormatterEnglishTests, format_float_shouldReturnOneWeatherCommand)

@@ -162,7 +162,8 @@ TEST(CommandTests, addAlarmCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee6.date(), tl::nullopt);
     EXPECT_EQ(testee6.time(), Time(10, 40));
 
-    AddAlarmCommand testee7("t0", AlarmType::REPETITIVE, AlarmFrequency::WEEKLY, tl::nullopt, tl::nullopt, Time(10, 40));
+    AddAlarmCommand
+        testee7("t0", AlarmType::REPETITIVE, AlarmFrequency::WEEKLY, tl::nullopt, tl::nullopt, Time(10, 40));
     EXPECT_EQ(testee7.transcript(), "t0");
     EXPECT_EQ(testee7.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee7.isComplete());
