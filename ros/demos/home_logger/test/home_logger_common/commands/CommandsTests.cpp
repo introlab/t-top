@@ -35,22 +35,6 @@ TEST(CommandTests, decreaseVolumeCommand_constructor_shouldSetAttributes)
     EXPECT_TRUE(testee.isComplete());
 }
 
-TEST(CommandTests, muteCommand_constructor_shouldSetAttributes)
-{
-    MuteCommand testee("t0");
-    EXPECT_EQ(testee.transcript(), "t0");
-    EXPECT_EQ(testee.type(), CommandType::get<MuteCommand>());
-    EXPECT_TRUE(testee.isComplete());
-}
-
-TEST(CommandTests, unmuteCommand_constructor_shouldSetAttributes)
-{
-    UnmuteCommand testee("t0");
-    EXPECT_EQ(testee.transcript(), "t0");
-    EXPECT_EQ(testee.type(), CommandType::get<UnmuteCommand>());
-    EXPECT_TRUE(testee.isComplete());
-}
-
 TEST(CommandTests, setVolumeCommand_constructor_shouldSetAttributes)
 {
     SetVolumeCommand testee0("t0");

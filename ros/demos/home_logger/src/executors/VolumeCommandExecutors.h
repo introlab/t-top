@@ -47,26 +47,6 @@ protected:
     void executeSpecific(const std::shared_ptr<DecreaseVolumeCommand>& command) override;
 };
 
-class MuteCommandExecutor : public VolumeCommandExecutor<MuteCommand>
-{
-public:
-    MuteCommandExecutor(StateManager& stateManager, VolumeManager& volumeManager);
-    ~MuteCommandExecutor() override;
-
-protected:
-    void executeSpecific(const std::shared_ptr<MuteCommand>& command) override;
-};
-
-class UnmuteCommandExecutor : public VolumeCommandExecutor<UnmuteCommand>
-{
-public:
-    UnmuteCommandExecutor(StateManager& stateManager, VolumeManager& volumeManager);
-    ~UnmuteCommandExecutor() override;
-
-protected:
-    void executeSpecific(const std::shared_ptr<UnmuteCommand>& command) override;
-};
-
 class SetVolumeCommandExecutor : public VolumeCommandExecutor<SetVolumeCommand>
 {
 public:

@@ -38,14 +38,6 @@ DecreaseVolumeCommand::DecreaseVolumeCommand(string transcript) : Command(move(t
 
 DecreaseVolumeCommand::~DecreaseVolumeCommand() {}
 
-MuteCommand::MuteCommand(string transcript) : Command(move(transcript)) {}
-
-MuteCommand::~MuteCommand() {}
-
-UnmuteCommand::UnmuteCommand(string transcript) : Command(move(transcript)) {}
-
-UnmuteCommand::~UnmuteCommand() {}
-
 SetVolumeCommand::SetVolumeCommand(string transcript) : Command(move(transcript)) {}
 
 SetVolumeCommand::SetVolumeCommand(string transcript, tl::optional<float> volumePercent)

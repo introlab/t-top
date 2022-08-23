@@ -33,34 +33,6 @@ void DecreaseVolumeCommandExecutor::executeSpecific(const shared_ptr<DecreaseVol
 }
 
 
-MuteCommandExecutor::MuteCommandExecutor(StateManager& stateManager, VolumeManager& volumeManager)
-    : VolumeCommandExecutor<MuteCommand>(stateManager, volumeManager)
-{
-}
-
-MuteCommandExecutor::~MuteCommandExecutor() {}
-
-void MuteCommandExecutor::executeSpecific(const shared_ptr<MuteCommand>& command)
-{
-    m_volumeManager.mute();
-    m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
-}
-
-
-UnmuteCommandExecutor::UnmuteCommandExecutor(StateManager& stateManager, VolumeManager& volumeManager)
-    : VolumeCommandExecutor<UnmuteCommand>(stateManager, volumeManager)
-{
-}
-
-UnmuteCommandExecutor::~UnmuteCommandExecutor() {}
-
-void UnmuteCommandExecutor::executeSpecific(const shared_ptr<UnmuteCommand>& command)
-{
-    m_volumeManager.unmute();
-    m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
-}
-
-
 SetVolumeCommandExecutor::SetVolumeCommandExecutor(StateManager& stateManager, VolumeManager& volumeManager)
     : VolumeCommandExecutor<SetVolumeCommand>(stateManager, volumeManager)
 {
@@ -84,20 +56,10 @@ GetVolumeCommandExecutor::~GetVolumeCommandExecutor() {}
 
 void GetVolumeCommandExecutor::executeSpecific(const shared_ptr<GetVolumeCommand>& command)
 {
-    string text = "";
-    if (m_volumeManager.isMuted())
-    {
-        text = StringRessources::getValue("dialogs.commands.get_volume.muted");
-    }
-    else
-    {
-        text = Formatter::format(
-            StringRessources::getValue("dialogs.commands.get_volume.volume"),
-            fmt::arg("volume", m_volumeManager.getVolume()));
-    }
-
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
-        text,
+        Formatter::format(
+            StringRessources::getValue("dialogs.commands.get_volume.volume"),
+            fmt::arg("volume", m_volumeManager.getVolume())),
         "",  // No gesture
         "blink",
         StateType::get<TalkState>(),

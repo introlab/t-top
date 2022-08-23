@@ -19,8 +19,6 @@ AllCommandExecutor::AllCommandExecutor(
 
     executors.emplace_back(make_unique<IncreaseVolumeCommandExecutor>(stateManager, volumeManager));
     executors.emplace_back(make_unique<DecreaseVolumeCommandExecutor>(stateManager, volumeManager));
-    executors.emplace_back(make_unique<MuteCommandExecutor>(stateManager, volumeManager));
-    executors.emplace_back(make_unique<UnmuteCommandExecutor>(stateManager, volumeManager));
     executors.emplace_back(make_unique<SetVolumeCommandExecutor>(stateManager, volumeManager));
     executors.emplace_back(make_unique<GetVolumeCommandExecutor>(stateManager, volumeManager));
 

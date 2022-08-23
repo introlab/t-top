@@ -13,45 +13,15 @@ VolumeManager::~VolumeManager() {}
 
 void VolumeManager::setVolume(float volume)
 {
-    volume = max(0.f, min(volume, 100.f));
-    if (volume == 0)
-    {
-        mute();
-        return;
-    }
+    volume = max(10.f, min(volume, 100.f));
     m_currentVolumePercent = volume;
-    m_isMuted = false;
 
     m_volumePublisher.publish(volumeToMsg(m_currentVolumePercent));
 }
 
 float VolumeManager::getVolume() const
 {
-    if (m_isMuted)
-    {
-        return 0.f;
-    }
-    else
-    {
-        return m_currentVolumePercent;
-    }
-}
-
-bool VolumeManager::isMuted() const
-{
-    return m_isMuted;
-}
-
-void VolumeManager::mute()
-{
-    m_isMuted = true;
-    m_volumePublisher.publish(volumeToMsg(0));
-}
-
-void VolumeManager::unmute()
-{
-    m_isMuted = true;
-    m_volumePublisher.publish(volumeToMsg(m_currentVolumePercent));
+    return m_currentVolumePercent;
 }
 
 std_msgs::Int8 VolumeManager::volumeToMsg(float volumePercent)

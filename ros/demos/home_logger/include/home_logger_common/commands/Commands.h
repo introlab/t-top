@@ -160,24 +160,6 @@ public:
     DECLARE_COMMAND_PUBLIC_METHODS(DecreaseVolumeCommand)
 };
 
-class MuteCommand : public Command
-{
-public:
-    explicit MuteCommand(std::string transcript);
-    ~MuteCommand() override;
-
-    DECLARE_COMMAND_PUBLIC_METHODS(MuteCommand)
-};
-
-class UnmuteCommand : public Command
-{
-public:
-    explicit UnmuteCommand(std::string transcript);
-    ~UnmuteCommand() override;
-
-    DECLARE_COMMAND_PUBLIC_METHODS(UnmuteCommand)
-};
-
 class SetVolumeCommand : public Command
 {
     tl::optional<float> m_volumePercent;

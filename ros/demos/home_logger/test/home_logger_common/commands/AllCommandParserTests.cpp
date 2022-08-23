@@ -77,16 +77,6 @@ TEST_F(AllCommandParserFrenchTests, parse_DecreaseVolumeCommand_shouldReturnOneD
     EXPECT_ONE_COMMAND(parser->parse("Peux-tu abaisser le son"), DecreaseVolumeCommand);
 }
 
-TEST_F(AllCommandParserFrenchTests, parse_MuteCommand_shouldReturnOneMuteCommand)
-{
-    EXPECT_ONE_COMMAND(parser->parse("Peux-tu te mettre en sourdine"), MuteCommand);
-}
-
-TEST_F(AllCommandParserFrenchTests, parse_UnmuteCommand_shouldReturnOneUnmuteCommand)
-{
-    EXPECT_ONE_COMMAND(parser->parse("Peux-tu enlèver la sourdine"), UnmuteCommand);
-}
-
 TEST_F(AllCommandParserFrenchTests, parse_SetVolumeCommand_shouldReturnOneSetVolumeCommand)
 {
     EXPECT_ONE_COMMAND(parser->parse("Peux-tu mettre le volume à 50%"), SetVolumeCommand);
@@ -201,16 +191,6 @@ TEST_F(AllCommandParserEnglishTests, parse_DecreaseVolumeCommand_shouldReturnOne
     EXPECT_ONE_COMMAND(parser->parse("Decrease the sound"), DecreaseVolumeCommand);
     EXPECT_ONE_COMMAND(parser->parse("Turn down the sound"), DecreaseVolumeCommand);
     EXPECT_ONE_COMMAND(parser->parse("Lower the sound"), DecreaseVolumeCommand);
-}
-
-TEST_F(AllCommandParserEnglishTests, parse_MuteCommand_shouldReturnOneMuteCommand)
-{
-    EXPECT_ONE_COMMAND(parser->parse("Mute"), MuteCommand);
-}
-
-TEST_F(AllCommandParserEnglishTests, parse_UnmuteCommand_shouldReturnOneUnmuteCommand)
-{
-    EXPECT_ONE_COMMAND(parser->parse("Unmute"), UnmuteCommand);
 }
 
 TEST_F(AllCommandParserEnglishTests, parse_SetVolumeCommand_shouldReturnOneSetVolumeCommand)

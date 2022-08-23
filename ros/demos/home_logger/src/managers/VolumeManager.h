@@ -7,7 +7,6 @@
 class VolumeManager
 {
     float m_currentVolumePercent;
-    bool m_isMuted;
 
     ros::Publisher m_volumePublisher;
 
@@ -17,10 +16,6 @@ public:
 
     void setVolume(float volumePercent);
     float getVolume() const;
-
-    bool isMuted() const;
-    void mute();
-    void unmute();
 
 private:
     std_msgs::Int8 volumeToMsg(float volumePercent);

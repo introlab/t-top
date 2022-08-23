@@ -20,15 +20,6 @@ AllCommandParser::AllCommandParser()
             {StringRessources::getVector("decrease_volume_command.decrease"),
              StringRessources::getVector("decrease_volume_command.volume")}),
         vector<string>({})));
-    m_parsers.emplace_back(make_unique<KeywordCommandParser<MuteCommand>>(
-        vector<SynonymKeywords>(
-            {StringRessources::getVector("mute_command.set"), StringRessources::getVector("mute_command.mute")}),
-        StringRessources::getVector("mute_command.not_keywords")));
-    m_parsers.emplace_back(make_unique<KeywordCommandParser<UnmuteCommand>>(
-        vector<SynonymKeywords>(
-            {StringRessources::getVector("unmute_command.unset"),
-             StringRessources::getVector("unmute_command.unmute")}),
-        vector<string>({})));
     m_parsers.emplace_back(make_unique<KeywordCommandParser<SetVolumeCommand>>(
         vector<SynonymKeywords>(
             {StringRessources::getVector("set_volume_command.set"),
