@@ -47,13 +47,3 @@ void Formatter::clear()
 {
     m_instance = nullptr;
 }
-
-Language Formatter::language()
-{
-    if (m_instance == nullptr)
-    {
-        throw runtime_error("The formatter is not initialized.");
-    }
-
-    return m_instance->m_language;
-}

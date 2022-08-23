@@ -186,7 +186,6 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(std::string& text, bool&
 
     int currentWeekDay = Date::now().weekDay();
     string temperatureSentence = StringRessources::getValue("dialogs.commands.weather.week.temperature");
-    vector<string> weekDayNames = StringRessources::getVector("week_day_names");
 
     stringstream ss;
     for (int i = 0; i < DAY_COUNT; i++)
@@ -205,7 +204,7 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(std::string& text, bool&
         }
         else
         {
-            ss << weekDayNames[(currentWeekDay + i) % DAY_COUNT];
+            ss << Formatter::weekDayNames().at((currentWeekDay + i) % DAY_COUNT);
         }
 
         ss << ", ";

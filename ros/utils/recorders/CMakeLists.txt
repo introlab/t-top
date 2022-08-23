@@ -116,7 +116,8 @@ catkin_package(
   INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/SQLiteCpp/include
     ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/optional/include
-  LIBRARIES SQLiteCpp
+    include
+  LIBRARIES SQLiteCpp perception_logger
   # CATKIN_DEPENDS audio_utils rospy sensor_msgs
   # DEPENDS system_lib
 )

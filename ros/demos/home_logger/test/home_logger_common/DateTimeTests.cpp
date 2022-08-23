@@ -1,7 +1,5 @@
 #include <home_logger_common/DateTime.h>
 
-#include <boost/filesystem.hpp>
-
 #include <gtest/gtest.h>
 
 using namespace std;

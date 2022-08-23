@@ -8,6 +8,9 @@
 #include <string>
 #include <typeindex>
 #include <cstdint>
+#include <type_traits>
+
+class Command;
 
 class CommandType
 {
@@ -34,6 +37,7 @@ public:
 template<class T>
 inline CommandType CommandType::get()
 {
+    static_assert(std::is_base_of<Command, T>::value, "T must be a subclass of Command");
     return CommandType(std::type_index(typeid(T)));
 }
 
@@ -231,19 +235,13 @@ public:
 enum class AlarmType
 {
     PUNCTUAL,
-    REPETITIVE
-};
-
-enum class AlarmFrequency
-{
     DAYLY,
-    WEEKLY
+    WEEKLY,
 };
 
 class AddAlarmCommand : public Command
 {
     tl::optional<AlarmType> m_alarmType;
-    tl::optional<AlarmFrequency> m_frequency;
 
     tl::optional<int> m_weekDay;
     tl::optional<Date> m_date;
@@ -254,7 +252,6 @@ public:
     AddAlarmCommand(
         std::string transcript,
         tl::optional<AlarmType> alarmType,
-        tl::optional<AlarmFrequency> frequency,
         tl::optional<int> weekDay,
         tl::optional<Date> date,
         tl::optional<Time> time);
@@ -265,7 +262,6 @@ public:
     bool isComplete() const override;
 
     tl::optional<AlarmType> alarmType() const;
-    tl::optional<AlarmFrequency> frequency() const;
 
     tl::optional<int> weekDay() const;
     tl::optional<Date> date() const;
@@ -275,11 +271,6 @@ public:
 inline tl::optional<AlarmType> AddAlarmCommand::alarmType() const
 {
     return m_alarmType;
-}
-
-inline tl::optional<AlarmFrequency> AddAlarmCommand::frequency() const
-{
-    return m_frequency;
 }
 
 inline tl::optional<int> AddAlarmCommand::weekDay() const

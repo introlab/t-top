@@ -18,7 +18,9 @@
 #include <vector>
 #include <typeindex>
 #include <numeric>
+#include <type_traits>
 
+class State;
 class StateManager;
 
 class StateParameter
@@ -55,6 +57,7 @@ public:
 template<class T>
 inline StateType StateType::get()
 {
+    static_assert(std::is_base_of<State, T>::value, "T must be a subclass of State");
     return StateType(std::type_index(typeid(T)));
 }
 

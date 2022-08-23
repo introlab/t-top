@@ -11,11 +11,11 @@ using namespace std;
 
 ExecuteCommandStateParameter::ExecuteCommandStateParameter() {}
 
-ExecuteCommandStateParameter::ExecuteCommandStateParameter(std::shared_ptr<Command> command) : command(command) {}
+ExecuteCommandStateParameter::ExecuteCommandStateParameter(shared_ptr<Command> command) : command(command) {}
 
 ExecuteCommandStateParameter::~ExecuteCommandStateParameter() {}
 
-std::string ExecuteCommandStateParameter::toString() const
+string ExecuteCommandStateParameter::toString() const
 {
     stringstream ss;
     ss << "command_type=" << command->type().name();
@@ -27,9 +27,10 @@ ExecuteCommandState::ExecuteCommandState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
-    VolumeManager& volumeManager)
+    VolumeManager& volumeManager,
+    AlarmManager& alarmManager)
     : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
-      m_allCommandExecutor(stateManager, nodeHandle, volumeManager)
+      m_allCommandExecutor(stateManager, nodeHandle, volumeManager, alarmManager)
 {
 }
 

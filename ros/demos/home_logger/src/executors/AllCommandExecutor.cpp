@@ -2,8 +2,9 @@
 
 #include "WeatherCommandExecutor.h"
 #include "VolumeCommandExecutors.h"
-#include "DateTimeCommandExecutors.h"
 #include "SleepCommandExecutor.h"
+#include "DateTimeCommandExecutors.h"
+#include "AlarmCommandExecutors.h"
 #include "ListCommandsCommandExecutor.h"
 
 using namespace std;
@@ -11,7 +12,8 @@ using namespace std;
 AllCommandExecutor::AllCommandExecutor(
     StateManager& stateManager,
     ros::NodeHandle& nodeHandle,
-    VolumeManager& volumeManager)
+    VolumeManager& volumeManager,
+    AlarmManager& alarmManager)
 {
     vector<unique_ptr<CommandExecutor>> executors;
 
@@ -27,6 +29,10 @@ AllCommandExecutor::AllCommandExecutor(
     executors.emplace_back(make_unique<CurrentDateCommandExecutor>(stateManager));
     executors.emplace_back(make_unique<CurrentTimeCommandExecutor>(stateManager));
     executors.emplace_back(make_unique<CurrentDateTimeCommandExecutor>(stateManager));
+
+    executors.emplace_back(make_unique<AddAlarmCommandExecutor>(stateManager, alarmManager));
+    executors.emplace_back(make_unique<ListAlarmsCommandExecutor>(stateManager, alarmManager));
+    executors.emplace_back(make_unique<RemoveAlarmCommandExecutor>(stateManager, alarmManager));
 
     executors.emplace_back(make_unique<ListCommandsCommandExecutor>(stateManager));
 

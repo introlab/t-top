@@ -18,33 +18,41 @@ using namespace std;
 class FormatterFrenchTests : public ::testing::Test
 {
 protected:
-    static void SetUpTestSuite()
-    {
-        loadFrenchStringResources();
-        Formatter::initialize(Language::FRENCH);
-    }
+    static void SetUpTestSuite() { loadFrenchStringResources(); }
 };
 
 class FormatterEnglishTests : public ::testing::Test
 {
 protected:
-    static void SetUpTestSuite()
-    {
-        loadEnglishStringResources();
-        Formatter::initialize(Language::ENGLISH);
-    }
+    static void SetUpTestSuite() { loadEnglishStringResources(); }
 };
 
 TEST(FormatterTests, format_notInitialized_shouldThrowRuntimeError)
 {
     StringRessources::clear();
+    Formatter::clear();
     EXPECT_THROW(Formatter::format("Hello {}", 10), runtime_error);
 }
 
 TEST(FormatterTests, language_notInitialized_shouldThrowRuntimeError)
 {
     StringRessources::clear();
+    Formatter::clear();
     EXPECT_THROW(Formatter::language(), runtime_error);
+}
+
+TEST(FormatterTests, weekDayNames_notInitialized_shouldThrowRuntimeError)
+{
+    StringRessources::clear();
+    Formatter::clear();
+    EXPECT_THROW(Formatter::weekDayNames(), runtime_error);
+}
+
+TEST_F(FormatterFrenchTests, weekDayNames_shouldReturnAllWeekDayNames)
+{
+    EXPECT_EQ(
+        Formatter::weekDayNames(),
+        vector<string>({"dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"}));
 }
 
 TEST_F(FormatterFrenchTests, format_int_shouldReturnOneWeatherCommand)
@@ -90,6 +98,13 @@ TEST_F(FormatterFrenchTests, format_date_shouldReturnOneWeatherCommand)
     EXPECT_EQ(Formatter::format("Il est le {}.", Date(2011, 11, 14)), "Il est le 14 décembre 2011.");
 }
 
+
+TEST_F(FormatterEnglishTests, weekDayNames_shouldReturnAllWeekDayNames)
+{
+    EXPECT_EQ(
+        Formatter::weekDayNames(),
+        vector<string>({"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}));
+}
 
 TEST_F(FormatterEnglishTests, format_int_shouldReturnOneWeatherCommand)
 {

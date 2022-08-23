@@ -81,13 +81,11 @@ AddAlarmCommand::AddAlarmCommand(std::string transcript) : Command(move(transcri
 AddAlarmCommand::AddAlarmCommand(
     std::string transcript,
     tl::optional<AlarmType> alarmType,
-    tl::optional<AlarmFrequency> frequency,
     tl::optional<int> weekDay,
     tl::optional<Date> date,
     tl::optional<Time> time)
     : Command(move(transcript)),
       m_alarmType(alarmType),
-      m_frequency(frequency),
       m_weekDay(weekDay),
       m_date(date),
       m_time(time)
@@ -107,11 +105,7 @@ bool AddAlarmCommand::isComplete() const
         return m_date.has_value() && m_time.has_value();
     }
 
-    if (!m_frequency.has_value())
-    {
-        return false;
-    }
-    if (m_frequency == AlarmFrequency::DAYLY)
+    if (m_alarmType == AlarmType::DAYLY)
     {
         return m_time.has_value();
     }

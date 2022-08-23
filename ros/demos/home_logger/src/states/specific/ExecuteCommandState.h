@@ -26,7 +26,8 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
-        VolumeManager& volumeManager);
+        VolumeManager& volumeManager,
+        AlarmManager& alarmManager);
     ~ExecuteCommandState() override;
 
 protected:

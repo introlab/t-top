@@ -72,6 +72,8 @@ public:
 
     static Language language();
 
+    static const std::vector<std::string>& weekDayNames();
+
 protected:
     template<typename FormatContext>
     static auto format(Time const& time, FormatContext& ctx);
@@ -92,6 +94,26 @@ std::string Formatter::format(const std::string& f, Types... args)
     }
 
     return fmt::vformat(m_instance->m_locale, f, fmt::make_format_args(args...));
+}
+
+inline Language Formatter::language()
+{
+    if (m_instance == nullptr)
+    {
+        throw std::runtime_error("The formatter is not initialized.");
+    }
+
+    return m_instance->m_language;
+}
+
+inline const std::vector<std::string>& Formatter::weekDayNames()
+{
+    if (m_instance == nullptr)
+    {
+        throw std::runtime_error("The formatter is are not initialized.");
+    }
+
+    return m_instance->m_weekDayNames;
 }
 
 template<typename FormatContext>

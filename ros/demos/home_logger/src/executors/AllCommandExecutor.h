@@ -4,6 +4,8 @@
 #include "CommandExecutor.h"
 #include "../managers/VolumeManager.h"
 
+#include <home_logger_common/managers/AlarmManager.h>
+
 #include <unordered_map>
 #include <memory>
 
@@ -12,7 +14,11 @@ class AllCommandExecutor
     std::unordered_map<CommandType, std::unique_ptr<CommandExecutor>> m_commandExecutorByCommandType;
 
 public:
-    AllCommandExecutor(StateManager& stateManager, ros::NodeHandle& nodeHandle, VolumeManager& volumeManager);
+    AllCommandExecutor(
+        StateManager& stateManager,
+        ros::NodeHandle& nodeHandle,
+        VolumeManager& volumeManager,
+        AlarmManager& alarmManager);
     virtual ~AllCommandExecutor();
 
     virtual void execute(const std::shared_ptr<Command>& command);

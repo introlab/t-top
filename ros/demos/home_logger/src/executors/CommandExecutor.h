@@ -70,9 +70,6 @@ void SpecificCommandExecutor<T>::execute(const std::shared_ptr<Command>& command
 }
 
 // TODO add
-// AddAlarmCommandExecutor
-// ListAlarmsCommandExecutor
-// RemoveAlarmCommandExecutor
 // AddReminderCommandExecutor
 // ListRemindersCommandExecutor
 // RemoveReminderCommandExecutor

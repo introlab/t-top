@@ -6,10 +6,12 @@
 #include "states/specific/IdleState.h"
 #include "states/specific/SleepState.h"
 #include "states/specific/WaitCommandState.h"
+#include "states/specific/ExecuteCommandState.h"
 
 #include <home_logger_common/language/Language.h>
 #include <home_logger_common/language/StringRessources.h>
 #include <home_logger_common/language/Formatter.h>
+#include <home_logger_common/managers/AlarmManager.h>
 
 #include <ros/ros.h>
 
@@ -47,6 +49,7 @@ void startNode(
     Language language,
     const string& englishStringResourcePath,
     const string& frenchStringResourcesPath,
+    const string& databasePath,
     bool camera2dWideEnabled,
     bool recordSession,
     bool logPerceptions,
@@ -85,6 +88,8 @@ void startNode(
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
     VolumeManager volumeManager(nodeHandle);
+    SQLite::Database database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    AlarmManager alarmManager(database);
 
     StateManager stateManager(desireSet, nodeHandle);
     stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
@@ -92,6 +97,8 @@ void startNode(
     stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
     stateManager.addState(make_unique<SleepState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
     stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, nodeHandle));
+    stateManager.addState(
+        make_unique<ExecuteCommandState>(stateManager, desireSet, nodeHandle, volumeManager, alarmManager));
 
     // TODO add states to the state manager
 
@@ -141,6 +148,13 @@ int main(int argc, char** argv)
     if (!privateNodeHandle.getParam("french_string_resources_path", frenchStringResourcesPath))
     {
         ROS_ERROR("The parameter french_string_resources_path must be set.");
+        return -1;
+    }
+
+    string databasePath;
+    if (!privateNodeHandle.getParam("database_path", databasePath))
+    {
+        ROS_ERROR("The parameter database_path is required.");
         return -1;
     }
 
@@ -195,6 +209,7 @@ int main(int argc, char** argv)
         language,
         englishStringResourcePath,
         frenchStringResourcesPath,
+        databasePath,
         camera2dWideEnabled,
         recordSession,
         logPerceptions,
