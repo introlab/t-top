@@ -28,18 +28,19 @@ string PunctualAlarm::toSpeech()
         fmt::arg("time", m_time));
 }
 
-void PunctualAlarm::insertAlarm(SQLite::Database& database) const
+void PunctualAlarm::insertAlarm(SQLite::Database& database, int id) const
 {
     SQLite::Statement insert(
         database,
-        "INSERT INTO alarm(type, year, month, day, hour, minute) VALUES(?, ?, ?, ?, ?, ?)");
+        "INSERT INTO alarm(id, type, year, month, day, hour, minute) VALUES(?, ?, ?, ?, ?, ?, ?)");
 
-    insert.bind(1, static_cast<int>(AlarmType::PUNCTUAL));
-    insert.bind(2, m_date.year);
-    insert.bind(3, m_date.month);
-    insert.bind(4, m_date.day);
-    insert.bind(5, m_time.hour);
-    insert.bind(6, m_time.minute);
+    insert.bind(1, id);
+    insert.bind(2, static_cast<int>(AlarmType::PUNCTUAL));
+    insert.bind(3, m_date.year);
+    insert.bind(4, m_date.month);
+    insert.bind(5, m_date.day);
+    insert.bind(6, m_time.hour);
+    insert.bind(7, m_time.minute);
     insert.exec();
 }
 
@@ -57,13 +58,14 @@ string DaylyAlarm::toSpeech()
         fmt::arg("time", m_time));
 }
 
-void DaylyAlarm::insertAlarm(SQLite::Database& database) const
+void DaylyAlarm::insertAlarm(SQLite::Database& database, int id) const
 {
-    SQLite::Statement insert(database, "INSERT INTO alarm(type, hour, minute) VALUES(?, ?, ?)");
+    SQLite::Statement insert(database, "INSERT INTO alarm(id, type, hour, minute) VALUES(?, ?, ?, ?)");
 
-    insert.bind(1, static_cast<int>(AlarmType::DAYLY));
-    insert.bind(2, m_time.hour);
-    insert.bind(3, m_time.minute);
+    insert.bind(1, id);
+    insert.bind(2, static_cast<int>(AlarmType::DAYLY));
+    insert.bind(3, m_time.hour);
+    insert.bind(4, m_time.minute);
     insert.exec();
 }
 
@@ -82,14 +84,15 @@ string WeeklyAlarm::toSpeech()
         fmt::arg("time", m_time));
 }
 
-void WeeklyAlarm::insertAlarm(SQLite::Database& database) const
+void WeeklyAlarm::insertAlarm(SQLite::Database& database, int id) const
 {
-    SQLite::Statement insert(database, "INSERT INTO alarm(type, week_day, hour, minute) VALUES(?, ?, ?, ?)");
+    SQLite::Statement insert(database, "INSERT INTO alarm(id, type, week_day, hour, minute) VALUES(?, ?, ?, ?, ?)");
 
-    insert.bind(1, static_cast<int>(AlarmType::WEEKLY));
-    insert.bind(2, m_weekDay);
-    insert.bind(3, m_time.hour);
-    insert.bind(4, m_time.minute);
+    insert.bind(1, id);
+    insert.bind(2, static_cast<int>(AlarmType::WEEKLY));
+    insert.bind(3, m_weekDay);
+    insert.bind(4, m_time.hour);
+    insert.bind(5, m_time.minute);
     insert.exec();
 }
 
@@ -119,7 +122,7 @@ AlarmManager::AlarmManager(SQLite::Database& database) : m_database(database)
 {
     vector<SQLiteMigration> migrations{SQLiteMigration("BEGIN;"
                                                        "CREATE TABLE alarm("
-                                                       "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                                       "    id INTEGER PRIMARY KEY,"
                                                        "    type INTEGER,"
                                                        "    week_day INTEGER,"
                                                        "    year INTEGER,"
@@ -137,7 +140,7 @@ AlarmManager::~AlarmManager() {}
 
 void AlarmManager::insertAlarm(unique_ptr<Alarm> alarm)
 {
-    alarm->insertAlarm(m_database);
+    alarm->insertAlarm(m_database, getNextId());
 }
 
 void AlarmManager::removeAlarm(int id)
@@ -152,7 +155,7 @@ vector<unique_ptr<Alarm>> AlarmManager::listAlarms()
 {
     vector<unique_ptr<Alarm>> alarms;
 
-    SQLite::Statement query(m_database, "SELECT id, type, week_day, year, month, day, hour, minute FROM alarm");
+    SQLite::Statement query(m_database, "SELECT id, type, week_day, year, month, day, hour, minute FROM alarm ORDER BY id");
 
     while (query.executeStep())
     {
@@ -160,6 +163,22 @@ vector<unique_ptr<Alarm>> AlarmManager::listAlarms()
     }
 
     return alarms;
+}
+
+int AlarmManager::getNextId()
+{
+    SQLite::Statement query(m_database, "SELECT MIN(t1.id) FROM "
+                                        "("
+                                        "    SELECT 1 AS id "
+                                        "    UNION ALL "
+                                        "    SELECT id + 1 from alarm "
+                                        ") as t1 "
+                                        "LEFT OUTER JOIN alarm as t2 ON t1.id = t2.id WHERE t2.id IS NULL");
+    if (query.executeStep())
+    {
+        return query.getColumn(0);
+    }
+    throw runtime_error("getNextId failed");
 }
 
 unique_ptr<Alarm> AlarmManager::alarmFromRow(SQLite::Statement& query)

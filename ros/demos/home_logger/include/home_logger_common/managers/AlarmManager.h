@@ -29,7 +29,7 @@ public:
     virtual std::string toSpeech() = 0;
 
 protected:
-    virtual void insertAlarm(SQLite::Database& database) const = 0;
+    virtual void insertAlarm(SQLite::Database& database, int id) const = 0;
 
     friend AlarmManager;
 };
@@ -58,7 +58,7 @@ public:
     std::string toSpeech() override;
 
 protected:
-    void insertAlarm(SQLite::Database& database) const override;
+    void insertAlarm(SQLite::Database& database, int id) const override;
 };
 
 inline Date PunctualAlarm::date() const
@@ -76,7 +76,7 @@ public:
     std::string toSpeech() override;
 
 protected:
-    void insertAlarm(SQLite::Database& database) const override;
+    void insertAlarm(SQLite::Database& database, int id) const override;
 };
 
 class WeeklyAlarm : public Alarm
@@ -93,7 +93,7 @@ public:
     std::string toSpeech() override;
 
 protected:
-    void insertAlarm(SQLite::Database& database) const override;
+    void insertAlarm(SQLite::Database& database, int id) const override;
 };
 
 inline int WeeklyAlarm::weekDay()
@@ -118,6 +118,7 @@ public:
     std::vector<std::unique_ptr<Alarm>> listAlarms();
 
 private:
+    int getNextId();
     std::unique_ptr<Alarm> alarmFromRow(SQLite::Statement& query);
 };
 
