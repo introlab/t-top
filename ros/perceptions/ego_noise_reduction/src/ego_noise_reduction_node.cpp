@@ -150,15 +150,17 @@ private:
     {
         if (msg->format != m_configuration.formatString || msg->channel_count != m_configuration.channelCount ||
             msg->sampling_frequency != m_configuration.samplingFrequency ||
-            msg->frame_sample_count != m_configuration.frameSampleCount)
+            msg->frame_sample_count != m_configuration.frameSampleCount ||
+            msg->data.size() != size(m_configuration.format, msg->channel_count, msg->frame_sample_count))
         {
             ROS_ERROR(
                 "Not supported audio frame (msg->format=%s, msg->channel_count=%d,"
-                "sampling_frequency=%d, frame_sample_count=%d)",
+                "sampling_frequency=%d, frame_sample_count=%d, data_size=%d)",
                 msg->format.c_str(),
                 msg->channel_count,
                 msg->sampling_frequency,
-                msg->frame_sample_count);
+                msg->frame_sample_count,
+                msg->data.size());
             return;
         }
 
