@@ -1,6 +1,7 @@
 #include "IdleState.h"
 #include "SleepState.h"
 #include "WaitCommandState.h"
+#include "AlarmState.h"
 #include "TellReminderState.h"
 #include "../StateManager.h"
 #include "../common/TalkState.h"
@@ -117,7 +118,12 @@ void IdleState::onEveryMinuteTimeout()
         return;
     }
 
-    // TODO check alarms
+    auto alarms = m_alarmManager.listDueAlarms(DateTime::now());
+    if (!alarms.empty())
+    {
+        switchToAlarmState(move(alarms));
+        return;
+    }
 }
 
 void IdleState::onEveryTenMinutesTimeout()
@@ -145,4 +151,17 @@ tl::optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnalys
     }
 
     return tl::nullopt;
+}
+
+void IdleState::switchToAlarmState(vector<unique_ptr<Alarm>> alarms)
+{
+    vector<int> alarmIds;
+    for (const auto& alarm : alarms)
+    {
+        if (alarm->id().has_value())
+        {
+            alarmIds.emplace_back(alarm->id().value());
+        }
+    }
+    m_stateManager.switchTo<AlarmState>(AlarmStateParameter(alarmIds));
 }

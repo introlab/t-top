@@ -164,7 +164,7 @@ void WeatherCommandExecutor::getTomorrowWeatherForecastText(string& text, bool& 
     text = ss.str();
 }
 
-void WeatherCommandExecutor::getWeekWeatherForecastText(std::string& text, bool& ok)
+void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
 {
     constexpr int DAY_COUNT = 7;
     float temperatures[DAY_COUNT];

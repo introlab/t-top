@@ -61,6 +61,10 @@ public:
 
 protected:
     void insertAlarm(SQLite::Database& database, int id) const override;
+
+    static std::vector<std::unique_ptr<Alarm>> listDueAlarms(SQLite::Database& database, DateTime now);
+
+    friend AlarmManager;
 };
 
 inline Date PunctualAlarm::date() const
@@ -79,6 +83,10 @@ public:
 
 protected:
     void insertAlarm(SQLite::Database& database, int id) const override;
+
+    static std::vector<std::unique_ptr<Alarm>> listDueAlarms(SQLite::Database& database, DateTime now);
+
+    friend AlarmManager;
 };
 
 class WeeklyAlarm : public Alarm
@@ -96,6 +104,10 @@ public:
 
 protected:
     void insertAlarm(SQLite::Database& database, int id) const override;
+
+    static std::vector<std::unique_ptr<Alarm>> listDueAlarms(SQLite::Database& database, DateTime now);
+
+    friend AlarmManager;
 };
 
 inline int WeeklyAlarm::weekDay()
@@ -122,9 +134,11 @@ public:
     void removeAlarm(int id);
     std::vector<std::unique_ptr<Alarm>> listAlarms();
 
+    std::vector<std::unique_ptr<Alarm>> listDueAlarms(DateTime now);
+    void informPerformedAlarms(const std::vector<int> alarmIds);
+
 private:
     int getNextId();
-    std::unique_ptr<Alarm> alarmFromRow(SQLite::Statement& query);
 };
 
 #endif

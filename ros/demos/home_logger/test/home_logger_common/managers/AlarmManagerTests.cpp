@@ -207,3 +207,44 @@ TEST(AlarmManagerTests, insert_shouldReplaceIds)
     EXPECT_EQ(alarms[1]->id(), 2);
     EXPECT_EQ(alarms[2]->id(), 4);
 }
+
+TEST(AlarmManagerTests, listDueAlarms_shouldReturn)
+{
+    SQLite::Database database(":memory:", SQLite::OPEN_READWRITE);
+    AlarmManager testee(database);
+
+    testee.insertAlarm(make_unique<PunctualAlarm>(Date(2022, 8, 1), Time(15, 15)));
+    testee.insertAlarm(make_unique<PunctualAlarm>(Date(2022, 8, 10), Time(15, 15)));
+    testee.insertAlarm(make_unique<DailyAlarm>(Time(21, 15)));
+    testee.insertAlarm(make_unique<DailyAlarm>(Time(22, 15)));
+    testee.insertAlarm(make_unique<WeeklyAlarm>(1, Time(6, 15)));
+    testee.insertAlarm(make_unique<WeeklyAlarm>(2, Time(6, 15)));
+    EXPECT_EQ(testee.listAlarms().size(), 6);
+
+    auto alarms = testee.listDueAlarms(DateTime(Date(2022, 8, 1), Time(15, 15)));
+    ASSERT_EQ(alarms.size(), 1);
+    EXPECT_EQ(alarms[0]->id(), 1);
+
+    testee.informPerformedAlarms({1, 2});
+    EXPECT_EQ(testee.listAlarms().size(), 4);
+    alarms = testee.listDueAlarms(DateTime(Date(2022, 8, 1), Time(15, 15)));
+    ASSERT_EQ(alarms.size(), 0);
+
+    alarms = testee.listDueAlarms(DateTime(Date(2022, 8, 1), Time(21, 15)));
+    ASSERT_EQ(alarms.size(), 1);
+    EXPECT_EQ(alarms[0]->id(), 3);
+
+    testee.informPerformedAlarms({3});
+    EXPECT_EQ(testee.listAlarms().size(), 4);
+    alarms = testee.listDueAlarms(DateTime(Date(2022, 8, 1), Time(21, 15)));
+    ASSERT_EQ(alarms.size(), 0);
+
+    alarms = testee.listDueAlarms(DateTime(Date(2022, 7, 1), Time(6, 15)));
+    ASSERT_EQ(alarms.size(), 1);
+    EXPECT_EQ(alarms[0]->id(), 5);
+
+    testee.informPerformedAlarms({3});
+    EXPECT_EQ(testee.listAlarms().size(), 4);
+    alarms = testee.listDueAlarms(DateTime(Date(2022, 8, 1), Time(6, 15)));
+    ASSERT_EQ(alarms.size(), 0);
+}

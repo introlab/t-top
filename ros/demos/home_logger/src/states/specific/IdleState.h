@@ -57,6 +57,7 @@ protected:
 
 private:
     tl::optional<Reminder> findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+    void switchToAlarmState(std::vector<std::unique_ptr<Alarm>> alarms);
 };
 
 #endif

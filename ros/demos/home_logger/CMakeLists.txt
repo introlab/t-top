@@ -176,6 +176,7 @@ add_executable(${PROJECT_NAME}_node
   src/states/specific/SleepState.cpp
   src/states/specific/WaitCommandState.cpp
   src/states/specific/ExecuteCommandState.cpp
+  src/states/specific/AlarmState.cpp
   src/states/specific/TellReminderState.cpp
 )
 

@@ -7,6 +7,7 @@
 #include "states/specific/SleepState.h"
 #include "states/specific/WaitCommandState.h"
 #include "states/specific/ExecuteCommandState.h"
+#include "states/specific/AlarmState.h"
 #include "states/specific/TellReminderState.h"
 
 #include <home_logger_common/language/Language.h>
@@ -56,6 +57,7 @@ void startNode(
     bool logPerceptions,
     Time sleepTime,
     Time wakeUpTime,
+    const string& alarmPath,
     float faceDescriptorThreshold)
 {
     loadResources(language, englishStringResourcePath, frenchStringResourcesPath);
@@ -116,6 +118,7 @@ void startNode(
         alarmManager,
         reminderManager));
 
+    stateManager.addState(make_unique<AlarmState>(stateManager, desireSet, nodeHandle, alarmManager, alarmPath));
     stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, nodeHandle, reminderManager));
 
     // TODO add states to the state manager
@@ -149,7 +152,7 @@ int startNode(int argc, char** argv)
 
     string languageString;
     Language language;
-    privateNodeHandle.param<std::string>("language", languageString, "");
+    privateNodeHandle.param<string>("language", languageString, "");
     if (!languageFromString(languageString, language))
     {
         ROS_ERROR("Language must be English (language=en) or French (language=fr).");
@@ -201,6 +204,13 @@ int startNode(int argc, char** argv)
         return -1;
     }
 
+    string alarmPath;
+    if (!privateNodeHandle.getParam("alarm_path", alarmPath))
+    {
+        ROS_ERROR("The parameter alarm_path must be set.");
+        return -1;
+    }
+
     float faceDescriptorThreshold;
     if (!privateNodeHandle.getParam("face_descriptor_threshold", faceDescriptorThreshold))
     {
@@ -240,6 +250,7 @@ int startNode(int argc, char** argv)
         logPerceptions,
         Time(sleepTimeHour, sleepTimeMinute),
         Time(wakeUpTimeHour, wakeUpTimeMinute),
+        alarmPath,
         faceDescriptorThreshold);
 
     return 0;
@@ -251,7 +262,7 @@ int main(int argc, char** argv)
     {
         return startNode(argc, argv);
     }
-    catch (const std::exception& e)
+    catch (const exception& e)
     {
         ROS_ERROR_STREAM("Home logger crashed (" << e.what() << ")");
         return -1;

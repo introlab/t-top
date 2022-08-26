@@ -56,7 +56,7 @@ AllCommandExecutor::AllCommandExecutor(
 
 AllCommandExecutor::~AllCommandExecutor() {}
 
-void AllCommandExecutor::execute(const std::shared_ptr<Command>& command)
+void AllCommandExecutor::execute(const shared_ptr<Command>& command)
 {
     auto it = m_commandExecutorByCommandType.find(command->type());
     if (it == m_commandExecutorByCommandType.end())

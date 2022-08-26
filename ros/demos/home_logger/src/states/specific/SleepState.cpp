@@ -8,7 +8,7 @@ using namespace std;
 
 SleepState::SleepState(
     StateManager& stateManager,
-    std::shared_ptr<DesireSet> desireSet,
+    shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     Time sleepTime,
     Time wakeUpTime)

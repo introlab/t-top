@@ -18,13 +18,12 @@ string TellReminderStateParameter::toString() const
 {
     stringstream ss;
     ss << "text=" << reminder.text();
-
     return ss.str();
 }
 
 TellReminderState::TellReminderState(
     StateManager& stateManager,
-    std::shared_ptr<DesireSet> desireSet,
+    shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     ReminderManager& reminderManager)
     : TalkState(stateManager, desireSet, nodeHandle),

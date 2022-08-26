@@ -5,7 +5,7 @@
 
 using namespace std;
 
-CommandType::CommandType(std::type_index type) : m_type(type) {}
+CommandType::CommandType(type_index type) : m_type(type) {}
 
 Command::Command(string transcript) : m_transcript(move(transcript)) {}
 
@@ -79,10 +79,10 @@ CurrentDateTimeCommand::CurrentDateTimeCommand(string transcript) : Command(move
 CurrentDateTimeCommand::~CurrentDateTimeCommand() {}
 
 
-AddAlarmCommand::AddAlarmCommand(std::string transcript) : Command(move(transcript)) {}
+AddAlarmCommand::AddAlarmCommand(string transcript) : Command(move(transcript)) {}
 
 AddAlarmCommand::AddAlarmCommand(
-    std::string transcript,
+    string transcript,
     tl::optional<AlarmType> alarmType,
     tl::optional<int> weekDay,
     tl::optional<Date> date,
@@ -120,13 +120,13 @@ bool AddAlarmCommand::isComplete() const
     return false;
 }
 
-ListAlarmsCommand::ListAlarmsCommand(std::string transcript) : Command(move(transcript)) {}
+ListAlarmsCommand::ListAlarmsCommand(string transcript) : Command(move(transcript)) {}
 
 ListAlarmsCommand::~ListAlarmsCommand() {}
 
-RemoveAlarmCommand::RemoveAlarmCommand(std::string transcript) : Command(move(transcript)) {}
+RemoveAlarmCommand::RemoveAlarmCommand(string transcript) : Command(move(transcript)) {}
 
-RemoveAlarmCommand::RemoveAlarmCommand(std::string transcript, tl::optional<int64_t> id)
+RemoveAlarmCommand::RemoveAlarmCommand(string transcript, tl::optional<int64_t> id)
     : Command(move(transcript)),
       m_id(id)
 {
@@ -149,7 +149,7 @@ float FaceDescriptor::distance(const FaceDescriptor& other) const
     return distance(other.m_descriptor);
 }
 
-float FaceDescriptor::distance(const std::vector<float>& other) const
+float FaceDescriptor::distance(const vector<float>& other) const
 {
     if (m_descriptor.size() != other.size())
     {
@@ -197,11 +197,11 @@ FaceDescriptor FaceDescriptor::mean(const vector<FaceDescriptor>& descriptors)
     }
 }
 
-AddReminderCommand::AddReminderCommand(std::string transcript) : Command(move(transcript)) {}
+AddReminderCommand::AddReminderCommand(string transcript) : Command(move(transcript)) {}
 
 AddReminderCommand::AddReminderCommand(
-    std::string transcript,
-    tl::optional<std::string> text,
+    string transcript,
+    tl::optional<string> text,
     tl::optional<DateTime> datetime,
     tl::optional<FaceDescriptor> faceDescriptor)
     : Command(move(transcript)),
@@ -218,13 +218,13 @@ bool AddReminderCommand::isComplete() const
     return m_text.has_value() && m_datetime.has_value() && m_faceDescriptor.has_value();
 }
 
-ListRemindersCommand::ListRemindersCommand(std::string transcript) : Command(move(transcript)) {}
+ListRemindersCommand::ListRemindersCommand(string transcript) : Command(move(transcript)) {}
 
 ListRemindersCommand::~ListRemindersCommand() {}
 
-RemoveReminderCommand::RemoveReminderCommand(std::string transcript) : Command(move(transcript)) {}
+RemoveReminderCommand::RemoveReminderCommand(string transcript) : Command(move(transcript)) {}
 
-RemoveReminderCommand::RemoveReminderCommand(std::string transcript, tl::optional<int64_t> id)
+RemoveReminderCommand::RemoveReminderCommand(string transcript, tl::optional<int64_t> id)
     : Command(move(transcript)),
       m_id(id)
 {
@@ -238,10 +238,10 @@ bool RemoveReminderCommand::isComplete() const
 }
 
 
-ListCommandsCommand::ListCommandsCommand(std::string transcript) : Command(move(transcript)) {}
+ListCommandsCommand::ListCommandsCommand(string transcript) : Command(move(transcript)) {}
 
 ListCommandsCommand::~ListCommandsCommand() {}
 
-NothingCommand::NothingCommand(std::string transcript) : Command(move(transcript)) {}
+NothingCommand::NothingCommand(string transcript) : Command(move(transcript)) {}
 
 NothingCommand::~NothingCommand() {}

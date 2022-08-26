@@ -12,7 +12,7 @@ using namespace std;
 
 WaitCommandState::WaitCommandState(
     StateManager& stateManager,
-    std::shared_ptr<DesireSet> desireSet,
+    shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
     : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
       m_transcriptReceived(false)
