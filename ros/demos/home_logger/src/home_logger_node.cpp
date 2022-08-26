@@ -97,11 +97,24 @@ void startNode(
     StateManager stateManager(desireSet, nodeHandle);
     stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
 
-    stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle, alarmManager, reminderManager, sleepTime, wakeUpTime, faceDescriptorThreshold));
+    stateManager.addState(make_unique<IdleState>(
+        stateManager,
+        desireSet,
+        nodeHandle,
+        alarmManager,
+        reminderManager,
+        sleepTime,
+        wakeUpTime,
+        faceDescriptorThreshold));
     stateManager.addState(make_unique<SleepState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
     stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(
-        make_unique<ExecuteCommandState>(stateManager, desireSet, nodeHandle, volumeManager, alarmManager, reminderManager));
+    stateManager.addState(make_unique<ExecuteCommandState>(
+        stateManager,
+        desireSet,
+        nodeHandle,
+        volumeManager,
+        alarmManager,
+        reminderManager));
 
     stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, nodeHandle, reminderManager));
 

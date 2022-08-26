@@ -160,6 +160,7 @@ protected:
 
     virtual void onStateTimeout();
     virtual void onEveryMinuteTimeout();
+    virtual void onEveryTenMinutesTimeout();
 
     friend StateManager;
 };

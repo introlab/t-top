@@ -64,6 +64,7 @@ public:
 
     void insertReminder(const Reminder& reminder);
     void removeReminder(int id);
+    void removeRemindersOlderThan(DateTime datetime);
     std::vector<Reminder> listReminders();
     std::vector<Reminder> listReminders(const Date& date);
 

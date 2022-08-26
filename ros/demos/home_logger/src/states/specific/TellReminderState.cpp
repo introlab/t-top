@@ -8,17 +8,11 @@
 
 using namespace std;
 
-TellReminderStateParameter::TellReminderStateParameter() : reminder("", DateTime(), FaceDescriptor({}))
-{
-}
+TellReminderStateParameter::TellReminderStateParameter() : reminder("", DateTime(), FaceDescriptor({})) {}
 
-TellReminderStateParameter::TellReminderStateParameter(Reminder reminder) : reminder(move(reminder))
-{
-}
+TellReminderStateParameter::TellReminderStateParameter(Reminder reminder) : reminder(move(reminder)) {}
 
-TellReminderStateParameter::~TellReminderStateParameter()
-{
-}
+TellReminderStateParameter::~TellReminderStateParameter() {}
 
 string TellReminderStateParameter::toString() const
 {
@@ -29,29 +23,31 @@ string TellReminderStateParameter::toString() const
 }
 
 TellReminderState::TellReminderState(
-StateManager& stateManager,
-std::shared_ptr<DesireSet> desireSet,
-ros::NodeHandle& nodeHandle,
-ReminderManager& reminderManager) : TalkState(stateManager, desireSet, nodeHandle), m_reminderManager(reminderManager)
+    StateManager& stateManager,
+    std::shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    ReminderManager& reminderManager)
+    : TalkState(stateManager, desireSet, nodeHandle),
+      m_reminderManager(reminderManager)
 {
 }
 
-TellReminderState::~TellReminderState()
-{
-}
+TellReminderState::~TellReminderState() {}
 
 void TellReminderState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
 {
     m_reminder = dynamic_cast<const TellReminderStateParameter&>(parameter).reminder;
 
-    TalkState::onEnabling(TalkStateParameter(
-        Formatter::format(
-            StringRessources::getValue("dialogs.tell_reminder_state.reminder"),
-            fmt::arg("text", m_reminder.value().text()),
-            fmt::arg("time", m_reminder.value().datetime().time)),
-        "",  // No gesture
-        "blink",
-        StateType::get<IdleState>()), previousStateType);
+    TalkState::onEnabling(
+        TalkStateParameter(
+            Formatter::format(
+                StringRessources::getValue("dialogs.tell_reminder_state.reminder"),
+                fmt::arg("text", m_reminder.value().text()),
+                fmt::arg("time", m_reminder.value().datetime().time)),
+            "",  // No gesture
+            "blink",
+            StateType::get<IdleState>()),
+        previousStateType);
 }
 
 void TellReminderState::onDisabling()

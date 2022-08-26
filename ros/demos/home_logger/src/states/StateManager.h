@@ -24,6 +24,7 @@ class StateManager : private DesireSetObserver
 
     ros::Timer m_stateTimeoutTimer;
     ros::Timer m_everyMinuteTimer;
+    ros::Timer m_everyTenMinuteTimer;
 
 public:
     StateManager(std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);
@@ -50,6 +51,7 @@ private:
 
     void onStateTimeout(const ros::TimerEvent& event);
     void onEveryMinuteTimeout(const ros::TimerEvent& event);
+    void onEveryTenMinutesTimeout(const ros::TimerEvent& event);
 };
 
 template<class T>

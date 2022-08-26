@@ -16,7 +16,8 @@ AddReminderCommandExecutor::~AddReminderCommandExecutor() {}
 
 void AddReminderCommandExecutor::executeSpecific(const shared_ptr<AddReminderCommand>& command)
 {
-    m_reminderManager.insertReminder(Reminder(command->text().value(), command->datetime().value(), command->faceDescriptor().value()));
+    m_reminderManager.insertReminder(
+        Reminder(command->text().value(), command->datetime().value(), command->faceDescriptor().value()));
     m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
 }
 
@@ -60,7 +61,9 @@ void ListRemindersCommandExecutor::executeSpecific(const shared_ptr<ListReminder
 }
 
 
-RemoveReminderCommandExecutor::RemoveReminderCommandExecutor(StateManager& stateManager, ReminderManager& reminderManager)
+RemoveReminderCommandExecutor::RemoveReminderCommandExecutor(
+    StateManager& stateManager,
+    ReminderManager& reminderManager)
     : ReminderCommandExecutor<RemoveReminderCommand>(stateManager, reminderManager)
 {
 }

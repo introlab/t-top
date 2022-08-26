@@ -13,6 +13,7 @@ using namespace std;
 
 constexpr float LOW_STATE_OF_CHARGE = 25;
 constexpr chrono::minutes BATTERY_LOW_MESSAGE_INTERVAL(5);
+constexpr chrono::hours GREATING_INTERVAL(4);
 
 IdleState::IdleState(
     StateManager& stateManager,
@@ -58,8 +59,9 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
 {
     SoundFaceFollowingState::onVideoAnalysisReceived(msg);
 
+    bool atLeastOnePerson = containsAtLeastOnePerson(msg);
     auto now = chrono::system_clock::now();
-    if (containsAtLeastOnePerson(msg) && m_chargeNeeded && (now - m_lastChargingMessageTime) >= BATTERY_LOW_MESSAGE_INTERVAL)
+    if (atLeastOnePerson && m_chargeNeeded && (now - m_lastChargingMessageTime) >= BATTERY_LOW_MESSAGE_INTERVAL)
     {
         m_lastChargingMessageTime = now;
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
@@ -69,7 +71,16 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
             StateType::get<IdleState>()));
     }
 
-    // TODO greatings
+    if (atLeastOnePerson && (now - m_lastGreetingTime) >= GREATING_INTERVAL)
+    {
+        m_lastGreetingTime = now;
+        m_stateManager.switchTo<TalkState>(TalkStateParameter(
+            StringRessources::getValue("dialogs.idle_state.hi") + " " +
+                StringRessources::getValue("dialogs.idle_state.ask_command"),
+            "",  // No gesture
+            "blink",
+            StateType::get<IdleState>()));
+    }
 
     auto reminder = findReminder(msg);
     if (reminder.has_value())
@@ -107,6 +118,12 @@ void IdleState::onEveryMinuteTimeout()
     }
 
     // TODO check alarms
+}
+
+void IdleState::onEveryTenMinutesTimeout()
+{
+    m_reminderManager.removeRemindersOlderThan(DateTime::now());
+    m_todayReminders = m_reminderManager.listReminders(Date::now());
 }
 
 tl::optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg)

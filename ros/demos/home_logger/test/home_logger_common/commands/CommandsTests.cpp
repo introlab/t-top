@@ -265,7 +265,6 @@ TEST(CommandTests, addReminderCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee3.datetime(), DateTime(2022, 7, 3, 10, 40));
     ASSERT_TRUE(testee3.faceDescriptor().has_value());
     EXPECT_EQ(testee3.faceDescriptor().value().data(), vector<float>({1.f}));
-
 }
 
 TEST(CommandTests, listRemindersCommand_constructor_shouldSetAttributes)

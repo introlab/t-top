@@ -4,6 +4,7 @@ using namespace std;
 
 const double TIMEOUT_S = 30.0;
 const double ONE_MINUTE_S = 60.0;
+const double TEN_MINUTES_S = 600.0;
 
 StateManager::StateManager(shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle)
     : m_desireSet(desireSet),
@@ -23,6 +24,8 @@ StateManager::StateManager(shared_ptr<DesireSet> desireSet, ros::NodeHandle& nod
 
     m_everyMinuteTimer =
         m_nodeHandle.createTimer(ros::Duration(ONE_MINUTE_S), &StateManager::onEveryMinuteTimeout, this);
+    m_everyTenMinuteTimer =
+        m_nodeHandle.createTimer(ros::Duration(TEN_MINUTES_S), &StateManager::onEveryTenMinutesTimeout, this);
 }
 
 StateManager::~StateManager()
@@ -136,5 +139,13 @@ void StateManager::onEveryMinuteTimeout(const ros::TimerEvent& event)
     if (m_currentState != nullptr)
     {
         m_currentState->onEveryMinuteTimeout();
+    }
+}
+
+void StateManager::onEveryTenMinutesTimeout(const ros::TimerEvent& event)
+{
+    if (m_currentState != nullptr)
+    {
+        m_currentState->onEveryTenMinutesTimeout();
     }
 }

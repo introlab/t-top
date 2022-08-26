@@ -20,10 +20,9 @@ class IdleState : public SoundFaceFollowingState
 
     tl::optional<uint64_t> m_faceAnimationDesireId;
 
-    std::chrono::time_point<std::chrono::system_clock> m_lastGreetingTime;
-
     bool m_chargeNeeded;
     std::chrono::time_point<std::chrono::system_clock> m_lastChargingMessageTime;
+    std::chrono::time_point<std::chrono::system_clock> m_lastGreetingTime;
 
     std::vector<Reminder> m_todayReminders;
 
@@ -54,6 +53,7 @@ protected:
         bool isPsuConnected,
         bool isBatteryCharging) override;
     void onEveryMinuteTimeout() override;
+    void onEveryTenMinutesTimeout() override;
 
 private:
     tl::optional<Reminder> findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg);

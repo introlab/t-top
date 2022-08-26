@@ -51,10 +51,17 @@ void ReminderManager::insertReminder(const Reminder& reminder)
 
     insert.bind(1, getNextId());
     insert.bindNoCopy(2, reminder.text());
-    insert.bindNoCopy(
-        3,
-        reminder.faceDescriptor().data().data(),
-        sizeof(float) * reminder.faceDescriptor().data().size());
+    if (reminder.faceDescriptor().data().size() == 0)
+    {
+        insert.bind(3);
+    }
+    else
+    {
+        insert.bindNoCopy(
+            3,
+            reminder.faceDescriptor().data().data(),
+            sizeof(float) * reminder.faceDescriptor().data().size());
+    }
     insert.bind(4, reminder.datetime().date.year);
     insert.bind(5, reminder.datetime().date.month);
     insert.bind(6, reminder.datetime().date.day);
@@ -68,6 +75,25 @@ void ReminderManager::removeReminder(int id)
     SQLite::Statement deleteFrom(m_database, "DELETE FROM reminder WHERE id=?");
 
     deleteFrom.bind(1, id);
+    deleteFrom.exec();
+}
+
+void ReminderManager::removeRemindersOlderThan(DateTime datetime)
+{
+    SQLite::Statement deleteFrom(
+        m_database,
+        "DELETE FROM reminder WHERE "
+        "year<?1 OR "
+        "(year=?1 AND month<?2) OR"
+        "(year=?1 AND month=?2 AND day<?3) OR"
+        "(year=?1 AND month=?2 AND day=?3 AND hour<?4) OR"
+        "(year=?1 AND month=?2 AND day=?3 AND hour=?4 AND minute<?5)");
+
+    deleteFrom.bind(1, datetime.date.year);
+    deleteFrom.bind(2, datetime.date.month);
+    deleteFrom.bind(3, datetime.date.day);
+    deleteFrom.bind(4, datetime.time.hour);
+    deleteFrom.bind(5, datetime.time.minute);
     deleteFrom.exec();
 }
 

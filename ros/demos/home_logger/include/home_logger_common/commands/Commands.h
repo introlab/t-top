@@ -347,7 +347,11 @@ class AddReminderCommand : public Command
 
 public:
     explicit AddReminderCommand(std::string transcript);
-    AddReminderCommand(std::string transcript, tl::optional<std::string> text, tl::optional<DateTime> datetime, tl::optional<FaceDescriptor> faceDescriptor);
+    AddReminderCommand(
+        std::string transcript,
+        tl::optional<std::string> text,
+        tl::optional<DateTime> datetime,
+        tl::optional<FaceDescriptor> faceDescriptor);
     ~AddReminderCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(AddReminderCommand)

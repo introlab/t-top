@@ -138,3 +138,62 @@ TEST(ReminderManagerTests, listReminders_date_shouldReturnRemindersOfADate)
     EXPECT_EQ(reminders[1].datetime(), DateTime(Date(2022, 5, 10), Time(17, 30)));
     EXPECT_EQ(reminders[1].faceDescriptor().data(), vector<float>({2.f, 1.f}));
 }
+
+TEST(ReminderManagerTests, removeRemindersOlderThan_shouldRemove)
+{
+    SQLite::Database database(":memory:", SQLite::OPEN_READWRITE);
+    ReminderManager testee(database);
+
+    testee.insertReminder(Reminder("a", DateTime(Date(2022, 1, 2), Time(3, 4)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("b", DateTime(Date(2022, 1, 2), Time(3, 5)), FaceDescriptor({2.f, 1.f})));
+    testee.insertReminder(Reminder("c", DateTime(Date(2022, 1, 2), Time(4, 0)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("d", DateTime(Date(2022, 1, 3), Time(0, 0)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("e", DateTime(Date(2022, 2, 1), Time(0, 0)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("e", DateTime(Date(2023, 1, 1), Time(0, 0)), FaceDescriptor({1.f, 2.f})));
+
+    auto reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2022, 1, 2), Time(3, 4)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2022, 1, 2), Time(3, 5)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 5);
+    EXPECT_EQ(reminders[0].id(), 2);
+    EXPECT_EQ(reminders[1].id(), 3);
+    EXPECT_EQ(reminders[2].id(), 4);
+    EXPECT_EQ(reminders[3].id(), 5);
+    EXPECT_EQ(reminders[4].id(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2022, 1, 2), Time(4, 0)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 4);
+    EXPECT_EQ(reminders[0].id(), 3);
+    EXPECT_EQ(reminders[1].id(), 4);
+    EXPECT_EQ(reminders[2].id(), 5);
+    EXPECT_EQ(reminders[3].id(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2022, 1, 3), Time(0, 0)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 3);
+    EXPECT_EQ(reminders[0].id(), 4);
+    EXPECT_EQ(reminders[1].id(), 5);
+    EXPECT_EQ(reminders[2].id(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2022, 1, 4), Time(0, 0)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 2);
+    EXPECT_EQ(reminders[0].id(), 5);
+    EXPECT_EQ(reminders[1].id(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2022, 3, 1), Time(0, 0)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 1);
+    EXPECT_EQ(reminders[0].id(), 6);
+
+    testee.removeRemindersOlderThan(DateTime(Date(2024, 1, 1), Time(0, 0)));
+    reminders = testee.listReminders();
+    ASSERT_EQ(reminders.size(), 0);
+}

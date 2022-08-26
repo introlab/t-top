@@ -68,6 +68,8 @@ void State::onStateTimeout() {}
 
 void State::onEveryMinuteTimeout() {}
 
+void State::onEveryTenMinutesTimeout() {}
+
 
 bool containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg)
 {
