@@ -142,4 +142,7 @@ def evaluate(model, device, dataset_loader, class_count):
         target = data[1].to(device)
         mean_iou_metric.add(model_output[-1], target)
 
-    print('\nTest : Mean IoU={}'.format(mean_iou_metric.get_mean_iou()))
+    print('\nTest : Mean IoU={}'.format(mean_iou_metric.get_mean_iou()), flush=True)
+    print('IoU by class:')
+    for class_index, iou in mean_iou_metric.get_iou_by_class().items():
+        print('{} --> {}'.format(class_index, iou))

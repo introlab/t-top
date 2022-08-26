@@ -25,18 +25,20 @@ class _MeanIoUMetric(ABC):
         pass
 
     def get_mean_iou(self):
-        iou_sum = 0.0
-        non_empty_class_count = 0
+        iou_by_class = self.get_iou_by_class()
+        return sum(iou_by_class.values()) / len(iou_by_class)
+
+    def get_iou_by_class(self):
+        iou_by_class = {}
         for class_index in range(self._class_count):
             true_positive_count = self._true_positive_count_by_class_index[class_index]
             false_positive_count = self._false_positive_count_by_class_index[class_index]
             false_negative_count = self._false_negative_count_by_class_index[class_index]
             denominator = (true_positive_count + false_positive_count + false_negative_count)
             if denominator != 0:
-                iou_sum += true_positive_count / denominator
-                non_empty_class_count += 1
+                iou_by_class[class_index] = true_positive_count / denominator
 
-        return iou_sum / non_empty_class_count
+        return iou_by_class
 
 
 class MeanIoUMetric(_MeanIoUMetric):
