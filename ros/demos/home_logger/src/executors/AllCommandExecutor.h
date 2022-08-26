@@ -5,6 +5,7 @@
 #include "../managers/VolumeManager.h"
 
 #include <home_logger_common/managers/AlarmManager.h>
+#include <home_logger_common/managers/ReminderManager.h>
 
 #include <unordered_map>
 #include <memory>
@@ -18,7 +19,8 @@ public:
         StateManager& stateManager,
         ros::NodeHandle& nodeHandle,
         VolumeManager& volumeManager,
-        AlarmManager& alarmManager);
+        AlarmManager& alarmManager,
+        ReminderManager& reminderManager);
     virtual ~AllCommandExecutor();
 
     virtual void execute(const std::shared_ptr<Command>& command);

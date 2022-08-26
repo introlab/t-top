@@ -66,12 +66,12 @@ inline Date PunctualAlarm::date() const
     return m_date;
 }
 
-class DaylyAlarm : public Alarm
+class DailyAlarm : public Alarm
 {
 public:
-    DaylyAlarm(Time time);
-    DaylyAlarm(int id, Time time);
-    ~DaylyAlarm() override;
+    DailyAlarm(Time time);
+    DailyAlarm(int id, Time time);
+    ~DailyAlarm() override;
 
     std::string toSpeech() override;
 

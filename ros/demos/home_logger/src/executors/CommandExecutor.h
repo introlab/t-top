@@ -59,19 +59,15 @@ template<class T>
 void SpecificCommandExecutor<T>::execute(const std::shared_ptr<Command>& command)
 {
     std::shared_ptr<T> specificCommand = std::dynamic_pointer_cast<T>(command);
-    if (specificCommand)
+    if (specificCommand && specificCommand->isComplete())
     {
         executeSpecific(specificCommand);
     }
     else
     {
-        ROS_ERROR("Invalid command executor");
+        ROS_ERROR("Invalid command executor or incomplet command");
+        m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
     }
 }
-
-// TODO add
-// AddReminderCommandExecutor
-// ListRemindersCommandExecutor
-// RemoveReminderCommandExecutor
 
 #endif

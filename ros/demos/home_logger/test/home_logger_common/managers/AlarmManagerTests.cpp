@@ -33,28 +33,28 @@ TEST(AlarmManagerTests, toSpeech_punctualEnglish_shouldReturn)
     EXPECT_EQ(testee.toSpeech(), "Alarm 2 is on September 1, 2022 at 10:15 PM.");
 }
 
-TEST(AlarmManagerTests, daylyAlarmConstructors_shouldSetAttributes)
+TEST(AlarmManagerTests, dailyAlarmConstructors_shouldSetAttributes)
 {
-    DaylyAlarm testee0(Time(20, 15));
+    DailyAlarm testee0(Time(20, 15));
     EXPECT_EQ(testee0.id(), tl::nullopt);
     EXPECT_EQ(testee0.time(), Time(20, 15));
 
-    DaylyAlarm testee1(11, Time(19, 15));
+    DailyAlarm testee1(11, Time(19, 15));
     EXPECT_EQ(testee1.id(), 11);
     EXPECT_EQ(testee1.time(), Time(19, 15));
 }
 
-TEST(AlarmManagerTests, toSpeech_daylyFrench_shouldReturn)
+TEST(AlarmManagerTests, toSpeech_dailyFrench_shouldReturn)
 {
     loadFrenchStringResources();
-    DaylyAlarm testee(3, Time(22, 15));
+    DailyAlarm testee(3, Time(22, 15));
     EXPECT_EQ(testee.toSpeech(), "L'alarme 3 est à 22:15 à chaque jour.");
 }
 
-TEST(AlarmManagerTests, toSpeech_daylyEnglish_shouldReturn)
+TEST(AlarmManagerTests, toSpeech_dailyEnglish_shouldReturn)
 {
     loadEnglishStringResources();
-    DaylyAlarm testee(4, Time(22, 15));
+    DailyAlarm testee(4, Time(22, 15));
     EXPECT_EQ(testee.toSpeech(), "Alarm 4 is at 10:15 PM every day.");
 }
 
@@ -99,12 +99,12 @@ TEST(AlarmManagerTests, toAlarm_punctual_shouldReturnPuntualAlarm)
     EXPECT_EQ(punctualAlarm.time(), Time(6, 30));
 }
 
-TEST(AlarmManagerTests, toAlarm_dayly_shouldReturnDaylyAlarm)
+TEST(AlarmManagerTests, toAlarm_daily_shouldReturnDailyAlarm)
 {
-    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::DAYLY, tl::nullopt, tl::nullopt, Time(7, 30)));
+    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::DAILY, tl::nullopt, tl::nullopt, Time(7, 30)));
 
-    auto daylyAlarm = dynamic_cast<const DaylyAlarm&>(*alarm);
-    EXPECT_EQ(daylyAlarm.time(), Time(7, 30));
+    auto dailyAlarm = dynamic_cast<const DailyAlarm&>(*alarm);
+    EXPECT_EQ(dailyAlarm.time(), Time(7, 30));
 }
 
 TEST(AlarmManagerTests, toAlarm_weekly_shouldReturnWeeklyAlarm)
@@ -122,7 +122,7 @@ TEST(AlarmManagerTests, insertListRemove_shouldInsertListAndRemove)
     AlarmManager testee(database);
 
     testee.insertAlarm(make_unique<PunctualAlarm>(Date(2022, 8, 1), Time(22, 15)));
-    testee.insertAlarm(make_unique<DaylyAlarm>(Time(21, 15)));
+    testee.insertAlarm(make_unique<DailyAlarm>(Time(21, 15)));
     testee.insertAlarm(make_unique<WeeklyAlarm>(1, Time(6, 15)));
 
     auto alarms = testee.listAlarms();
@@ -133,9 +133,9 @@ TEST(AlarmManagerTests, insertListRemove_shouldInsertListAndRemove)
     EXPECT_EQ(punctualAlarm.date(), Date(2022, 8, 1));
     EXPECT_EQ(punctualAlarm.time(), Time(22, 15));
 
-    auto daylyAlarm = dynamic_cast<const DaylyAlarm&>(*alarms[1]);
-    EXPECT_EQ(daylyAlarm.id(), 2);
-    EXPECT_EQ(daylyAlarm.time(), Time(21, 15));
+    auto dailyAlarm = dynamic_cast<const DailyAlarm&>(*alarms[1]);
+    EXPECT_EQ(dailyAlarm.id(), 2);
+    EXPECT_EQ(dailyAlarm.time(), Time(21, 15));
 
     auto weeklyAlarm = dynamic_cast<const WeeklyAlarm&>(*alarms[2]);
     EXPECT_EQ(weeklyAlarm.id(), 3);

@@ -1,5 +1,8 @@
 #include <home_logger_common/commands/Commands.h>
 
+#include <limits>
+#include <cmath>
+
 using namespace std;
 
 CommandType::CommandType(std::type_index type) : m_type(type) {}
@@ -105,7 +108,7 @@ bool AddAlarmCommand::isComplete() const
         return m_date.has_value() && m_time.has_value();
     }
 
-    if (m_alarmType == AlarmType::DAYLY)
+    if (m_alarmType == AlarmType::DAILY)
     {
         return m_time.has_value();
     }
@@ -137,15 +140,69 @@ bool RemoveAlarmCommand::isComplete() const
 }
 
 
+FaceDescriptor::FaceDescriptor(vector<float> descriptor) : m_descriptor(move(descriptor)) {}
+
+FaceDescriptor::~FaceDescriptor() {}
+
+float FaceDescriptor::distance(const FaceDescriptor& other) const
+{
+    if (m_descriptor.size() != other.m_descriptor.size())
+    {
+        return numeric_limits<float>::infinity();
+    }
+
+    float squarredDistance = 0.f;
+    for (size_t i = 0; i < m_descriptor.size(); i++)
+    {
+        float diff = m_descriptor[i] - other.m_descriptor[i];
+        squarredDistance += diff * diff;
+    }
+
+    return sqrt(squarredDistance);
+}
+
+FaceDescriptor FaceDescriptor::mean(const vector<FaceDescriptor>& descriptors)
+{
+    if (descriptors.empty())
+    {
+        return FaceDescriptor({});
+    }
+    else if (descriptors.size() == 1)
+    {
+        return descriptors[0];
+    }
+    else
+    {
+        vector<float> mean(descriptors[0].m_descriptor.size());
+        for (auto descriptor : descriptors)
+        {
+            size_t size = min(descriptor.m_descriptor.size(), mean.size());
+            for (size_t i = 0; i < size; i++)
+            {
+                mean[i] += descriptor.m_descriptor[i];
+            }
+        }
+
+        for (size_t i = 0; i < mean.size(); i++)
+        {
+            mean[i] /= descriptors.size();
+        }
+
+        return FaceDescriptor(mean);
+    }
+}
+
 AddReminderCommand::AddReminderCommand(std::string transcript) : Command(move(transcript)) {}
 
 AddReminderCommand::AddReminderCommand(
     std::string transcript,
     tl::optional<std::string> text,
-    tl::optional<DateTime> datetime)
+    tl::optional<DateTime> datetime,
+    tl::optional<FaceDescriptor> faceDescriptor)
     : Command(move(transcript)),
       m_text(text),
-      m_datetime(datetime)
+      m_datetime(datetime),
+      m_faceDescriptor(move(faceDescriptor))
 {
 }
 
@@ -153,7 +210,7 @@ AddReminderCommand::~AddReminderCommand() {}
 
 bool AddReminderCommand::isComplete() const
 {
-    return m_text.has_value() && m_datetime.has_value();
+    return m_text.has_value() && m_datetime.has_value() && m_faceDescriptor.has_value();
 }
 
 ListRemindersCommand::ListRemindersCommand(std::string transcript) : Command(move(transcript)) {}

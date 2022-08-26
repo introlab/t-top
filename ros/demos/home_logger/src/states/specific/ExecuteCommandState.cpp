@@ -28,9 +28,10 @@ ExecuteCommandState::ExecuteCommandState(
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
     VolumeManager& volumeManager,
-    AlarmManager& alarmManager)
+    AlarmManager& alarmManager,
+    ReminderManager& reminderManager)
     : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
-      m_allCommandExecutor(stateManager, nodeHandle, volumeManager, alarmManager)
+      m_allCommandExecutor(stateManager, nodeHandle, volumeManager, alarmManager, reminderManager)
 {
 }
 

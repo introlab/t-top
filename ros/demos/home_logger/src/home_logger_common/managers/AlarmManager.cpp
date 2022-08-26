@@ -44,26 +44,26 @@ void PunctualAlarm::insertAlarm(SQLite::Database& database, int id) const
     insert.exec();
 }
 
-DaylyAlarm::DaylyAlarm(Time time) : Alarm(move(time)) {}
+DailyAlarm::DailyAlarm(Time time) : Alarm(move(time)) {}
 
-DaylyAlarm::DaylyAlarm(int id, Time time) : Alarm(id, move(time)) {}
+DailyAlarm::DailyAlarm(int id, Time time) : Alarm(id, move(time)) {}
 
-DaylyAlarm::~DaylyAlarm() {}
+DailyAlarm::~DailyAlarm() {}
 
-string DaylyAlarm::toSpeech()
+string DailyAlarm::toSpeech()
 {
     return Formatter::format(
-        StringRessources::getValue("dialogs.commands.alarm.dayly"),
+        StringRessources::getValue("dialogs.commands.alarm.daily"),
         fmt::arg("id", m_id.value()),
         fmt::arg("time", m_time));
 }
 
-void DaylyAlarm::insertAlarm(SQLite::Database& database, int id) const
+void DailyAlarm::insertAlarm(SQLite::Database& database, int id) const
 {
     SQLite::Statement insert(database, "INSERT INTO alarm(id, type, hour, minute) VALUES(?, ?, ?, ?)");
 
     insert.bind(1, id);
-    insert.bind(2, static_cast<int>(AlarmType::DAYLY));
+    insert.bind(2, static_cast<int>(AlarmType::DAILY));
     insert.bind(3, m_time.hour);
     insert.bind(4, m_time.minute);
     insert.exec();
@@ -109,9 +109,9 @@ unique_ptr<Alarm> toAlarm(const AddAlarmCommand& command)
         return make_unique<PunctualAlarm>(command.date().value(), command.time().value());
     }
 
-    if (command.alarmType() == AlarmType::DAYLY)
+    if (command.alarmType() == AlarmType::DAILY)
     {
-        return make_unique<DaylyAlarm>(command.time().value());
+        return make_unique<DailyAlarm>(command.time().value());
     }
 
     return make_unique<WeeklyAlarm>(command.weekDay().value(), command.time().value());
@@ -155,7 +155,9 @@ vector<unique_ptr<Alarm>> AlarmManager::listAlarms()
 {
     vector<unique_ptr<Alarm>> alarms;
 
-    SQLite::Statement query(m_database, "SELECT id, type, week_day, year, month, day, hour, minute FROM alarm ORDER BY id");
+    SQLite::Statement query(
+        m_database,
+        "SELECT id, type, week_day, year, month, day, hour, minute FROM alarm ORDER BY id");
 
     while (query.executeStep())
     {
@@ -167,13 +169,15 @@ vector<unique_ptr<Alarm>> AlarmManager::listAlarms()
 
 int AlarmManager::getNextId()
 {
-    SQLite::Statement query(m_database, "SELECT MIN(t1.id) FROM "
-                                        "("
-                                        "    SELECT 1 AS id "
-                                        "    UNION ALL "
-                                        "    SELECT id + 1 from alarm "
-                                        ") as t1 "
-                                        "LEFT OUTER JOIN alarm as t2 ON t1.id = t2.id WHERE t2.id IS NULL");
+    SQLite::Statement query(
+        m_database,
+        "SELECT MIN(t1.id) FROM "
+        "("
+        "    SELECT 1 AS id "
+        "    UNION ALL "
+        "    SELECT id + 1 from alarm "
+        ") as t1 "
+        "LEFT OUTER JOIN alarm as t2 ON t1.id = t2.id WHERE t2.id IS NULL");
     if (query.executeStep())
     {
         return query.getColumn(0);
@@ -194,8 +198,8 @@ unique_ptr<Alarm> AlarmManager::alarmFromRow(SQLite::Statement& query)
                 Date(query.getColumn(3), query.getColumn(4), query.getColumn(5)),
                 time);
 
-        case AlarmType::DAYLY:
-            return make_unique<DaylyAlarm>(id, time);
+        case AlarmType::DAILY:
+            return make_unique<DailyAlarm>(id, time);
 
         case AlarmType::WEEKLY:
             return make_unique<WeeklyAlarm>(id, query.getColumn(2), time);

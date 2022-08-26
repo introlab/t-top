@@ -5,6 +5,7 @@
 #include "SleepCommandExecutor.h"
 #include "DateTimeCommandExecutors.h"
 #include "AlarmCommandExecutors.h"
+#include "ReminderCommandExecutors.h"
 #include "ListCommandsCommandExecutor.h"
 
 using namespace std;
@@ -13,7 +14,8 @@ AllCommandExecutor::AllCommandExecutor(
     StateManager& stateManager,
     ros::NodeHandle& nodeHandle,
     VolumeManager& volumeManager,
-    AlarmManager& alarmManager)
+    AlarmManager& alarmManager,
+    ReminderManager& reminderManager)
 {
     vector<unique_ptr<CommandExecutor>> executors;
 
@@ -33,6 +35,10 @@ AllCommandExecutor::AllCommandExecutor(
     executors.emplace_back(make_unique<AddAlarmCommandExecutor>(stateManager, alarmManager));
     executors.emplace_back(make_unique<ListAlarmsCommandExecutor>(stateManager, alarmManager));
     executors.emplace_back(make_unique<RemoveAlarmCommandExecutor>(stateManager, alarmManager));
+
+    executors.emplace_back(make_unique<AddReminderCommandExecutor>(stateManager, reminderManager));
+    executors.emplace_back(make_unique<ListRemindersCommandExecutor>(stateManager, reminderManager));
+    executors.emplace_back(make_unique<RemoveReminderCommandExecutor>(stateManager, reminderManager));
 
     executors.emplace_back(make_unique<ListCommandsCommandExecutor>(stateManager));
 

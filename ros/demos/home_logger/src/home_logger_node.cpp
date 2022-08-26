@@ -90,6 +90,7 @@ void startNode(
     VolumeManager volumeManager(nodeHandle);
     SQLite::Database database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     AlarmManager alarmManager(database);
+    ReminderManager reminderManager(database);
 
     StateManager stateManager(desireSet, nodeHandle);
     stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
@@ -98,7 +99,7 @@ void startNode(
     stateManager.addState(make_unique<SleepState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
     stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, nodeHandle));
     stateManager.addState(
-        make_unique<ExecuteCommandState>(stateManager, desireSet, nodeHandle, volumeManager, alarmManager));
+        make_unique<ExecuteCommandState>(stateManager, desireSet, nodeHandle, volumeManager, alarmManager, reminderManager));
 
     // TODO add states to the state manager
 
@@ -123,7 +124,7 @@ void startNode(
     ros::spin();
 }
 
-int main(int argc, char** argv)
+int startNode(int argc, char** argv)
 {
     ros::init(argc, argv, "home_logger_node");
     ros::NodeHandle nodeHandle;
@@ -217,4 +218,17 @@ int main(int argc, char** argv)
         Time(wakeUpTimeHour, wakeUpTimeMinute));
 
     return 0;
+}
+
+int main(int argc, char** argv)
+{
+    try
+    {
+        return startNode(argc, argv);
+    }
+    catch (const std::exception& e)
+    {
+        ROS_ERROR_STREAM("Home logger crashed (" << e.what() << ")");
+        return -1;
+    }
 }

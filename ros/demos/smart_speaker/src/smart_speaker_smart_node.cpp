@@ -172,7 +172,7 @@ bool getSongVectors(ros::NodeHandle& privateNodeHandle, vector<vector<string>>& 
     return values.size() > 0;
 }
 
-int main(int argc, char** argv)
+int startNode(int argc, char** argv)
 {
     ros::init(argc, argv, "smart_speaker_smart_node");
     ros::NodeHandle nodeHandle;
@@ -270,4 +270,17 @@ int main(int argc, char** argv)
         afterTaskDelayDuration);
 
     return 0;
+}
+
+int main(int argc, char** argv)
+{
+    try
+    {
+        return startNode(argc, argv);
+    }
+    catch (const std::exception& e)
+    {
+        ROS_ERROR_STREAM("Smart speaker crashed (" << e.what() << ")");
+        return -1;
+    }
 }

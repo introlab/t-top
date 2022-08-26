@@ -17,7 +17,7 @@ using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
-int main(int argc, char* argv[])
+int startNode(int argc, char* argv[])
 {
     ros::init(argc, argv, "control_panel_node");
     ros::NodeHandle nodeHandle;
@@ -53,14 +53,27 @@ int main(int argc, char* argv[])
     auto solver = make_unique<GecodeSolver>();
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
 
-    QApplication a(argc, argv);
+    QApplication application(argc, argv);
     ControlPanel controlPanel(nodeHandle, desireSet, camera2dWideEnabled);
     controlPanel.show();
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
-    int returnCode = a.exec();
+    int returnCode = application.exec();
     spinner.stop();
 
     return returnCode;
+}
+
+int main(int argc, char* argv[])
+{
+    try
+    {
+        return startNode(argc, argv);
+    }
+    catch (const std::exception& e)
+    {
+        ROS_ERROR_STREAM("Smart speaker crashed (" << e.what() << ")");
+        return -1;
+    }
 }

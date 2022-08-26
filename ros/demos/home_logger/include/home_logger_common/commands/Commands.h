@@ -9,6 +9,7 @@
 #include <typeindex>
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 
 class Command;
 
@@ -235,7 +236,7 @@ public:
 enum class AlarmType
 {
     PUNCTUAL,
-    DAYLY,
+    DAILY,
     WEEKLY,
 };
 
@@ -318,14 +319,34 @@ inline tl::optional<int64_t> RemoveAlarmCommand::id() const
 }
 
 
+class FaceDescriptor
+{
+    std::vector<float> m_descriptor;
+
+public:
+    FaceDescriptor(std::vector<float> descriptor);
+    virtual ~FaceDescriptor();
+
+    const std::vector<float>& data() const;
+
+    float distance(const FaceDescriptor& other) const;
+    static FaceDescriptor mean(const std::vector<FaceDescriptor>& descriptors);
+};
+
+inline const std::vector<float>& FaceDescriptor::data() const
+{
+    return m_descriptor;
+}
+
 class AddReminderCommand : public Command
 {
     tl::optional<std::string> m_text;
     tl::optional<DateTime> m_datetime;
+    tl::optional<FaceDescriptor> m_faceDescriptor;
 
 public:
     explicit AddReminderCommand(std::string transcript);
-    AddReminderCommand(std::string transcript, tl::optional<std::string> text, tl::optional<DateTime> datetime);
+    AddReminderCommand(std::string transcript, tl::optional<std::string> text, tl::optional<DateTime> datetime, tl::optional<FaceDescriptor> faceDescriptor);
     ~AddReminderCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(AddReminderCommand)
@@ -333,6 +354,7 @@ public:
     bool isComplete() const override;
     tl::optional<std::string> text() const;
     tl::optional<DateTime> datetime() const;
+    tl::optional<FaceDescriptor> faceDescriptor() const;
 };
 
 inline tl::optional<std::string> AddReminderCommand::text() const
@@ -344,6 +366,12 @@ inline tl::optional<DateTime> AddReminderCommand::datetime() const
 {
     return m_datetime;
 }
+
+inline tl::optional<FaceDescriptor> AddReminderCommand::faceDescriptor() const
+{
+    return m_faceDescriptor;
+}
+
 
 class ListRemindersCommand : public Command
 {

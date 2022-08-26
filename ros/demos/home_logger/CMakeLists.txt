@@ -145,6 +145,7 @@ add_library(home_logger_common
   src/home_logger_common/language/StringRessources.cpp
   src/home_logger_common/language/Formatter.cpp
   src/home_logger_common/managers/AlarmManager.cpp
+  src/home_logger_common/managers/ReminderManager.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -165,6 +166,7 @@ add_executable(${PROJECT_NAME}_node
   src/executors/SleepCommandExecutor.cpp
   src/executors/DateTimeCommandExecutors.cpp
   src/executors/AlarmCommandExecutors.cpp
+  src/executors/ReminderCommandExecutors.cpp
   src/executors/ListCommandsCommandExecutor.cpp
   src/states/State.cpp
   src/states/StateManager.cpp
@@ -258,6 +260,7 @@ catkin_add_gtest(home_logger_common-test
   test/home_logger_common/language/StringRessourcesTests.cpp
   test/home_logger_common/language/FormatterTests.cpp
   test/home_logger_common/managers/AlarmManagerTests.cpp
+  test/home_logger_common/managers/ReminderManagerTests.cpp
 )
 if(TARGET home_logger_common-test)
   find_package(Boost REQUIRED COMPONENTS system filesystem)
