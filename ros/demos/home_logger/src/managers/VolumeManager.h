@@ -4,6 +4,8 @@
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
 
+#include <hbba_lite/utils/ClassMacros.h>
+
 class VolumeManager
 {
     float m_currentVolumePercent;
@@ -13,6 +15,9 @@ class VolumeManager
 public:
     VolumeManager(ros::NodeHandle& nodeHandle);
     virtual ~VolumeManager();
+
+    DECLARE_NOT_COPYABLE(VolumeManager);
+    DECLARE_NOT_MOVABLE(VolumeManager);
 
     void setVolume(float volumePercent);
     float getVolume() const;

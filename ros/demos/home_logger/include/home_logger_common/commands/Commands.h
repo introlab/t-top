@@ -330,6 +330,7 @@ public:
     const std::vector<float>& data() const;
 
     float distance(const FaceDescriptor& other) const;
+    float distance(const std::vector<float>& m_descriptor) const;
     static FaceDescriptor mean(const std::vector<FaceDescriptor>& descriptors);
 };
 

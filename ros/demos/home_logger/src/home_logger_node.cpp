@@ -7,6 +7,7 @@
 #include "states/specific/SleepState.h"
 #include "states/specific/WaitCommandState.h"
 #include "states/specific/ExecuteCommandState.h"
+#include "states/specific/TellReminderState.h"
 
 #include <home_logger_common/language/Language.h>
 #include <home_logger_common/language/StringRessources.h>
@@ -54,7 +55,8 @@ void startNode(
     bool recordSession,
     bool logPerceptions,
     Time sleepTime,
-    Time wakeUpTime)
+    Time wakeUpTime,
+    float faceDescriptorThreshold)
 {
     loadResources(language, englishStringResourcePath, frenchStringResourcesPath);
     Formatter::initialize(language);
@@ -95,11 +97,13 @@ void startNode(
     StateManager stateManager(desireSet, nodeHandle);
     stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
 
-    stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
+    stateManager.addState(make_unique<IdleState>(stateManager, desireSet, nodeHandle, alarmManager, reminderManager, sleepTime, wakeUpTime, faceDescriptorThreshold));
     stateManager.addState(make_unique<SleepState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
     stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, nodeHandle));
     stateManager.addState(
         make_unique<ExecuteCommandState>(stateManager, desireSet, nodeHandle, volumeManager, alarmManager, reminderManager));
+
+    stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, nodeHandle, reminderManager));
 
     // TODO add states to the state manager
 
@@ -184,6 +188,13 @@ int startNode(int argc, char** argv)
         return -1;
     }
 
+    float faceDescriptorThreshold;
+    if (!privateNodeHandle.getParam("face_descriptor_threshold", faceDescriptorThreshold))
+    {
+        ROS_ERROR("The parameter face_descriptor_threshold must be set.");
+        return -1;
+    }
+
     bool camera2dWideEnabled;
     if (!privateNodeHandle.getParam("camera_2d_wide_enabled", camera2dWideEnabled))
     {
@@ -215,7 +226,8 @@ int startNode(int argc, char** argv)
         recordSession,
         logPerceptions,
         Time(sleepTimeHour, sleepTimeMinute),
-        Time(wakeUpTimeHour, wakeUpTimeMinute));
+        Time(wakeUpTimeHour, wakeUpTimeMinute),
+        faceDescriptorThreshold);
 
     return 0;
 }

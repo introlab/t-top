@@ -71,7 +71,7 @@ void State::onEveryMinuteTimeout() {}
 
 bool containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg)
 {
-    for (auto object : msg->objects)
+    for (auto& object : msg->objects)
     {
         if (object.object_class == "person")
         {

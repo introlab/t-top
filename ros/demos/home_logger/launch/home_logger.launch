@@ -22,6 +22,8 @@
         <param name="wake_up_time_hour" value="7"/>
         <param name="wake_up_time_minute" value="0"/>
 
+        <param name="face_descriptor_threshold" value="0.7"/>
+
         <param name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
 
         <param name="record_session" value="$(arg record_session)"/>

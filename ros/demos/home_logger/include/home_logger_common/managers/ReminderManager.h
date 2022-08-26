@@ -6,6 +6,8 @@
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
+#include <hbba_lite/utils/ClassMacros.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -57,9 +59,13 @@ public:
     ReminderManager(SQLite::Database& database);
     virtual ~ReminderManager();
 
+    DECLARE_NOT_COPYABLE(ReminderManager);
+    DECLARE_NOT_MOVABLE(ReminderManager);
+
     void insertReminder(const Reminder& reminder);
     void removeReminder(int id);
     std::vector<Reminder> listReminders();
+    std::vector<Reminder> listReminders(const Date& date);
 
 private:
     int getNextId();

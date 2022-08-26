@@ -6,6 +6,8 @@
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
+#include <hbba_lite/utils/ClassMacros.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -112,6 +114,9 @@ class AlarmManager
 public:
     AlarmManager(SQLite::Database& database);
     virtual ~AlarmManager();
+
+    DECLARE_NOT_COPYABLE(AlarmManager);
+    DECLARE_NOT_MOVABLE(AlarmManager);
 
     void insertAlarm(std::unique_ptr<Alarm> alarm);
     void removeAlarm(int id);

@@ -4,13 +4,19 @@
 #include "../common/SoundFaceFollowingState.h"
 
 #include <home_logger_common/DateTime.h>
+#include <home_logger_common/managers/AlarmManager.h>
+#include <home_logger_common/managers/ReminderManager.h>
 
 #include <chrono>
 
 class IdleState : public SoundFaceFollowingState
 {
+    AlarmManager& m_alarmManager;
+    ReminderManager& m_reminderManager;
+
     Time m_sleepTime;
     Time m_wakeUpTime;
+    float m_faceDescriptorThreshold;
 
     tl::optional<uint64_t> m_faceAnimationDesireId;
 
@@ -19,13 +25,18 @@ class IdleState : public SoundFaceFollowingState
     bool m_chargeNeeded;
     std::chrono::time_point<std::chrono::system_clock> m_lastChargingMessageTime;
 
+    std::vector<Reminder> m_todayReminders;
+
 public:
     IdleState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
+        AlarmManager& alarmManager,
+        ReminderManager& reminderManager,
         Time sleepTime,
-        Time wakeUpTime);
+        Time wakeUpTime,
+        float faceDescriptorThreshold);
     ~IdleState() override;
 
 protected:
@@ -43,6 +54,9 @@ protected:
         bool isPsuConnected,
         bool isBatteryCharging) override;
     void onEveryMinuteTimeout() override;
+
+private:
+    tl::optional<Reminder> findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg);
 };
 
 #endif

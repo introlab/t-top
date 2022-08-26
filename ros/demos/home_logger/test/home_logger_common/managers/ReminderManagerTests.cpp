@@ -113,3 +113,28 @@ TEST(ReminderManagerTests, insert_shouldReplaceIds)
     EXPECT_EQ(reminders[1].id(), 2);
     EXPECT_EQ(reminders[2].id(), 4);
 }
+
+TEST(ReminderManagerTests, listReminders_date_shouldReturnRemindersOfADate)
+{
+    SQLite::Database database(":memory:", SQLite::OPEN_READWRITE);
+    ReminderManager testee(database);
+
+    testee.insertReminder(Reminder("a", DateTime(Date(2022, 5, 10), Time(10, 30)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("b", DateTime(Date(2022, 5, 10), Time(17, 30)), FaceDescriptor({2.f, 1.f})));
+    testee.insertReminder(Reminder("c", DateTime(Date(2022, 5, 11), Time(17, 30)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("d", DateTime(Date(2022, 6, 10), Time(17, 30)), FaceDescriptor({1.f, 2.f})));
+    testee.insertReminder(Reminder("e", DateTime(Date(2021, 5, 10), Time(10, 30)), FaceDescriptor({1.f, 2.f})));
+
+    auto reminders = testee.listReminders(Date(2022, 5, 10));
+    ASSERT_EQ(reminders.size(), 2);
+
+    EXPECT_EQ(reminders[0].id(), 1);
+    EXPECT_EQ(reminders[0].text(), "a");
+    EXPECT_EQ(reminders[0].datetime(), DateTime(Date(2022, 5, 10), Time(10, 30)));
+    EXPECT_EQ(reminders[0].faceDescriptor().data(), vector<float>({1.f, 2.f}));
+
+    EXPECT_EQ(reminders[1].id(), 2);
+    EXPECT_EQ(reminders[1].text(), "b");
+    EXPECT_EQ(reminders[1].datetime(), DateTime(Date(2022, 5, 10), Time(17, 30)));
+    EXPECT_EQ(reminders[1].faceDescriptor().data(), vector<float>({2.f, 1.f}));
+}

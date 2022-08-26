@@ -87,6 +87,26 @@ vector<Reminder> ReminderManager::listReminders()
     return reminders;
 }
 
+vector<Reminder> ReminderManager::listReminders(const Date& date)
+{
+    vector<Reminder> reminders;
+
+    SQLite::Statement query(
+        m_database,
+        "SELECT id, text, face_descriptor, year, month, day, hour, minute FROM reminder "
+        "WHERE year=? AND month=? AND day=? ORDER BY id");
+    query.bind(1, date.year);
+    query.bind(2, date.month);
+    query.bind(3, date.day);
+
+    while (query.executeStep())
+    {
+        reminders.emplace_back(reminderFromRow(query));
+    }
+
+    return reminders;
+}
+
 int ReminderManager::getNextId()
 {
     SQLite::Statement query(

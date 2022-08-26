@@ -1,6 +1,7 @@
 #include "IdleState.h"
 #include "SleepState.h"
 #include "WaitCommandState.h"
+#include "TellReminderState.h"
 #include "../StateManager.h"
 #include "../common/TalkState.h"
 
@@ -17,11 +18,17 @@ IdleState::IdleState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle,
+    AlarmManager& alarmManager,
+    ReminderManager& reminderManager,
     Time sleepTime,
-    Time wakeUpTime)
+    Time wakeUpTime,
+    float faceDescriptorThreshold)
     : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+      m_alarmManager(alarmManager),
+      m_reminderManager(reminderManager),
       m_sleepTime(sleepTime),
       m_wakeUpTime(wakeUpTime),
+      m_faceDescriptorThreshold(faceDescriptorThreshold),
       m_chargeNeeded(false)
 {
 }
@@ -33,6 +40,7 @@ void IdleState::onEnabling(const StateParameter& parameter, const StateType& pre
     SoundFaceFollowingState::onEnabling(parameter, previousStateType);
 
     m_faceAnimationDesireId = m_desireSet->addDesire<FaceAnimationDesire>("blink");
+    m_todayReminders = m_reminderManager.listReminders(Date::now());
 }
 
 void IdleState::onDisabling()
@@ -50,14 +58,8 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
 {
     SoundFaceFollowingState::onVideoAnalysisReceived(msg);
 
-    if (!containsAtLeastOnePerson(msg))
-    {
-        return;
-    }
-
     auto now = chrono::system_clock::now();
-
-    if (m_chargeNeeded && (now - m_lastChargingMessageTime) >= BATTERY_LOW_MESSAGE_INTERVAL)
+    if (containsAtLeastOnePerson(msg) && m_chargeNeeded && (now - m_lastChargingMessageTime) >= BATTERY_LOW_MESSAGE_INTERVAL)
     {
         m_lastChargingMessageTime = now;
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
@@ -68,7 +70,12 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
     }
 
     // TODO greatings
-    // TODO check reminder face descriptor
+
+    auto reminder = findReminder(msg);
+    if (reminder.has_value())
+    {
+        m_stateManager.switchTo<TellReminderState>(TellReminderStateParameter(reminder.value()));
+    }
 }
 
 void IdleState::onRobotNameDetected()
@@ -100,5 +107,25 @@ void IdleState::onEveryMinuteTimeout()
     }
 
     // TODO check alarms
-    // TODO check reminders
+}
+
+tl::optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+{
+    for (auto& object : msg->objects)
+    {
+        if (object.object_class != "person" || object.face_descriptor.empty())
+        {
+            continue;
+        }
+
+        for (auto& reminder : m_todayReminders)
+        {
+            if (reminder.faceDescriptor().distance(object.face_descriptor) <= m_faceDescriptorThreshold)
+            {
+                return reminder;
+            }
+        }
+    }
+
+    return tl::nullopt;
 }

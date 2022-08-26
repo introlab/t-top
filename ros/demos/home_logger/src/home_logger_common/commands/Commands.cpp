@@ -146,7 +146,12 @@ FaceDescriptor::~FaceDescriptor() {}
 
 float FaceDescriptor::distance(const FaceDescriptor& other) const
 {
-    if (m_descriptor.size() != other.m_descriptor.size())
+    return distance(other.m_descriptor);
+}
+
+float FaceDescriptor::distance(const std::vector<float>& other) const
+{
+    if (m_descriptor.size() != other.size())
     {
         return numeric_limits<float>::infinity();
     }
@@ -154,7 +159,7 @@ float FaceDescriptor::distance(const FaceDescriptor& other) const
     float squarredDistance = 0.f;
     for (size_t i = 0; i < m_descriptor.size(); i++)
     {
-        float diff = m_descriptor[i] - other.m_descriptor[i];
+        float diff = m_descriptor[i] - other[i];
         squarredDistance += diff * diff;
     }
 
