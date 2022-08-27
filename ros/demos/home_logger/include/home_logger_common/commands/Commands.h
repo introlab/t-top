@@ -342,7 +342,8 @@ inline const std::vector<float>& FaceDescriptor::data() const
 class AddReminderCommand : public Command
 {
     tl::optional<std::string> m_text;
-    tl::optional<DateTime> m_datetime;
+    tl::optional<Date> m_date;
+    tl::optional<Time> m_time;
     tl::optional<FaceDescriptor> m_faceDescriptor;
 
 public:
@@ -350,7 +351,8 @@ public:
     AddReminderCommand(
         std::string transcript,
         tl::optional<std::string> text,
-        tl::optional<DateTime> datetime,
+        tl::optional<Date> date,
+        tl::optional<Time> time,
         tl::optional<FaceDescriptor> faceDescriptor);
     ~AddReminderCommand() override;
 
@@ -358,7 +360,8 @@ public:
 
     bool isComplete() const override;
     tl::optional<std::string> text() const;
-    tl::optional<DateTime> datetime() const;
+    tl::optional<Date> date() const;
+    tl::optional<Time> time() const;
     tl::optional<FaceDescriptor> faceDescriptor() const;
 };
 
@@ -367,9 +370,14 @@ inline tl::optional<std::string> AddReminderCommand::text() const
     return m_text;
 }
 
-inline tl::optional<DateTime> AddReminderCommand::datetime() const
+inline tl::optional<Date> AddReminderCommand::date() const
 {
-    return m_datetime;
+    return m_date;
+}
+
+inline tl::optional<Time> AddReminderCommand::time() const
+{
+    return m_time;
 }
 
 inline tl::optional<FaceDescriptor> AddReminderCommand::faceDescriptor() const

@@ -7,6 +7,8 @@
 #include "states/specific/SleepState.h"
 #include "states/specific/WaitCommandState.h"
 #include "states/specific/ExecuteCommandState.h"
+#include "states/specific/WaitCommandParameterState.h"
+#include "states/specific/WaitFaceDescriptorCommandParameterState.h"
 #include "states/specific/AlarmState.h"
 #include "states/specific/TellReminderState.h"
 
@@ -58,7 +60,8 @@ void startNode(
     Time sleepTime,
     Time wakeUpTime,
     const string& alarmPath,
-    float faceDescriptorThreshold)
+    float faceDescriptorThreshold,
+    float noseConfidenceThreshold)
 {
     loadResources(language, englishStringResourcePath, frenchStringResourcesPath);
     Formatter::initialize(language);
@@ -117,11 +120,15 @@ void startNode(
         volumeManager,
         alarmManager,
         reminderManager));
+    stateManager.addState(make_unique<WaitCommandParameterState>(stateManager, desireSet, nodeHandle));
+    stateManager.addState(make_unique<WaitFaceDescriptorCommandParameterState>(
+        stateManager,
+        desireSet,
+        nodeHandle,
+        noseConfidenceThreshold));
 
     stateManager.addState(make_unique<AlarmState>(stateManager, desireSet, nodeHandle, alarmManager, alarmPath));
     stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, nodeHandle, reminderManager));
-
-    // TODO add states to the state manager
 
 
     if (recordSession)
@@ -218,6 +225,14 @@ int startNode(int argc, char** argv)
         return -1;
     }
 
+    float noseConfidenceThreshold;
+    if (!privateNodeHandle.getParam("nose_confidence_threshold", faceDescriptorThreshold))
+    {
+        ROS_ERROR("The parameter nose_confidence_threshold must be set.");
+        return -1;
+    }
+
+
     bool camera2dWideEnabled;
     if (!privateNodeHandle.getParam("camera_2d_wide_enabled", camera2dWideEnabled))
     {
@@ -251,7 +266,8 @@ int startNode(int argc, char** argv)
         Time(sleepTimeHour, sleepTimeMinute),
         Time(wakeUpTimeHour, wakeUpTimeMinute),
         alarmPath,
-        faceDescriptorThreshold);
+        faceDescriptorThreshold,
+        noseConfidenceThreshold);
 
     return 0;
 }

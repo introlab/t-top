@@ -26,7 +26,7 @@ public:
         std::shared_ptr<StateParameter> nextStateParameter);
     ~TalkStateParameter() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 };
 
 class TalkState : public State

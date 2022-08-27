@@ -4,22 +4,33 @@
 #include "../common/SoundFaceFollowingState.h"
 #include "../../managers/VolumeManager.h"
 #include "../../executors/AllCommandExecutor.h"
+#include "../../parameters/AllCommandParametersAsker.h"
 
 class ExecuteCommandStateParameter : public StateParameter
 {
 public:
     std::shared_ptr<Command> command;
 
+    tl::optional<std::string> parameterName;
+    tl::optional<std::string> parameterResponse;
+    tl::optional<FaceDescriptor> faceDescriptor;
+
     ExecuteCommandStateParameter();
     ExecuteCommandStateParameter(std::shared_ptr<Command> command);
+    ExecuteCommandStateParameter(
+        std::shared_ptr<Command> command,
+        std::string parameterName,
+        std::string parameterResponse);
+    ExecuteCommandStateParameter(std::shared_ptr<Command> command, FaceDescriptor faceDescriptor);
     ~ExecuteCommandStateParameter() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 };
 
 class ExecuteCommandState : public SoundFaceFollowingState
 {
     AllCommandExecutor m_allCommandExecutor;
+    AllCommandParametersAsker m_allCommandParametersAsker;
 
 public:
     ExecuteCommandState(

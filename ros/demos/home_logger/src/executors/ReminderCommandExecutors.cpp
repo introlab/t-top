@@ -16,8 +16,10 @@ AddReminderCommandExecutor::~AddReminderCommandExecutor() {}
 
 void AddReminderCommandExecutor::executeSpecific(const shared_ptr<AddReminderCommand>& command)
 {
-    m_reminderManager.insertReminder(
-        Reminder(command->text().value(), command->datetime().value(), command->faceDescriptor().value()));
+    m_reminderManager.insertReminder(Reminder(
+        command->text().value(),
+        DateTime(command->date().value(), command->time().value()),
+        command->faceDescriptor().value()));
     m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
 }
 

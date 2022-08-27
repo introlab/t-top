@@ -168,6 +168,12 @@ add_executable(${PROJECT_NAME}_node
   src/executors/AlarmCommandExecutors.cpp
   src/executors/ReminderCommandExecutors.cpp
   src/executors/ListCommandsCommandExecutor.cpp
+  src/parameters/AllCommandParametersAsker.cpp
+  src/parameters/CommandParametersAsker.cpp
+  src/parameters/WeatherCommandParametersAsker.cpp
+  src/parameters/SetVolumeCommandParametersAsker.cpp
+  src/parameters/AlarmCommandParametersAskers.cpp
+  src/parameters/ReminderCommandParametersAskers.cpp
   src/states/State.cpp
   src/states/StateManager.cpp
   src/states/common/SoundFaceFollowingState.cpp
@@ -176,6 +182,8 @@ add_executable(${PROJECT_NAME}_node
   src/states/specific/SleepState.cpp
   src/states/specific/WaitCommandState.cpp
   src/states/specific/ExecuteCommandState.cpp
+  src/states/specific/WaitCommandParameterState.cpp
+  src/states/specific/WaitFaceDescriptorCommandParameterState.cpp
   src/states/specific/AlarmState.cpp
   src/states/specific/TellReminderState.cpp
 )

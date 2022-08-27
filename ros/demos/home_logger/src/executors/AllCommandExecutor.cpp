@@ -45,12 +45,12 @@ AllCommandExecutor::AllCommandExecutor(
 
     for (auto& executor : executors)
     {
-        if (m_commandExecutorByCommandType.find(executor->commandType()) != m_commandExecutorByCommandType.end())
+        if (m_commandExecutorsByCommandType.find(executor->commandType()) != m_commandExecutorsByCommandType.end())
         {
             throw runtime_error(
                 string("The executor for ") + executor->commandType().name() + " commands is already declared.");
         }
-        m_commandExecutorByCommandType[executor->commandType()] = move(executor);
+        m_commandExecutorsByCommandType[executor->commandType()] = move(executor);
     }
 }
 
@@ -58,8 +58,8 @@ AllCommandExecutor::~AllCommandExecutor() {}
 
 void AllCommandExecutor::execute(const shared_ptr<Command>& command)
 {
-    auto it = m_commandExecutorByCommandType.find(command->type());
-    if (it == m_commandExecutorByCommandType.end())
+    auto it = m_commandExecutorsByCommandType.find(command->type());
+    if (it == m_commandExecutorsByCommandType.end())
     {
         throw runtime_error(command->type().name() + string(" type does not have any executor."));
     }

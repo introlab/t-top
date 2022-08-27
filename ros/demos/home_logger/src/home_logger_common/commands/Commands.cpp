@@ -202,11 +202,13 @@ AddReminderCommand::AddReminderCommand(string transcript) : Command(move(transcr
 AddReminderCommand::AddReminderCommand(
     string transcript,
     tl::optional<string> text,
-    tl::optional<DateTime> datetime,
+    tl::optional<Date> date,
+    tl::optional<Time> time,
     tl::optional<FaceDescriptor> faceDescriptor)
     : Command(move(transcript)),
       m_text(text),
-      m_datetime(datetime),
+      m_date(date),
+      m_time(time),
       m_faceDescriptor(move(faceDescriptor))
 {
 }
@@ -215,7 +217,7 @@ AddReminderCommand::~AddReminderCommand() {}
 
 bool AddReminderCommand::isComplete() const
 {
-    return m_text.has_value() && m_datetime.has_value() && m_faceDescriptor.has_value();
+    return m_text.has_value() && m_date.has_value() && m_time.has_value() && m_faceDescriptor.has_value();
 }
 
 ListRemindersCommand::ListRemindersCommand(string transcript) : Command(move(transcript)) {}

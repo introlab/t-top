@@ -5,8 +5,6 @@
 
 #include <home_logger_common/commands/AllCommandParser.h>
 
-#include <chrono>
-
 class WaitCommandState : public SoundFaceFollowingState
 {
     AllCommandParser m_parser;

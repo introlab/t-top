@@ -15,7 +15,7 @@ public:
     TellReminderStateParameter(Reminder reminder);
     ~TellReminderStateParameter() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 };
 
 class TellReminderState : public TalkState

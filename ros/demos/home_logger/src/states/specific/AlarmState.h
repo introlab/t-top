@@ -14,7 +14,7 @@ public:
     AlarmStateParameter(std::vector<int> alarmIds);
     ~AlarmStateParameter() override;
 
-    std::string toString() const;
+    std::string toString() const override;
 };
 
 class AlarmState : public SoundFaceFollowingState

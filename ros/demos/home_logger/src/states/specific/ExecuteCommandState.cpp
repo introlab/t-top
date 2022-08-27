@@ -11,7 +11,23 @@ using namespace std;
 
 ExecuteCommandStateParameter::ExecuteCommandStateParameter() {}
 
-ExecuteCommandStateParameter::ExecuteCommandStateParameter(shared_ptr<Command> command) : command(command) {}
+ExecuteCommandStateParameter::ExecuteCommandStateParameter(shared_ptr<Command> command) : command(move(command)) {}
+
+ExecuteCommandStateParameter::ExecuteCommandStateParameter(
+    shared_ptr<Command> command,
+    string parameterName,
+    string parameterResponse)
+    : command(command),
+      parameterName(move(parameterName)),
+      parameterResponse(move(parameterResponse))
+{
+}
+
+ExecuteCommandStateParameter::ExecuteCommandStateParameter(shared_ptr<Command> command, FaceDescriptor faceDescriptor)
+    : command(move(command)),
+      faceDescriptor(move(faceDescriptor))
+{
+}
 
 ExecuteCommandStateParameter::~ExecuteCommandStateParameter() {}
 
@@ -31,7 +47,8 @@ ExecuteCommandState::ExecuteCommandState(
     AlarmManager& alarmManager,
     ReminderManager& reminderManager)
     : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
-      m_allCommandExecutor(stateManager, nodeHandle, volumeManager, alarmManager, reminderManager)
+      m_allCommandExecutor(stateManager, nodeHandle, volumeManager, alarmManager, reminderManager),
+      m_allCommandParametersAsker(stateManager)
 {
 }
 
@@ -40,6 +57,11 @@ ExecuteCommandState::~ExecuteCommandState() {}
 void ExecuteCommandState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
 {
     auto executeCommandParameter = dynamic_cast<const ExecuteCommandStateParameter&>(parameter);
+
+    if (executeCommandParameter.command->isComplete())
+    {
+        // TODO parameter parser
+    }
 
     if (executeCommandParameter.command->isComplete() && previousStateType == StateType::get<WaitCommandState>())
     {
@@ -56,12 +78,6 @@ void ExecuteCommandState::onEnabling(const StateParameter& parameter, const Stat
     }
     else
     {
-        // TODO parameter parsers/questions
-        // WeatherCommand
-        // SetVolumeCommand
-        // AddAlarmCommand
-        // RemoveAlarmCommand
-        // AddReminderCommand
-        // RemoveReminderCommand
+        m_allCommandParametersAsker.ask(executeCommandParameter.command);
     }
 }

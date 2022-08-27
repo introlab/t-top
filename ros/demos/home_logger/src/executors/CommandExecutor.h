@@ -1,12 +1,12 @@
-#ifndef HOME_LOGGER_EXECUTOR_COMMAND_EXECUTOR_H
-#define HOME_LOGGER_EXECUTOR_COMMAND_EXECUTOR_H
+#ifndef HOME_LOGGER_EXECUTORS_COMMAND_EXECUTOR_H
+#define HOME_LOGGER_EXECUTORS_COMMAND_EXECUTOR_H
 
 #include "../states/StateManager.h"
 #include "../states/common/TalkState.h"
 
 #include <home_logger_common/commands/Commands.h>
 
-#include <ros/ros.h>
+#include <memory>
 
 class CommandExecutor
 {
@@ -65,8 +65,7 @@ void SpecificCommandExecutor<T>::execute(const std::shared_ptr<Command>& command
     }
     else
     {
-        ROS_ERROR("Invalid command executor or incomplet command");
-        m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
+        throw std::runtime_error("Invalid command executor or incomplet command");
     }
 }
 

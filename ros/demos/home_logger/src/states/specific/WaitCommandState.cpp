@@ -50,6 +50,7 @@ void WaitCommandState::onDisabling()
 
 void WaitCommandState::onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg)
 {
+    m_transcriptReceived = true;
     m_commands = m_parser.parse(msg->text);
 
     if (msg->is_final)

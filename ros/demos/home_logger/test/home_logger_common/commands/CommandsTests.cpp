@@ -238,33 +238,46 @@ TEST(CommandTests, addReminderCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee0.isComplete());
     EXPECT_EQ(testee0.text(), tl::nullopt);
-    EXPECT_EQ(testee0.datetime(), tl::nullopt);
+    EXPECT_EQ(testee0.date(), tl::nullopt);
+    EXPECT_EQ(testee0.time(), tl::nullopt);
     EXPECT_EQ(testee0.faceDescriptor(), tl::nullopt);
 
-    AddReminderCommand testee1("t0", "Hello", tl::nullopt, tl::nullopt);
+    AddReminderCommand testee1("t0", "Hello", tl::nullopt, tl::nullopt, tl::nullopt);
     EXPECT_EQ(testee1.transcript(), "t0");
     EXPECT_EQ(testee1.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee1.isComplete());
     EXPECT_EQ(testee1.text(), "Hello");
-    EXPECT_EQ(testee1.datetime(), tl::nullopt);
+    EXPECT_EQ(testee1.date(), tl::nullopt);
+    EXPECT_EQ(testee1.time(), tl::nullopt);
     EXPECT_EQ(testee1.faceDescriptor(), tl::nullopt);
 
-    AddReminderCommand testee2("t0", "Hello", DateTime(2022, 7, 3, 10, 40), tl::nullopt);
+    AddReminderCommand testee2("t0", "Hello", Date(2022, 7, 3), tl::nullopt, tl::nullopt);
     EXPECT_EQ(testee2.transcript(), "t0");
     EXPECT_EQ(testee2.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee2.isComplete());
     EXPECT_EQ(testee2.text(), "Hello");
-    EXPECT_EQ(testee2.datetime(), DateTime(2022, 7, 3, 10, 40));
+    EXPECT_EQ(testee2.date(), Date(2022, 7, 3));
+    EXPECT_EQ(testee2.time(), tl::nullopt);
     EXPECT_EQ(testee2.faceDescriptor(), tl::nullopt);
 
-    AddReminderCommand testee3("t0", "Hello", DateTime(2022, 7, 3, 10, 40), FaceDescriptor({1.f}));
+    AddReminderCommand testee3("t0", "Hello", Date(2022, 7, 3), Time(10, 40), tl::nullopt);
     EXPECT_EQ(testee3.transcript(), "t0");
     EXPECT_EQ(testee3.type(), CommandType::get<AddReminderCommand>());
-    EXPECT_TRUE(testee3.isComplete());
+    EXPECT_FALSE(testee3.isComplete());
     EXPECT_EQ(testee3.text(), "Hello");
-    EXPECT_EQ(testee3.datetime(), DateTime(2022, 7, 3, 10, 40));
-    ASSERT_TRUE(testee3.faceDescriptor().has_value());
-    EXPECT_EQ(testee3.faceDescriptor().value().data(), vector<float>({1.f}));
+    EXPECT_EQ(testee3.date(), Date(2022, 7, 3));
+    EXPECT_EQ(testee3.time(), Time(10, 40));
+    EXPECT_EQ(testee3.faceDescriptor(), tl::nullopt);
+
+    AddReminderCommand testee4("t0", "Hello", Date(2022, 7, 3), Time(10, 40), FaceDescriptor({1.f}));
+    EXPECT_EQ(testee4.transcript(), "t0");
+    EXPECT_EQ(testee4.type(), CommandType::get<AddReminderCommand>());
+    EXPECT_TRUE(testee4.isComplete());
+    EXPECT_EQ(testee4.text(), "Hello");
+    EXPECT_EQ(testee4.date(), Date(2022, 7, 3));
+    EXPECT_EQ(testee4.time(), Time(10, 40));
+    ASSERT_TRUE(testee4.faceDescriptor().has_value());
+    EXPECT_EQ(testee4.faceDescriptor().value().data(), vector<float>({1.f}));
 }
 
 TEST(CommandTests, listRemindersCommand_constructor_shouldSetAttributes)
