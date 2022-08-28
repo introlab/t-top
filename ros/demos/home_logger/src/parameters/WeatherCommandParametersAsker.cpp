@@ -2,7 +2,7 @@
 #include "../states/common/TalkState.h"
 #include "../states/specific/WaitCommandParameterState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -18,7 +18,7 @@ void WeatherCommandParametersAsker::askSpecific(const shared_ptr<WeatherCommand>
     if (!command->time().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.weather.time"),
+            StringResources::getValue("dialogs.command_parameters.weather.time"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),

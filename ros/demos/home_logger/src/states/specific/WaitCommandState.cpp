@@ -4,7 +4,7 @@
 #include "../StateManager.h"
 #include "../common/TalkState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -73,7 +73,7 @@ void WaitCommandState::switchState()
     else if (m_commands.empty())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.wait_command_state.invalid_command"),
+            StringResources::getValue("dialogs.wait_command_state.invalid_command"),
             "no",
             "sad",
             StateType::get<WaitCommandState>()));
@@ -81,7 +81,7 @@ void WaitCommandState::switchState()
     else if (m_commands.size() > 1)
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.wait_command_state.many_commands"),
+            StringResources::getValue("dialogs.wait_command_state.many_commands"),
             "",  // No gesture
             "skeptic",
             StateType::get<WaitCommandState>()));

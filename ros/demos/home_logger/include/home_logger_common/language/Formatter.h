@@ -73,6 +73,7 @@ public:
     static Language language();
 
     static const std::vector<std::string>& weekDayNames();
+    static const std::vector<std::string>& monthNames();
 
 protected:
     template<typename FormatContext>
@@ -114,6 +115,16 @@ inline const std::vector<std::string>& Formatter::weekDayNames()
     }
 
     return m_instance->m_weekDayNames;
+}
+
+inline const std::vector<std::string>& Formatter::monthNames()
+{
+    if (m_instance == nullptr)
+    {
+        throw std::runtime_error("The formatter is are not initialized.");
+    }
+
+    return m_instance->m_monthNames;
 }
 
 template<typename FormatContext>

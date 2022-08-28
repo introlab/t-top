@@ -1,7 +1,7 @@
 #include <home_logger_common/managers/AlarmManager.h>
 
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <perception_logger/sqlite/SQLiteMigration.h>
 
@@ -48,7 +48,7 @@ PunctualAlarm::~PunctualAlarm() {}
 string PunctualAlarm::toSpeech()
 {
     return Formatter::format(
-        StringRessources::getValue("dialogs.commands.alarm.punctual"),
+        StringResources::getValue("dialogs.commands.alarm.punctual"),
         fmt::arg("id", m_id.value()),
         fmt::arg("date", m_date),
         fmt::arg("time", m_time));
@@ -105,7 +105,7 @@ DailyAlarm::~DailyAlarm() {}
 string DailyAlarm::toSpeech()
 {
     return Formatter::format(
-        StringRessources::getValue("dialogs.commands.alarm.daily"),
+        StringResources::getValue("dialogs.commands.alarm.daily"),
         fmt::arg("id", m_id.value()),
         fmt::arg("time", m_time));
 }
@@ -152,7 +152,7 @@ WeeklyAlarm::~WeeklyAlarm() {}
 string WeeklyAlarm::toSpeech()
 {
     return Formatter::format(
-        StringRessources::getValue("dialogs.commands.alarm.weekly"),
+        StringResources::getValue("dialogs.commands.alarm.weekly"),
         fmt::arg("id", m_id.value()),
         fmt::arg("week_day", Formatter::weekDayNames().at(m_weekDay)),
         fmt::arg("time", m_time));

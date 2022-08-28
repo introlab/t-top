@@ -5,7 +5,7 @@
 
 #include <home_logger_common/DateTime.h>
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <cloud_data/CurrentLocalWeather.h>
 #include <cloud_data/LocalWeatherForecast.h>
@@ -61,7 +61,7 @@ void WeatherCommandExecutor::executeSpecific(const shared_ptr<WeatherCommand>& c
     else
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.commands.weather.not_available"),
+            StringResources::getValue("dialogs.commands.weather.not_available"),
             "",  // No gesture
             "sad",
             StateType::get<TalkState>(),
@@ -82,7 +82,7 @@ void WeatherCommandExecutor::getCurrentWeatherText(string& text, bool& ok)
     }
 
     text = Formatter::format(
-        StringRessources::getValue("dialogs.commands.weather.current"),
+        StringResources::getValue("dialogs.commands.weather.current"),
         fmt::arg("temperature_celsius", srv.response.temperature_celsius),
         fmt::arg("weather_description", srv.response.weather_description));
 }
@@ -105,27 +105,27 @@ void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
     if (currentTime < Time(12, 00))
     {
         ss << Formatter::format(
-            StringRessources::getValue("dialogs.commands.weather.today.morning"),
+            StringResources::getValue("dialogs.commands.weather.today.morning"),
             fmt::arg("temperature_celsius", srv.response.temperature_morning_celsius));
         ss << "\n";
     }
     if (currentTime < Time(17, 00))
     {
         ss << Formatter::format(
-            StringRessources::getValue("dialogs.commands.weather.today.day"),
+            StringResources::getValue("dialogs.commands.weather.today.day"),
             fmt::arg("temperature_celsius", srv.response.temperature_day_celsius));
         ss << "\n";
     }
     if (currentTime < Time(21, 00))
     {
         ss << Formatter::format(
-            StringRessources::getValue("dialogs.commands.weather.today.evening"),
+            StringResources::getValue("dialogs.commands.weather.today.evening"),
             fmt::arg("temperature_celsius", srv.response.temperature_evening_celsius));
         ss << "\n";
     }
 
     ss << Formatter::format(
-        StringRessources::getValue("dialogs.commands.weather.today.night"),
+        StringResources::getValue("dialogs.commands.weather.today.night"),
         fmt::arg("temperature_celsius", srv.response.temperature_night_celsius));
 
     text = ss.str();
@@ -146,19 +146,19 @@ void WeatherCommandExecutor::getTomorrowWeatherForecastText(string& text, bool& 
 
     stringstream ss;
     ss << Formatter::format(
-        StringRessources::getValue("dialogs.commands.weather.tomorrow.morning"),
+        StringResources::getValue("dialogs.commands.weather.tomorrow.morning"),
         fmt::arg("temperature_celsius", srv.response.temperature_morning_celsius));
     ss << "\n";
     ss << Formatter::format(
-        StringRessources::getValue("dialogs.commands.weather.tomorrow.day"),
+        StringResources::getValue("dialogs.commands.weather.tomorrow.day"),
         fmt::arg("temperature_celsius", srv.response.temperature_day_celsius));
     ss << "\n";
     ss << Formatter::format(
-        StringRessources::getValue("dialogs.commands.weather.tomorrow.evening"),
+        StringResources::getValue("dialogs.commands.weather.tomorrow.evening"),
         fmt::arg("temperature_celsius", srv.response.temperature_evening_celsius));
     ss << "\n";
     ss << Formatter::format(
-        StringRessources::getValue("dialogs.commands.weather.tomorrow.night"),
+        StringResources::getValue("dialogs.commands.weather.tomorrow.night"),
         fmt::arg("temperature_celsius", srv.response.temperature_night_celsius));
 
     text = ss.str();
@@ -185,7 +185,7 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
     }
 
     int currentWeekDay = Date::now().weekDay();
-    string temperatureSentence = StringRessources::getValue("dialogs.commands.weather.week.temperature");
+    string temperatureSentence = StringResources::getValue("dialogs.commands.weather.week.temperature");
 
     stringstream ss;
     for (int i = 0; i < DAY_COUNT; i++)
@@ -196,11 +196,11 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
             {
                 continue;
             }
-            ss << StringRessources::getValue("dialogs.commands.weather.week.today");
+            ss << StringResources::getValue("dialogs.commands.weather.week.today");
         }
         else if (i == 1)
         {
-            ss << StringRessources::getValue("dialogs.commands.weather.week.tomorrow");
+            ss << StringResources::getValue("dialogs.commands.weather.week.tomorrow");
         }
         else
         {

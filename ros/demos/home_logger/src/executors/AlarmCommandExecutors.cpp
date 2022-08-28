@@ -1,6 +1,6 @@
 #include "AlarmCommandExecutors.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <sstream>
 
@@ -34,7 +34,7 @@ void ListAlarmsCommandExecutor::executeSpecific(const shared_ptr<ListAlarmsComma
 
     if (alarms.empty())
     {
-        ss << StringRessources::getValue("dialogs.commands.alarm.no_alarm");
+        ss << StringResources::getValue("dialogs.commands.alarm.no_alarm");
     }
     else
     {

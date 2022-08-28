@@ -13,7 +13,7 @@
 #include "states/specific/TellReminderState.h"
 
 #include <home_logger_common/language/Language.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 #include <home_logger_common/language/Formatter.h>
 #include <home_logger_common/managers/AlarmManager.h>
 
@@ -36,11 +36,11 @@ void loadResources(Language language, const string& englishStringResourcePath, c
 {
     if (language == Language::ENGLISH)
     {
-        StringRessources::loadFromFile(englishStringResourcePath, Language::ENGLISH);
+        StringResources::loadFromFile(englishStringResourcePath, Language::ENGLISH);
     }
     else if (language == Language::FRENCH)
     {
-        StringRessources::loadFromFile(frenchStringResourcesPath, Language::FRENCH);
+        StringResources::loadFromFile(frenchStringResourcesPath, Language::FRENCH);
     }
     else
     {

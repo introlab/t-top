@@ -2,7 +2,7 @@
 #include "ExecuteCommandState.h"
 #include "IdleState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -20,7 +20,7 @@ WaitCommandParameterStateParameter::WaitCommandParameterStateParameter(
 
 WaitCommandParameterStateParameter::~WaitCommandParameterStateParameter() {}
 
-std::string WaitCommandParameterStateParameter::toString() const
+string WaitCommandParameterStateParameter::toString() const
 {
     stringstream ss;
     ss << "command=" << command->type().name();
@@ -90,7 +90,7 @@ void WaitCommandParameterState::switchState()
     if (!m_transcriptReceived)
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.wait_command_parameter_state.timeout"),
+            StringResources::getValue("dialogs.wait_command_parameter_state.timeout"),
             "no",
             "sad",
             StateType::get<IdleState>()));

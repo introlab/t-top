@@ -6,6 +6,8 @@
 #include "../../executors/AllCommandExecutor.h"
 #include "../../parameters/AllCommandParametersAsker.h"
 
+#include <home_logger_common/parameters/AllCommandParametersParser.h>
+
 class ExecuteCommandStateParameter : public StateParameter
 {
 public:
@@ -31,6 +33,7 @@ class ExecuteCommandState : public SoundFaceFollowingState
 {
     AllCommandExecutor m_allCommandExecutor;
     AllCommandParametersAsker m_allCommandParametersAsker;
+    AllCommandParametersParser m_allCommandParametersParser;
 
 public:
     ExecuteCommandState(

@@ -1,5 +1,5 @@
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include "../loadStringResources.h"
 
@@ -29,21 +29,21 @@ protected:
 
 TEST(FormatterTests, format_notInitialized_shouldThrowRuntimeError)
 {
-    StringRessources::clear();
+    StringResources::clear();
     Formatter::clear();
     EXPECT_THROW(Formatter::format("Hello {}", 10), runtime_error);
 }
 
 TEST(FormatterTests, language_notInitialized_shouldThrowRuntimeError)
 {
-    StringRessources::clear();
+    StringResources::clear();
     Formatter::clear();
     EXPECT_THROW(Formatter::language(), runtime_error);
 }
 
 TEST(FormatterTests, weekDayNames_notInitialized_shouldThrowRuntimeError)
 {
-    StringRessources::clear();
+    StringResources::clear();
     Formatter::clear();
     EXPECT_THROW(Formatter::weekDayNames(), runtime_error);
 }
@@ -53,6 +53,25 @@ TEST_F(FormatterFrenchTests, weekDayNames_shouldReturnAllWeekDayNames)
     EXPECT_EQ(
         Formatter::weekDayNames(),
         vector<string>({"dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"}));
+}
+
+TEST_F(FormatterFrenchTests, monthNames_shouldReturnAllMonthNames)
+{
+    EXPECT_EQ(
+        Formatter::monthNames(),
+        vector<string>(
+            {"janvier",
+             "février",
+             "mars",
+             "avril",
+             "mai",
+             "juin",
+             "juillet",
+             "août",
+             "septembre",
+             "octobre",
+             "novembre",
+             "décembre"}));
 }
 
 TEST_F(FormatterFrenchTests, format_int_shouldReturnOneWeatherCommand)
@@ -104,6 +123,25 @@ TEST_F(FormatterEnglishTests, weekDayNames_shouldReturnAllWeekDayNames)
     EXPECT_EQ(
         Formatter::weekDayNames(),
         vector<string>({"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}));
+}
+
+TEST_F(FormatterEnglishTests, monthNames_shouldReturnAllMonthNames)
+{
+    EXPECT_EQ(
+        Formatter::monthNames(),
+        vector<string>(
+            {"January",
+             "February",
+             "March",
+             "April",
+             "May",
+             "June",
+             "July",
+             "August",
+             "September",
+             "October",
+             "November",
+             "December"}));
 }
 
 TEST_F(FormatterEnglishTests, format_int_shouldReturnOneWeatherCommand)

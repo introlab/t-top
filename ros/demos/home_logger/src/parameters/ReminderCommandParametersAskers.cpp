@@ -3,7 +3,7 @@
 #include "../states/specific/WaitCommandParameterState.h"
 #include "../states/specific/WaitFaceDescriptorCommandParameterState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -19,7 +19,7 @@ void AddReminderCommandParametersAsker::askSpecific(const shared_ptr<AddReminder
     if (!command->text().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_reminder.text"),
+            StringResources::getValue("dialogs.command_parameters.add_reminder.text"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -28,7 +28,7 @@ void AddReminderCommandParametersAsker::askSpecific(const shared_ptr<AddReminder
     else if (!command->date().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_reminder.date"),
+            StringResources::getValue("dialogs.command_parameters.add_reminder.date"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -37,7 +37,7 @@ void AddReminderCommandParametersAsker::askSpecific(const shared_ptr<AddReminder
     else if (!command->time().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_reminder.time"),
+            StringResources::getValue("dialogs.command_parameters.add_reminder.time"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -46,7 +46,7 @@ void AddReminderCommandParametersAsker::askSpecific(const shared_ptr<AddReminder
     else if (!command->faceDescriptor().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_reminder.face_descriptor"),
+            StringResources::getValue("dialogs.command_parameters.add_reminder.face_descriptor"),
             "",  // No gesture
             "blink",
             StateType::get<WaitFaceDescriptorCommandParameterState>(),
@@ -70,7 +70,7 @@ void RemoveReminderCommandParametersAsker::askSpecific(const shared_ptr<RemoveRe
     if (!command->id().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.remove_reminder.id"),
+            StringResources::getValue("dialogs.command_parameters.remove_reminder.id"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),

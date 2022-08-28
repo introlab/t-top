@@ -2,7 +2,7 @@
 #include "../states/common/TalkState.h"
 #include "../states/specific/WaitCommandParameterState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -18,7 +18,7 @@ void SetVolumeCommandParametersAsker::askSpecific(const shared_ptr<SetVolumeComm
     if (!command->volumePercent().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.set_volume.volume"),
+            StringResources::getValue("dialogs.command_parameters.set_volume.volume"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),

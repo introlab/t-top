@@ -1,7 +1,7 @@
 #include "ReminderCommandExecutors.h"
 
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <sstream>
 
@@ -38,14 +38,14 @@ void ListRemindersCommandExecutor::executeSpecific(const shared_ptr<ListReminder
 
     if (reminders.empty())
     {
-        ss << StringRessources::getValue("dialogs.commands.reminder.no_reminder");
+        ss << StringResources::getValue("dialogs.commands.reminder.no_reminder");
     }
     else
     {
         for (const auto& reminder : reminders)
         {
             ss << Formatter::format(
-                StringRessources::getValue("dialogs.commands.reminder.reminder"),
+                StringResources::getValue("dialogs.commands.reminder.reminder"),
                 fmt::arg("id", reminder.id().value()),
                 fmt::arg("text", reminder.text()),
                 fmt::arg("date", reminder.datetime().date),

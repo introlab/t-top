@@ -2,7 +2,7 @@
 #include "../states/common/TalkState.h"
 #include "../states/specific/WaitCommandParameterState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -18,7 +18,7 @@ void AddAlarmCommandParametersAsker::askSpecific(const shared_ptr<AddAlarmComman
     if (!command->alarmType().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_alarm.type"),
+            StringResources::getValue("dialogs.command_parameters.add_alarm.type"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -27,7 +27,7 @@ void AddAlarmCommandParametersAsker::askSpecific(const shared_ptr<AddAlarmComman
     else if (command->alarmType() == AlarmType::PUNCTUAL && !command->date().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_alarm.date"),
+            StringResources::getValue("dialogs.command_parameters.add_alarm.date"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -36,7 +36,7 @@ void AddAlarmCommandParametersAsker::askSpecific(const shared_ptr<AddAlarmComman
     else if (command->alarmType() == AlarmType::WEEKLY && !command->weekDay().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_alarm.week_day"),
+            StringResources::getValue("dialogs.command_parameters.add_alarm.week_day"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -45,7 +45,7 @@ void AddAlarmCommandParametersAsker::askSpecific(const shared_ptr<AddAlarmComman
     else if (!command->time().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.add_alarm.time"),
+            StringResources::getValue("dialogs.command_parameters.add_alarm.time"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),
@@ -69,7 +69,7 @@ void RemoveAlarmCommandParametersAsker::askSpecific(const shared_ptr<RemoveAlarm
     if (!command->id().has_value())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.command_parameters.remove_alarm.id"),
+            StringResources::getValue("dialogs.command_parameters.remove_alarm.id"),
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandParameterState>(),

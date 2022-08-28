@@ -2,7 +2,7 @@
 #include "WaitCommandState.h"
 #include "../common/TalkState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <sstream>
 #include <vector>
@@ -58,26 +58,31 @@ void ExecuteCommandState::onEnabling(const StateParameter& parameter, const Stat
 {
     auto executeCommandParameter = dynamic_cast<const ExecuteCommandStateParameter&>(parameter);
 
-    if (executeCommandParameter.command->isComplete())
+    shared_ptr<Command> command = executeCommandParameter.command;
+    if (!command->isComplete())
     {
-        // TODO parameter parser
+        command = m_allCommandParametersParser.parse(
+            command,
+            executeCommandParameter.parameterName,
+            executeCommandParameter.parameterResponse,
+            executeCommandParameter.faceDescriptor);
     }
 
-    if (executeCommandParameter.command->isComplete() && previousStateType == StateType::get<WaitCommandState>())
+    if (command->isComplete() && previousStateType == StateType::get<WaitCommandState>())
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.execute_command_state.valid_command"),
+            StringResources::getValue("dialogs.execute_command_state.valid_command"),
             "yes",
             "happy",
             StateType::get<ExecuteCommandState>(),
             make_shared<ExecuteCommandStateParameter>(executeCommandParameter)));
     }
-    else if (executeCommandParameter.command->isComplete())
+    else if (command->isComplete())
     {
-        m_allCommandExecutor.execute(executeCommandParameter.command);
+        m_allCommandExecutor.execute(command);
     }
     else
     {
-        m_allCommandParametersAsker.ask(executeCommandParameter.command);
+        m_allCommandParametersAsker.ask(command);
     }
 }

@@ -6,7 +6,7 @@
 #include "../StateManager.h"
 #include "../common/TalkState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <t_top_hbba_lite/Desires.h>
 
@@ -66,7 +66,7 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
     {
         m_lastChargingMessageTime = now;
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.idle_state.low_battery"),
+            StringResources::getValue("dialogs.idle_state.low_battery"),
             "",  // No gesture
             "fear",
             StateType::get<IdleState>()));
@@ -76,8 +76,8 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
     {
         m_lastGreetingTime = now;
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.idle_state.hi") + " " +
-                StringRessources::getValue("dialogs.idle_state.ask_command"),
+            StringResources::getValue("dialogs.idle_state.hi") + " " +
+                StringResources::getValue("dialogs.idle_state.ask_command"),
             "",  // No gesture
             "blink",
             StateType::get<IdleState>()));
@@ -93,7 +93,7 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
 void IdleState::onRobotNameDetected()
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
-        StringRessources::getValue("dialogs.idle_state.ask_command"),
+        StringResources::getValue("dialogs.idle_state.ask_command"),
         "",  // No gesture
         "blink",
         StateType::get<WaitCommandState>()));

@@ -2,7 +2,7 @@
 
 #include <home_logger_common/DateTime.h>
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -16,7 +16,7 @@ CurrentDateCommandExecutor::~CurrentDateCommandExecutor() {}
 void CurrentDateCommandExecutor::executeSpecific(const shared_ptr<CurrentDateCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
-        Formatter::format(StringRessources::getValue("dialogs.commands.current_date"), fmt::arg("date", Date::now())),
+        Formatter::format(StringResources::getValue("dialogs.commands.current_date"), fmt::arg("date", Date::now())),
         "",  // No gesture
         "blink",
         StateType::get<TalkState>(),
@@ -34,7 +34,7 @@ CurrentTimeCommandExecutor::~CurrentTimeCommandExecutor() {}
 void CurrentTimeCommandExecutor::executeSpecific(const shared_ptr<CurrentTimeCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
-        Formatter::format(StringRessources::getValue("dialogs.commands.current_time"), fmt::arg("time", Time::now())),
+        Formatter::format(StringResources::getValue("dialogs.commands.current_time"), fmt::arg("time", Time::now())),
         "",  // No gesture
         "blink",
         StateType::get<TalkState>(),
@@ -53,7 +53,7 @@ void CurrentDateTimeCommandExecutor::executeSpecific(const shared_ptr<CurrentDat
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         Formatter::format(
-            StringRessources::getValue("dialogs.commands.current_datetime"),
+            StringResources::getValue("dialogs.commands.current_datetime"),
             fmt::arg("date", Date::now()),
             fmt::arg("time", Time::now())),
         "",  // No gesture

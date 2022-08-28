@@ -1,23 +1,22 @@
 #ifndef HOME_LOGGER_COMMON_PARAMETERS_COMMAND_PARAMETERS_PARSER_H
 #define HOME_LOGGER_COMMON_PARAMETERS_COMMAND_PARAMETERS_PARSER_H
 
-#include "../states/StateManager.h"
-
 #include <home_logger_common/commands/Commands.h>
 
 #include <memory>
 
 class CommandParametersParser
 {
-protected:
-    StateManager& m_stateManager;
-
 public:
-    CommandParametersParser(StateManager& stateManager);
+    CommandParametersParser();
     virtual ~CommandParametersParser();
 
     virtual CommandType commandType() const = 0;
-    virtual void ask(const std::shared_ptr<Command>& command) = 0;
+    virtual std::shared_ptr<Command> parse(
+        const std::shared_ptr<Command>& command,
+        const tl::optional<std::string>& parameterName,
+        const tl::optional<std::string>& parameterResponse,
+        const tl::optional<FaceDescriptor>& faceDescriptor) = 0;
 };
 
 
@@ -25,12 +24,12 @@ template<class T>
 class SpecificCommandParametersParser : public CommandParametersParser
 {
 public:
-    SpecificCommandParametersParser(StateManager& stateManager);
+    SpecificCommandParametersParser();
     ~SpecificCommandParametersParser() override;
 
     CommandType commandType() const final;
     std::shared_ptr<Command> parse(
-        std::shared_ptr<Command>& command,
+        const std::shared_ptr<Command>& command,
         const tl::optional<std::string>& parameterName,
         const tl::optional<std::string>& parameterResponse,
         const tl::optional<FaceDescriptor>& faceDescriptor) final;
@@ -44,8 +43,7 @@ protected:
 };
 
 template<class T>
-SpecificCommandParametersParser<T>::SpecificCommandParametersParser(StateManager& stateManager)
-    : CommandParametersParser(stateManager)
+SpecificCommandParametersParser<T>::SpecificCommandParametersParser()
 {
 }
 
@@ -61,12 +59,18 @@ CommandType SpecificCommandParametersParser<T>::commandType() const
 }
 
 template<class T>
-void SpecificCommandParametersParser<T>::parse(
-    std::shared_ptr<Command>& command,
+std::shared_ptr<Command> SpecificCommandParametersParser<T>::parse(
+    const std::shared_ptr<Command>& command,
     const tl::optional<std::string>& parameterName,
     const tl::optional<std::string>& parameterResponse,
     const tl::optional<FaceDescriptor>& faceDescriptor)
 {
+    if ((parameterName.has_value() && !parameterResponse.has_value()) ||
+        (!parameterName.has_value() && parameterResponse.has_value()))
+    {
+        throw std::runtime_error("parameterName and parameterResponse must be set or unset");
+    }
+
     std::shared_ptr<T> specificCommand = std::dynamic_pointer_cast<T>(command);
     if (specificCommand)
     {
@@ -77,5 +81,12 @@ void SpecificCommandParametersParser<T>::parse(
         throw std::runtime_error("Invalid command parameters parser");
     }
 }
+
+bool containsAny(const std::string& text, const std::vector<std::string>& keywords);
+
+tl::optional<int> findInt(const std::string& text);
+tl::optional<Time> findTime(const std::string& text);
+tl::optional<Date> findDate(const std::string& text, int defaultYear, int defaultMonth);
+tl::optional<int> findWeekDay(const std::string& text);
 
 #endif

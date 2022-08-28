@@ -142,7 +142,13 @@ add_library(home_logger_common
   src/home_logger_common/commands/Commands.cpp
   src/home_logger_common/commands/CommandParsers.cpp
   src/home_logger_common/commands/AllCommandParser.cpp
-  src/home_logger_common/language/StringRessources.cpp
+  src/home_logger_common/parameters/AllCommandParametersParser.cpp
+  src/home_logger_common/parameters/CommandParametersParser.cpp
+  src/home_logger_common/parameters/WeatherCommandParametersParser.cpp
+  src/home_logger_common/parameters/SetVolumeCommandParametersParser.cpp
+  src/home_logger_common/parameters/AlarmCommandParametersParsers.cpp
+  src/home_logger_common/parameters/ReminderCommandParametersParsers.cpp
+  src/home_logger_common/language/StringResources.cpp
   src/home_logger_common/language/Formatter.cpp
   src/home_logger_common/managers/AlarmManager.cpp
   src/home_logger_common/managers/ReminderManager.cpp
@@ -266,8 +272,13 @@ catkin_add_gtest(home_logger_common-test
   test/home_logger_common/commands/CommandsTests.cpp
   test/home_logger_common/commands/CommandParsersTests.cpp
   test/home_logger_common/commands/AllCommandParserTests.cpp
+  test/home_logger_common/parameters/CommandParametersParserTests.cpp
+  test/home_logger_common/parameters/WeatherCommandParametersParserTests.cpp
+  test/home_logger_common/parameters/SetVolumeCommandParametersParserTests.cpp
+  test/home_logger_common/parameters/AlarmCommandParametersParsersTests.cpp
+  test/home_logger_common/parameters/ReminderCommandParametersParsersTests.cpp
   test/home_logger_common/language/LanguageTests.cpp
-  test/home_logger_common/language/StringRessourcesTests.cpp
+  test/home_logger_common/language/StringResourcesTests.cpp
   test/home_logger_common/language/FormatterTests.cpp
   test/home_logger_common/managers/AlarmManagerTests.cpp
   test/home_logger_common/managers/ReminderManagerTests.cpp

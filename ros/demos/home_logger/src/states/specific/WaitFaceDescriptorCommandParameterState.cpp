@@ -2,7 +2,7 @@
 #include "ExecuteCommandState.h"
 #include "IdleState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <t_top_hbba_lite/Desires.h>
 #include <tf/transform_listener.h>
@@ -21,7 +21,7 @@ WaitFaceDescriptorCommandParameterStateParameter::WaitFaceDescriptorCommandParam
 
 WaitFaceDescriptorCommandParameterStateParameter::~WaitFaceDescriptorCommandParameterStateParameter() {}
 
-std::string WaitFaceDescriptorCommandParameterStateParameter::toString() const
+string WaitFaceDescriptorCommandParameterStateParameter::toString() const
 {
     stringstream ss;
     ss << "command=" << command->type().name();
@@ -118,7 +118,7 @@ void WaitFaceDescriptorCommandParameterState::switchState()
     if (m_faceDescriptors.size() < FACE_DESCRIPTOR_COUNT)
     {
         m_stateManager.switchTo<TalkState>(TalkStateParameter(
-            StringRessources::getValue("dialogs.wait_face_descriptor_command_parameter_state.timeout"),
+            StringResources::getValue("dialogs.wait_face_descriptor_command_parameter_state.timeout"),
             "no",
             "sad",
             StateType::get<IdleState>()));

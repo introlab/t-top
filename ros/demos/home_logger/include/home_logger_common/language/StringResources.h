@@ -10,17 +10,17 @@
 #include <unordered_map>
 #include <vector>
 
-class StringRessources
+class StringResources
 {
-    static std::unique_ptr<StringRessources> m_instance;
+    static std::unique_ptr<StringResources> m_instance;
 
     Properties m_properties;
     Language m_language;
 
-    StringRessources(Properties properties, Language language);
+    StringResources(Properties properties, Language language);
 
-    DECLARE_NOT_COPYABLE(StringRessources);
-    DECLARE_NOT_MOVABLE(StringRessources);
+    DECLARE_NOT_COPYABLE(StringResources);
+    DECLARE_NOT_MOVABLE(StringResources);
 
 public:
     static void loadFromFile(const std::string& path, Language language);

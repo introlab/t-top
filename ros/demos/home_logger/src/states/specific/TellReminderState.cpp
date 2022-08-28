@@ -2,7 +2,7 @@
 #include "IdleState.h"
 
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 #include <sstream>
 
@@ -40,7 +40,7 @@ void TellReminderState::onEnabling(const StateParameter& parameter, const StateT
     TalkState::onEnabling(
         TalkStateParameter(
             Formatter::format(
-                StringRessources::getValue("dialogs.tell_reminder_state.reminder"),
+                StringResources::getValue("dialogs.tell_reminder_state.reminder"),
                 fmt::arg("text", m_reminder.value().text()),
                 fmt::arg("time", m_reminder.value().datetime().time)),
             "",  // No gesture

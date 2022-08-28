@@ -1,5 +1,5 @@
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -7,9 +7,9 @@ unique_ptr<Formatter> Formatter::m_instance = nullptr;
 
 Formatter::Formatter(Language language) : m_language(language)
 {
-    if (StringRessources::language() != language)
+    if (StringResources::language() != language)
     {
-        throw runtime_error("StringRessources::language() must be the same as Formatter::language()");
+        throw runtime_error("StringResources::language() must be the same as Formatter::language()");
     }
 
     if (language == Language::ENGLISH)
@@ -25,13 +25,13 @@ Formatter::Formatter(Language language) : m_language(language)
         throw runtime_error("Invalid language");
     }
 
-    m_weekDayNames = StringRessources::getVector("week_day_names");
+    m_weekDayNames = StringResources::getVector("week_day_names");
     if (m_weekDayNames.size() != 7)
     {
         throw runtime_error("week_day_names must contain 7 values");
     }
 
-    m_monthNames = StringRessources::getVector("month_names");
+    m_monthNames = StringResources::getVector("month_names");
     if (m_monthNames.size() != 12)
     {
         throw runtime_error("month_names must contain 12 values");

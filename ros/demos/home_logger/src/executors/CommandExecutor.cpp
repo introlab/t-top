@@ -2,7 +2,7 @@
 
 #include "../states/specific/WaitCommandState.h"
 
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -13,7 +13,7 @@ CommandExecutor::~CommandExecutor() {}
 shared_ptr<TalkStateParameter> CommandExecutor::getAskNextCommandParameter()
 {
     return make_shared<TalkStateParameter>(
-        StringRessources::getValue("dialogs.execute_command_state.ask_next_command"),
+        StringResources::getValue("dialogs.execute_command_state.ask_next_command"),
         "",  // No gesture
         "blink",
         StateType::get<WaitCommandState>());

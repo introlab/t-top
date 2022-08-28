@@ -1,7 +1,7 @@
 #include "VolumeCommandExecutors.h"
 
 #include <home_logger_common/language/Formatter.h>
-#include <home_logger_common/language/StringRessources.h>
+#include <home_logger_common/language/StringResources.h>
 
 using namespace std;
 
@@ -58,7 +58,7 @@ void GetVolumeCommandExecutor::executeSpecific(const shared_ptr<GetVolumeCommand
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         Formatter::format(
-            StringRessources::getValue("dialogs.commands.get_volume.volume"),
+            StringResources::getValue("dialogs.commands.get_volume.volume"),
             fmt::arg("volume", m_volumeManager.getVolume())),
         "",  // No gesture
         "blink",
