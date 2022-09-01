@@ -75,7 +75,7 @@ void SleepState::onEveryMinuteTimeout()
     {
         m_wasForced = false;
     }
-    if (now.between(m_wakeUpTime, m_sleepTime) && !m_wasForced)
+    else if (now.between(m_wakeUpTime, m_sleepTime) && !m_wasForced)
     {
         m_stateManager.switchTo<IdleState>();
         return;

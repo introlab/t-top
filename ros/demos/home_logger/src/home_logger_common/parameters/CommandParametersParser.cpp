@@ -44,13 +44,35 @@ tl::optional<int> findInt(const string& text)
     return findInt(text, startPosition, endPosition);
 }
 
+static tl::optional<Time> findTimeHourOnly(const string& lowerCaseText)
+{
+    tl::optional<int> hour = findInt(lowerCaseText);
+    if (!hour.has_value())
+    {
+        return tl::nullopt;
+    }
+
+    bool am = containsAny(lowerCaseText, StringResources::getVector("time.am"));
+    bool pm = containsAny(lowerCaseText, StringResources::getVector("time.pm"));
+    if ((am && pm) || (!am && !pm) || (am && hour.value() > 11))
+    {
+        return tl::nullopt;
+    }
+    if (pm && hour.value() < 12)
+    {
+        hour.value() += 12;
+    }
+
+    return Time(hour.value(), 0);
+}
+
 tl::optional<Time> findTime(const string& text)
 {
     string lowerCaseText = toLowerString(text);
     size_t separatorPosition = lowerCaseText.find_first_of("h:");
     if (separatorPosition == string::npos)
     {
-        return tl::nullopt;
+        return findTimeHourOnly(lowerCaseText);
     }
 
     tl::optional<int> hour = findInt(lowerCaseText.substr(0, separatorPosition));

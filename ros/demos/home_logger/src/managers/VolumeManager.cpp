@@ -4,9 +4,10 @@
 
 using namespace std;
 
-VolumeManager::VolumeManager(ros::NodeHandle& nodeHandle) : m_currentVolumePercent(38)
+VolumeManager::VolumeManager(ros::NodeHandle& nodeHandle) : m_currentVolumePercent(35)
 {
     m_volumePublisher = nodeHandle.advertise<std_msgs::Int8>("opencr/audio_power_amplifier_volume", 1);
+    setVolume(m_currentVolumePercent);
 }
 
 VolumeManager::~VolumeManager() {}

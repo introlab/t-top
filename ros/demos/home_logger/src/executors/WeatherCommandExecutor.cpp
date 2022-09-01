@@ -188,7 +188,7 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
     string temperatureSentence = StringResources::getValue("dialogs.commands.weather.week.temperature");
 
     stringstream ss;
-    for (int i = 0; i < DAY_COUNT; i++)
+    for (int i = 0; i <= DAY_COUNT; i++)
     {
         if (i == 0)
         {

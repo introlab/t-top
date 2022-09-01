@@ -12,7 +12,7 @@ TalkStateParameter::TalkStateParameter() : nextState(StateType::null()) {}
 TalkStateParameter::TalkStateParameter(string text, StateType nextState)
     : text(move(text)),
       nextState(nextState),
-      nextStateParameter(make_unique<StateParameter>())
+      nextStateParameter(make_shared<StateParameter>())
 {
 }
 
@@ -28,7 +28,7 @@ TalkStateParameter::TalkStateParameter(string text, string gestureName, string f
       gestureName(move(gestureName)),
       faceAnimationName(move(faceAnimationName)),
       nextState(nextState),
-      nextStateParameter(make_unique<StateParameter>())
+      nextStateParameter(make_shared<StateParameter>())
 {
 }
 
@@ -115,6 +115,7 @@ void TalkState::onDesireSetChanged(const vector<unique_ptr<Desire>>& _)
     if (!(m_talkDesireId.has_value() && m_desireSet->contains(m_talkDesireId.value())) &&
         !(m_gestureDesireId.has_value() && m_desireSet->contains(m_gestureDesireId.value())))
     {
-        m_stateManager.switchTo(m_parameter.nextState, *m_parameter.nextStateParameter);
+        shared_ptr<StateParameter> nextStateParameter = m_parameter.nextStateParameter;
+        m_stateManager.switchTo(m_parameter.nextState, *nextStateParameter);
     }
 }

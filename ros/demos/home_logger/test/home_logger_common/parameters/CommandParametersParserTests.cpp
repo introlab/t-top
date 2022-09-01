@@ -134,6 +134,7 @@ TEST_F(CommandParametersParserEnglishTests, findTime_invalid_shouldReturnNullopt
     EXPECT_EQ(findTime("1h-1"), tl::nullopt);
     EXPECT_EQ(findTime("1h60"), tl::nullopt);
 
+    EXPECT_EQ(findTime("10 AM PM"), tl::nullopt);
     EXPECT_EQ(findTime("10h00 AM PM"), tl::nullopt);
 }
 
@@ -144,6 +145,8 @@ TEST_F(CommandParametersParserEnglishTests, findTime_valid_shouldReturnTheTime)
     EXPECT_EQ(findTime("7:00 PM"), Time(19, 0));
     EXPECT_EQ(findTime("7:00 en afternoon"), Time(19, 0));
     EXPECT_EQ(findTime("7:00 p.m."), Time(19, 0));
+    EXPECT_EQ(findTime("8 p.m."), Time(20, 0));
+    EXPECT_EQ(findTime("10 AM"), Time(10, 0));
 }
 
 TEST_F(CommandParametersParserEnglishTests, findDate_invalid_shouldReturnNullopt)
