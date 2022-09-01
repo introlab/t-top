@@ -97,8 +97,8 @@ TEST(DateTimeTests, dateNow_shouldSetAllAttributes)
 {
     Date testee = Date::now();
     EXPECT_GE(testee.year, 2022);
-    EXPECT_GE(testee.month, 7);
-    EXPECT_GE(testee.day, 3);
+    EXPECT_GE(testee.month, 0);
+    EXPECT_GE(testee.day, 1);
 }
 
 TEST(DateTimeTests, dateWeekDay_shouldReturnTheWeekDay)
