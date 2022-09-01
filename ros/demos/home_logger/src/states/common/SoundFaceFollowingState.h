@@ -7,7 +7,7 @@
 
 class SoundFaceFollowingState : public State
 {
-    std::type_index m_followingDesireType;
+    DesireType m_followingDesireType;
     tl::optional<uint64_t> m_followingDesireId;
     uint64_t m_videoAnalysisWithoutPersonCount;
 

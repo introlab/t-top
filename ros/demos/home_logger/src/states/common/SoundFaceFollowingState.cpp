@@ -11,7 +11,7 @@ SoundFaceFollowingState::SoundFaceFollowingState(
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
     : State(stateManager, move(desireSet), nodeHandle),
-      m_followingDesireType(typeid(nullptr_t)),
+      m_followingDesireType(DesireType::null()),
       m_videoAnalysisWithoutPersonCount(0)
 {
 }
@@ -33,12 +33,12 @@ void SoundFaceFollowingState::onVideoAnalysisReceived(const video_analyzer::Vide
 {
     bool containsAPerson = containsAtLeastOnePerson(msg);
 
-    if (containsAPerson && m_followingDesireType != type_index(typeid(NearestFaceFollowingDesire)))
+    if (containsAPerson && m_followingDesireType != DesireType::get<NearestFaceFollowingDesire>())
     {
         m_videoAnalysisWithoutPersonCount = 0;
         setFollowingDesire(make_unique<NearestFaceFollowingDesire>());
     }
-    else if (!containsAPerson && m_followingDesireType != type_index(typeid(SoundFollowingDesire)))
+    else if (!containsAPerson && m_followingDesireType != DesireType::get<SoundFollowingDesire>())
     {
         m_videoAnalysisWithoutPersonCount++;
         if (m_videoAnalysisWithoutPersonCount > VIDEO_ANALYSIS_WITHOUT_PERSON_COUNT_THRESHOLD)
@@ -62,7 +62,7 @@ void SoundFaceFollowingState::setFollowingDesire(unique_ptr<Desire> desire)
     }
     else
     {
-        m_followingDesireType = type_index(typeid(nullptr_t));
+        m_followingDesireType = DesireType::null();
         m_followingDesireId = tl::nullopt;
     }
 }
