@@ -20,7 +20,7 @@ class OpenFaceInception(nn.Module):
             nn.BatchNorm2d(num_features=64),
             nn.ReLU(inplace=True),
             nn.Conv2d(in_channels=64, out_channels=192, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(num_features=1192),
+            nn.BatchNorm2d(num_features=192),
             nn.ReLU(inplace=True),
 
             Lrn2d(size=5, alpha=0.0001, beta=0.75),
