@@ -22,11 +22,12 @@ class InceptionModule(nn.Module):
 
     def _create_branch(self, in_channels, kernel_size, kernel_stride, out_channels, reduce_size):
         return nn.Sequential(
-            nn.Conv2d(in_channels, reduce_size, 1),
+            nn.Conv2d(in_channels, reduce_size, kernel_size=1, bias=False),
             nn.BatchNorm2d(reduce_size),
             nn.ReLU(inplace=True),
 
-            nn.Conv2d(reduce_size, out_channels, kernel_size, stride=kernel_stride, padding=kernel_size // 2),
+            nn.Conv2d(reduce_size, out_channels, kernel_size,
+                      stride=kernel_stride, padding=kernel_size // 2, bias=False),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True))
 
@@ -36,13 +37,13 @@ class InceptionModule(nn.Module):
         else:
             return nn.Sequential(
                 pool,
-                nn.Conv2d(in_channels, reduce_size, 1),
+                nn.Conv2d(in_channels, reduce_size, kernel_size=1, bias=False),
                 nn.BatchNorm2d(reduce_size),
                 nn.ReLU(inplace=True))
 
     def _create_conv_1x1_branch(self, in_channels, reduce_size):
         return nn.Sequential(
-            nn.Conv2d(in_channels, reduce_size, 1),
+            nn.Conv2d(in_channels, reduce_size, kernel_size=1, bias=False),
             nn.BatchNorm2d(reduce_size),
             nn.ReLU(inplace=True))
 

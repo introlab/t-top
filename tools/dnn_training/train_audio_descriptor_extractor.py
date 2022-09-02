@@ -1,3 +1,4 @@
+import os
 import argparse
 
 import torch
@@ -5,6 +6,7 @@ import torch
 from common.program_arguments import save_arguments, print_arguments
 
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
+from audio_descriptor.backbones import ThinResnet34
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
 from audio_descriptor.trainers import AudioDescriptorExtractorTrainer
 
@@ -16,7 +18,7 @@ def main():
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
-                                                    'open_face_inception'],
+                                                    'open_face_inception', 'thin_resnet_34'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--vlad', action='store_true', help='Use VLAD pooling layer')
@@ -30,6 +32,7 @@ def main():
     parser.add_argument('--margin', type=float, help='Set the margin', default=0.2)
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
+    parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
     parser.add_argument('--batch_size', type=int, help='Set the batch size for the training', required=True)
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
     parser.add_argument('--criterion_type', choices=['triplet_loss', 'cross_entropy_loss', 'am_softmax_loss'],
@@ -42,8 +45,6 @@ def main():
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
 
     args = parser.parse_args()
-    save_arguments(args.output_path, args)
-    print_arguments(args)
 
     if args.criterion_type == 'triplet_loss' and args.dataset_class_count is None:
         model = create_model(args.backbone_type, args.embedding_size, vlad=args.vlad)
@@ -57,9 +58,17 @@ def main():
                          'types')
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
+    output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
+                               '_vlad' + str(int(args.vlad)) + '_' + args.audio_transform_type +
+                               args.criterion_type + '_' + '_lr' + str(args.learning_rate) +
+                               '_wd' + str(args.weight_decay))
+    save_arguments(output_path, args)
+    print_arguments(args)
+
     trainer = AudioDescriptorExtractorTrainer(device, model,
                                               epoch_count=args.epoch_count,
                                               learning_rate=args.learning_rate,
+                                              weight_decay=args.weight_decay,
                                               dataset_root=args.dataset_root,
                                               output_path=args.output_path,
                                               batch_size=args.batch_size,
@@ -100,6 +109,8 @@ def create_backbone(backbone_type, pretrained):
         return Resnet50(pretrained=pretrained)
     elif backbone_type == 'open_face_inception':
         return OpenFaceInception()
+    elif backbone_type == 'thin_resnet_34':
+        return ThinResnet34()
     else:
         raise ValueError('Invalid backbone type')
 
