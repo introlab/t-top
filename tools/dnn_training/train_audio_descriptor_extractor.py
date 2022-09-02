@@ -60,7 +60,7 @@ def main():
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
                                '_vlad' + str(int(args.vlad)) + '_' + args.audio_transform_type +
-                               args.criterion_type + '_' + '_lr' + str(args.learning_rate) +
+                               '_' + args.criterion_type + '_lr' + str(args.learning_rate) +
                                '_wd' + str(args.weight_decay))
     save_arguments(output_path, args)
     print_arguments(args)
