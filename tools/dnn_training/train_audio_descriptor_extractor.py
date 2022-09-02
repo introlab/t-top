@@ -70,7 +70,7 @@ def main():
                                               learning_rate=args.learning_rate,
                                               weight_decay=args.weight_decay,
                                               dataset_root=args.dataset_root,
-                                              output_path=args.output_path,
+                                              output_path=output_path,
                                               batch_size=args.batch_size,
                                               criterion_type=args.criterion_type,
                                               waveform_size=args.waveform_size,
