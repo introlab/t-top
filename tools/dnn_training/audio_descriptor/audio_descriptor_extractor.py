@@ -42,8 +42,11 @@ class AudioDescriptorExtractorVLAD(nn.Module):
 
         self._cluster_count = 8
         self._vlad = NetVLAD(backbone.last_channel_count(), self._cluster_count, ghost_cluster_count=2)
-        self._pca = nn.Linear(in_features=backbone.last_channel_count() * self._cluster_count,
-                              out_features=embedding_size, bias=False)
+        self._output_layers = nn.Sequential(
+            nn.Linear(in_features=backbone.last_channel_count() * self._cluster_count,
+                      out_features=embedding_size, bias=False),
+            L2Normalization()
+        )
 
         self._classifier = _create_classifier(embedding_size, class_count, am_softmax_linear)
         self._class_count = class_count
@@ -54,7 +57,7 @@ class AudioDescriptorExtractorVLAD(nn.Module):
     def forward(self, x):
         features = self._global_pooling(self._backbone(x))
         full_descriptor = self._vlad(features)
-        descriptor = self._pca(full_descriptor)
+        descriptor = self._output_layers(full_descriptor)
         if self._classifier is not None:
             class_scores = self._classifier(descriptor)
             return descriptor, class_scores
