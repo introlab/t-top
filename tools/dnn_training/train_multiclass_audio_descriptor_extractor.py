@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import torch
 
@@ -28,6 +29,7 @@ def main():
     parser.add_argument('--enable_time_stretching', action='store_true', help='Use pitch shifting data augmentation')
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
+    parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
     parser.add_argument('--batch_size', type=int, help='Set the batch size for the training', required=True)
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
     parser.add_argument('--criterion_type', choices=['bce_loss', 'sigmoid_focal_loss'],
@@ -36,17 +38,22 @@ def main():
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
 
     args = parser.parse_args()
-    save_arguments(args.output_path, args)
-    print_arguments(args)
 
     model = create_model(args.backbone_type, args.embedding_size)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
+    output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
+                               '_' + args.audio_transform_type + '_' + args.criterion_type +
+                               '_lr' + str(args.learning_rate) + '_wd' + str(args.weight_decay))
+    save_arguments(output_path, args)
+    print_arguments(args)
+
     trainer = MulticlassAudioDescriptorExtractorTrainer(device, model,
                                                         epoch_count=args.epoch_count,
                                                         learning_rate=args.learning_rate,
+                                                        weight_decay=args.weight_decay,
                                                         dataset_root=args.dataset_root,
-                                                        output_path=args.output_path,
+                                                        output_path=output_path,
                                                         batch_size=args.batch_size,
                                                         waveform_size=args.waveform_size,
                                                         n_features=args.n_features,

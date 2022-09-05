@@ -17,8 +17,8 @@ from audio_descriptor.metrics import AudioDescriptorEvaluation
 
 
 class MulticlassAudioDescriptorExtractorTrainer(Trainer):
-    def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
-                 batch_size=128, criterion_type='bce_loss',
+    def __init__(self, device, model, dataset_root='', output_path='',
+                 epoch_count=10, learning_rate=0.01, weight_decay=0, batch_size=128, criterion_type='bce_loss',
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
                  enable_pitch_shifting=False, enable_time_stretching=False,
                  model_checkpoint=None):
@@ -31,13 +31,14 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._enable_time_stretching = enable_time_stretching
         self._class_count = model.class_count()
         super(MulticlassAudioDescriptorExtractorTrainer, self).__init__(device, model,
-                                                              dataset_root=dataset_root,
-                                                              output_path=output_path,
-                                                              epoch_count=epoch_count,
-                                                              learning_rate=learning_rate,
-                                                              batch_size=batch_size,
-                                                              batch_size_division=1,
-                                                              model_checkpoint=model_checkpoint)
+                                                                        dataset_root=dataset_root,
+                                                                        output_path=output_path,
+                                                                        epoch_count=epoch_count,
+                                                                        learning_rate=learning_rate,
+                                                                        weight_decay=weight_decay,
+                                                                        batch_size=batch_size,
+                                                                        batch_size_division=1,
+                                                                        model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 
