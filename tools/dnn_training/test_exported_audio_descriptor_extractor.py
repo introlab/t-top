@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
-    parser.add_argument('--audio_transform_type', choices=['mfcc', 'mel_spectrogram'],
+    parser.add_argument('--audio_transform_type', choices=['mfcc', 'mel_spectrogram', 'spectrogram'],
                         help='Choose the audio transform type', required=True)
 
     args = parser.parse_args()

@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
-    parser.add_argument('--audio_transform_type', choices=['mfcc', 'mel_spectrogram'],
+    parser.add_argument('--audio_transform_type', choices=['mfcc', 'mel_spectrogram', 'spectrogram'],
                         help='Choose the audio transform type', required=True)
     parser.add_argument('--enable_pitch_shifting', action='store_true', help='Use pitch shifting data augmentation')
     parser.add_argument('--enable_time_stretching', action='store_true', help='Use pitch shifting data augmentation')

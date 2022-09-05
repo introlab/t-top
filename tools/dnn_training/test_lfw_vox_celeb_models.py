@@ -142,7 +142,7 @@ def main():
     parser.add_argument('--voice_waveform_size', type=int, help='Set the voice waveform size', required=True)
     parser.add_argument('--voice_n_features', type=int, help='Set voice n_features', required=True)
     parser.add_argument('--voice_n_fft', type=int, help='Set voice n_fft', required=True)
-    parser.add_argument('--voice_audio_transform_type', choices=['mfcc', 'mel_spectrogram'],
+    parser.add_argument('--voice_audio_transform_type', choices=['mfcc', 'mel_spectrogram', 'spectrogram'],
                         help='Choose the voice audio transform type', required=True)
     parser.add_argument('--voice_model_checkpoint', type=str, help='Choose the voice model checkpoint path',
                         required=True)

@@ -26,6 +26,8 @@ class _AudioDescriptorTransforms:
             self._audio_transform = transforms.MelSpectrogram(sample_rate=self._sample_rate,
                                                               n_fft=n_fft,
                                                               n_mels=n_features)
+        elif audio_transform_type == 'spectrogram':
+            self._audio_transform = transforms.Spectrogram(n_fft=n_fft, power=2)
         else:
             raise ValueError('Invalid audio_transform_type')
 
