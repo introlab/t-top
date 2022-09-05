@@ -13,7 +13,7 @@ from audio_utils.msg import AudioFrame
 from audio_analyzer.msg import AudioAnalysis
 from odas_ros.msg import OdasSstArrayStamped
 
-from dnn_utils import AudioDescriptorExtractor, MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor
+from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor
 import hbba_lite
 
 
@@ -24,12 +24,8 @@ SUPPORTED_CHANNEL_COUNT = 1
 class AudioAnalyzerNode:
     def __init__(self):
         self._inference_type = rospy.get_param('~inference_type', None)
-        self._multiclass_audio_descriptor = rospy.get_param('~multiclass_audio_descriptor', False)
 
-        if self._multiclass_audio_descriptor:
-            self._audio_descriptor_extractor = MulticlassAudioDescriptorExtractor(inference_type=self._inference_type)
-        else:
-            self._audio_descriptor_extractor = AudioDescriptorExtractor(inference_type=self._inference_type)
+        self._audio_descriptor_extractor = MulticlassAudioDescriptorExtractor(inference_type=self._inference_type)
         self._voice_descriptor_extractor = VoiceDescriptorExtractor(inference_type=self._inference_type)
 
         if self._audio_descriptor_extractor.get_supported_sampling_frequency() != self._voice_descriptor_extractor.get_supported_sampling_frequency():
@@ -45,10 +41,7 @@ class AudioAnalyzerNode:
                                           self._audio_analysis_interval)
 
         self._class_names = self._audio_descriptor_extractor.get_class_names()
-        if self._multiclass_audio_descriptor:
-            self._voice_class_index = self._class_names.index('Human_voice')
-        else:
-            self._voice_class_index = self._class_names.index('Speech')
+        self._voice_class_index = self._class_names.index('Human_voice')
 
         self._audio_frames_lock = threading.Lock()
         self._audio_frames = []
@@ -116,15 +109,8 @@ class AudioAnalyzerNode:
             return audio_buffer[-self._audio_buffer_duration:]
 
     def _get_audio_classes(self, audio_class_probabilities):
-        if self._multiclass_audio_descriptor:
-            return [self._class_names[i] for i in range(len(self._class_names))
-                    if audio_class_probabilities[i].item() >= self._class_probability_threshold]
-        else:
-            class_index = torch.argmax(audio_class_probabilities).item()
-            if audio_class_probabilities[class_index] >= self._class_probability_threshold:
-                return [self._class_names[class_index]]
-            else:
-                return []
+        return [self._class_names[i] for i in range(len(self._class_names))
+                if audio_class_probabilities[i].item() >= self._class_probability_threshold]
 
     def _publish_audio_analysis(self, audio_buffer, audio_classes, audio_descriptor, voice_descriptor):
         with self._audio_direction_lock:

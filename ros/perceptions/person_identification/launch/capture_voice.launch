@@ -30,7 +30,6 @@
     </node>
 
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
-        <param name="multiclass_audio_descriptor" value="true"/>
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="interval" value="32000"/> <!-- Low quality audio-->
         <param name="voice_probability_threshold" value="0.5"/>

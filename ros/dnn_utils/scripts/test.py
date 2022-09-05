@@ -9,7 +9,7 @@ import torch
 import rospy
 
 from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor
-from dnn_utils import AudioDescriptorExtractor, MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
+from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
 
 
 def mean_abs_diff(a, b):
@@ -50,7 +50,7 @@ def test_descriptor_yolo_v4():
         print('mean(abs(cpu_predictions[{}] - trt_gpu_predictions[{}])) ='.format(i, i),
             mean_abs_diff(cpu_predictions[i], trt_gpu_predictions[i]))
 
-        
+
 def test_yolo_v4():
     print('----------test_yolo_v4----------')
 
@@ -105,7 +105,7 @@ def test_face_descriptor_extractor():
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.rand(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
-    
+
     pose_coordinates = np.array([[0.5 * IMAGE_SIZE[1], 0.5144414 * IMAGE_SIZE[0]],
                                  [0.75 * IMAGE_SIZE[1], 0.25 * IMAGE_SIZE[0]],
                                  [0.25 * IMAGE_SIZE[1], 0.25 * IMAGE_SIZE[0]]])
@@ -119,28 +119,6 @@ def test_face_descriptor_extractor():
           mean_abs_diff(cpu_descriptor, torch_gpu_descriptor))
     print('mean(abs(cpu_descriptor - trt_gpu_descriptor)) =',
           mean_abs_diff(cpu_descriptor, trt_gpu_descriptor))
-
-
-def test_audio_descriptor_extractor():
-    print('----------test_audio_descriptor_extractor----------')
-
-    cpu_model = AudioDescriptorExtractor(inference_type='cpu')
-    torch_gpu_model = AudioDescriptorExtractor(inference_type='torch_gpu')
-    trt_gpu_model = AudioDescriptorExtractor(inference_type='trt_gpu')
-
-    x = torch.randn(cpu_model.get_supported_duration(), dtype=torch.float32)
-    cpu_descriptor, cpu_class_probabilities = cpu_model(x)
-    torch_gpu_descriptor, torch_gpu_class_probabilities = torch_gpu_model(x)
-    trt_gpu_descriptor, trt_gpu_class_probabilities = trt_gpu_model(x)
-
-    print('mean(abs(cpu_descriptor - torch_gpu_descriptor)) =',
-          mean_abs_diff(cpu_descriptor, torch_gpu_descriptor))
-    print('mean(abs(cpu_descriptor - trt_gpu_descriptor)) =',
-          mean_abs_diff(cpu_descriptor, trt_gpu_descriptor))
-    print('mean(abs(cpu_class_probabilities - torch_gpu_class_probabilities)) =',
-          mean_abs_diff(cpu_class_probabilities, torch_gpu_class_probabilities))
-    print('mean(abs(cpu_class_probabilities - trt_gpu_class_probabilities)) =',
-          mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
 
 
 def test_multiclass_audio_descriptor_extractor():
@@ -203,7 +181,7 @@ def test_ttop_keyword_spotter():
 
 def main():
     rospy.init_node('dnn_utils_test')
-    
+
     launch_test(test_descriptor_yolo_v4)
     launch_test(test_yolo_v4)
     launch_test(test_pose_estimator)
