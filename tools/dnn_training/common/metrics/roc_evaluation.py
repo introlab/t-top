@@ -60,6 +60,17 @@ class RocEvaluation:
             }
             json.dump(data, file, indent=4, sort_keys=True)
 
+    def _save_performances(self, best_accuracy, best_threshold, auc, eer):
+        with open(os.path.join(self._output_path, 'performance.json'), 'w') as file:
+            data = {
+                'best_accuracy': best_accuracy,
+                'best_threshold': best_threshold,
+                'auc': auc,
+                'eer': eer
+            }
+            json.dump(data, file, indent=4, sort_keys=True)
+
+
 
 class RocDistancesThresholdsEvaluation(RocEvaluation):
     def __init__(self, output_path, thresholds):
@@ -79,6 +90,7 @@ class RocDistancesThresholdsEvaluation(RocEvaluation):
         print('Best accuracy: {}, threshold: {}, AUC: {}, EER: {}'.format(best_accuracy, best_threshold, auc, eer))
         self._save_roc_curve(true_positive_rate_curve, false_positive_rate_curve)
         self._save_roc_curve_data(true_positive_rate_curve, false_positive_rate_curve, thresholds)
+        self._save_performances(best_accuracy, best_threshold, auc, eer)
 
     def _calculate_distances(self):
         raise NotImplementedError()
