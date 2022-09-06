@@ -27,6 +27,9 @@ class _AudioDescriptorTransforms:
                                                               n_fft=n_fft,
                                                               n_mels=n_features)
         elif audio_transform_type == 'spectrogram':
+            if n_features != (n_fft // 2 + 1):
+                raise ValueError('n_features must be equal to (n_fft // 2 + 1) '
+                                 'when audio_transform_type is spectrogram.')
             self._audio_transform = transforms.Spectrogram(n_fft=n_fft, power=2)
         else:
             raise ValueError('Invalid audio_transform_type')
