@@ -236,6 +236,7 @@ git clone -b noetic-devel https://github.com/ros-perception/image_transport_plug
 
 git clone -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
 git clone -b 2.3.2 https://github.com/IntelRealSense/realsense-ros.git
+git clone https://github.com/OTL/cv_camera.git
 git clone -b 0.6.4-noetic https://github.com/introlab/find-object.git
 
 # Replace not complete packages
@@ -274,7 +275,8 @@ sudo apt install -y libasound2-dev \
     qt5-default \
     v4l-utils \
     libopenblas-dev \
-    libpython3-dev
+    libpython3-dev \
+    ffmpeg
 ```
 
 ### K. Install Python Dependencies
@@ -284,7 +286,7 @@ sudo apt install -y libasound2-dev \
 ```bash
 # Install general dependencies
 sudo apt install -y 'libprotobuf*' protobuf-compiler ninja-build
-sudo -H pip3 install numpy scipy numba cupy matplotlib google-cloud-texttospeech google-cloud-speech libconf tqdm sounddevice librosa requests ipinfo pybind11-stubgen sphinx build
+sudo -H pip3 install numpy scipy numba cupy matplotlib google-cloud-texttospeech google-cloud-speech libconf tqdm sounddevice librosa audioread requests ipinfo pybind11-stubgen sphinx build
 sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 
 # Install PyTorch for Jetson
