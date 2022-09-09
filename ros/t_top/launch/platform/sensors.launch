@@ -7,16 +7,22 @@
     <arg name="ec_volume_percent"/>
 
     <!-- Camera 3d -->
-    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">
+        <arg name="fisheye_width" value="1280"/>
+        <arg name="fisheye_height" value="720"/>
+
+        <arg name="depth_width" value="1280"/>
+        <arg name="depth_height" value="720"/>
+
+        <arg name="infra_width" value="1280"/>
+        <arg name="infra_height" value="720"/>
+
         <arg name="color_width" value="1280"/>
         <arg name="color_height" value="720"/>
-        <arg name="align_depth" value="true"/>
 
         <arg name="color_fps" value="15"/>
         <arg name="infra_fps" value="15"/>
         <arg name="depth_fps" value="15"/>
-
-        <arg name="filters" value="pointcloud"/>
 
         <arg name="enable_gyro" value="false"/>
         <arg name="enable_accel" value="false"/>
