@@ -150,7 +150,6 @@
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
 | `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson%20agx%20xavier.jpg)                    |
-| `WiFi Card`                           | 1        | ![WiFi Card](images/electronics/wifi%20card.jpg)                                             |
 | `Stewart Support With An Antenna`     | 2        | ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)                                        |
 | `Stewart Support`                     | 1        | ![Stewart Support](images/3d%20printed%20parts/stewart%20support.jpg)                        |
 | `Assembled Torso Bottom Dynamixel`    | 1        | ![Assembled Torso Bottom Dynamixel](images/assemblies/08A%20dynamixel%20gear.jpg)            |
@@ -162,42 +161,38 @@
 
 ### Steps
 
-1. Install the `WiFi card` into the `Nvidia Jetson AGX Xavier`.
-
-![WiFi Card](images/assemblies/08E%20wifi%20card.jpg)
-
-2. Remove the following screws.
+1. Remove the following screws.
 
 ![Nvidia Jetson AGX Xavier Screws](images/assemblies/08E%20screws.jpg)
 
-3. Install the `Nvidia Jetson AGX Xavier` onto the assembly with `M3x55 socket screws`.
+2. Install the `Nvidia Jetson AGX Xavier` onto the assembly with `M3x55 socket screws`.
 
 ![Nvidia Jetson AGX Xavier](images/assemblies/08E%20jetson.jpg)
 
-4. Install the `assembled torso bottom dynamixel` onto the assembly with `M2.5x8 plastic screws`.
+3. Install the `assembled torso bottom dynamixel` onto the assembly with `M2.5x8 plastic screws`.
 
 ![Dynamixel](images/assemblies/08E%20dynamixel%201.jpg)
 ![Dynamixel](images/assemblies/08E%20dynamixel%202.jpg)
 
-5. Install the `stewart support` onto the assembly.
+4. Install the `stewart support` onto the assembly.
 
 ![Stewart Support](images/3d%20printed%20parts/stewart%20support.jpg)
 ![Stewart Support](images/assemblies/08E%20stewart%20support%201.jpg)
 
-6. Install the first `stewart support with an antenna` onto the assembly.
+5. Install the first `stewart support with an antenna` onto the assembly.
 
 ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)
 ![Stewart Support](images/assemblies/08E%20stewart%20support%202.jpg)
 
-7. Install the second `stewart support with an antenna` onto the assembly.
+6. Install the second `stewart support with an antenna` onto the assembly.
 
 ![Antenna 1](images/assemblies/08D%20antenna%202.jpg)
 ![Stewart Support](images/assemblies/08E%20stewart%20support%203.jpg)
 
-8. Install the `assembled limit switch` onto the assembly with `M2.5x12 plastic screws`.
+7. Install the `assembled limit switch` onto the assembly with `M2.5x12 plastic screws`.
 
 ![Limit Switch](images/assemblies/08E%20limit%20switch.jpg)
 
-9. Connect the `WiFi antennas` to the `WiFi card`.
+8. Connect the `WiFi antennas` to the `WiFi card`.
 
 ![WiFi Antennas](images/assemblies/08E%20wifi%20antennas.jpg)

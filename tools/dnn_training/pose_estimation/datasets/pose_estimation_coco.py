@@ -153,7 +153,7 @@ class PoseEstimationCoco(Dataset):
 
         heatmap_x = torch.arange(image_width, dtype=torch.float)
         heatmap_y = torch.arange(image_height, dtype=torch.float)
-        heatmap_grid_y, heatmap_grid_x = torch.meshgrid(heatmap_y, heatmap_x)
+        heatmap_grid_y, heatmap_grid_x = torch.meshgrid(heatmap_y, heatmap_x, indexing='ij')
 
         return torch.exp(-(torch.pow(heatmap_grid_x - keypoint_x, 2) + torch.pow(heatmap_grid_y - keypoint_y, 2)) /
                          (2 * HEATMAP_SIGMA ** 2))
