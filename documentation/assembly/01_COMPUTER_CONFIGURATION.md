@@ -276,7 +276,8 @@ sudo apt install -y libasound2-dev \
     v4l-utils \
     libopenblas-dev \
     libpython3-dev \
-    ffmpeg
+    ffmpeg \
+    chromium-browser
 ```
 
 ### K. Install Python Dependencies
