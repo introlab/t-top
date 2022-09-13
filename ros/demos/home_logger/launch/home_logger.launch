@@ -37,6 +37,8 @@
         <arg name="language" value="$(arg language)"/>
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="slam" value="false"/>
+        <arg name="fullscreen_face" value="true"/>
+        <arg name="record_session" value="$(arg record_session)"/>
     </include>
 
 </launch>
