@@ -20,6 +20,7 @@ class IdleState : public SoundFaceFollowingState
 
     tl::optional<uint64_t> m_faceAnimationDesireId;
     tl::optional<uint64_t> m_robotNameDetectorDesireId;
+    tl::optional<uint64_t> m_videoAnalyzer3dDesireId;
 
     bool m_chargeNeeded;
     std::chrono::time_point<std::chrono::system_clock> m_lastChargingMessageTime;

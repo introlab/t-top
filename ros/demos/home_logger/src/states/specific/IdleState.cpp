@@ -43,6 +43,12 @@ void IdleState::onEnabling(const StateParameter& parameter, const StateType& pre
 
     m_faceAnimationDesireId = m_desireSet->addDesire<FaceAnimationDesire>("blink");
     m_robotNameDetectorDesireId = m_desireSet->addDesire<RobotNameDetectorDesire>();
+
+    if (!m_desireSet->containsAnyDesiresOfType<FastVideoAnalyzer3dDesire>())
+    {
+        m_videoAnalyzer3dDesireId = m_desireSet->addDesire<FastVideoAnalyzer3dDesire>();
+    }
+
     m_todayReminders = m_reminderManager.listReminders(Date::now());
 }
 
@@ -59,6 +65,11 @@ void IdleState::onDisabling()
     {
         m_desireSet->removeDesire(m_robotNameDetectorDesireId.value());
         m_robotNameDetectorDesireId = tl::nullopt;
+    }
+    if (m_videoAnalyzer3dDesireId.has_value())
+    {
+        m_desireSet->removeDesire(m_videoAnalyzer3dDesireId.value());
+        m_videoAnalyzer3dDesireId = tl::nullopt;
     }
 }
 
