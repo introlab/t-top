@@ -256,7 +256,7 @@ int startNode(int argc, char** argv)
     }
 
     ROS_INFO("Waiting nodes.");
-    ros::Duration(STARTUP_DELAY_S).sleep()
+    ros::Duration(STARTUP_DELAY_S).sleep();
 
     startNode(
         nodeHandle,
