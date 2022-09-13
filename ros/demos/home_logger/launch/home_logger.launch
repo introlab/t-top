@@ -31,6 +31,8 @@
 
         <param name="record_session" value="$(arg record_session)"/>
         <param name="log_perceptions" value="$(arg log_perceptions)"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
     </node>
 
     <include file="$(find t_top)/launch/bringup.launch">
