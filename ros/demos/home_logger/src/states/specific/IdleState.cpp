@@ -97,7 +97,7 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
                 StringResources::getValue("dialogs.idle_state.ask_command"),
             "",  // No gesture
             "blink",
-            StateType::get<IdleState>()));
+            StateType::get<WaitCommandState>()));
     }
 
     auto reminder = findReminder(msg);
