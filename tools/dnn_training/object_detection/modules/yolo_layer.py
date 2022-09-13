@@ -21,7 +21,7 @@ class YoloLayer(nn.Module):
 
         x = torch.arange(self._grid_size[1])
         y = torch.arange(self._grid_size[0])
-        y_offset, x_offset = torch.meshgrid(x, y)
+        y_offset, x_offset = torch.meshgrid(y, x, indexing='ij')
         self.register_buffer('_x_offset', x_offset.float().clone())
         self.register_buffer('_y_offset', y_offset.float().clone())
 
