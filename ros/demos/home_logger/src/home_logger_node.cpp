@@ -31,6 +31,7 @@
 using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
+constexpr double STARTUP_DELAY_S = 30.0;
 
 void loadResources(Language language, const string& englishStringResourcePath, const string& frenchStringResourcesPath)
 {
@@ -253,6 +254,9 @@ int startNode(int argc, char** argv)
         ROS_ERROR("The parameter log_perceptions must be set.");
         return -1;
     }
+
+    ROS_INFO("Waiting nodes.");
+    ros::Duration(STARTUP_DELAY_S).sleep()
 
     startNode(
         nodeHandle,
