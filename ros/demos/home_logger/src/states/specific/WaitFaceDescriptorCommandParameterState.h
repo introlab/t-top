@@ -25,6 +25,7 @@ class WaitFaceDescriptorCommandParameterState : public SoundFaceFollowingState
     std::vector<FaceDescriptor> m_faceDescriptors;
 
     tl::optional<uint64_t> m_faceAnimationDesireId;
+    tl::optional<uint64_t> m_videoAnalyzer3dDesireId;
 
 public:
     WaitFaceDescriptorCommandParameterState(

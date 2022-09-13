@@ -51,6 +51,10 @@ void WaitFaceDescriptorCommandParameterState::onEnabling(
     m_faceDescriptors.clear();
 
     m_faceAnimationDesireId = m_desireSet->addDesire<FaceAnimationDesire>("blink");
+    if (!m_desireSet->containsAnyDesiresOfType<FastVideoAnalyzer3dDesire>())
+    {
+        m_videoAnalyzer3dDesireId = m_desireSet->addDesire<FastVideoAnalyzer3dDesire>();
+    }
 }
 
 void WaitFaceDescriptorCommandParameterState::onDisabling()
@@ -61,6 +65,11 @@ void WaitFaceDescriptorCommandParameterState::onDisabling()
     {
         m_desireSet->removeDesire(m_faceAnimationDesireId.value());
         m_faceAnimationDesireId = tl::nullopt;
+    }
+    if (m_videoAnalyzer3dDesireId.has_value())
+    {
+        m_desireSet->removeDesire(m_videoAnalyzer3dDesireId.value());
+        m_videoAnalyzer3dDesireId = tl::nullopt;
     }
 }
 
