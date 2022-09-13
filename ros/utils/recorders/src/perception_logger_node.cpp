@@ -96,7 +96,7 @@ public:
         }
         catch (tf::TransformException ex)
         {
-            ROS_ERROR(ex.what());
+            ROS_ERROR("%s", ex.what());
             return;
         }
 
