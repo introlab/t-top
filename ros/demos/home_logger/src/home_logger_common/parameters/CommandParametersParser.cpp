@@ -27,11 +27,14 @@ bool containsAny(const string& text, const vector<string>& keywords)
 static tl::optional<int> findInt(const string& text, size_t& startPosition, size_t& endPosition)
 {
     constexpr const char* DIGITS = "0123456789";
-    constexpr const char* DIGITS_WITH_MINUS = "-0123456789";
-    startPosition = text.find_first_of(DIGITS_WITH_MINUS);
+    startPosition = text.find_first_of(DIGITS);
     if (startPosition == string::npos)
     {
         return tl::nullopt;
+    }
+    if (startPosition > 0 && text[startPosition - 1] == '-')
+    {
+        startPosition--;
     }
     endPosition = text.find_first_not_of(DIGITS, startPosition + 1);
     return stoi(text.substr(startPosition, endPosition));

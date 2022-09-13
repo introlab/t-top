@@ -28,6 +28,7 @@ TEST(CommandParametersParserTests, findInt_valid_shouldReturnTheNumber)
     EXPECT_EQ(findInt("1"), 1);
     EXPECT_EQ(findInt(" 23 "), 23);
     EXPECT_EQ(findInt("Alarme 456 enlever"), 456);
+    EXPECT_EQ(findInt("est-ce que tu peux enlever l'alarme 1"), 1);
     EXPECT_EQ(findInt("780 10"), 780);
     EXPECT_EQ(findInt("9"), 9);
     EXPECT_EQ(findInt("-9"), -9);
