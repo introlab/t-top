@@ -19,6 +19,7 @@ class IdleState : public SoundFaceFollowingState
     float m_faceDescriptorThreshold;
 
     tl::optional<uint64_t> m_faceAnimationDesireId;
+    tl::optional<uint64_t> m_robotNameDetectorDesireId;
 
     bool m_chargeNeeded;
     std::chrono::time_point<std::chrono::system_clock> m_lastChargingMessageTime;
