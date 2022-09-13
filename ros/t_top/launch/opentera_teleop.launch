@@ -13,6 +13,7 @@
     <!-- Platform nodes -->
     <include file="$(find t_top)/launch/platform.launch">
         <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
+        <arg name="camera_2d_wide_enabled" value="false"/>
     </include>
 
     <!-- Perceptions -->
