@@ -21,7 +21,7 @@ protected:
     Time m_time;
 
 public:
-    Alarm(Time time);
+    explicit Alarm(Time time);
     Alarm(int id, Time time);
     virtual ~Alarm();
 
@@ -75,7 +75,7 @@ inline Date PunctualAlarm::date() const
 class DailyAlarm : public Alarm
 {
 public:
-    DailyAlarm(Time time);
+    explicit DailyAlarm(Time time);
     DailyAlarm(int id, Time time);
     ~DailyAlarm() override;
 
@@ -124,7 +124,7 @@ class AlarmManager
     SQLite::Database& m_database;
 
 public:
-    AlarmManager(SQLite::Database& database);
+    explicit AlarmManager(SQLite::Database& database);
     virtual ~AlarmManager();
 
     DECLARE_NOT_COPYABLE(AlarmManager);

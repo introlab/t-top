@@ -18,7 +18,7 @@ public:
     tl::optional<FaceDescriptor> faceDescriptor;
 
     ExecuteCommandStateParameter();
-    ExecuteCommandStateParameter(std::shared_ptr<Command> command);
+    explicit ExecuteCommandStateParameter(std::shared_ptr<Command> command);
     ExecuteCommandStateParameter(
         std::shared_ptr<Command> command,
         std::string parameterName,

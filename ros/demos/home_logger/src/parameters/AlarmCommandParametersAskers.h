@@ -8,7 +8,7 @@
 class AddAlarmCommandParametersAsker : public SpecificCommandParametersAsker<AddAlarmCommand>
 {
 public:
-    AddAlarmCommandParametersAsker(StateManager& stateManager);
+    explicit AddAlarmCommandParametersAsker(StateManager& stateManager);
     ~AddAlarmCommandParametersAsker() override;
 
 protected:
@@ -18,7 +18,7 @@ protected:
 class RemoveAlarmCommandParametersAsker : public SpecificCommandParametersAsker<RemoveAlarmCommand>
 {
 public:
-    RemoveAlarmCommandParametersAsker(StateManager& stateManager);
+    explicit RemoveAlarmCommandParametersAsker(StateManager& stateManager);
     ~RemoveAlarmCommandParametersAsker() override;
 
 protected:

@@ -11,7 +11,7 @@ public:
     std::vector<int> alarmIds;
 
     AlarmStateParameter();
-    AlarmStateParameter(std::vector<int> alarmIds);
+    explicit AlarmStateParameter(std::vector<int> alarmIds);
     ~AlarmStateParameter() override;
 
     std::string toString() const override;

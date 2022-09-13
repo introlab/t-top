@@ -14,7 +14,7 @@ protected:
     StateManager& m_stateManager;
 
 public:
-    CommandExecutor(StateManager& stateManager);
+    explicit CommandExecutor(StateManager& stateManager);
     virtual ~CommandExecutor();
 
     virtual CommandType commandType() const = 0;
@@ -29,7 +29,7 @@ template<class T>
 class SpecificCommandExecutor : public CommandExecutor
 {
 public:
-    SpecificCommandExecutor(StateManager& stateManager);
+    explicit SpecificCommandExecutor(StateManager& stateManager);
     ~SpecificCommandExecutor() override;
 
     CommandType commandType() const final;

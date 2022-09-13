@@ -6,7 +6,7 @@
 class ListCommandsCommandExecutor : public SpecificCommandExecutor<ListCommandsCommand>
 {
 public:
-    ListCommandsCommandExecutor(StateManager& stateManager);
+    explicit ListCommandsCommandExecutor(StateManager& stateManager);
     ~ListCommandsCommandExecutor() override;
 
 protected:

@@ -12,7 +12,7 @@ public:
     Reminder reminder;
 
     TellReminderStateParameter();
-    TellReminderStateParameter(Reminder reminder);
+    explicit TellReminderStateParameter(Reminder reminder);
     ~TellReminderStateParameter() override;
 
     std::string toString() const override;

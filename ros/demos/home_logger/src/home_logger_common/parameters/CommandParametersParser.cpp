@@ -177,6 +177,11 @@ tl::optional<Date> findDate(const string& text, int defaultYear, int defaultMont
 {
     string lowerCaseText = toLowerString(text);
 
+    if (containsAny(lowerCaseText, StringResources::getVector("date.today")))
+    {
+        return Date::now();
+    }
+
     size_t monthPosition;
     tl::optional<int> month = findMonth(lowerCaseText, monthPosition);
     if (!month.has_value())

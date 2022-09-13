@@ -8,7 +8,7 @@
 class AddReminderCommandParametersAsker : public SpecificCommandParametersAsker<AddReminderCommand>
 {
 public:
-    AddReminderCommandParametersAsker(StateManager& stateManager);
+    explicit AddReminderCommandParametersAsker(StateManager& stateManager);
     ~AddReminderCommandParametersAsker() override;
 
 protected:
@@ -18,7 +18,7 @@ protected:
 class RemoveReminderCommandParametersAsker : public SpecificCommandParametersAsker<RemoveReminderCommand>
 {
 public:
-    RemoveReminderCommandParametersAsker(StateManager& stateManager);
+    explicit RemoveReminderCommandParametersAsker(StateManager& stateManager);
     ~RemoveReminderCommandParametersAsker() override;
 
 protected:

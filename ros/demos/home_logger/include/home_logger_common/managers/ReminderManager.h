@@ -56,7 +56,7 @@ class ReminderManager
     SQLite::Database& m_database;
 
 public:
-    ReminderManager(SQLite::Database& database);
+    explicit ReminderManager(SQLite::Database& database);
     virtual ~ReminderManager();
 
     DECLARE_NOT_COPYABLE(ReminderManager);

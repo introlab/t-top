@@ -8,7 +8,7 @@
 class WeatherCommandParametersAsker : public SpecificCommandParametersAsker<WeatherCommand>
 {
 public:
-    WeatherCommandParametersAsker(StateManager& stateManager);
+    explicit WeatherCommandParametersAsker(StateManager& stateManager);
     ~WeatherCommandParametersAsker() override;
 
 protected:

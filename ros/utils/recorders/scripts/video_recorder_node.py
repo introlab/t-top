@@ -48,16 +48,16 @@ class VideoCodec(Enum):
         else:
             return VideoCodec._STRING_TO_VIDEO_CODEC[x]
 
-    def to_software_encoder(self):
+    def to_software_encoder(self) -> str:
         return VideoCodec._VIDEO_CODEC_TO_SOFTWARE_ENCODER[self]
 
-    def get_software_bitrate_attribute(self):
+    def get_software_bitrate_attribute(self) -> str:
         if self == VideoCodec.H264 or self == VideoCodec.H265:
             return 'bitrate'
         elif self == VideoCodec.VP8 or self == VideoCodec.VP9:
             return 'target-bitrate'
 
-    def to_nvidia_hardware_encoder(self):
+    def to_nvidia_hardware_encoder(self) -> str:
         return VideoCodec._VIDEO_CODEC_TO_NVIDIA_HARDWARE_ENCODER[self]
 
 
@@ -134,7 +134,7 @@ class AudioCodec(Enum):
         else:
             return AudioCodec._STRING_TO_AUDIO_CODEC[x]
 
-    def to_encoder(self):
+    def to_encoder(self) -> str:
         return AudioCodec._AUDIO_CODEC_TO_ENCODER[self]
 
 
@@ -308,7 +308,7 @@ class VideoRecorder:
         rospy.log(f'Gstreamer bus message: {msg}')
 
     @staticmethod
-    def _create_mux_pipeline(configuration: VideoRecorderConfiguration):
+    def _create_mux_pipeline(configuration: VideoRecorderConfiguration) -> str:
         path = os.path.join(configuration.output_directory, VideoRecorder._get_filename(configuration))
         if configuration.video_codec == VideoCodec.H264 or configuration.video_codec == VideoCodec.H265:
             attributes = 'reserved-bytes-per-sec=100 reserved-max-duration=20184000000000 reserved-moov-update-period=100000000'
@@ -317,12 +317,12 @@ class VideoRecorder:
             return f'matroskamux name=mux ! filesink location={path}.mkv'
 
     @staticmethod
-    def _get_filename(configuration: VideoRecorderConfiguration):
+    def _get_filename(configuration: VideoRecorderConfiguration) -> str:
         now = datetime.datetime.utcfromtimestamp(rospy.Time.now().to_sec())
         return configuration.filename_prefix + now.strftime("%Y-%m-%d_%H-%M-%S")
 
     @staticmethod
-    def _create_video_pipeline(configuration: VideoRecorderConfiguration):
+    def _create_video_pipeline(configuration: VideoRecorderConfiguration) -> str:
         pipeline = VideoRecorder._create_video_input_pipeline(configuration)
 
         if VideoRecorder._verify_nvidia_hardware_encoder(configuration):
@@ -345,18 +345,18 @@ class VideoRecorder:
         return pipeline
 
     @staticmethod
-    def _create_video_input_pipeline(configuration: VideoRecorderConfiguration):
+    def _create_video_input_pipeline(configuration: VideoRecorderConfiguration) -> str:
         caps = f'video/x-raw,format={configuration.video_format.value}'
         caps += f',width={configuration.video_width},height={configuration.video_height}'
         return f'appsrc name=video_src emit-signals=True is-live=True format=time caps={caps} ! queue max-size-buffers=100'
 
     @staticmethod
-    def _verify_nvidia_hardware_encoder(configuration: VideoRecorderConfiguration):
+    def _verify_nvidia_hardware_encoder(configuration: VideoRecorderConfiguration) -> bool:
         return (Gst.ElementFactory.find('nvvidconv') is not None and
                 Gst.ElementFactory.find(configuration.video_codec.to_nvidia_hardware_encoder()) is not None)
 
     @staticmethod
-    def _create_audio_pipeline(configuration: VideoRecorderConfiguration):
+    def _create_audio_pipeline(configuration: VideoRecorderConfiguration) -> str:
         pipeline = VideoRecorder._create_audio_input_pipeline(configuration)
 
         audioconvert_attributes = ''
@@ -370,7 +370,7 @@ class VideoRecorder:
         return pipeline
 
     @staticmethod
-    def _create_audio_input_pipeline(configuration: VideoRecorderConfiguration):
+    def _create_audio_input_pipeline(configuration: VideoRecorderConfiguration) -> str:
         channel_mask = ''
         if configuration.audio_channel_count > 2:
             channel_mask = ',channel-mask=(bitmask)0x0'
@@ -380,7 +380,7 @@ class VideoRecorder:
         return f'appsrc name=audio_src is-live=True format=time caps={caps} ! queue max-size-buffers=100'
 
     @staticmethod
-    def data_to_gst_buffer(data: bytes, timestamp_ns: int, duration_ns: int):
+    def data_to_gst_buffer(data: bytes, timestamp_ns: int, duration_ns: int) -> Gst.Buffer:
         buffer = Gst.Buffer.new_wrapped(data)
         buffer.pts = int(timestamp_ns)
         buffer.duration = int(duration_ns)

@@ -58,7 +58,7 @@ class Formatter
     std::vector<std::string> m_weekDayNames;
     std::vector<std::string> m_monthNames;
 
-    Formatter(Language language);
+    explicit Formatter(Language language);
 
     DECLARE_NOT_COPYABLE(Formatter);
     DECLARE_NOT_MOVABLE(Formatter);

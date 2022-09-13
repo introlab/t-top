@@ -11,7 +11,7 @@ public:
     std::shared_ptr<Command> command;
 
     WaitFaceDescriptorCommandParameterStateParameter();
-    WaitFaceDescriptorCommandParameterStateParameter(std::shared_ptr<Command> command);
+    explicit WaitFaceDescriptorCommandParameterStateParameter(std::shared_ptr<Command> command);
     ~WaitFaceDescriptorCommandParameterStateParameter() override;
 
     std::string toString() const override;

@@ -13,7 +13,7 @@ protected:
     StateManager& m_stateManager;
 
 public:
-    CommandParametersAsker(StateManager& stateManager);
+    explicit CommandParametersAsker(StateManager& stateManager);
     virtual ~CommandParametersAsker();
 
     virtual CommandType commandType() const = 0;
@@ -25,7 +25,7 @@ template<class T>
 class SpecificCommandParametersAsker : public CommandParametersAsker
 {
 public:
-    SpecificCommandParametersAsker(StateManager& stateManager);
+    explicit SpecificCommandParametersAsker(StateManager& stateManager);
     ~SpecificCommandParametersAsker() override;
 
     CommandType commandType() const final;

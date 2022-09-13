@@ -80,6 +80,8 @@ TEST_F(CommandParametersParserFrenchTests, findDate_invalid_shouldReturnNullopt)
 
 TEST_F(CommandParametersParserFrenchTests, findDate_valid_shouldReturnTheDate)
 {
+    EXPECT_TRUE(findDate("aujourd'hui", 2022, 0).has_value());
+
     EXPECT_EQ(findDate("1", 2022, 0), Date(2022, 0, 1));
 
     EXPECT_EQ(findDate("1 janvier", 2022, 0), Date(2022, 0, 1));
@@ -164,6 +166,8 @@ TEST_F(CommandParametersParserEnglishTests, findDate_invalid_shouldReturnNullopt
 
 TEST_F(CommandParametersParserEnglishTests, findDate_valid_shouldReturnTheDate)
 {
+    EXPECT_TRUE(findDate("today", 2022, 0).has_value());
+
     EXPECT_EQ(findDate("1", 2022, 0), Date(2022, 0, 1));
 
     EXPECT_EQ(findDate("January 1st", 2022, 0), Date(2022, 0, 1));

@@ -6,7 +6,7 @@
 class SleepCommandExecutor : public SpecificCommandExecutor<SleepCommand>
 {
 public:
-    SleepCommandExecutor(StateManager& stateManager);
+    explicit SleepCommandExecutor(StateManager& stateManager);
     ~SleepCommandExecutor() override;
 
 protected:

@@ -6,7 +6,7 @@
 class CurrentDateCommandExecutor : public SpecificCommandExecutor<CurrentDateCommand>
 {
 public:
-    CurrentDateCommandExecutor(StateManager& stateManager);
+    explicit CurrentDateCommandExecutor(StateManager& stateManager);
     ~CurrentDateCommandExecutor() override;
 
 protected:
@@ -16,7 +16,7 @@ protected:
 class CurrentTimeCommandExecutor : public SpecificCommandExecutor<CurrentTimeCommand>
 {
 public:
-    CurrentTimeCommandExecutor(StateManager& stateManager);
+    explicit CurrentTimeCommandExecutor(StateManager& stateManager);
     ~CurrentTimeCommandExecutor() override;
 
 protected:
@@ -26,7 +26,7 @@ protected:
 class CurrentDateTimeCommandExecutor : public SpecificCommandExecutor<CurrentDateTimeCommand>
 {
 public:
-    CurrentDateTimeCommandExecutor(StateManager& stateManager);
+    explicit CurrentDateTimeCommandExecutor(StateManager& stateManager);
     ~CurrentDateTimeCommandExecutor() override;
 
 protected:

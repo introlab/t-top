@@ -8,7 +8,7 @@
 class SetVolumeCommandParametersAsker : public SpecificCommandParametersAsker<SetVolumeCommand>
 {
 public:
-    SetVolumeCommandParametersAsker(StateManager& stateManager);
+    explicit SetVolumeCommandParametersAsker(StateManager& stateManager);
     ~SetVolumeCommandParametersAsker() override;
 
 protected:
