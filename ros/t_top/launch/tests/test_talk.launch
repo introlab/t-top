@@ -21,7 +21,7 @@
         <param name="channel_count" value="1"/>
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
-        <param name="latency_us" value="4000"/>
+        <param name="latency_us" value="64000"/>
 
         <remap from="audio_in" to="audio_float_16000"/>
     </node>
