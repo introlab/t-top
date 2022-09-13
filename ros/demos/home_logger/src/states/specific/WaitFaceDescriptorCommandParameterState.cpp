@@ -115,7 +115,7 @@ tl::optional<FaceDescriptor> WaitFaceDescriptorCommandParameterState::findNeares
         if (distance < nearestDistance)
         {
             nearestDistance = distance;
-            nearestFaceDescriptor = FaceDescriptor(object.person_pose_confidence);
+            nearestFaceDescriptor = FaceDescriptor(object.face_descriptor);
         }
     }
 

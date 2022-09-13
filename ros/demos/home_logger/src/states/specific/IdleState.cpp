@@ -77,6 +77,13 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
 {
     SoundFaceFollowingState::onVideoAnalysisReceived(msg);
 
+    auto reminder = findReminder(msg);
+    if (reminder.has_value())
+    {
+        m_stateManager.switchTo<TellReminderState>(TellReminderStateParameter(reminder.value()));
+        return;
+    }
+
     bool atLeastOnePerson = containsAtLeastOnePerson(msg);
     auto now = chrono::system_clock::now();
     if (atLeastOnePerson && m_chargeNeeded && (now - m_lastChargingMessageTime) >= BATTERY_LOW_MESSAGE_INTERVAL)
@@ -87,6 +94,7 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
             "",  // No gesture
             "fear",
             StateType::get<IdleState>()));
+        return;
     }
 
     if (atLeastOnePerson && (now - m_lastGreetingTime) >= GREATING_INTERVAL)
@@ -98,12 +106,7 @@ void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::Con
             "",  // No gesture
             "blink",
             StateType::get<WaitCommandState>()));
-    }
-
-    auto reminder = findReminder(msg);
-    if (reminder.has_value())
-    {
-        m_stateManager.switchTo<TellReminderState>(TellReminderStateParameter(reminder.value()));
+        return;
     }
 }
 
