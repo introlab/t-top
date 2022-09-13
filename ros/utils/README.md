@@ -11,4 +11,4 @@ This folder contains the ROS packages for utilities.
 - The [recorders](recorders) folder contains nodes to record data.
 - The [t_top_hbba_lite](t_top_hbba_lite) folder contains the HBBA Lite strategies and desires.
 
-TODO move dnn_utils after the merge.
+TODO move dnn_utils after the merge of sound-object-person-following-segmentation.
