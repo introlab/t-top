@@ -90,9 +90,12 @@ class Trainer:
             model_output = self._model(data[0].to(self._device))
             target = self._move_target_to_device(data[1], self._device)
             loss = self._criterion(model_output, target)
-            loss.backward()
 
-            self._measure_training_metrics(loss, model_output, target)
+            if torch.all(torch.isfinite(loss)):
+                loss.backward()
+                self._measure_training_metrics(loss, model_output, target)
+            else:
+                print('Warning the loss is not finite.')
 
             division += 1
             if division == self._batch_size_division:
