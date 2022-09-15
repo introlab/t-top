@@ -15,10 +15,28 @@ SpeechTab::SpeechTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSe
       m_desireSet(std::move(desireSet))
 {
     createUi();
+    m_desireSet->addObserver(this);
 
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &SpeechTab::talkDoneSubscriberCallback, this);
     m_speechToTextSubscriber =
         nodeHandle.subscribe("speech_to_text/transcript", 1, &SpeechTab::speechToTextSubscriberCallback, this);
+}
+
+SpeechTab::~SpeechTab()
+{
+    m_desireSet->removeObserver(this);
+}
+
+void SpeechTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+{
+    invokeLater(
+        [=]()
+        {
+            if (m_talkDesireId.isValid() && !m_desireSet->contains(m_talkDesireId.toULongLong()))
+            {
+                m_talkDesireId.clear();
+                m_talkButton->setEnabled(true);
+            }
+        });
 }
 
 void SpeechTab::onTalkButtonClicked()
@@ -43,21 +61,6 @@ void SpeechTab::onListenButtonToggled(bool checked)
         m_desireSet->removeDesire(m_speechToTextDesireId.toULongLong());
         m_speechToTextDesireId.clear();
     }
-}
-
-void SpeechTab::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
-{
-    invokeLater(
-        [=]()
-        {
-            if (m_talkDesireId.isValid() && m_talkDesireId.toULongLong() == msg->id)
-            {
-                m_desireSet->removeDesire(m_talkDesireId.toULongLong());
-                m_talkDesireId.clear();
-
-                m_talkButton->setEnabled(true);
-            }
-        });
 }
 
 void SpeechTab::speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)

@@ -9,6 +9,7 @@
     <arg name="simulation" default="false"/>
     <arg name="open_browser" default="true"/>
     <arg name="fullscreen_face" default="false"/>
+    <arg name="record_session" default="false"/>
 
     <include file="$(find t_top)/launch/platform.launch">
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
@@ -35,4 +36,8 @@
         <param name="language" value="$(arg language)"/>
         <param name="timeout_s" value="2"/>
     </node>
+
+    <include if="$(arg record_session)" file="$(find t_top)/launch/recording.launch">
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+    </include>
 </launch>

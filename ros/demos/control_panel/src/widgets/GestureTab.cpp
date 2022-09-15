@@ -15,8 +15,6 @@ GestureTab::GestureTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desire
 {
     createUi();
     m_desireSet->addObserver(this);
-
-    m_gestureDoneSubscriber = nodeHandle.subscribe("gesture/done", 1, &GestureTab::gestureDoneSubscriberCallback, this);
 }
 
 GestureTab::~GestureTab()
@@ -46,21 +44,6 @@ void GestureTab::onGestureButtonClicked(const QString& name)
     auto desire = make_unique<GestureDesire>(name.toStdString());
     m_gestureDesireId = static_cast<qint64>(desire->id());
     m_desireSet->addDesire(std::move(desire));
-}
-
-void GestureTab::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
-{
-    invokeLater(
-        [=]()
-        {
-            if (m_gestureDesireId.isValid() && m_gestureDesireId.toULongLong() == msg->id)
-            {
-                m_desireSet->removeDesire(m_gestureDesireId.toULongLong());
-                m_gestureDesireId.clear();
-
-                setEnabledAllButtons(true);
-            }
-        });
 }
 
 void GestureTab::setEnabledAllButtons(bool enabled)

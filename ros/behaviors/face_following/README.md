@@ -22,7 +22,7 @@ This node makes T-Top follow the nearest face.
 #### Subscribed Topics
 
 - `video_analysis` ([video_analyzer/VideoAnalysis](../../perceptions/video_analyzer/msg/VideoAnalysis.msg)): The video
-  analysis containing the detected objects.
+  analysis containing the detected objects. The video analysis must contain 3d positions.
 
 #### Published Topics
 

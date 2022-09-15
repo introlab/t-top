@@ -49,9 +49,9 @@ void WaitAnswerState::enable(const string& parameter, const type_index& previous
     m_desireSet->addDesire(move(faceFollowingDesire));
     m_desireSet->addDesire(move(faceAnimationDesire));
 
-    constexpr bool oneshot = true;
+    constexpr bool ONE_SHOT = true;
     m_timeoutTimer =
-        m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S), &WaitAnswerState::timeoutTimerCallback, this, oneshot);
+        m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S), &WaitAnswerState::timeoutTimerCallback, this, ONE_SHOT);
 }
 
 void WaitAnswerState::disable()

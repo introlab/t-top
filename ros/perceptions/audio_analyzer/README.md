@@ -13,8 +13,7 @@ This node classifies the audio and extracts a general audio embedding. If the au
  - `class_probability_threshold` (double): The class probability threshold for the audio analysis.
 
 #### Subscribed Topics
- - `low_quality_audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic processed, which must be signed_16, at 16000 Hz and 1 channel.
- - `high_quality_audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic included in the audio analysis.
+ - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic processed, which must be signed_16, at 16000 Hz and 1 channel.
  - `sst` ([odas_ros/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/msg/OdasSstArrayStamped.msg)): The sound source tracking information.
 
 #### Published Topics

@@ -25,7 +25,7 @@ RssStoryState::RssStoryState(
       m_talkDesireId(MAX_DESIRE_ID),
       m_faceAnimationDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &RssStoryState::talkDoneSubscriberCallback, this);
+    m_desireSet->addObserver(this);
 
     switch (language)
     {
@@ -35,6 +35,30 @@ RssStoryState::RssStoryState(
         case Language::FRENCH:
             readStory(frenchStoryPath);
             break;
+    }
+}
+
+RssStoryState::~RssStoryState()
+{
+    m_desireSet->removeObserver(this);
+}
+
+void RssStoryState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+{
+    if (!enabled() || m_desireSet->contains(m_talkDesireId))
+    {
+        return;
+    }
+
+    bool finished = false;
+    {
+        auto transaction = m_desireSet->beginTransaction();
+        finished = !setNextLineDesire();
+    }
+
+    if (finished)
+    {
+        m_stateManager.switchTo<AfterTaskDelayState>();
     }
 }
 
@@ -116,23 +140,4 @@ bool RssStoryState::setNextLineDesire()
     m_desireSet->addDesire(move(faceAnimationDesire));
 
     return true;
-}
-
-void RssStoryState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_talkDesireId)
-    {
-        return;
-    }
-
-    bool finished = false;
-    {
-        auto transaction = m_desireSet->beginTransaction();
-        finished = !setNextLineDesire();
-    }
-
-    if (finished)
-    {
-        m_stateManager.switchTo<AfterTaskDelayState>();
-    }
 }

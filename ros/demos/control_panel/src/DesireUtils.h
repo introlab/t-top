@@ -7,13 +7,13 @@
 
 inline void removeAllMovementDesires(DesireSet& desireSet)
 {
-    desireSet.removeDesires(std::type_index(typeid(GestureDesire)));
-    desireSet.removeDesires(std::type_index(typeid(NearestFaceFollowingDesire)));
-    desireSet.removeDesires(std::type_index(typeid(SpecificFaceFollowingDesire)));
-    desireSet.removeDesires(std::type_index(typeid(SoundFollowingDesire)));
-    desireSet.removeDesires(std::type_index(typeid(SoundObjectPersonFollowingDesire)));
-    desireSet.removeDesires(std::type_index(typeid(DanceDesire)));
-    desireSet.removeDesires(std::type_index(typeid(ExploreDesire)));
+    desireSet.removeAllDesiresOfType<GestureDesire>();
+    desireSet.removeAllDesiresOfType<NearestFaceFollowingDesire>();
+    desireSet.removeAllDesiresOfType<SpecificFaceFollowingDesire>();
+    desireSet.removeAllDesiresOfType<SoundFollowingDesire>();
+    desireSet.removeAllDesiresOfType<SoundObjectPersonFollowingDesire>();
+    desireSet.removeAllDesiresOfType<DanceDesire>();
+    desireSet.removeAllDesiresOfType<ExploreDesire>();
 }
 
 #endif

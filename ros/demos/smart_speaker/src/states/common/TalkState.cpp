@@ -16,7 +16,22 @@ TalkState::TalkState(
       m_nextStateType(nextStateType),
       m_talkDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &TalkState::talkDoneSubscriberCallback, this);
+    m_desireSet->addObserver(this);
+}
+
+TalkState::~TalkState()
+{
+    m_desireSet->removeObserver(this);
+}
+
+void TalkState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+{
+    if (!enabled() || m_desireSet->contains(m_talkDesireId))
+    {
+        return;
+    }
+
+    m_stateManager.switchTo(m_nextStateType);
 }
 
 void TalkState::enable(const string& parameter, const type_index& previousStageType)
@@ -44,25 +59,15 @@ void TalkState::disable()
     m_talkDesireId = MAX_DESIRE_ID;
 }
 
-string TalkState::generateText(const string& personName)
+string TalkState::generateText(const string& parameter)
 {
     switch (language())
     {
         case Language::ENGLISH:
-            return generateEnglishText(personName);
+            return generateEnglishText(parameter);
         case Language::FRENCH:
-            return generateFrenchText(personName);
+            return generateFrenchText(parameter);
     }
 
     return "";
-}
-
-void TalkState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_talkDesireId)
-    {
-        return;
-    }
-
-    m_stateManager.switchTo(m_nextStateType);
 }

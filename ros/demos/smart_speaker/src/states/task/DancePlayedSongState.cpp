@@ -23,10 +23,25 @@ DancePlayedSongState::DancePlayedSongState(
         throw runtime_error("songPaths must not be empty");
     }
 
+    m_desireSet->addObserver(this);
+
     m_songStartedSubscriber =
         nodeHandle.subscribe("sound_player/started", 1, &DancePlayedSongState::songStartedSubscriberCallback, this);
-    m_songDoneSubscriber =
-        nodeHandle.subscribe("sound_player/done", 1, &DancePlayedSongState::songDoneSubscriberCallback, this);
+}
+
+DancePlayedSongState::~DancePlayedSongState()
+{
+    m_desireSet->removeObserver(this);
+}
+
+void DancePlayedSongState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+{
+    if (!enabled() || m_desireSet->contains(m_songDesireId))
+    {
+        return;
+    }
+
+    m_stateManager.switchTo(m_nextStateType);
 }
 
 void DancePlayedSongState::enable(const string& parameter, const type_index& previousStageType)
@@ -70,18 +85,4 @@ void DancePlayedSongState::songStartedSubscriberCallback(const sound_player::Sta
     auto danceDesire = make_unique<DanceDesire>();
     m_desireIds.emplace_back(danceDesire->id());
     m_desireSet->addDesire(move(danceDesire));
-}
-
-void DancePlayedSongState::songDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_songDesireId)
-    {
-        return;
-    }
-    if (!msg->ok)
-    {
-        ROS_ERROR("Unable to dance the played song");
-    }
-
-    m_stateManager.switchTo(m_nextStateType);
 }

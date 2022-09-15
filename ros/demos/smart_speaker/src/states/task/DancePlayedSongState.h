@@ -4,14 +4,12 @@
 #include "../State.h"
 
 #include <sound_player/Started.h>
-#include <sound_player/Done.h>
 
-class DancePlayedSongState : public State
+class DancePlayedSongState : public State, public DesireSetObserver
 {
     std::type_index m_nextStateType;
 
     ros::Subscriber m_songStartedSubscriber;
-    ros::Subscriber m_songDoneSubscriber;
 
     std::vector<std::string> m_songPaths;
     uint64_t m_songDesireId;
@@ -24,10 +22,12 @@ public:
         ros::NodeHandle& nodeHandle,
         std::type_index nextStateType,
         std::vector<std::string> songPaths);
-    ~DancePlayedSongState() override = default;
+    ~DancePlayedSongState() override;
 
     DECLARE_NOT_COPYABLE(DancePlayedSongState);
     DECLARE_NOT_MOVABLE(DancePlayedSongState);
+
+    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 protected:
     std::type_index type() const override;
@@ -37,7 +37,6 @@ protected:
 
 private:
     void songStartedSubscriberCallback(const sound_player::Started::ConstPtr& msg);
-    void songDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg);
 };
 
 inline std::type_index DancePlayedSongState::type() const

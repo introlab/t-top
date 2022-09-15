@@ -90,7 +90,7 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
     tf::StampedTransform transform;
     try
     {
-        m_tfListener.lookupTransform(m_personDistanceFrameId, msg->header.frame_id, ros::Time(0), transform);
+        m_tfListener.lookupTransform(m_personDistanceFrameId, msg->header.frame_id, msg->header.stamp, transform);
     }
     catch (tf::TransformException& ex)
     {

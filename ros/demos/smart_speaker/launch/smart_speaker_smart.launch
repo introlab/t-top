@@ -6,6 +6,8 @@
     <arg name="use_after_task_delay_duration_topic" default="true"/>
 
     <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 45; $0 $1 $2 $3 $4 $5 $6' ">
+        <param name="record_session" value="$(arg record_session)"/>
+
         <param name="language" value="$(arg language)"/>
 
         <param name="person_distance_threshold" value="1.5"/>
@@ -61,7 +63,6 @@
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
         <arg name="slam" value="false"/>
         <arg name="fullscreen_face" value="true"/>
+        <arg name="record_session" value="$(arg record_session)"/>
     </include>
-
-    <include if="$(arg record_session)" file="$(find smart_speaker)/launch/record.launch"/>
 </launch>

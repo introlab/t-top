@@ -3,8 +3,6 @@
 
 #include "../common/TalkState.h"
 
-#include <talk/Done.h>
-
 class RssAskTaskState : public TalkState
 {
 public:
