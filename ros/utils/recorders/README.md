@@ -12,7 +12,7 @@ This node records an image topic and an audio topic.
  - `video_width` (int): The image width of the image topic.
  - `video_height` (int): The image height of the image topic.
  - `video_codec` (string): The video codec to use (`h264`, `h265`, `vp8` or `vp9`).
- - `video_bitrate` (int): The video codec bitrate.
+ - `video_bitrate` (int): The video codec bitrate (bits/s).
  - `video_delay_s` (double): The video delay in seconds.
  - `audio_format` (string): The audio format of the audio topic.
  - `audio_channel_count` (int): The channel count of the audio topic.

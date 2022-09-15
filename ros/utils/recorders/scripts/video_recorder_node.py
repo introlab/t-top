@@ -56,9 +56,22 @@ class VideoCodec(Enum):
             return 'bitrate'
         elif self == VideoCodec.VP8 or self == VideoCodec.VP9:
             return 'target-bitrate'
+        else:
+            raise ValueError('Invalid video codec')
+
+    def convert_software_bitrate(self, bitrate) -> int:
+        if self == VideoCodec.H264 or self == VideoCodec.H265:
+            return bitrate // 1000
+        elif self == VideoCodec.VP8 or self == VideoCodec.VP9:
+            return bitrate
+        else:
+            raise ValueError('Invalid video codec')
 
     def to_nvidia_hardware_encoder(self) -> str:
         return VideoCodec._VIDEO_CODEC_TO_NVIDIA_HARDWARE_ENCODER[self]
+
+    def convert_nvidia_hardware_bitrate(self, bitrate) -> int:
+        return bitrate
 
 
 VideoCodec._STRING_TO_VIDEO_CODEC = {
@@ -327,15 +340,17 @@ class VideoRecorder:
 
         if VideoRecorder._verify_nvidia_hardware_encoder(configuration):
             encoder = configuration.video_codec.to_nvidia_hardware_encoder()
+            bitrate = configuration.video_codec.convert_nvidia_hardware_bitrate(configuration.video_bitrate)
             pipeline += ' ! videoconvert ! nvvidconv ! capsfilter caps=video/x-raw(memory:NVMM),format=(string)I420'
-            pipeline += f' ! {encoder} bitrate={configuration.video_bitrate}'
+            pipeline += f' ! {encoder} bitrate={bitrate}'
         else:
             rospy.logwarn('NVIDIA hardware encoder are not available.')
 
             encoder = configuration.video_codec.to_software_encoder()
             bitrate_attribute = configuration.video_codec.get_software_bitrate_attribute()
+            bitrate = configuration.video_codec.convert_software_bitrate(configuration.video_bitrate)
             pipeline += f' ! videoconvert ! capsfilter caps=video/x-raw,format=I420'
-            pipeline += f' ! {encoder} {bitrate_attribute}={configuration.video_bitrate}'
+            pipeline += f' ! {encoder} {bitrate_attribute}={bitrate}'
 
         if configuration.video_codec == VideoCodec.H264:
             pipeline += ' ! h264parse'
