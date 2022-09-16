@@ -30,7 +30,13 @@ class Trainer:
             model = nn.DataParallel(model)
 
         self._model = model.to(device)
-        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+        bias_parameters = [parameter for name, parameter in model.named_parameters() if name.endswith('.bias')]
+        other_parameters = [parameter for name, parameter in model.named_parameters() if not name.endswith('.bias')]
+        parameter_groups = [
+            {'params': other_parameters},
+            {'params': bias_parameters, 'weight_decay': 0.0}
+        ]
+        self._optimizer = torch.optim.Adam(parameter_groups, lr=learning_rate, weight_decay=weight_decay)
         self._scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self._optimizer, epoch_count)
 
         self._training_dataset_loader = self._create_training_dataset_loader(dataset_root,
