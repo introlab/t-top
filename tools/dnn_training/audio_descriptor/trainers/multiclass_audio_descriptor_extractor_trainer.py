@@ -9,7 +9,7 @@ from tqdm import tqdm
 from common.trainers import Trainer
 from common.criterions import SigmoidFocalLossWithLogits
 from common.metrics import MulticlassClassificationAccuracyMetric, MulticlassClassificationPrecisionRecallMetric, \
-    LossMetric, LossAccuracyLearningCurves, MulticlassClassificationMeanAveragePrecisionMetric
+    LossMetric, LossAccuracyMeanAveragePrecisionLearningCurves, MulticlassClassificationMeanAveragePrecisionMetric
 
 from audio_descriptor.datasets import Fsd50kDataset, AudioDescriptorTrainingTransforms, \
     AudioDescriptorValidationTransforms
@@ -45,11 +45,13 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._training_loss_metric = LossMetric()
         self._validation_loss_metric = LossMetric()
 
-        self._learning_curves = LossAccuracyLearningCurves()
+        self._learning_curves = LossAccuracyMeanAveragePrecisionLearningCurves()
         self._training_accuracy_metric = MulticlassClassificationAccuracyMetric()
         self._validation_accuracy_metric = MulticlassClassificationAccuracyMetric()
         self._training_precision_recall_metric = MulticlassClassificationPrecisionRecallMetric()
         self._validation_precision_recall_metric = MulticlassClassificationPrecisionRecallMetric()
+        self._training_map_metric = MulticlassClassificationMeanAveragePrecisionMetric(self._class_count)
+        self._validation_map_metric = MulticlassClassificationMeanAveragePrecisionMetric(self._class_count)
 
     def _create_criterion(self, model):
         if self._criterion_type == 'bce_loss':
@@ -92,6 +94,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._training_loss_metric.clear()
         self._training_accuracy_metric.clear()
         self._training_precision_recall_metric.clear()
+        self._training_map_metric.clear()
 
     def _move_target_to_device(self, target, device):
         return target.to(device)
@@ -100,34 +103,41 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._training_loss_metric.add(loss.item())
         self._training_accuracy_metric.add(model_output[1], target)
         self._training_precision_recall_metric.add(model_output[1], target)
+        self._training_map_metric.add(model_output[1], target)
 
     def _clear_between_validation_epoch(self):
         self._validation_loss_metric.clear()
         self._validation_accuracy_metric.clear()
         self._validation_precision_recall_metric.clear()
+        self._validation_map_metric.clear()
 
     def _measure_validation_metrics(self, loss, model_output, target):
         self._validation_loss_metric.add(loss.item())
         self._validation_accuracy_metric.add(model_output[1], target)
         self._validation_precision_recall_metric.add(model_output[1], target)
+        self._validation_map_metric.add(model_output[1], target)
 
     def _print_performances(self):
-        print('\nTraining : Loss={}, Accuracy={}, Precision={}, Recall={}'.format(
+        print('\nTraining : Loss={}, Accuracy={}, Precision={}, Recall={}, mAP={}'.format(
             self._training_loss_metric.get_loss(),
             self._training_accuracy_metric.get_accuracy(),
             self._training_precision_recall_metric.get_precision(),
-            self._training_precision_recall_metric.get_recall()))
-        print('Validation : Loss={}, Accuracy={}, Precision={}, Recall={}\n'.format(
+            self._training_precision_recall_metric.get_recall(),
+            self._training_map_metric.get_value()))
+        print('Validation : Loss={}, Accuracy={}, Precision={}, Recall={}, mAP={}\n'.format(
             self._validation_loss_metric.get_loss(),
             self._validation_accuracy_metric.get_accuracy(),
             self._validation_precision_recall_metric.get_precision(),
-            self._validation_precision_recall_metric.get_recall()))
+            self._validation_precision_recall_metric.get_recall(),
+            self._validation_map_metric.get_value()))
 
     def _save_learning_curves(self):
         self._learning_curves.add_training_loss_value(self._training_loss_metric.get_loss())
         self._learning_curves.add_validation_loss_value(self._validation_loss_metric.get_loss())
         self._learning_curves.add_training_accuracy_value(self._training_accuracy_metric.get_accuracy())
         self._learning_curves.add_validation_accuracy_value(self._validation_accuracy_metric.get_accuracy())
+        self._learning_curves.add_training_mean_average_precision_value(self._training_map_metric.get_value())
+        self._learning_curves.add_validation_mean_average_precision_value(self._validation_map_metric.get_value())
 
         self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
                                    os.path.join(self._output_path, 'learning_curves.json'))
