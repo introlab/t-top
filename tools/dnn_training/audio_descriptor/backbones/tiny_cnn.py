@@ -29,4 +29,4 @@ class TinyCnn(nn.Module):
         return self._layers(x)
 
     def last_channel_count(self):
-        return 512
+        return 256
