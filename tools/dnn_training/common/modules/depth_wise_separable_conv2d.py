@@ -8,10 +8,11 @@ class DepthWiseSeparableConv2d(nn.Module):
         padding = kernel_size // 2
 
         self._layers = nn.Sequential(
-            nn.Conv2d(in_channels, in_channels, kernel_size, stride=stride, padding=padding, groups=in_channels),
+            nn.Conv2d(in_channels, in_channels, kernel_size,
+                      stride=stride, padding=padding, groups=in_channels, bias=False),
             nn.BatchNorm2d(in_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(in_channels, out_channels, 1),
+            nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True)
         )

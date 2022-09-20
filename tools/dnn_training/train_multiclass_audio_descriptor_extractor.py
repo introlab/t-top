@@ -5,7 +5,8 @@ import torch
 
 from common.program_arguments import save_arguments, print_arguments
 
-from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
+from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception, VGGLike
+from audio_descriptor.backbones import TinyCnn
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor
 from audio_descriptor.trainers import MulticlassAudioDescriptorExtractorTrainer
 
@@ -17,7 +18,7 @@ def main():
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
-                                                    'open_face_inception'],
+                                                    'open_face_inception', 'tiny_cnn', 'vgg_like'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
@@ -85,6 +86,10 @@ def create_backbone(backbone_type, pretrained):
         return Resnet50(pretrained=pretrained)
     elif backbone_type == 'open_face_inception':
         return OpenFaceInception()
+    elif backbone_type == 'tiny_cnn':
+        return TinyCnn()
+    elif backbone_type == 'vgg_like':
+        return VGGLike()
     else:
         raise ValueError('Invalid backbone type')
 
