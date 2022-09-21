@@ -90,39 +90,3 @@ class RandomTimeStretch(nn.Module):
             return torch.from_numpy(time_stretch(x[0].numpy(), rate)).unsqueeze(0)
         else:
             return x
-
-
-class RandomTimeRoll(nn.Module):
-    def __init__(self, p):
-        super(RandomTimeRoll, self).__init__()
-        self._p = p
-
-    def forward(self, x):
-        if random.random() < self._p:
-            shifts = random.randrange(x.size(1))
-            return torch.roll(x, shifts, dims=1)
-        else:
-            return x
-
-
-class RandomTimeSwap(nn.Module):
-    def __init__(self, min_size_ratio, max_size_ratio, p):
-        super(RandomTimeSwap, self).__init__()
-        self._min_size_ratio = min_size_ratio
-        self._max_size_ratio = max_size_ratio
-        self._p = p
-
-    def forward(self, x):
-        if random.random() < self._p:
-            min_size = int(x.size(1) * self._min_size_ratio)
-            max_size = int(x.size(1) * self._max_size_ratio)
-            size = random.randrange(min_size, max_size)
-            from_index = random.randrange(0, x.size(1) - size)
-            to_index = random.randrange(0, x.size(1) - size)
-
-            y = x.clone()
-            y[:, from_index:from_index + size] = x[:, to_index:to_index + size]
-            y[:, to_index:to_index + size] = x[:, from_index:from_index + size]
-            return y
-        else:
-            return x

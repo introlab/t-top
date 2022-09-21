@@ -6,7 +6,7 @@ import torchaudio
 import torchaudio.transforms as transforms
 
 from common.datasets.audio_transform_utils import to_mono, resample, resize_waveform, resize_waveform_random, \
-    normalize, RandomPitchShift, RandomTimeStretch, RandomTimeRoll, RandomTimeSwap
+    normalize, RandomPitchShift, RandomTimeStretch
 
 
 class _AudioDescriptorTransforms:
@@ -40,8 +40,6 @@ class _AudioDescriptorTransforms:
 
 class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
     def __init__(self, sample_rate=16000, waveform_size=64000, n_features=128, n_fft=400,
-                 min_size_ratio=0.05, max_size_ratio=0.25, time_swap_p=0.5,
-                 time_roll_p=0.5,
                  min_time_stretch=0.9, max_time_stretch= 1.1, time_stretching_p=0.5,
                  min_pitch_shift=-2, max_pitch_shift=2, pitch_shift_p=0.5,
                  noise_root=None, noise_volume=0.05, noise_p=0.5,
@@ -56,9 +54,6 @@ class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
                                                                 audio_transform_type=audio_transform_type)
         self._noise_volume = noise_volume
         self._noise_p = noise_p
-
-        self._time_swap = RandomTimeSwap(min_size_ratio, max_size_ratio, time_swap_p)
-        self._time_roll = RandomTimeRoll(time_roll_p)
 
         self._enable_pitch_shifting = enable_pitch_shifting
         self._enable_time_stretching = enable_time_stretching
@@ -96,10 +91,7 @@ class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
         waveform = to_mono(waveform)
         waveform = resample(waveform, metadata['original_sample_rate'], self._sample_rate)
 
-        waveform = self._time_swap(waveform)
         waveform = resize_waveform_random(waveform, int(self._waveform_size / self._min_time_stretch))
-        waveform = self._time_swap(waveform)
-        waveform = self._time_roll(waveform)
         if self._enable_time_stretching:
             waveform = self._time_stretch(waveform)
         if self._enable_pitch_shifting:
