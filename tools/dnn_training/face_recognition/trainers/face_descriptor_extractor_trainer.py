@@ -12,6 +12,7 @@ from common.trainers import Trainer
 from common.metrics import LossMetric, ClassificationAccuracyMetric, TopNClassificationAccuracyMetric, \
     ClassificationMeanAveragePrecisionMetric, LossLearningCurves, LossAccuracyLearningCurves
 
+from face_recognition.criterions import FaceDescriptorAmSoftmaxLoss
 from face_recognition.datasets import IMAGE_SIZE, Vggface2Dataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
 from face_recognition.metrics import LfwEvaluation
 
@@ -55,6 +56,10 @@ class FaceDescriptorExtractorTrainer(Trainer):
         elif self._criterion_type == 'cross_entropy_loss':
             criterion = nn.CrossEntropyLoss()
             return lambda model_output, target: criterion(model_output[1], target)
+        elif self._criterion_type == 'am_softmax_loss':
+            return FaceDescriptorAmSoftmaxLoss(s=30.0, m=self._margin,
+                                                start_annealing_epoch=0,
+                                                end_annealing_epoch=self._epoch_count // 4)
         else:
             raise ValueError('Invalid criterion type')
 
@@ -93,6 +98,11 @@ class FaceDescriptorExtractorTrainer(Trainer):
         self._training_loss_metric.add(loss.item())
         if self._criterion_type != 'triplet_loss':
             self._training_accuracy_metric.add(model_output[1], target)
+
+    def _validate(self):
+        super(FaceDescriptorExtractorTrainer, self)._validate()
+        if self._criterion_type == 'am_softmax_loss':
+            self._criterion.next_epoch()
 
     def _clear_between_validation_epoch(self):
         self._validation_loss_metric.clear()

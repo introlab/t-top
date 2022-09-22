@@ -22,10 +22,11 @@ def main():
     parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
     parser.add_argument('--batch_size', type=int, help='Set the batch size for the training', required=True)
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
-    parser.add_argument('--criterion_type', choices=['triplet_loss', 'cross_entropy_loss'],
+    parser.add_argument('--criterion_type', choices=['triplet_loss', 'cross_entropy_loss', 'am_softmax_loss'],
                         help='Choose the criterion type', required=True)
     parser.add_argument('--dataset_class_count', type=int,
-                        help='Choose the dataset class count when criterion_type is "cross_entropy_loss"',
+                        help='Choose the dataset class count when criterion_type is "cross_entropy_loss" or '
+                             '"am_softmax_loss"',
                         default=None)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
@@ -36,8 +37,10 @@ def main():
         model = create_model(args.embedding_size)
     elif args.criterion_type == 'cross_entropy_loss' and args.dataset_class_count is not None:
         model = create_model(args.embedding_size, args.dataset_class_count)
+    elif args.criterion_type == 'am_softmax_loss' and args.dataset_class_count is not None:
+        model = create_model(args.embedding_size, args.dataset_class_count, am_softmax_linear=True)
     else:
-        raise ValueError('--dataset_class_count must be used with "cross_entropy_loss" types')
+        raise ValueError('--dataset_class_count must be used with "cross_entropy_loss" or "am_softmax_loss" types')
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, 'e' + str(args.embedding_size) +
@@ -60,8 +63,10 @@ def main():
     trainer.train()
 
 
-def create_model(embedding_size, class_count=None):
-    return FaceDescriptorExtractor(embedding_size=embedding_size, class_count=class_count)
+def create_model(embedding_size, class_count=None, am_softmax_linear=False):
+    return FaceDescriptorExtractor(embedding_size=embedding_size,
+                                   class_count=class_count,
+                                   am_softmax_linear=am_softmax_linear)
 
 
 if __name__ == '__main__':

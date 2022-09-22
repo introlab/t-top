@@ -67,7 +67,7 @@ class AudioDescriptorExtractorTrainer(Trainer):
         elif self._criterion_type == 'am_softmax_loss':
             return AudioDescriptorAmSoftmaxLoss(s=30.0, m=self._margin,
                                                 start_annealing_epoch=0,
-                                                end_annealing_epoch=self._epoch_count // 2)
+                                                end_annealing_epoch=self._epoch_count // 4)
         else:
             raise ValueError('Invalid criterion type')
 

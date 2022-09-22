@@ -2,12 +2,12 @@ import torch.nn as nn
 
 from common.modules import L2Normalization
 
-from common.modules import InceptionModule, PaddedLPPool2d, Lrn2d
+from common.modules import InceptionModule, PaddedLPPool2d, Lrn2d, AmSoftmaxLinear
 
 
 # Based on OpenFace (https://cmusatyalab.github.io/openface/)
 class FaceDescriptorExtractor(nn.Module):
-    def __init__(self, embedding_size=128, class_count=None):
+    def __init__(self, embedding_size=128, class_count=None, am_softmax_linear=False):
         super(FaceDescriptorExtractor, self).__init__()
 
         self._features_layers = nn.Sequential(
@@ -81,12 +81,13 @@ class FaceDescriptorExtractor(nn.Module):
             L2Normalization()
         )
 
-        if class_count is not None:
+        self._class_count = class_count
+        if class_count is not None and am_softmax_linear:
+            self._classifier = AmSoftmaxLinear(embedding_size, class_count)
+        elif class_count is not None:
             self._classifier = nn.Linear(embedding_size, class_count)
-            self._class_count = class_count
         else:
             self._classifier = None
-            self._class_count = None
 
     def class_count(self):
         return self._class_count

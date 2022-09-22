@@ -1,0 +1,1 @@
+from face_recognition.criterions.face_descriptor_am_softmax_loss import FaceDescriptorAmSoftmaxLoss
