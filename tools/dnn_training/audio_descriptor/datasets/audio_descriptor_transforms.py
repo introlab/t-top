@@ -46,6 +46,7 @@ class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
                  time_masking_p=0.1, time_masking_max_length=None,
                  frequency_masking_p=0.1, frequency_masking_max_length=None,
                  enable_pitch_shifting=False, enable_time_stretching=False,
+                 enable_time_masking=False, enable_frequency_masking=False,
                  audio_transform_type='mel_spectrogram'):
         super(AudioDescriptorTrainingTransforms, self).__init__(sample_rate=sample_rate,
                                                                 waveform_size=waveform_size,
@@ -57,14 +58,16 @@ class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
 
         self._enable_pitch_shifting = enable_pitch_shifting
         self._enable_time_stretching = enable_time_stretching
-        self._min_time_stretch = min_time_stretch
+        self._min_time_stretch = min_time_stretch if self._enable_time_stretching else 1.0
         self._time_stretch = RandomTimeStretch(min_time_stretch, max_time_stretch, time_stretching_p)
         self._pitch_shift = RandomPitchShift(sample_rate, min_pitch_shift, max_pitch_shift, pitch_shift_p)
 
+        self._enable_time_masking = enable_time_masking
         self._time_masking_p = time_masking_p
         time_mask_param = waveform_size // 10 if time_masking_max_length is None else time_masking_max_length
         self._time_masking = transforms.TimeMasking(time_mask_param)
 
+        self._enable_frequency_masking = enable_frequency_masking
         self._frequency_masking_p = frequency_masking_p
         freq_mask_param = n_features // 10 if frequency_masking_max_length is None else frequency_masking_max_length
         self._frequency_masking = transforms.FrequencyMasking(freq_mask_param)
@@ -106,10 +109,10 @@ class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
 
         spectrogram = self._audio_transform(waveform)
 
-        if random.random() < self._time_masking_p:
+        if self._enable_time_masking and random.random() < self._time_masking_p:
             spectrogram = self._time_masking(spectrogram)
 
-        if random.random() < self._frequency_masking_p:
+        if self._enable_frequency_masking and random.random() < self._frequency_masking_p:
             spectrogram = self._frequency_masking(spectrogram)
 
         return spectrogram, target, metadata

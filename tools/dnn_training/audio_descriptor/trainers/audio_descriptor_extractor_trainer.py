@@ -22,7 +22,8 @@ class AudioDescriptorExtractorTrainer(Trainer):
     def __init__(self, device, model, dataset_root='', output_path='',
                  epoch_count=10, learning_rate=0.01, weight_decay=0.0, batch_size=128, criterion_type='triplet_loss',
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
-                 enable_pitch_shifting=False, enable_time_stretching=False, margin=0.2,
+                 enable_pitch_shifting=False, enable_time_stretching=False,
+                 enable_time_masking=False, enable_frequency_masking=False, margin=0.2,
                  model_checkpoint=None):
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
@@ -31,6 +32,8 @@ class AudioDescriptorExtractorTrainer(Trainer):
         self._audio_transform_type = audio_transform_type
         self._enable_pitch_shifting = enable_pitch_shifting
         self._enable_time_stretching = enable_time_stretching
+        self._enable_time_masking = enable_time_masking
+        self._enable_frequency_masking = enable_frequency_masking
         self._margin = margin
         self._class_count = model.class_count()
         super(AudioDescriptorExtractorTrainer, self).__init__(device, model,
@@ -62,7 +65,7 @@ class AudioDescriptorExtractorTrainer(Trainer):
             criterion = nn.CrossEntropyLoss()
             return lambda model_output, target: criterion(model_output[1], target)
         elif self._criterion_type == 'am_softmax_loss':
-            return AudioDescriptorAmSoftmaxLoss(s=10.0, m=0.2,
+            return AudioDescriptorAmSoftmaxLoss(s=30.0, m=self._margin,
                                                 start_annealing_epoch=0,
                                                 end_annealing_epoch=self._epoch_count // 2)
         else:
@@ -77,7 +80,9 @@ class AudioDescriptorExtractorTrainer(Trainer):
                                                        noise_p=0.5,
                                                        audio_transform_type=self._audio_transform_type,
                                                        enable_pitch_shifting=self._enable_pitch_shifting,
-                                                       enable_time_stretching=self._enable_time_stretching)
+                                                       enable_time_stretching=self._enable_time_stretching,
+                                                       enable_time_masking=self._enable_time_masking,
+                                                       enable_frequency_masking=self._enable_frequency_masking)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):

@@ -29,6 +29,8 @@ def main():
                         help='Choose the audio transform type', required=True)
     parser.add_argument('--enable_pitch_shifting', action='store_true', help='Use pitch shifting data augmentation')
     parser.add_argument('--enable_time_stretching', action='store_true', help='Use pitch shifting data augmentation')
+    parser.add_argument('--enable_time_masking', action='store_true', help='Use time masking data augmentation')
+    parser.add_argument('--enable_frequency_masking', action='store_true', help='Use time masking data augmentation')
     parser.add_argument('--margin', type=float, help='Set the margin', default=0.2)
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
@@ -79,6 +81,8 @@ def main():
                                               audio_transform_type=args.audio_transform_type,
                                               enable_pitch_shifting=args.enable_pitch_shifting,
                                               enable_time_stretching=args.enable_time_stretching,
+                                              enable_time_masking=args.enable_time_masking,
+                                              enable_frequency_masking=args.enable_frequency_masking,
                                               margin=args.margin,
                                               model_checkpoint=args.model_checkpoint)
     trainer.train()
