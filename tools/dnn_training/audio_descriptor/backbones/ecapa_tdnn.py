@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from common.modules import GlobalAvgPool1d
+
 
 # Inspired by https://github.com/TaoRuijie/ECAPA-TDNN and https://github.com/lawlict/ECAPA-TDNN
 class SqueezeExcitation(nn.Module):
@@ -8,7 +10,7 @@ class SqueezeExcitation(nn.Module):
         super(SqueezeExcitation, self).__init__()
 
         self._layers = nn.Sequential(
-            nn.AdaptiveAvgPool1d(output_size=1),
+            GlobalAvgPool1d(),
             nn.Conv1d(in_channels=in_channels, out_channels=bottleneck_channels, kernel_size=1, bias=False),
             nn.BatchNorm1d(num_features=bottleneck_channels),
             nn.ReLU(),
@@ -80,15 +82,17 @@ class EcapaTdnnAttentionPooling(nn.Module):
             nn.Softmax(dim=2),
         )
 
-    def forward(self, x):
-        global_x = torch.cat((x,
-                              torch.mean(x, dim=2, keepdim=True).repeat(1, 1, x.size(2)),
-                              torch.std(x, dim=2, keepdim=True).clamp(min=1e-4).repeat(1, 1, x.size(2))),
+    def forward(self, x, eps=1e-4):
+        global_mean = torch.mean(x, dim=2, keepdim=True)
+        global_std = torch.sqrt((torch.mean((x - global_mean) ** 2, dim=2, keepdim=True)).clamp(min=eps))
+        global_x = torch.cat([x,
+                              global_mean.expand(x.size(0), x.size(1), x.size(2)),
+                              global_std.expand(x.size(0), x.size(1), x.size(2))],
                              dim=1)
         w = self._layers(global_x)
 
         mean = torch.sum(w * x, dim=2)
-        std = torch.sqrt((torch.sum((x**2) * w, dim=2) - mean**2).clamp(min=1e-4))
+        std = torch.sqrt((torch.sum((x**2) * w, dim=2) - mean**2).clamp(min=eps))
 
         return torch.cat([mean, std], dim=1)
 
@@ -106,10 +110,10 @@ class SmallEcapaTdnnAttentionPooling(nn.Module):
             nn.Softmax(dim=2),
         )
 
-    def forward(self, x):
+    def forward(self, x, eps=1e-4):
         w = self._layers(x)
         mean = torch.sum(w * x, dim=2)
-        std = torch.sqrt((torch.sum((x**2) * w, dim=2) - mean**2).clamp(min=1e-4))
+        std = torch.sqrt((torch.sum((x**2) * w, dim=2) - mean**2).clamp(min=eps))
 
         return torch.cat([mean, std], dim=1)
 
