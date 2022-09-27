@@ -7,7 +7,8 @@ from common.program_arguments import save_arguments, print_arguments
 
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception, VGGLike
 from audio_descriptor.backbones import TinyCnn
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor
+from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
+from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP
 from audio_descriptor.trainers import MulticlassAudioDescriptorExtractorTrainer
 
 
@@ -21,6 +22,7 @@ def main():
                                                     'open_face_inception', 'tiny_cnn', 'vgg_like'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
+    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
@@ -28,6 +30,8 @@ def main():
                         help='Choose the audio transform type', required=True)
     parser.add_argument('--enable_pitch_shifting', action='store_true', help='Use pitch shifting data augmentation')
     parser.add_argument('--enable_time_stretching', action='store_true', help='Use pitch shifting data augmentation')
+    parser.add_argument('--enable_time_masking', action='store_true', help='Use time masking data augmentation')
+    parser.add_argument('--enable_frequency_masking', action='store_true', help='Use time masking data augmentation')
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
     parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
@@ -40,7 +44,7 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.backbone_type, args.embedding_size)
+    model = create_model(args.backbone_type, args.embedding_size, args.pooling_layer)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
@@ -62,15 +66,25 @@ def main():
                                                         audio_transform_type=args.audio_transform_type,
                                                         enable_pitch_shifting=args.enable_pitch_shifting,
                                                         enable_time_stretching=args.enable_time_stretching,
+                                                        enable_time_masking=args.enable_time_masking,
+                                                        enable_frequency_masking=args.enable_frequency_masking,
                                                         model_checkpoint=args.model_checkpoint)
     trainer.train()
 
 
-def create_model(backbone_type, embedding_size):
+def create_model(backbone_type, embedding_size, pooling_layer):
     pretrained = True
+    class_count = 200
 
     backbone = create_backbone(backbone_type, pretrained)
-    return AudioDescriptorExtractor(backbone, embedding_size=embedding_size, class_count=200)
+    if pooling_layer == 'avg':
+        return AudioDescriptorExtractor(backbone, embedding_size=embedding_size, class_count=class_count)
+    elif pooling_layer == 'vlad':
+        return AudioDescriptorExtractorVLAD(backbone, embedding_size=embedding_size, class_count=class_count)
+    elif pooling_layer == 'sap':
+        return AudioDescriptorExtractorSAP(backbone, embedding_size=embedding_size, class_count=class_count)
+    else:
+        raise ValueError('Invalid pooling layer')
 
 
 def create_backbone(backbone_type, pretrained):

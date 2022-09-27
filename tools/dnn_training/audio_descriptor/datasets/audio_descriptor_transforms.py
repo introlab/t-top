@@ -6,7 +6,7 @@ import torchaudio
 import torchaudio.transforms as transforms
 
 from common.datasets.audio_transform_utils import to_mono, resample, resize_waveform, resize_waveform_random, \
-    normalize, RandomPitchShift, RandomTimeStretch
+    normalize, standardize_every_frame, RandomPitchShift, RandomTimeStretch
 
 
 class _AudioDescriptorTransforms:
@@ -115,6 +115,7 @@ class AudioDescriptorTrainingTransforms(_AudioDescriptorTransforms):
         if self._enable_frequency_masking and random.random() < self._frequency_masking_p:
             spectrogram = self._frequency_masking(spectrogram)
 
+        spectrogram = standardize_every_frame(spectrogram)
         return spectrogram, target, metadata
 
     def _add_noise(self, waveform):
@@ -133,4 +134,17 @@ class AudioDescriptorValidationTransforms(_AudioDescriptorTransforms):
         waveform = resize_waveform(waveform, self._waveform_size)
         waveform = normalize(waveform)
 
-        return self._audio_transform(waveform), target, metadata
+        spectrogram = self._audio_transform(waveform)
+        spectrogram = standardize_every_frame(spectrogram)
+        return spectrogram, target, metadata
+
+
+class AudioDescriptorTestTransforms(_AudioDescriptorTransforms):
+    def __call__(self, waveform, target, metadata):
+        waveform = to_mono(waveform)
+        waveform = resample(waveform, metadata['original_sample_rate'], self._sample_rate)
+        waveform = normalize(waveform)
+
+        spectrogram = self._audio_transform(waveform)
+        spectrogram = standardize_every_frame(spectrogram)
+        return spectrogram, target, metadata

@@ -14,7 +14,7 @@ from common.metrics import ClassificationAccuracyMetric, LossMetric, LossLearnin
 
 from audio_descriptor.criterions import AudioDescriptorAmSoftmaxLoss
 from audio_descriptor.datasets import AudioDescriptorDataset, \
-    AudioDescriptorTrainingTransforms, AudioDescriptorValidationTransforms
+    AudioDescriptorTrainingTransforms, AudioDescriptorValidationTransforms, AudioDescriptorTestTransforms
 from audio_descriptor.metrics import AudioDescriptorEvaluation
 
 
@@ -93,11 +93,11 @@ class AudioDescriptorExtractorTrainer(Trainer):
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms)
 
     def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = AudioDescriptorValidationTransforms(waveform_size=self._waveform_size,
-                                                         n_features=self._n_features,
-                                                         n_fft=self._n_fft,
-                                                         audio_transform_type=self._audio_transform_type)
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'testing', transforms)
+        transforms = AudioDescriptorTestTransforms(waveform_size=self._waveform_size,
+                                                   n_features=self._n_features,
+                                                   n_fft=self._n_fft,
+                                                   audio_transform_type=self._audio_transform_type)
+        return self._create_dataset_loader(dataset_root, 1, 1, 'testing', transforms)
 
     def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms):
         dataset = AudioDescriptorDataset(dataset_root, split=split, transforms=transforms)

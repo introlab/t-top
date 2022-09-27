@@ -21,6 +21,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                  epoch_count=10, learning_rate=0.01, weight_decay=0, batch_size=128, criterion_type='bce_loss',
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
                  enable_pitch_shifting=False, enable_time_stretching=False,
+                 enable_time_masking=False, enable_frequency_masking=False,
                  model_checkpoint=None):
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
@@ -29,6 +30,8 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._audio_transform_type = audio_transform_type
         self._enable_pitch_shifting = enable_pitch_shifting
         self._enable_time_stretching = enable_time_stretching
+        self._enable_time_masking = enable_time_masking
+        self._enable_frequency_masking = enable_frequency_masking
         self._class_count = model.class_count()
         super(MulticlassAudioDescriptorExtractorTrainer, self).__init__(device, model,
                                                                         dataset_root=dataset_root,
@@ -72,7 +75,9 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                                                        noise_p=0.5,
                                                        audio_transform_type=self._audio_transform_type,
                                                        enable_pitch_shifting=self._enable_pitch_shifting,
-                                                       enable_time_stretching=self._enable_time_stretching)
+                                                       enable_time_stretching=self._enable_time_stretching,
+                                                       enable_time_masking=self._enable_time_masking,
+                                                       enable_frequency_masking=self._enable_frequency_masking)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):

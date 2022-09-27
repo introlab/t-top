@@ -34,12 +34,16 @@ class NetVLAD(nn.Module):
 
         # Compute the VLAD
         x = x.view(N, C, -1)
-        residual = x.expand(self._all_cluster_count, -1, -1, -1).permute(1, 0, 2, 3) - \
-                   self._centroids.expand(x.size(-1), -1, -1).permute(1, 2, 0).unsqueeze(0)
-        vlad = (residual * soft_assignment.unsqueeze(2)).sum(dim=-1)
+        a = x.unsqueeze(0).expand(self._all_cluster_count, x.size(0), x.size(1), x.size(2))
+        a = a.unsqueeze(0).permute(0, 2, 1, 3, 4)
+        b = self._centroids.contiguous().unsqueeze(0)
+        b = b.expand(x.size(-1), self._centroids.size(0), self._centroids.size(1))
+        b = b.unsqueeze(0).permute(0, 2, 3, 1).unsqueeze(0)
 
-        vlad = vlad[:, :self._cluster_count, :] # Remove the ghost clusters
+        residual = (a - b)[(0,)]
+        vlad = (residual * soft_assignment.unsqueeze(2)).sum(dim=3)
+
+        vlad = vlad[:, :self._cluster_count, :]  # Remove the ghost clusters
 
         vlad = F.normalize(vlad, p=2, dim=2)  # intra-normalization
         return F.normalize(vlad.view(N, -1), p=2, dim=1)  # L2 normalize
-

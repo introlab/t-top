@@ -55,6 +55,10 @@ def resample(waveform, input_sample_rate, output_sample_rate):
         return waveform
 
 
+def standardize_every_frame(spectrogram, eps=1e-8):
+    return (spectrogram - spectrogram.mean(dim=1, keepdim=True)) / (spectrogram.std(dim=1, keepdim=True) + eps)
+
+
 class RandomPitchShift(nn.Module):
     def __init__(self, sample_rate, min_steps, max_steps, p):
         super(RandomPitchShift, self).__init__()
