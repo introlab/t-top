@@ -1,4 +1,4 @@
 from audio_descriptor.datasets.audio_descriptor_transforms import AudioDescriptorTrainingTransforms, \
     AudioDescriptorValidationTransforms, AudioDescriptorTestTransforms
 from audio_descriptor.datasets.audio_descriptor_dataset import AudioDescriptorDataset
-from audio_descriptor.datasets.fsd50k_dataset import Fsd50kDataset
+from audio_descriptor.datasets.fsd50k_dataset import Fsd50kDataset, FSDK50k_POS_WEIGHT

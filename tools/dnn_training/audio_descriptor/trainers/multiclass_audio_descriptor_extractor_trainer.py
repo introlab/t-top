@@ -11,7 +11,7 @@ from common.criterions import SigmoidFocalLossWithLogits
 from common.metrics import MulticlassClassificationAccuracyMetric, MulticlassClassificationPrecisionRecallMetric, \
     LossMetric, LossAccuracyMeanAveragePrecisionLearningCurves, MulticlassClassificationMeanAveragePrecisionMetric
 
-from audio_descriptor.datasets import Fsd50kDataset, AudioDescriptorTrainingTransforms, \
+from audio_descriptor.datasets import Fsd50kDataset, FSDK50k_POS_WEIGHT, AudioDescriptorTrainingTransforms, \
     AudioDescriptorValidationTransforms
 from audio_descriptor.metrics import AudioDescriptorEvaluation
 
@@ -22,7 +22,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
                  enable_pitch_shifting=False, enable_time_stretching=False,
                  enable_time_masking=False, enable_frequency_masking=False,
-                 model_checkpoint=None):
+                 enable_pos_weight=False, model_checkpoint=None):
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
         self._n_features = n_features
@@ -32,6 +32,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._enable_time_stretching = enable_time_stretching
         self._enable_time_masking = enable_time_masking
         self._enable_frequency_masking = enable_frequency_masking
+        self._enable_pos_weight = enable_pos_weight
         self._class_count = model.class_count()
         super(MulticlassAudioDescriptorExtractorTrainer, self).__init__(device, model,
                                                                         dataset_root=dataset_root,
@@ -57,11 +58,13 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._validation_map_metric = MulticlassClassificationMeanAveragePrecisionMetric(self._class_count)
 
     def _create_criterion(self, model):
+        pos_weight = FSDK50k_POS_WEIGHT if self._enable_pos_weight else None
+
         if self._criterion_type == 'bce_loss':
-            criterion = nn.BCEWithLogitsLoss()
+            criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
             return lambda model_output, target: criterion(model_output[1], target)
         elif self._criterion_type == 'sigmoid_focal_loss':
-            criterion = SigmoidFocalLossWithLogits()
+            criterion = SigmoidFocalLossWithLogits(pos_weight=pos_weight)
             return lambda model_output, target: criterion(model_output[1], target)
         else:
             raise ValueError('Invalid criterion type')

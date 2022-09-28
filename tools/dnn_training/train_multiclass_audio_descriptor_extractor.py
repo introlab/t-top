@@ -32,6 +32,7 @@ def main():
     parser.add_argument('--enable_time_stretching', action='store_true', help='Use pitch shifting data augmentation')
     parser.add_argument('--enable_time_masking', action='store_true', help='Use time masking data augmentation')
     parser.add_argument('--enable_frequency_masking', action='store_true', help='Use time masking data augmentation')
+    parser.add_argument('--enable_pos_weight', action='store_true', help='Use pos weight in the loss')
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
     parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
@@ -68,6 +69,7 @@ def main():
                                                         enable_time_stretching=args.enable_time_stretching,
                                                         enable_time_masking=args.enable_time_masking,
                                                         enable_frequency_masking=args.enable_frequency_masking,
+                                                        enable_pos_weight=args.enable_pos_weight,
                                                         model_checkpoint=args.model_checkpoint)
     trainer.train()
 
