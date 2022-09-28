@@ -58,7 +58,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._validation_map_metric = MulticlassClassificationMeanAveragePrecisionMetric(self._class_count)
 
     def _create_criterion(self, model):
-        pos_weight = FSDK50k_POS_WEIGHT if self._enable_pos_weight else None
+        pos_weight = FSDK50k_POS_WEIGHT.to(self._device) if self._enable_pos_weight else None
 
         if self._criterion_type == 'bce_loss':
             criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
