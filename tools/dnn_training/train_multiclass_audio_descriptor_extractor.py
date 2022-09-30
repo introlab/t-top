@@ -6,7 +6,7 @@ import torch
 from common.program_arguments import save_arguments, print_arguments
 
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception, VGGLike
-from audio_descriptor.backbones import TinyCnn
+from audio_descriptor.backbones import TinyCnn, EcapaTdnn, SmallEcapaTdnn
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP
 from audio_descriptor.trainers import MulticlassAudioDescriptorExtractorTrainer
@@ -19,7 +19,8 @@ def main():
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
-                                                    'open_face_inception', 'tiny_cnn', 'vgg_like'],
+                                                    'open_face_inception', 'tiny_cnn', 'vgg_like',
+                                                    'ecapa_tdnn', 'small_ecapa_tdnn'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
@@ -45,7 +46,7 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.backbone_type, args.embedding_size, args.pooling_layer)
+    model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.pooling_layer)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
@@ -74,11 +75,11 @@ def main():
     trainer.train()
 
 
-def create_model(backbone_type, embedding_size, pooling_layer):
+def create_model(backbone_type, n_features, embedding_size, pooling_layer):
     pretrained = True
     class_count = 200
 
-    backbone = create_backbone(backbone_type, pretrained)
+    backbone = create_backbone(backbone_type, n_features, pretrained)
     if pooling_layer == 'avg':
         return AudioDescriptorExtractor(backbone, embedding_size=embedding_size, class_count=class_count)
     elif pooling_layer == 'vlad':
@@ -89,7 +90,7 @@ def create_model(backbone_type, embedding_size, pooling_layer):
         raise ValueError('Invalid pooling layer')
 
 
-def create_backbone(backbone_type, pretrained):
+def create_backbone(backbone_type, n_features, pretrained):
     if backbone_type == 'mnasnet0.5':
         return Mnasnet0_5(pretrained=pretrained)
     elif backbone_type == 'mnasnet1.0':
@@ -106,6 +107,10 @@ def create_backbone(backbone_type, pretrained):
         return TinyCnn()
     elif backbone_type == 'vgg_like':
         return VGGLike()
+    elif backbone_type == 'ecapa_tdnn':
+        return EcapaTdnn(n_features)
+    elif backbone_type == 'small_ecapa_tdnn':
+        return SmallEcapaTdnn(n_features)
     else:
         raise ValueError('Invalid backbone type')
 
