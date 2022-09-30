@@ -12,7 +12,7 @@ from common.metrics import MulticlassClassificationAccuracyMetric, MulticlassCla
     LossMetric, LossAccuracyMeanAveragePrecisionLearningCurves, MulticlassClassificationMeanAveragePrecisionMetric
 
 from audio_descriptor.datasets import Fsd50kDataset, FSDK50k_POS_WEIGHT, AudioDescriptorTrainingTransforms, \
-    AudioDescriptorValidationTransforms
+    AudioDescriptorValidationTransforms, AudioDescriptorTestTransforms
 from audio_descriptor.metrics import AudioDescriptorEvaluation
 
 
@@ -89,6 +89,13 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                                                          n_fft=self._n_fft,
                                                          audio_transform_type=self._audio_transform_type)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms)
+
+    def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
+        transforms = AudioDescriptorTestTransforms(waveform_size=self._waveform_size,
+                                                   n_features=self._n_features,
+                                                   n_fft=self._n_fft,
+                                                   audio_transform_type=self._audio_transform_type)
+        return self._create_dataset_loader(dataset_root, 1, 1, 'validation', transforms)
 
     def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms):
         dataset = Fsd50kDataset(dataset_root, split=split, transforms=transforms)
