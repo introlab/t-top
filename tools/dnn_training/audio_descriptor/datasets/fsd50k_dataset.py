@@ -34,7 +34,7 @@ FSDK50k_POS_WEIGHT = torch.tensor([0.5651, 0.1267, 0.1715, 0.4201, 0.1626, 0.117
 
 
 class Fsd50kDataset(Dataset):
-    def __init__(self, root, split=None, transforms=None, mixing=True):
+    def __init__(self, root, split=None, transforms=None, enable_mixup=True):
         self._class_indexes_by_name = self._list_classes(root)
 
         if split == 'training':
@@ -45,7 +45,7 @@ class Fsd50kDataset(Dataset):
             raise ValueError('Invalid split')
 
         self._transforms = transforms
-        self._mixing = mixing
+        self._enable_mixup = enable_mixup
 
     def _list_classes(self, root):
         class_indexes_by_name = {}
@@ -83,19 +83,19 @@ class Fsd50kDataset(Dataset):
         return len(self._sounds)
 
     def __getitem__(self, index):
-        waveform, target, metadata = self._get_item_without_mixing(index)
+        waveform, target, metadata = self._get_item_without_mixup(index)
 
-        if self._mixing:
-            mixing_index = random.randrange(len(self._sounds))
+        if self._enable_mixup:
+            mixup_index = random.randrange(len(self._sounds))
             alpha = random.random()
-            mixing_waveform, mixing_target, _ = self._get_item_without_mixing(mixing_index)
+            mixup_waveform, mixup_target, _ = self._get_item_without_mixup(mixup_index)
 
-            waveform = alpha * waveform + (1 - alpha) * mixing_waveform
-            target = alpha * target + (1 - alpha) * mixing_target
+            waveform = alpha * waveform + (1 - alpha) * mixup_waveform
+            target = alpha * target + (1 - alpha) * mixup_target
 
         return waveform, target, metadata
 
-    def _get_item_without_mixing(self, index):
+    def _get_item_without_mixup(self, index):
         waveform, sample_rate = torchaudio.load(self._sounds[index]['path'])
         target = self._sounds[index]['target'].clone()
 

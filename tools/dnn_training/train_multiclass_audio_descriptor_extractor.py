@@ -34,7 +34,7 @@ def main():
     parser.add_argument('--enable_time_masking', action='store_true', help='Use time masking data augmentation')
     parser.add_argument('--enable_frequency_masking', action='store_true', help='Use time masking data augmentation')
     parser.add_argument('--enable_pos_weight', action='store_true', help='Use pos weight in the loss')
-    parser.add_argument('--enable_mixing', action='store_true', help='Use pos weight in the loss')
+    parser.add_argument('--enable_mixup', action='store_true', help='Use pos weight in the loss')
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
     parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
@@ -51,7 +51,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
-                               '_' + args.audio_transform_type + '_' + str(args.enable_mixing) +
+                               '_' + args.audio_transform_type + '_mixup' + str(int(args.enable_mixup)) +
                                '_' + args.criterion_type + '_lr' + str(args.learning_rate) +
                                '_wd' + str(args.weight_decay))
     save_arguments(output_path, args)
@@ -73,7 +73,7 @@ def main():
                                                         enable_time_masking=args.enable_time_masking,
                                                         enable_frequency_masking=args.enable_frequency_masking,
                                                         enable_pos_weight=args.enable_pos_weight,
-                                                        enable_mixing=args.enable_mixing,
+                                                        enable_mixup=args.enable_mixup,
                                                         model_checkpoint=args.model_checkpoint)
     trainer.train()
 
