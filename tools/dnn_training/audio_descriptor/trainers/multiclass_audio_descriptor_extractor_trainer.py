@@ -22,7 +22,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
                  enable_pitch_shifting=False, enable_time_stretching=False,
                  enable_time_masking=False, enable_frequency_masking=False,
-                 enable_pos_weight=False, model_checkpoint=None):
+                 enable_pos_weight=False, enable_mixing=True, model_checkpoint=None):
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
         self._n_features = n_features
@@ -33,6 +33,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._enable_time_masking = enable_time_masking
         self._enable_frequency_masking = enable_frequency_masking
         self._enable_pos_weight = enable_pos_weight
+        self._enable_mixing = enable_mixing
         self._class_count = model.class_count()
         super(MulticlassAudioDescriptorExtractorTrainer, self).__init__(device, model,
                                                                         dataset_root=dataset_root,
@@ -81,24 +82,26 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                                                        enable_time_stretching=self._enable_time_stretching,
                                                        enable_time_masking=self._enable_time_masking,
                                                        enable_frequency_masking=self._enable_frequency_masking)
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms)
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms,
+                                           mixing=self._enable_mixing)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         transforms = AudioDescriptorValidationTransforms(waveform_size=self._waveform_size,
                                                          n_features=self._n_features,
                                                          n_fft=self._n_fft,
                                                          audio_transform_type=self._audio_transform_type)
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms)
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms,
+                                           mixing=False)
 
     def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         transforms = AudioDescriptorTestTransforms(waveform_size=self._waveform_size,
                                                    n_features=self._n_features,
                                                    n_fft=self._n_fft,
                                                    audio_transform_type=self._audio_transform_type)
-        return self._create_dataset_loader(dataset_root, 1, 1, 'validation', transforms)
+        return self._create_dataset_loader(dataset_root, 1, 1, 'validation', transforms, mixing=False)
 
-    def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms):
-        dataset = Fsd50kDataset(dataset_root, split=split, transforms=transforms)
+    def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms, mixing):
+        dataset = Fsd50kDataset(dataset_root, split=split, transforms=transforms, mixing=mixing)
         return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=True,
                                            num_workers=4)
 
