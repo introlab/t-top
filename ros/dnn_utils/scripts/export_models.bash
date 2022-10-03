@@ -35,7 +35,8 @@ if [ $NEW_TIME -gt $OLD_TIME ]; then
 
     # TODO update multiclass_audio_descriptor_extractor
     python3 export_audio_descriptor_extractor.py --backbone_type open_face_inception --embedding_size 128 --conv_bias --pooling_layer avg --waveform_size 64000 --n_features 128 --n_fft 400 --dataset_class_count 200 --output_dir $SCRIPT_PATH/../models --torch_script_filename multiclass_audio_descriptor_extractor.ts.pth --trt_filename multiclass_audio_descriptor_extractor.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/multiclass_audio_descriptor_extractor_open_face_inception_128_64000_128_400_mel_spectrogram.pth --trt_fp16
-    python3 export_audio_descriptor_extractor.py --backbone_type small_ecapa_tdnn --embedding_size 256 --pooling_layer avg --waveform_size 64000 --n_features 96 --n_fft 480 --output_dir $SCRIPT_PATH/../models --torch_script_filename voice_descriptor_extractor.ts.pth --trt_filename voice_descriptor_extractor.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/voice_descriptor_extractor_small_ecapa_tdnn_256_64000_96_480_mel_spectrogram.pth --trt_fp16
+    # TODO add --trt_fp16
+    python3 export_audio_descriptor_extractor.py --backbone_type small_ecapa_tdnn --embedding_size 256 --pooling_layer avg --waveform_size 64000 --n_features 96 --n_fft 480 --output_dir $SCRIPT_PATH/../models --torch_script_filename voice_descriptor_extractor.ts.pth --trt_filename voice_descriptor_extractor.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/voice_descriptor_extractor_small_ecapa_tdnn_256_64000_96_480_mel_spectrogram.pth
 else
     echo "Using current weights."
 fi
