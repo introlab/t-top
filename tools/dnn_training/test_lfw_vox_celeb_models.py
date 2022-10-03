@@ -85,11 +85,12 @@ class LfwVoxCelebEvaluation(RocDistancesThresholdsEvaluation):
             face_image_0 = self._load_face_image(face_path_0)
             face_image_1 = self._load_face_image(face_path_1)
 
-            voice_descriptors = self._voice_model(torch.stack((voice_sound_0, voice_sound_1)))#
+            voice_descriptor_0 = self._voice_model(voice_sound_0)
+            voice_descriptor_1 = self._voice_model(voice_sound_1)
             face_descriptors = self._face_model(torch.stack((face_image_0, face_image_1)))
 
-            descriptor_0 = torch.cat((voice_descriptors[0], face_descriptors[0]))
-            descriptor_1 = torch.cat((voice_descriptors[1], face_descriptors[1]))
+            descriptor_0 = torch.cat((voice_descriptor_0[0], face_descriptors[0]))
+            descriptor_1 = torch.cat((voice_descriptor_1[0], face_descriptors[1]))
             distance = torch.dist(descriptor_0, descriptor_1, p=2).item()
             distances.append(distance)
 
@@ -150,13 +151,13 @@ def main():
     args = parser.parse_args()
 
     face_model = create_face_model(args.face_embedding_size)
-    load_checkpoint(face_model, args.face_model_checkpoint)
+    load_checkpoint(face_model, args.face_model_checkpoint, keys_to_remove=['_classifier._weight'])
     face_model.eval()
     face_transforms = create_validation_image_transform()
 
     voice_model = create_voice_model(args.voice_backbone_type, args.voice_n_features, args.voice_embedding_size,
                                      pooling_layer=args.voice_pooling_layer)
-    load_checkpoint(voice_model, args.voice_model_checkpoint)
+    load_checkpoint(voice_model, args.voice_model_checkpoint, keys_to_remove=['_classifier._weight'])
     voice_model.eval()
     voice_transforms = AudioDescriptorTestTransforms(waveform_size=args.voice_waveform_size,
                                                      n_features=args.voice_n_features,

@@ -3,8 +3,13 @@ import os
 import torch
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
-from dnn_utils.audio_transforms import MelSpectrogram, GPU_SUPPORTED, normalize
-from dnn_utils.audio_descriptor_extractor import DURATION, SAMPLING_FREQUENCY, N_MELS, N_FFT
+from dnn_utils.audio_transforms import MelSpectrogram, GPU_SUPPORTED, normalize, standardize_every_frame
+
+
+DURATION = 64000
+SAMPLING_FREQUENCY = 16000
+N_MELS = 96
+N_FFT = 480
 
 
 class MulticlassAudioDescriptorExtractor(DnnModel):
@@ -64,6 +69,7 @@ class MulticlassAudioDescriptorExtractor(DnnModel):
 
             x = normalize(x)
             spectrogram = self._transform(x).unsqueeze(0)
+            spectrogram = standardize_every_frame(spectrogram)
             descriptor, class_scores = super(MulticlassAudioDescriptorExtractor, self).__call__(spectrogram.unsqueeze(0))
             probabilities = torch.sigmoid(class_scores[0])
 

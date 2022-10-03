@@ -28,7 +28,7 @@ def main():
     model = FaceDescriptorExtractor(embedding_size=args.embedding_size)
     x = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
-                 trt_fp16=args.trt_fp16)
+                 trt_fp16=args.trt_fp16, keys_to_remove=['_classifier._weight'])
 
 
 if __name__ == '__main__':

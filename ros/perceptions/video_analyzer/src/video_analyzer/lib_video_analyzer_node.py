@@ -83,6 +83,7 @@ class VideoAnalyzerNode:
         self._pose_enabled = rospy.get_param('~pose_enabled', True)
         self._face_descriptor_enabled = rospy.get_param('~face_descriptor_enabled', True)
         self._semantic_segmentation_enabled = rospy.get_param('~semantic_segmentation_enabled', True)
+        self._semantic_segmentation_dataset = rospy.get_param('~semantic_segmentation_dataset', 'coco')
         self._cropped_image_enabled = rospy.get_param('~cropped_image_enabled', True)
 
         if self._face_descriptor_enabled and not self._pose_enabled:
@@ -102,7 +103,8 @@ class VideoAnalyzerNode:
         if self._face_descriptor_enabled:
             self._face_descriptor_extractor = FaceDescriptorExtractor(inference_type=self._inference_type)
         if self._semantic_segmentation_enabled:
-            self._semantic_segmentation_network = SemanticSegmentationNetwork(inference_type=self._inference_type)
+            self._semantic_segmentation_network = SemanticSegmentationNetwork(inference_type=self._inference_type,
+                                                                              dataset=self._semantic_segmentation_dataset)
 
         self._person_class_index = self._object_class_names.index('person')
 

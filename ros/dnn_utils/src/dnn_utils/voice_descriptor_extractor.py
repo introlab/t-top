@@ -3,13 +3,13 @@ import os
 import torch
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
-from dnn_utils.audio_transforms import MelSpectrogram, GPU_SUPPORTED, normalize
+from dnn_utils.audio_transforms import MelSpectrogram, GPU_SUPPORTED, normalize, standardize_every_frame
 
 
 DURATION = 64000
 SAMPLING_FREQUENCY = 16000
-N_MELS = 128
-N_FFT = 400
+N_MELS = 96
+N_FFT = 480
 
 
 class VoiceDescriptorExtractor(DnnModel):
@@ -35,4 +35,5 @@ class VoiceDescriptorExtractor(DnnModel):
 
             x = normalize(x)
             spectrogram = self._transform(x).unsqueeze(0)
+            spectrogram = standardize_every_frame(spectrogram)
             return super(VoiceDescriptorExtractor, self).__call__(spectrogram.unsqueeze(0))[0].cpu()

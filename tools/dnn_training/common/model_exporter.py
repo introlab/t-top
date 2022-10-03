@@ -12,8 +12,9 @@ except ImportError:
     torch2trt_found = False
 
 
-def export_model(model, model_checkpoint, x, output_dir, torch_script_filename, trt_filename, trt_fp16=False):
-    load_checkpoint(model, model_checkpoint)
+def export_model(model, model_checkpoint, x, output_dir, torch_script_filename, trt_filename, trt_fp16=False,
+                 keys_to_remove=None):
+    load_checkpoint(model, model_checkpoint, keys_to_remove=keys_to_remove)
     model.eval()
 
     _export_torch_script(model, x, output_dir, torch_script_filename)
@@ -22,8 +23,8 @@ def export_model(model, model_checkpoint, x, output_dir, torch_script_filename, 
 
 
 def _export_torch_script(model, x, output_dir, filename):
-    scripted_model = torch.jit.script(model, x)
-    scripted_model.save(os.path.join(output_dir, filename))
+    traced_model = torch.jit.trace(model, x, check_trace=False)
+    traced_model.save(os.path.join(output_dir, filename))
 
 
 def _export_trt(model, x, output_dir, filename, fp16_mode=False):

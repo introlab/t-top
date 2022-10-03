@@ -10,6 +10,7 @@ import rospy
 
 from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor
 from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
+from dnn_utils import SemanticSegmentationNetwork
 
 
 def mean_abs_diff(a, b):
@@ -179,6 +180,25 @@ def test_ttop_keyword_spotter():
           mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
 
 
+def test_semantic_segmentation_network():
+    print('----------test_semantic_segmentation_network----------')
+
+    cpu_model = SemanticSegmentationNetwork(inference_type='cpu')
+    torch_gpu_model = SemanticSegmentationNetwork(inference_type='torch_gpu')
+    trt_gpu_model = SemanticSegmentationNetwork(inference_type='trt_gpu')
+
+    IMAGE_SIZE = cpu_model.get_supported_image_size()
+    x = torch.randn(1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1])
+    cpu_semantic_segmentation = cpu_model(x)
+    torch_gpu_semantic_segmentation = torch_gpu_model(x)
+    trt_gpu_semantic_segmentation = trt_gpu_model(x)
+
+    print('mean(abs(cpu_semantic_segmentation - torch_gpu_class_probabilities)) =',
+          mean_abs_diff(cpu_semantic_segmentation, torch_gpu_semantic_segmentation))
+    print('mean(abs(cpu_semantic_segmentation - trt_gpu_class_probabilities))) =',
+          mean_abs_diff(cpu_semantic_segmentation, trt_gpu_semantic_segmentation))
+
+
 def main():
     rospy.init_node('dnn_utils_test')
 
@@ -186,10 +206,10 @@ def main():
     launch_test(test_yolo_v4)
     launch_test(test_pose_estimator)
     launch_test(test_face_descriptor_extractor)
-    launch_test(test_audio_descriptor_extractor)
     launch_test(test_multiclass_audio_descriptor_extractor)
     launch_test(test_voice_descriptor_extractor)
     launch_test(test_ttop_keyword_spotter)
+    launch_test(test_semantic_segmentation_network)
 
 
 if __name__ == '__main__':

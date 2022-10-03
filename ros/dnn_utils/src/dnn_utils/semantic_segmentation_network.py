@@ -12,9 +12,9 @@ IMAGE_SIZE = (270, 480)
 
 
 class SemanticSegmentationNetwork(DnnModel):
-    def __init__(self, inference_type=None):
-        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'semantic_segmentation_network.ts.pth')
-        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'semantic_segmentation_network.trt.pth')
+    def __init__(self, inference_type=None, dataset='coco'):
+        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', f'semantic_segmentation_network_{dataset}.ts.pth')
+        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', f'semantic_segmentation_network_{dataset}.trt.pth')
         sample_input = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
 
         super(SemanticSegmentationNetwork, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,

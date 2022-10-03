@@ -15,6 +15,10 @@ def normalize(waveform):
     return waveform / s
 
 
+def standardize_every_frame(spectrogram, eps=1e-8):
+    return (spectrogram - spectrogram.mean(dim=1, keepdim=True)) / (spectrogram.std(dim=1, keepdim=True) + eps)
+
+
 class MelSpectrogram:
     def __init__(self, sample_rate, n_fft, n_mels) -> None:
         self._cpu_tranform = _CpuMelSpectrogram(sample_rate, n_fft, n_mels)

@@ -15,7 +15,8 @@ from keyword_spotting.datasets import GoogleSpeechCommands, TtopKeyword, \
 
 class KeywordSpotterTrainer(Trainer):
     def __init__(self, device, model, dataset_type='google_speech_commands', mfcc_feature_count=40, dataset_root='',
-                 output_path='', epoch_count=10, learning_rate=0.01, batch_size=128, batch_size_division=4,
+                 output_path='', epoch_count=10, learning_rate=0.01, weight_decay=0.0,
+                 batch_size=128, batch_size_division=4,
                  model_checkpoint=None):
         self._dataset_type = dataset_type
         self._mfcc_feature_count = mfcc_feature_count
@@ -25,6 +26,7 @@ class KeywordSpotterTrainer(Trainer):
                                                     output_path=output_path,
                                                     epoch_count=epoch_count,
                                                     learning_rate=learning_rate,
+                                                    weight_decay=weight_decay,
                                                     batch_size=batch_size,
                                                     batch_size_division=batch_size_division,
                                                     model_checkpoint=model_checkpoint)

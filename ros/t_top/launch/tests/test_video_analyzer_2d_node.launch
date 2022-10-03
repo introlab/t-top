@@ -18,6 +18,8 @@
 
         <param name="pose_enabled" value="false"/>
         <param name="face_descriptor_enabled" value="false"/>
+        <param name="semantic_segmentation_enabled" value="true"/>
+        <param name="semantic_segmentation_dataset" value="coco"/> <!-- coco or open_images -->
         <param name="cropped_image_enabled" value="false"/>
 
         <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
