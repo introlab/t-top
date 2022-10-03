@@ -92,10 +92,10 @@ def main():
 
 
 def create_model(backbone_type, n_features, embedding_size,
-                 class_count=None, am_softmax_linear=False, pooling_layer='avg'):
+                 class_count=None, am_softmax_linear=False, pooling_layer='avg', conv_bias=False):
     pretrained = True
 
-    backbone = create_backbone(backbone_type, n_features, pretrained)
+    backbone = create_backbone(backbone_type, n_features, pretrained, conv_bias)
     if pooling_layer == 'avg':
         return AudioDescriptorExtractor(backbone, embedding_size=embedding_size,
                                         class_count=class_count, am_softmax_linear=am_softmax_linear)
@@ -109,7 +109,7 @@ def create_model(backbone_type, n_features, embedding_size,
         raise ValueError('Invalid pooling layer')
 
 
-def create_backbone(backbone_type, n_features, pretrained):
+def create_backbone(backbone_type, n_features, pretrained, conv_bias=False):
     if backbone_type == 'mnasnet0.5':
         return Mnasnet0_5(pretrained=pretrained)
     elif backbone_type == 'mnasnet1.0':
@@ -121,7 +121,7 @@ def create_backbone(backbone_type, n_features, pretrained):
     elif backbone_type == 'resnet50':
         return Resnet50(pretrained=pretrained)
     elif backbone_type == 'open_face_inception':
-        return OpenFaceInception()
+        return OpenFaceInception(conv_bias)
     elif backbone_type == 'thin_resnet_34':
         return ThinResnet34()
     elif backbone_type == 'ecapa_tdnn':
