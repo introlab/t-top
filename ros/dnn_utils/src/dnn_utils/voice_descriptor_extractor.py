@@ -6,7 +6,7 @@ from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 from dnn_utils.audio_transforms import MelSpectrogram, GPU_SUPPORTED, normalize, standardize_every_frame
 
 
-DURATION = 64000
+DURATION = 63840
 SAMPLING_FREQUENCY = 16000
 N_MELS = 96
 N_FFT = 480

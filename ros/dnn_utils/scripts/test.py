@@ -188,7 +188,7 @@ def test_semantic_segmentation_network():
     trt_gpu_model = SemanticSegmentationNetwork(inference_type='trt_gpu')
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
-    x = torch.randn(1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1])
+    x = torch.randn(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
     cpu_semantic_segmentation = cpu_model(x)
     torch_gpu_semantic_segmentation = torch_gpu_model(x)
     trt_gpu_semantic_segmentation = trt_gpu_model(x)
