@@ -15,12 +15,11 @@
 #include <memory>
 #include <utility>
 
-class SpeechTab : public QWidget
+class SpeechTab : public QWidget, public DesireSetObserver
 {
     Q_OBJECT
 
     ros::NodeHandle& m_nodeHandle;
-    ros::Subscriber m_talkDoneSubscriber;
     ros::Subscriber m_speechToTextSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
@@ -29,13 +28,15 @@ class SpeechTab : public QWidget
 
 public:
     SpeechTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    ~SpeechTab() override;
+
+    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 private slots:
     void onTalkButtonClicked();
     void onListenButtonToggled(bool checked);
 
 private:
-    void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
     void speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg);
 
     void createUi();

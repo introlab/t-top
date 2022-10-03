@@ -64,8 +64,12 @@ class AudioAnalyzerNode:
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
                 msg.channel_count != SUPPORTED_CHANNEL_COUNT or \
                 msg.sampling_frequency != self._supported_sampling_frequency:
-            rospy.logerr('Invalid low quality audio frame (msg.format={}, msg.channel_count={}, msg.sampling_frequency={}})'
+            rospy.logerr('Invalid audio frame (msg.format={}, msg.channel_count={}, msg.sampling_frequency={}})'
                 .format(msg.format, msg.channel_count, msg.sampling_frequency))
+            return
+        if self._hbba_filter_state.is_filtering_all_messages:
+            self._audio_analysis_count = 0
+            self._audio_frames.clear()
             return
 
         with torch.no_grad():
@@ -75,14 +79,11 @@ class AudioAnalyzerNode:
                 if (len(self._audio_frames) - 1) * audio_frame.shape[0] >= self._audio_buffer_duration:
                     self._audio_frames.pop(0)
 
-            if not self._hbba_filter_state.is_filtering_all_messages:
-                if self._audio_analysis_count >= self._audio_analysis_interval:
-                    self._audio_analysis_count = 0
-                    self._analyse()
-                else:
-                    self._audio_analysis_count += audio_frame.shape[0]
+            if self._audio_analysis_count >= self._audio_analysis_interval:
+                self._audio_analysis_count = 0
+                self._analyse()
             else:
-                self._audio_analysis_count = self._audio_analysis_interval
+                self._audio_analysis_count += audio_frame.shape[0]
 
     def _analyse(self):
         audio_buffer = self._get_audio_buffer()

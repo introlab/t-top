@@ -37,7 +37,7 @@ class _CpuMelSpectrogram:
 
         self._n_fft = n_fft
 
-        self._fb_matrix = F.create_fb_matrix(n_fft // 2 + 1, 0, sample_rate // 2, n_mels, sample_rate).float().numpy()
+        self._fb_matrix = F.melscale_fbanks(n_fft // 2 + 1, 0, sample_rate // 2, n_mels, sample_rate).float().numpy()
         self._window = np.hanning(n_fft)
 
     def __call__(self, x):
@@ -67,7 +67,7 @@ if GPU_SUPPORTED:
 
             self._n_fft = n_fft
 
-            fb_matrix = F.create_fb_matrix(n_fft // 2 + 1, 0, sample_rate // 2, n_mels, sample_rate).float()
+            fb_matrix = F.melscale_fbanks(n_fft // 2 + 1, 0, sample_rate // 2, n_mels, sample_rate).float()
             self._fb_matrix = cp.asarray(fb_matrix)
             self._window = cp.hanning(n_fft).astype(cp.float32)
 

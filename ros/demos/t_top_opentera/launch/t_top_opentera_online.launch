@@ -1,0 +1,8 @@
+<launch>
+    <arg name="verify_ssl" default="true"/>
+
+    <include file="$(find t_top_opentera)/launch/t_top_opentera.launch">
+        <arg name="online" value="true"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
+    </include>
+</launch>

@@ -3,20 +3,12 @@
 
 #include "../State.h"
 
-#include <talk/Done.h>
-#include <gesture/Done.h>
-
-class ValidTaskState : public State
+class ValidTaskState : public State, public DesireSetObserver
 {
-    ros::Subscriber m_talkDoneSubscriber;
-    ros::Subscriber m_gestureDoneSubscriber;
-
     std::string m_task;
 
     uint64_t m_talkDesireId;
     uint64_t m_gestureDesireId;
-    bool m_talkDone;
-    bool m_gestureDone;
 
 public:
     ValidTaskState(
@@ -24,10 +16,12 @@ public:
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle);
-    ~ValidTaskState() override = default;
+    ~ValidTaskState() override;
 
     DECLARE_NOT_COPYABLE(ValidTaskState);
     DECLARE_NOT_MOVABLE(ValidTaskState);
+
+    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 protected:
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
@@ -37,9 +31,6 @@ protected:
 
 private:
     std::string generateText();
-
-    void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
-    void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
 };
 
 #endif

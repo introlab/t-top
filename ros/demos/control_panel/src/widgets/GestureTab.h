@@ -18,7 +18,6 @@ class GestureTab : public QWidget, public DesireSetObserver
     Q_OBJECT
 
     ros::NodeHandle& m_nodeHandle;
-    ros::Subscriber m_gestureDoneSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_gestureDesireId;
@@ -33,7 +32,6 @@ private slots:
     void onGestureButtonClicked(const QString& name);
 
 private:
-    void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
     void setEnabledAllButtons(bool enabled);
 
     void createUi();

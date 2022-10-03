@@ -13,13 +13,24 @@ ValidTaskState::ValidTaskState(
     ros::NodeHandle& nodeHandle)
     : State(language, stateManager, desireSet, nodeHandle),
       m_talkDesireId(MAX_DESIRE_ID),
-      m_gestureDesireId(MAX_DESIRE_ID),
-      m_talkDone(false),
-      m_gestureDone(false)
+      m_gestureDesireId(MAX_DESIRE_ID)
 {
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 1, &ValidTaskState::talkDoneSubscriberCallback, this);
-    m_gestureDoneSubscriber =
-        nodeHandle.subscribe("gesture/done", 1, &ValidTaskState::gestureDoneSubscriberCallback, this);
+    m_desireSet->addObserver(this);
+}
+
+ValidTaskState::~ValidTaskState()
+{
+    m_desireSet->removeObserver(this);
+}
+
+void ValidTaskState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+{
+    if (!enabled() || m_desireSet->contains(m_talkDesireId) || m_desireSet->contains(m_gestureDesireId))
+    {
+        return;
+    }
+
+    switchState(m_task);
 }
 
 void ValidTaskState::enable(const string& parameter, const type_index& previousStageType)
@@ -27,8 +38,6 @@ void ValidTaskState::enable(const string& parameter, const type_index& previousS
     State::enable(parameter, previousStageType);
 
     m_task = parameter;
-    m_talkDone = false;
-    m_gestureDone = false;
 
     auto gestureDesire = make_unique<GestureDesire>("yes");
     auto faceAnimationDesire = make_unique<FaceAnimationDesire>("happy");
@@ -65,32 +74,4 @@ string ValidTaskState::generateText()
     }
 
     return "";
-}
-
-void ValidTaskState::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_talkDesireId)
-    {
-        return;
-    }
-
-    m_talkDone = true;
-    if (m_talkDone && m_gestureDone)
-    {
-        switchState(m_task);
-    }
-}
-
-void ValidTaskState::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
-{
-    if (!enabled() || msg->id != m_gestureDesireId)
-    {
-        return;
-    }
-
-    m_gestureDone = true;
-    if (m_talkDone && m_gestureDone)
-    {
-        switchState(m_task);
-    }
 }

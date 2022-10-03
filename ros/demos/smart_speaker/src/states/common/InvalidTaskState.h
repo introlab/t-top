@@ -3,20 +3,12 @@
 
 #include "../State.h"
 
-#include <talk/Done.h>
-#include <gesture/Done.h>
-
-class InvalidTaskState : public State
+class InvalidTaskState : public State, public DesireSetObserver
 {
     std::type_index m_nextStateType;
 
-    ros::Subscriber m_talkDoneSubscriber;
-    ros::Subscriber m_gestureDoneSubscriber;
-
     uint64_t m_talkDesireId;
     uint64_t m_gestureDesireId;
-    bool m_talkDone;
-    bool m_gestureDone;
 
 public:
     InvalidTaskState(
@@ -25,10 +17,12 @@ public:
         std::shared_ptr<DesireSet> desireSet,
         ros::NodeHandle& nodeHandle,
         std::type_index nextStateType);
-    ~InvalidTaskState() override = default;
+    ~InvalidTaskState() override;
 
     DECLARE_NOT_COPYABLE(InvalidTaskState);
     DECLARE_NOT_MOVABLE(InvalidTaskState);
+
+    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 protected:
     std::type_index type() const override;
@@ -37,11 +31,6 @@ protected:
     void disable() override;
 
     virtual std::string generateText();
-
-private:
-    void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
-    void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
-    void switchState();
 };
 
 inline std::type_index InvalidTaskState::type() const

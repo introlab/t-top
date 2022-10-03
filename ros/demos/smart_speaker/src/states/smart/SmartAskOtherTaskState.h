@@ -3,8 +3,6 @@
 
 #include "../common/TalkState.h"
 
-#include <talk/Done.h>
-
 #include <string>
 #include <vector>
 

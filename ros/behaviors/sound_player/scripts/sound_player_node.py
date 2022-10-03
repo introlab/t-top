@@ -35,7 +35,7 @@ class SoundPlayerNode:
                 self._play_audio(msg.id, msg.path)
                 ok = True
             except Exception as e:
-                rospy.logerr(f'Unable to play the song ({e})')
+                rospy.logerr(f'Unable to play the sound ({e})')
                 ok = False
             self._done_pub.publish(Done(id=msg.id, ok=ok))
 
@@ -63,6 +63,8 @@ class SoundPlayerNode:
 
     def _load_frames(self, file_path):
         waveform, _ = librosa.load(file_path, sr=self._sampling_frequency, res_type='kaiser_fast')
+        pad = (self._frame_sample_count - (waveform.shape[0] % self._frame_sample_count)) % self._frame_sample_count
+        waveform.resize(waveform.shape[0] + pad, refcheck=False)
         frames = np.split(waveform, np.arange(self._frame_sample_count, len(waveform), self._frame_sample_count))
         return frames
 
