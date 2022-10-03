@@ -16,7 +16,9 @@ def main():
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
                                                     'open_face_inception', 'thin_resnet_34',
-                                                    'ecapa_tdnn', 'small_ecapa_tdnn'],
+                                                    'ecapa_tdnn_512', 'ecapa_tdnn_1024',
+                                                    'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
+                                                    'small_ecapa_tdnn_512'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer', required=True)

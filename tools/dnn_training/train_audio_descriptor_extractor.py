@@ -20,7 +20,9 @@ def main():
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
                                                     'open_face_inception', 'thin_resnet_34',
-                                                    'ecapa_tdnn', 'small_ecapa_tdnn'],
+                                                    'ecapa_tdnn_512', 'ecapa_tdnn_1024',
+                                                    'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
+                                                    'small_ecapa_tdnn_512'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
@@ -124,10 +126,16 @@ def create_backbone(backbone_type, n_features, pretrained, conv_bias=False):
         return OpenFaceInception(conv_bias)
     elif backbone_type == 'thin_resnet_34':
         return ThinResnet34()
-    elif backbone_type == 'ecapa_tdnn':
-        return EcapaTdnn(n_features)
-    elif backbone_type == 'small_ecapa_tdnn':
-        return SmallEcapaTdnn(n_features)
+    elif backbone_type == 'ecapa_tdnn_512':
+        return EcapaTdnn(n_features, channels=512)
+    elif backbone_type == 'ecapa_tdnn_1024':
+        return EcapaTdnn(n_features, channels=1024)
+    elif backbone_type == 'small_ecapa_tdnn_128':
+        return SmallEcapaTdnn(n_features, channels=128)
+    elif backbone_type == 'small_ecapa_tdnn_256':
+        return SmallEcapaTdnn(n_features, channels=256)
+    elif backbone_type == 'small_ecapa_tdnn_512':
+        return SmallEcapaTdnn(n_features, channels=512)
     else:
         raise ValueError('Invalid backbone type')
 
