@@ -189,9 +189,9 @@ def test_semantic_segmentation_network():
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.randn(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
-    cpu_semantic_segmentation = cpu_model(x)
-    torch_gpu_semantic_segmentation = torch_gpu_model(x)
-    trt_gpu_semantic_segmentation = trt_gpu_model(x)
+    cpu_semantic_segmentation = cpu_model(x).float()
+    torch_gpu_semantic_segmentation = torch_gpu_model(x).float()
+    trt_gpu_semantic_segmentation = trt_gpu_model(x).float()
 
     print('mean(abs(cpu_semantic_segmentation - torch_gpu_class_probabilities)) =',
           mean_abs_diff(cpu_semantic_segmentation, torch_gpu_semantic_segmentation))
