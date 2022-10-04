@@ -13,7 +13,7 @@ IMAGE_SIZE = (270, 480)
 
 class SemanticSegmentationNetwork(DnnModel):
     def __init__(self, inference_type=None, dataset='coco'):
-        if self._dataset not in ['coco', 'open_images']:
+        if dataset not in ['coco', 'open_images']:
             raise ValueError('Invalid semantic segmentation dataset')
 
         self._dataset = dataset
