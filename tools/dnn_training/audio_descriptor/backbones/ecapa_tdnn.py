@@ -91,8 +91,8 @@ class EcapaTdnnAttentionPooling(nn.Module):
                              dim=1)
         w = self._layers(global_x)
 
-        mean = torch.mean(w * x, dim=2)
-        std = torch.sqrt((torch.mean((x**2) * w, dim=2) - mean**2).clamp(min=eps))
+        mean = torch.sum(w * x, dim=2)
+        std = torch.sqrt((torch.sum((x**2) * w, dim=2) - mean**2).clamp(min=eps))
 
         return torch.cat([mean, std], dim=1)
 
@@ -112,8 +112,8 @@ class SmallEcapaTdnnAttentionPooling(nn.Module):
 
     def forward(self, x, eps=1e-4):
         w = self._layers(x)
-        mean = torch.mean(w * x, dim=2)
-        std = torch.sqrt((torch.mean((x**2) * w, dim=2) - mean**2).clamp(min=eps))
+        mean = torch.sum(w * x, dim=2)
+        std = torch.sqrt((torch.sum((x**2) * w, dim=2) - mean**2).clamp(min=eps))
 
         return torch.cat([mean, std], dim=1)
 
@@ -133,7 +133,7 @@ class EcapaTdnn(nn.Module):
         self._layer4 = SqueezeExcitationRes2Block(channels, channels, kernel_size=3, dilation=4, scale=8)
 
         self._layer5 = nn.Sequential(
-            nn.Conv1d(in_channels=3 * channels, out_channels=1536, kernel_size=1),
+            nn.Conv1d(in_channels=3 * channels, out_channels=1536, kernel_size=1, bias=False),
             nn.BatchNorm1d(num_features=1536),
             nn.ReLU()
         )
@@ -174,7 +174,7 @@ class SmallEcapaTdnn(nn.Module):
         self._layer4 = SqueezeExcitationRes2Block(channels, channels, kernel_size=3, dilation=4, scale=4)
 
         self._layer5 = nn.Sequential(
-            nn.Conv1d(in_channels=3 * channels, out_channels=1536, kernel_size=1),
+            nn.Conv1d(in_channels=3 * channels, out_channels=1536, kernel_size=1, bias=False),
             nn.BatchNorm1d(num_features=1536),
             nn.ReLU()
         )
