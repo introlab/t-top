@@ -9,7 +9,7 @@ import torchvision.datasets as datasets
 from object_detection.datasets.coco_detection_transforms import CATEGORY_ID_TO_CLASS_INDEX_MAPPING
 
 
-CLASS_COUNT = 80
+CLASS_COUNT = 81
 
 
 class SemanticSegmentationCoco(datasets.CocoDetection):
@@ -44,10 +44,11 @@ class SemanticSegmentationCoco(datasets.CocoDetection):
 
     def _object_to_target(self, obj, width, height):
         class_index = CATEGORY_ID_TO_CLASS_INDEX_MAPPING[obj['category_id']]
+        class_index += 1  # Because the background is 0.
         if obj['iscrowd'] == 0:
             return self._polygon_to_mask(obj['segmentation'], width, height), class_index
         elif obj['iscrowd'] == 1:
-            return self.rle_to_mask(obj['segmentation'], width, height), class_index
+            return self._rle_to_mask(obj['segmentation'], width, height), class_index
         else:
             raise ValueError('Invalid iscrowd value')
 
@@ -60,7 +61,7 @@ class SemanticSegmentationCoco(datasets.CocoDetection):
 
         return mask
 
-    def rle_to_mask(self, rle, width, height):
+    def _rle_to_mask(self, rle, width, height):
         mask_np = np.zeros(width * height, dtype=np.uint8)
 
         ranges = []

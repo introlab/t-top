@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 
 import torch
+import torchvision.transforms.functional as F
 
 import rospy
 from cv_bridge import CvBridge
@@ -135,7 +136,8 @@ class VideoAnalyzerNode:
             object_analyses.append(object_analysis)
 
         if self._semantic_segmentation_enabled:
-            semantic_segmentation = self._semantic_segmentation_network(color_image_tensor)
+            equalized_color_image_tensor = self._convert_color_image_to_equalized_tensor(color_image)
+            semantic_segmentation = self._semantic_segmentation_network(equalized_color_image_tensor)
         else:
             semantic_segmentation = None
 
@@ -143,6 +145,10 @@ class VideoAnalyzerNode:
 
     def _convert_color_image_to_tensor(self, color_image):
         return torch.from_numpy(color_image).to(self._object_detector.device()).permute(2, 0, 1).float() / 255
+
+    def _convert_color_image_to_equalized_tensor(self, color_image):
+        color_image_tensor = torch.from_numpy(color_image).permute(2, 0, 1).to(self._object_detector.device())
+        return F.equalize(color_image_tensor).float() / 255
 
     def _analyse_person(self, cv_color_image, color_image_tensor, x0, y0):
         pose_coordinates, pose_confidence = self._pose_estimator(color_image_tensor)

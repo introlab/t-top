@@ -13,7 +13,7 @@ IMAGE_SIZE = (270, 480)
 
 class SemanticSegmentationNetwork(DnnModel):
     def __init__(self, inference_type=None, dataset='coco'):
-        if dataset not in ['coco', 'open_images']:
+        if dataset not in ['coco', 'kitchen_open_images', 'person_other_open_images']:
             raise ValueError('Invalid semantic segmentation dataset')
 
         self._dataset = dataset
@@ -24,7 +24,6 @@ class SemanticSegmentationNetwork(DnnModel):
 
         super(SemanticSegmentationNetwork, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                           inference_type=inference_type)
-        self._normalization = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def get_supported_image_size(self):
         return IMAGE_SIZE
@@ -40,7 +39,7 @@ class SemanticSegmentationNetwork(DnnModel):
                     'chair', 'sofa', 'pottedplant', 'bed', 'diningtable', 'toilet', 'tvmonitor', 'laptop', 'mouse',
                     'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book',
                     'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
-        elif self._dataset == 'open_images':
+        elif self._dataset == 'kitchen_open_images':
             return ['background', 'apple', 'artichoke', 'bagel', 'banana', 'band-aid', 'beer', 'bell pepper', 'book',
                     'bottle', 'bottle opener', 'bowl', 'bread', 'broccoli', 'burrito', 'cabbage', 'cake', 'cantaloupe',
                     'carrot', 'cheese', 'chopsticks', 'cocktail shaker', 'coffee cup', 'common fig', 'cookie', 'croissant',
@@ -49,14 +48,15 @@ class SemanticSegmentationNetwork(DnnModel):
                     'mixing bowl', 'orange', 'pancake', 'person', 'pizza', 'pizza cutter', 'pomegranate', 'popcorn',
                     'potato', 'pressure cooker', 'pretzel', 'sandwich', 'submarine sandwich', 'tomato', 'waffle', 'wine',
                     'winter melon', 'zucchini']
+        elif self._dataset == 'person_other_open_images':
+            return ['background', 'person', 'other']
         else:
             raise ValueError('Invalid semantic segmentation dataset')
 
-    def __call__(self, image_tensor):
+    def __call__(self, equalized_image_tensor):
         with torch.no_grad():
-            image_tensor = F.interpolate(image_tensor.to(self._device).unsqueeze(0), size=IMAGE_SIZE, mode='bilinear')
-            image_tensor = self._normalization(image_tensor.squeeze(0))
-
-            prediction = super(SemanticSegmentationNetwork, self).__call__(image_tensor.unsqueeze(0))[0]
+            equalized_image_tensor = F.interpolate(equalized_image_tensor.to(self._device).unsqueeze(0),
+                                                   size=IMAGE_SIZE, mode='bilinear')
+            prediction = super(SemanticSegmentationNetwork, self).__call__(equalized_image_tensor.unsqueeze(0))[0]
             semantic_segmentation = prediction[0].argmax(dim=0)
             return semantic_segmentation.cpu()

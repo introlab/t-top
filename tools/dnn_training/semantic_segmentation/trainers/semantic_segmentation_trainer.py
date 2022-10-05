@@ -9,8 +9,9 @@ from common.criterions import OhemCrossEntropyLoss, SoftmaxFocalLoss
 from common.trainers import Trainer
 from common.metrics import LossMetric
 
-from semantic_segmentation.datasets import SemanticSegmentationCoco, SemanticSegmentationOpenImages, \
-    SemanticSegmentationTrainingTransforms, SemanticSegmentationValidationTransforms
+from semantic_segmentation.datasets import SemanticSegmentationCoco, SemanticSegmentationKitchenOpenImages, \
+    SemanticSegmentationPersonOtherOpenImages,  SemanticSegmentationTrainingTransforms, \
+    SemanticSegmentationValidationTransforms
 from semantic_segmentation.metrics import LossMeanIoULearningCurves, MeanIoUMetric
 
 
@@ -63,17 +64,17 @@ class SemanticSegmentationTrainer(Trainer):
         return criterion_mean
 
     def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = SemanticSegmentationTrainingTransforms(IMAGE_SIZE, self._class_count)
+        transforms = SemanticSegmentationTrainingTransforms(IMAGE_SIZE)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms,
                                            shuffle=True)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = SemanticSegmentationValidationTransforms(IMAGE_SIZE, self._class_count)
+        transforms = SemanticSegmentationValidationTransforms(IMAGE_SIZE)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms,
                                            shuffle=False)
 
     def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = SemanticSegmentationValidationTransforms(IMAGE_SIZE, self._class_count)
+        transforms = SemanticSegmentationValidationTransforms(IMAGE_SIZE)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'testing', transforms,
                                            shuffle=False)
 
@@ -127,8 +128,10 @@ def create_dataset(dataset_type, dataset_root, split, transforms):
     if dataset_type == 'coco':
         split_mapping = {'training': True, 'validation': False, 'testing': False}
         return SemanticSegmentationCoco(dataset_root, train=split_mapping[split], transforms=transforms)
-    elif dataset_type == 'open_images':
-        return SemanticSegmentationOpenImages(dataset_root, split=split, transforms=transforms)
+    elif dataset_type == 'kitchen_open_images':
+        return SemanticSegmentationKitchenOpenImages(dataset_root, split=split, transforms=transforms)
+    elif dataset_type == 'person_other_open_images':
+        return SemanticSegmentationPersonOtherOpenImages(dataset_root, split=split, transforms=transforms)
     else:
         raise ValueError('Invalid dataset type')
 

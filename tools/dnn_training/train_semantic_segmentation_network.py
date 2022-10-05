@@ -11,7 +11,10 @@ from backbone.stdc import Stdc1, Stdc2
 from semantic_segmentation.pp_lite_seg import PpLiteSeg
 from semantic_segmentation.trainers import SemanticSegmentationTrainer
 from semantic_segmentation.datasets.semantic_segmentation_coco import CLASS_COUNT as COCO_CLASS_COUNT
-from semantic_segmentation.datasets.semantic_segmentation_open_images import CLASS_COUNT as OPEN_IMAGES_CLASS_COUNT
+from semantic_segmentation.datasets.semantic_segmentation_open_images \
+    import KITCHEN_CLASS_COUNT as KITCHEN_OPEN_IMAGES_CLASS_COUNT
+from semantic_segmentation.datasets.semantic_segmentation_open_images \
+    import PERSON_OTHER_CLASS_COUNT as PERSON_OTHER_OPEN_IMAGES_CLASS_COUNT
 
 
 def main():
@@ -19,7 +22,7 @@ def main():
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
     parser.add_argument('--dataset_root', type=str, help='Choose the dataset root path', required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
-    parser.add_argument('--dataset_type', choices=['coco', 'open_images'],
+    parser.add_argument('--dataset_type', choices=['coco', 'kitchen_open_images', 'person_other_open_images'],
                         help='Choose the database type', required=True)
     parser.add_argument('--backbone_type', choices=['stdc1', 'stdc2'], help='Choose the backbone type', required=True)
     parser.add_argument('--channel_scale', type=int, help='Choose the decoder channel count scale factor',
@@ -81,8 +84,10 @@ def create_backbone(backbone_type):
 def get_class_count_from_dataset_type(dataset_type):
     if dataset_type == 'coco':
         return COCO_CLASS_COUNT
-    elif dataset_type == 'open_images':
-        return OPEN_IMAGES_CLASS_COUNT
+    elif dataset_type == 'kitchen_open_images':
+        return KITCHEN_OPEN_IMAGES_CLASS_COUNT
+    elif dataset_type == 'person_other_open_images':
+        return PERSON_OTHER_OPEN_IMAGES_CLASS_COUNT
     else:
         raise ValueError('Invalid dataset type')
 

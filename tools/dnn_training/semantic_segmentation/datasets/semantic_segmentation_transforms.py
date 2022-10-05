@@ -10,7 +10,7 @@ import torchvision.transforms.functional as F
 from common.datasets import RandomSharpnessChange, RandomAutocontrast, RandomEqualize, RandomPosterize
 
 
-def _random_scale_translation(output_image_size, input_image, input_target, min_scale=0.25):
+def _random_scale_translation(output_image_size, input_image, input_target, min_scale=0.5):
     if min_scale >= 1.0 or min_scale <= 0.0:
         raise ValueError('min_scale must be between 0 and 1')
 
@@ -42,12 +42,11 @@ def _random_scale_translation(output_image_size, input_image, input_target, min_
 
 
 class SemanticSegmentationTransforms(nn.Module):
-    def __init__(self, image_size, class_count):
+    def __init__(self, image_size):
         super(SemanticSegmentationTransforms, self).__init__()
 
         self._image_size = image_size
-        self._class_count = class_count
-        self._normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        self._resize_transform = transforms.Resize(image_size)
 
     def _target_to_tensor(self, target):
         target_tensor = torch.zeros(self._image_size[0], self._image_size[1], dtype=torch.long)
@@ -60,8 +59,8 @@ class SemanticSegmentationTransforms(nn.Module):
 
 
 class SemanticSegmentationTrainingTransforms(SemanticSegmentationTransforms):
-    def __init__(self, image_size, class_count):
-        super(SemanticSegmentationTrainingTransforms, self).__init__(image_size, class_count)
+    def __init__(self, image_size):
+        super(SemanticSegmentationTrainingTransforms, self).__init__(image_size)
 
         self._image_transform = transforms.Compose([
             transforms.ColorJitter(brightness=0.2, saturation=0.2, contrast=0.2, hue=0.2),
@@ -71,7 +70,6 @@ class SemanticSegmentationTrainingTransforms(SemanticSegmentationTransforms):
             RandomEqualize(),
             RandomPosterize(),
         ])
-        self._resize_transform = transforms.Resize(image_size)
 
         self._horizontal_flip_p = 0.5
         self._scale_translation_p = 0.25
@@ -88,24 +86,20 @@ class SemanticSegmentationTrainingTransforms(SemanticSegmentationTransforms):
             image = F.hflip(image)
             target = [(F.hflip(mask), class_index) for mask, class_index in target]
 
+        image = F.equalize(image)
         image_tensor = F.to_tensor(image)
-        image_tensor = self._normalize(image_tensor)
         target_tensor = self._target_to_tensor(target)
 
         return image_tensor, target_tensor, {}
 
 
 class SemanticSegmentationValidationTransforms(SemanticSegmentationTransforms):
-    def __init__(self, image_size, class_count):
-        super(SemanticSegmentationValidationTransforms, self).__init__(image_size, class_count)
-        self._resize_transform = transforms.Resize(image_size)
-
     def forward(self, image, target):
         image = self._resize_transform(image)
         target = [(self._resize_transform(mask), class_index) for mask, class_index in target]
 
+        image = F.equalize(image)
         image_tensor = F.to_tensor(image)
-        image_tensor = self._normalize(image_tensor)
         target_tensor = self._target_to_tensor(target)
 
         return image_tensor, target_tensor, {}
