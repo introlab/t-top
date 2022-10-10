@@ -5,11 +5,9 @@ import torch
 
 from common.program_arguments import save_arguments, print_arguments
 
-from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception, VGGLike
-from audio_descriptor.backbones import TinyCnn, EcapaTdnn, SmallEcapaTdnn
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP
 from audio_descriptor.trainers import MulticlassAudioDescriptorExtractorTrainer
+
+from train_audio_descriptor_extractor import create_model
 
 
 def main():
@@ -19,8 +17,10 @@ def main():
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                     'resnet18', 'resnet34', 'resnet50',
-                                                    'open_face_inception', 'tiny_cnn', 'vgg_like',
-                                                    'ecapa_tdnn', 'small_ecapa_tdnn'],
+                                                    'open_face_inception', 'thin_resnet_34',
+                                                    'ecapa_tdnn_512', 'ecapa_tdnn_1024',
+                                                    'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
+                                                    'small_ecapa_tdnn_512'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
@@ -47,7 +47,8 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.pooling_layer)
+    model = create_model(args.backbone_type, args.n_features, args.embedding_size, class_count=200,
+                         pooling_layer=args.pooling_layer)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_e' + str(args.embedding_size) +
@@ -76,46 +77,6 @@ def main():
                                                         enable_mixup=args.enable_mixup,
                                                         model_checkpoint=args.model_checkpoint)
     trainer.train()
-
-
-def create_model(backbone_type, n_features, embedding_size, pooling_layer):
-    pretrained = True
-    class_count = 200
-
-    backbone = create_backbone(backbone_type, n_features, pretrained)
-    if pooling_layer == 'avg':
-        return AudioDescriptorExtractor(backbone, embedding_size=embedding_size, class_count=class_count)
-    elif pooling_layer == 'vlad':
-        return AudioDescriptorExtractorVLAD(backbone, embedding_size=embedding_size, class_count=class_count)
-    elif pooling_layer == 'sap':
-        return AudioDescriptorExtractorSAP(backbone, embedding_size=embedding_size, class_count=class_count)
-    else:
-        raise ValueError('Invalid pooling layer')
-
-
-def create_backbone(backbone_type, n_features, pretrained):
-    if backbone_type == 'mnasnet0.5':
-        return Mnasnet0_5(pretrained=pretrained)
-    elif backbone_type == 'mnasnet1.0':
-        return Mnasnet1_0(pretrained=pretrained)
-    elif backbone_type == 'resnet18':
-        return Resnet18(pretrained=pretrained)
-    elif backbone_type == 'resnet34':
-        return Resnet34(pretrained=pretrained)
-    elif backbone_type == 'resnet50':
-        return Resnet50(pretrained=pretrained)
-    elif backbone_type == 'open_face_inception':
-        return OpenFaceInception()
-    elif backbone_type == 'tiny_cnn':
-        return TinyCnn()
-    elif backbone_type == 'vgg_like':
-        return VGGLike()
-    elif backbone_type == 'ecapa_tdnn':
-        return EcapaTdnn(n_features)
-    elif backbone_type == 'small_ecapa_tdnn':
-        return SmallEcapaTdnn(n_features)
-    else:
-        raise ValueError('Invalid backbone type')
 
 
 if __name__ == '__main__':
