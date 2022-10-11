@@ -15,7 +15,7 @@ from train_semantic_segmentation_network import create_model
 
 def main():
     parser = argparse.ArgumentParser(description='Export keyword spotter')
-    parser.add_argument('--dataset_type', choices=['coco', 'open_images'],
+    parser.add_argument('--dataset_type', choices=['coco', 'kitchen_open_images', 'person_other_open_images'],
                         help='Choose the database type', required=True)
     parser.add_argument('--backbone_type', choices=['stdc1', 'stdc2'], help='Choose the backbone type', required=True)
     parser.add_argument('--channel_scale', type=int, help='Choose the decoder channel count scale factor',
