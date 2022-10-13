@@ -117,8 +117,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES home_logger
+ INCLUDE_DIRS include 3rd_party/fmt/include
+ LIBRARIES home_logger_common fmt
 #  CATKIN_DEPENDS audio_analyzer cloud_data gesture hbba_lite person_identification roscpp rospy sensor_msgs speech_to_text std_msgs t_top_hbba_lite talk tf video_analyzer
 #  DEPENDS system_lib
 )
