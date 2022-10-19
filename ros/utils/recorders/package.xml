@@ -55,7 +55,7 @@
   <build_depend>hbba_lite</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>video_analyzer</build_depend>
-  <build_depend>audio_analyser</build_depend>
+  <build_depend>audio_analyzer</build_depend>
   <build_depend>talk</build_depend>
   <build_depend>speech_to_text</build_depend>
   <build_depend>tf</build_depend>

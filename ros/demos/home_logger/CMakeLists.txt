@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(home_logger)
 
-add_subdirectory(3rd_party/fmt)
-
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -116,12 +114,23 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(_FMT_LIB_NAME fmtd)
+else()
+  set(_FMT_LIB_NAME fmt)
+endif()
+
 catkin_package(
  INCLUDE_DIRS include 3rd_party/fmt/include
- LIBRARIES home_logger_common fmt
-#  CATKIN_DEPENDS audio_analyzer cloud_data gesture hbba_lite person_identification roscpp rospy sensor_msgs speech_to_text std_msgs t_top_hbba_lite talk tf video_analyzer
+ LIBRARIES home_logger_common ${_FMT_LIB_NAME}
+#  CATKIN_DEPENDS audio_analyzer cloud_data gesture hbba_lite person_identification roscpp rospy sensor_msgs speech_to_text std_msgs t_top_hbba_lite talk tf video_analyzer recorders
 #  DEPENDS system_lib
 )
+
+unset(_FMT_LIB_NAME)
+
+add_subdirectory(3rd_party/fmt)
 
 ###########
 ## Build ##
