@@ -5,6 +5,7 @@ import numpy as np
 
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from sys import argv
 
 #Parameters
 MICROPHONE_COUNT = 16
@@ -16,7 +17,8 @@ BOTTOM_RADIUS = 0.14
 BOTTOM_MICROPHONE_WALL_HEIGHT = 0.03087
 TOP_MICROPHONE_WALL_HEIGHT = 0.04987
 
-Z_OFFSET = -0.31868650962
+# Allow to specify the height of the desired odas frame relative to the robot base, or use the default value (classic T-Top)
+Z_OFFSET = (0.061 - (float(argv[1]) if len(argv) >= 2 else 0.37968650962))
 
 
 #Position and direction calculation
