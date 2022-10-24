@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
 import datetime
-from enum import Enum, auto
+from enum import Enum
 import os
 import threading
+from typing import Optional
 
 import gi
 
 gi.require_version("Gst", "1.0")
-from gi.repository import Gst
+from gi.repository import Gst  # type: ignore
+from gi.repository import GLib  # type: ignore
 
 import rospy
 
@@ -18,36 +20,59 @@ from sensor_msgs.msg import Image
 import hbba_lite
 
 
-class VideoFormat(Enum):
-    RGB = "RGB"
-    BGR = "BGR"
+class FormatEnum(str, Enum):
+    gst_value: str
 
-    @staticmethod
-    def from_string(x: str) -> "VideoFormat":
-        if x not in VideoFormat._STRING_TO_VIDEO_FORMAT:
-            raise ValueError(f"Invalid video codec ({x})")
-        else:
-            return VideoFormat._STRING_TO_VIDEO_FORMAT[x]
+    def __new__(cls, value: str, gstreamer_value: str):
+        obj = str.__new__(cls, value)
+        obj._value_ = value
 
-
-VideoFormat._STRING_TO_VIDEO_FORMAT = {"rgb8": VideoFormat.RGB, "bgr8": VideoFormat.BGR}
+        obj.gst_value = gstreamer_value
+        return obj
 
 
-class VideoCodec(Enum):
-    H264 = auto()
-    H265 = auto()
-    VP8 = auto()
-    VP9 = auto()
+class VideoCodecEnum(str, Enum):
+    sw_enc: str
+    nv_hw_enc: Optional[str]
+    gst_parser: str
 
-    @staticmethod
-    def from_string(x: str) -> "VideoCodec":
-        if x not in VideoCodec._STRING_TO_VIDEO_CODEC:
-            raise ValueError(f"Invalid video codec ({x})")
-        else:
-            return VideoCodec._STRING_TO_VIDEO_CODEC[x]
+    def __new__(
+        cls,
+        value: str,
+        sw_enc: str,
+        nv_hw_enc: Optional[str] = None,
+        parser: Optional[str] = None,
+    ):
+        obj = str.__new__(cls, value)
+        obj._value_ = value
 
-    def to_software_encoder(self) -> str:
-        return VideoCodec._VIDEO_CODEC_TO_SOFTWARE_ENCODER[self]
+        obj.sw_enc = sw_enc
+        obj.nv_hw_enc = nv_hw_enc
+        obj.gst_parser = f" ! {parser}" if parser is not None else ""
+        return obj
+
+
+class AudioCodecEnum(str, Enum):
+    enc: str
+
+    def __new__(cls, value: str, enc: str):
+        obj = str.__new__(cls, value)
+        obj._value_ = value
+
+        obj.enc = enc
+        return obj
+
+
+class VideoFormat(FormatEnum):
+    RGB = ("rgb8", "RGB")
+    BGR = ("bgr8", "BGR")
+
+
+class VideoCodec(VideoCodecEnum):
+    H264 = ("h264", "x264enc", "nvv4l2h264enc", "h264parse")
+    H265 = ("h265", "x265enc", "nvv4l2h265enc", "h265parse")
+    VP8 = ("vp8", "vp8enc", "nvv4l2vp8enc")
+    VP9 = ("vp9", "vp9enc", "nvv4l2vp9enc")
 
     def get_software_bitrate_attribute(self) -> str:
         if self == VideoCodec.H264 or self == VideoCodec.H265:
@@ -65,100 +90,30 @@ class VideoCodec(Enum):
         else:
             raise ValueError("Invalid video codec")
 
-    def to_nvidia_hardware_encoder(self) -> str:
-        return VideoCodec._VIDEO_CODEC_TO_NVIDIA_HARDWARE_ENCODER[self]
-
     def convert_nvidia_hardware_bitrate(self, bitrate) -> int:
         return bitrate
 
 
-VideoCodec._STRING_TO_VIDEO_CODEC = {
-    "h264": VideoCodec.H264,
-    "h265": VideoCodec.H265,
-    "vp8": VideoCodec.VP8,
-    "vp9": VideoCodec.VP9,
-}
+class AudioFormat(FormatEnum):
+    S8 = ("signed_8", "S8")
+    S16LE = ("signed_16", "S16LE")
+    S24LE = ("signed_24", "S24LE")
+    S24_32LE = ("signed_padded_24", "S24_32LE")
+    S32LE = ("signed_32", "S32LE")
+    U8 = ("unsigned_8", "U8")
+    U16LE = ("unsigned_16", "U16LE")
+    U24LE = ("unsigned_24", "U24LE")
+    U24_32LE = ("unsigned_padded_24", "U24_32LE")
+    U32LE = ("unsigned_32", "U32LE")
+    F32LE = ("float", "F32LE")
+    F64LE = ("double", "F64LE")
 
 
-VideoCodec._VIDEO_CODEC_TO_SOFTWARE_ENCODER = {
-    VideoCodec.H264: "x264enc",
-    VideoCodec.H265: "x265enc",
-    VideoCodec.VP8: "vp8enc",
-    VideoCodec.VP9: "vp9enc",
-}
-
-
-VideoCodec._VIDEO_CODEC_TO_NVIDIA_HARDWARE_ENCODER = {
-    VideoCodec.H264: "nvv4l2h264enc",
-    VideoCodec.H265: "nvv4l2h265enc",
-    VideoCodec.VP8: "nvv4l2vp8enc",
-    VideoCodec.VP9: "nvv4l2vp9enc",
-}
-
-
-class AudioFormat(Enum):
-    S8 = "S8"
-    S16LE = "S16LE"
-    S24LE = "S24LE"
-    S24_32LE = "S24_32LE"
-    S32LE = "S32LE"
-    U8 = "U8"
-    U16LE = "U16LE"
-    U24LE = "U24LE"
-    U24_32LE = "U24_32LE"
-    U32LE = "U32LE"
-    F32LE = "F32LE"
-    F64LE = "F64LE"
-
-    @staticmethod
-    def from_string(x: str) -> "AudioFormat":
-        if x not in AudioFormat._STRING_TO_AUDIO_FORMAT:
-            raise ValueError(f"Invalid audio format ({x})")
-        else:
-            return AudioFormat._STRING_TO_AUDIO_FORMAT[x]
-
-
-AudioFormat._STRING_TO_AUDIO_FORMAT = {
-    "signed_8": AudioFormat.S8,
-    "signed_16": AudioFormat.S16LE,
-    "signed_24": AudioFormat.S24LE,
-    "signed_padded_24": AudioFormat.S24_32LE,
-    "signed_32": AudioFormat.S32LE,
-    "unsigned_8": AudioFormat.U8,
-    "unsigned_16": AudioFormat.U16LE,
-    "unsigned_24": AudioFormat.U24LE,
-    "unsigned_padded_24": AudioFormat.U24_32LE,
-    "unsigned_32": AudioFormat.U32LE,
-    "float": AudioFormat.F32LE,
-    "double": AudioFormat.F64LE,
-}
-
-
-class AudioCodec(Enum):
-    AAC = auto()
-    MP3 = auto()
-
-    @staticmethod
-    def from_string(x: str) -> "AudioCodec":
-        if x not in AudioCodec._STRING_TO_AUDIO_CODEC:
-            raise ValueError(f"Invalid audio codec ({x})")
-        else:
-            return AudioCodec._STRING_TO_AUDIO_CODEC[x]
-
-    def to_encoder(self) -> str:
-        return AudioCodec._AUDIO_CODEC_TO_ENCODER[self]
-
-
-AudioCodec._STRING_TO_AUDIO_CODEC = {
-    "aac": AudioCodec.AAC,
-    "mp3": AudioCodec.MP3,
-}
-
-
-AudioCodec._AUDIO_CODEC_TO_ENCODER = {
-    AudioCodec.AAC: "voaacenc",
-    AudioCodec.MP3: "lamemp3enc",
-}
+class AudioCodec(AudioCodecEnum):
+    AAC = ("aac", "voaacenc")
+    MP3 = ("mp3", "lamemp3enc")
+    OPUS = ("opus", "opusenc")
+    FLAC = ("flac", "flacenc")
 
 
 class VideoRecorderConfiguration:
@@ -196,18 +151,18 @@ class VideoRecorderConfiguration:
     @staticmethod
     def from_parameters() -> "VideoRecorderConfiguration":
         return VideoRecorderConfiguration(
-            rospy.get_param("~output_directory"),
-            rospy.get_param("~filename_prefix"),
-            VideoFormat.from_string(rospy.get_param("~video_format")),
-            rospy.get_param("~video_width"),
-            rospy.get_param("~video_height"),
-            VideoCodec.from_string(rospy.get_param("~video_codec")),
-            rospy.get_param("~video_bitrate"),
-            rospy.get_param("~video_delay_s"),
-            AudioFormat.from_string(rospy.get_param("~audio_format")),
-            rospy.get_param("~audio_channel_count"),
-            rospy.get_param("~audio_sampling_frequency"),
-            AudioCodec.from_string(rospy.get_param("~audio_codec")),
+            rospy.get_param("~output_directory"),  # type: ignore
+            rospy.get_param("~filename_prefix"),  # type: ignore
+            VideoFormat(rospy.get_param("~video_format")),
+            rospy.get_param("~video_width"),  # type: ignore
+            rospy.get_param("~video_height"),  # type: ignore
+            VideoCodec(rospy.get_param("~video_codec")),
+            rospy.get_param("~video_bitrate"),  # type: ignore
+            rospy.get_param("~video_delay_s"),  # type: ignore
+            AudioFormat(rospy.get_param("~audio_format")),
+            rospy.get_param("~audio_channel_count"),  # type: ignore
+            rospy.get_param("~audio_sampling_frequency"),  # type: ignore
+            AudioCodec(rospy.get_param("~audio_codec")),
         )
 
 
@@ -261,7 +216,7 @@ class VideoRecorder:
     def _verify_image_msg(configuration: VideoRecorderConfiguration, msg: Image):
         try:
             return (
-                VideoFormat.from_string(msg.encoding) == configuration.video_format
+                VideoFormat(msg.encoding) == configuration.video_format
                 and msg.width == configuration.video_width
                 and msg.height == configuration.video_height
             )
@@ -281,7 +236,7 @@ class VideoRecorder:
             return
 
         timestamp_ns = msg_timestamp_ns - self._record_start_time_ns
-        duration_ns = 1 / msg.sampling_frequency * msg.frame_sample_count
+        duration_ns = int(1 / msg.sampling_frequency * msg.frame_sample_count)
 
         if timestamp_ns >= 0:
             self._audio_src.emit(
@@ -295,7 +250,7 @@ class VideoRecorder:
     ):
         try:
             return (
-                AudioFormat.from_string(msg.format) == configuration.audio_format
+                AudioFormat(msg.format) == configuration.audio_format
                 and msg.channel_count == configuration.audio_channel_count
                 and msg.sampling_frequency == configuration.audio_sampling_frequency
             )
@@ -327,20 +282,20 @@ class VideoRecorder:
             self._video_src = video_src
             self._audio_src = audio_src
             self._bus = bus
-        except gi.repository.GLib.Error as e:
+        except GLib.Error as e:
             rospy.loginfo(f"GStreamer pipeline failed({e})")
 
     def _stop_if_started(self):
         if self._pipeline is None:
             return
 
-        self._video_src.emit("end-of-stream")
-        self._audio_src.emit("end-of-stream")
-        self._bus.timed_pop_filtered(
+        self._video_src.emit("end-of-stream")  # type: ignore
+        self._audio_src.emit("end-of-stream")  # type: ignore
+        self._bus.timed_pop_filtered(  # type: ignore
             Gst.CLOCK_TIME_NONE, Gst.MessageType.ERROR | Gst.MessageType.EOS
         )
 
-        self._bus.remove_watch()
+        self._bus.remove_watch()  # type: ignore
         self._pipeline.set_state(Gst.State.NULL)
         self._pipeline = None
         self._video_src = None
@@ -348,7 +303,7 @@ class VideoRecorder:
         self._bus = None
 
     def _on_bus_message_cb(self, bus, msg):
-        rospy.log(f"Gstreamer bus message: {msg}")
+        rospy.loginfo(f"Gstreamer bus message: {msg}")
 
     @staticmethod
     def _create_mux_pipeline(configuration: VideoRecorderConfiguration) -> str:
@@ -367,6 +322,8 @@ class VideoRecorder:
         ):
             return f"matroskamux name=mux ! filesink location={path}.mkv"
 
+        raise NotImplementedError()
+
     @staticmethod
     def _get_filename(configuration: VideoRecorderConfiguration) -> str:
         now = datetime.datetime.utcfromtimestamp(rospy.Time.now().to_sec())
@@ -377,7 +334,7 @@ class VideoRecorder:
         pipeline = VideoRecorder._create_video_input_pipeline(configuration)
 
         if VideoRecorder._verify_nvidia_hardware_encoder(configuration):
-            encoder = configuration.video_codec.to_nvidia_hardware_encoder()
+            encoder = configuration.video_codec.nv_hw_enc
             bitrate = configuration.video_codec.convert_nvidia_hardware_bitrate(
                 configuration.video_bitrate
             )
@@ -386,7 +343,7 @@ class VideoRecorder:
         else:
             rospy.logwarn("NVIDIA hardware encoder are not available.")
 
-            encoder = configuration.video_codec.to_software_encoder()
+            encoder = configuration.video_codec.sw_enc
             bitrate_attribute = (
                 configuration.video_codec.get_software_bitrate_attribute()
             )
@@ -396,10 +353,7 @@ class VideoRecorder:
             pipeline += f" ! videoconvert ! capsfilter caps=video/x-raw,format=I420"
             pipeline += f" ! {encoder} {bitrate_attribute}={bitrate}"
 
-        if configuration.video_codec == VideoCodec.H264:
-            pipeline += " ! h264parse"
-        elif configuration.video_codec == VideoCodec.H265:
-            pipeline += " ! h265parse"
+        pipeline += configuration.video_codec.gst_parser
 
         return pipeline
 
@@ -417,10 +371,7 @@ class VideoRecorder:
     ) -> bool:
         return (
             Gst.ElementFactory.find("nvvidconv") is not None
-            and Gst.ElementFactory.find(
-                configuration.video_codec.to_nvidia_hardware_encoder()
-            )
-            is not None
+            and Gst.ElementFactory.find(configuration.video_codec.nv_hw_enc) is not None
         )
 
     @staticmethod
@@ -434,7 +385,7 @@ class VideoRecorder:
             ] * configuration.audio_channel_count
             audioconvert_attributes = 'mix-matrix="<<' + ",".join(values) + '>>"'
 
-        encoder = configuration.audio_codec.to_encoder()
+        encoder = configuration.audio_codec.enc
         pipeline += f" ! audioconvert {audioconvert_attributes}"
         pipeline += f" ! capsfilter caps=audio/x-raw,channels=1 ! audiorate ! {encoder}"
         return pipeline
@@ -465,7 +416,7 @@ class VideoRecorderNode:
         self._recorder = None
         self._recorder_configuration = VideoRecorderConfiguration.from_parameters()
 
-        self._filter_state = hbba_lite.OnOffHbbaFilterState(
+        self._filter_state = hbba_lite.OnOffHbbaFilterState(  # type: ignore
             "video_recorder/filter_state"
         )
         self._filter_state.on_changed(self._on_filter_state_changed)
@@ -479,12 +430,15 @@ class VideoRecorderNode:
                 self._recorder = VideoRecorder(self._recorder_configuration)
 
     def run(self):
-        rospy.spin()
-
-        with self._recorder_lock:
-            if self._recorder is not None:
-                self._recorder.close()
-                self._recorder = None
+        try:
+            rospy.spin()
+        except rospy.ROSInterruptException:
+            pass
+        finally:
+            with self._recorder_lock:
+                if self._recorder is not None:
+                    self._recorder.close()
+                    self._recorder = None
 
 
 def main():
