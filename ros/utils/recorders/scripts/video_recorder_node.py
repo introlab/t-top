@@ -18,6 +18,7 @@ from typing import (
     Iterable,
     Dict,
     Callable,
+    Tuple,
 )
 
 import gi
@@ -25,6 +26,7 @@ import gi
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst  # type: ignore
 from gi.repository import GLib  # type: ignore
+from gi.repository import GObject  # type: ignore
 
 import rospy
 
@@ -39,6 +41,10 @@ def apply(func: Callable, iter: Iterable) -> None:
         func(x)
 
 
+def graph_export(pipeline: Gst.Pipeline, name: str):
+    Gst.debug_bin_to_dot_file(pipeline, Gst.DebugGraphDetails.ALL, name)
+
+
 def get_duplicates(iterable: Iterable[Hashable]) -> Set[Hashable]:
     ti = tuple(iterable)
     return {x for x in iterable if ti.count(x) > 1}
@@ -47,11 +53,11 @@ def get_duplicates(iterable: Iterable[Hashable]) -> Set[Hashable]:
 class FormatEnum(str, Enum):
     gst_value: str
 
-    def __new__(cls, value: str, gst_value: str):
+    def __new__(cls, value: str, gstreamer_value: str):
         obj = str.__new__(cls, value)
         obj._value_ = value
 
-        obj.gst_value = gst_value
+        obj.gst_value = gstreamer_value
         return obj
 
 
@@ -269,6 +275,7 @@ class VideoRecorderConfiguration:
         streams_count = len(video_streams) + len(audio_streams)
         if streams_count < 1:
             rospy.logerr(f"At least one video or audio stream must be specified")
+            sys.exit(os.EX_CONFIG)
 
         video_names = [video_stream.name for video_stream in video_streams]
         if len(duplicates := get_duplicates(video_names)) > 0:
@@ -335,7 +342,14 @@ class VideoRecorder:
         self._record_start_time_ns = 0
         self._clear_last_timestamps()
 
+        self.lock = threading.Lock()
+
         self._bus = None
+
+        self._glib_main_loop = GLib.MainLoop()
+        GObject.threads_init()
+        self._glib_thread = threading.Thread(target=self._glib_main_loop.run)
+        self._glib_thread.start()
 
         self._pipeline = None
 
@@ -436,85 +450,138 @@ class VideoRecorder:
             return False
 
     def _start_if_not_started(self, record_start_time_ns: int):
-        if self._pipeline is not None:
-            return
+        with self.lock:
+            if self._pipeline is not None:
+                return
 
-        self._record_start_time_ns = record_start_time_ns
-        self._clear_last_timestamps()
+            self._record_start_time_ns = record_start_time_ns
+            self._clear_last_timestamps()
 
-        mux_pipeline = VideoRecorder._create_mux_pipeline(self._configuration)
-        video_and_audio_pipelines = itertools.chain(
-            (
-                VideoRecorder._create_video_pipeline(video_stream_config)
-                for video_stream_config in self._configuration.video_streams
-            ),
-            (
-                VideoRecorder._create_audio_pipeline(audio_stream_config)
-                for audio_stream_config in self._configuration.audio_streams
-            ),
-        )
+            mux_pipeline = VideoRecorder._create_mux_pipeline(self._configuration)
+            video_and_audio_pipelines = itertools.chain(
+                (
+                    VideoRecorder._create_video_pipeline(video_stream_config)
+                    for video_stream_config in self._configuration.video_streams
+                ),
+                (
+                    VideoRecorder._create_audio_pipeline(audio_stream_config)
+                    for audio_stream_config in self._configuration.audio_streams
+                ),
+            )
 
-        pipeline_str = (
-            f"{next(video_and_audio_pipelines)} ! {mux_pipeline}  "
-            + "  ".join(f"{p} ! mux." for p in video_and_audio_pipelines)
-        )
+            pipeline_str = (
+                f"{next(video_and_audio_pipelines)} ! {mux_pipeline}  "
+                + "  ".join(f"{p} ! mux." for p in video_and_audio_pipelines)
+            )
 
-        rospy.loginfo(f"Launching gstreamer pipeline: {pipeline_str}")
+            rospy.loginfo(f"Launching gstreamer pipeline: {pipeline_str}")
 
-        try:
-            pipeline = Gst.parse_launch(pipeline_str)
+            try:
+                pipeline = Gst.parse_launch(pipeline_str)
 
-            video_srcs = {
-                video_stream_config.name: pipeline.get_by_name(
-                    f"appsrc_{video_stream_config.full_name}"
-                )
-                for video_stream_config in self._configuration.video_streams
-            }
-            audio_srcs = {
-                audio_stream_config.name: pipeline.get_by_name(
-                    f"appsrc_{audio_stream_config.full_name}"
-                )
-                for audio_stream_config in self._configuration.audio_streams
-            }
+                video_srcs = {
+                    video_stream_config.name: pipeline.get_by_name(
+                        f"appsrc_{video_stream_config.full_name}"
+                    )
+                    for video_stream_config in self._configuration.video_streams
+                }
+                audio_srcs = {
+                    audio_stream_config.name: pipeline.get_by_name(
+                        f"appsrc_{audio_stream_config.full_name}"
+                    )
+                    for audio_stream_config in self._configuration.audio_streams
+                }
 
-            bus = pipeline.get_bus()
-            bus.add_watch(0, self._on_bus_message_cb)
+                bus = pipeline.get_bus()
+                bus.add_watch(0, self._on_bus_message_cb)
 
-            pipeline.set_state(Gst.State.PLAYING)
+                pipeline.set_state(Gst.State.PLAYING)
 
-            self._pipeline = pipeline
-            self._video_srcs = video_srcs
-            self._audio_srcs = audio_srcs
-            self._bus = bus
-        except GLib.Error as e:  # type: ignore
-            rospy.loginfo(f"GStreamer pipeline failed({e})")
-            sys.exit(-2)
+                self._pipeline = pipeline
+                self._video_srcs = video_srcs
+                self._audio_srcs = audio_srcs
+                self._bus = bus
+            except GLib.Error as e:  # type: ignore
+                rospy.loginfo(f"GStreamer pipeline failed({e})")
+                sys.exit(-2)
+
+            graph_export(self._pipeline, "started")
 
     def _stop_if_started(self):
-        if self._pipeline is None:
-            return
+        with self.lock:
+            if self._pipeline is None:
+                return
 
-        apply(lambda s: s.emit("end-of-stream"), self._video_srcs.values())  # type: ignore
-        apply(lambda s: s.emit("end-of-stream"), self._audio_srcs.values())  # type: ignore
-        rospy.loginfo("Sent EOS to all sources")
+            graph_export(self._pipeline, "stop")
 
-        if self._bus:
-            self._bus.timed_pop_filtered(  # type: ignore
-                Gst.CLOCK_TIME_NONE, Gst.MessageType.ERROR | Gst.MessageType.EOS
-            )
-            self._bus.remove_watch()
+            # We don't want the message callback to pop the messages anymore, so that we don't miss the EOS message
+            self._glib_main_loop.quit()
 
-        rospy.loginfo("Received EOS on the bus")
+            apply(lambda s: s.emit("end-of-stream"), self._video_srcs.values())  # type: ignore
+            apply(lambda s: s.emit("end-of-stream"), self._audio_srcs.values())  # type: ignore
+            rospy.loginfo("Sent EOS to all sources")
 
-        self._pipeline.set_state(Gst.State.NULL)
-        self._pipeline = None
+            if self._bus:
+                self._bus.timed_pop_filtered(  # type: ignore
+                    Gst.CLOCK_TIME_NONE, Gst.MessageType.ERROR | Gst.MessageType.EOS
+                )
+                self._bus.remove_watch()
 
-        self._clear_sources_lists()
+            rospy.loginfo("Received EOS on the bus")
 
-        self._bus = None
+            self._pipeline.set_state(Gst.State.NULL)
+            self._pipeline = None
+
+            self._clear_sources_lists()
+
+            self._bus = None
 
     def _on_bus_message_cb(self, bus, msg):
-        rospy.loginfo(f"Gstreamer bus message: {msg}")
+        def message_to_string(msg: Gst.Message) -> Tuple[str, Callable]:
+            if msg.type == Gst.MessageType.EOS:
+                return "End-of-stream", rospy.loginfo
+            elif msg.type == Gst.MessageType.WARNING:
+                err, debug = msg.parse_warning()
+                return f"Warning: |{err}|: {debug}", rospy.logwarn
+            elif msg.type == Gst.MessageType.ERROR:
+                err, debug = msg.parse_error()
+                return f"Bus call: Error: |{err}|: {debug}", rospy.logerr
+            elif msg.type == Gst.MessageType.BUFFERING:
+                percent = msg.parse_buffering()
+                return f"Buffering ({percent}%)", rospy.loginfo
+            elif msg.type == Gst.MessageType.STATE_CHANGED:
+                old_state, new_state, pending_state = msg.parse_state_changed()
+                return (
+                    f"Element |{msg.src.get_name()}| (of type |{type(msg.src).__name__}|) state changed from |{old_state.value_nick}| to |{new_state.value_nick}| "
+                    f"(pending |{pending_state.value_nick}|)"
+                ), rospy.loginfo
+            elif msg.type == Gst.MessageType.STREAM_START:
+                return "Stream started", rospy.loginfo
+            elif msg.type == Gst.MessageType.STREAM_STATUS:
+                status_type, owner = msg.parse_stream_status()
+                return (
+                    f"Stream status; status: |{status_type.value_nick}|, owner: |{type(owner).__name__}|",
+                    rospy.loginfo,
+                )
+            elif msg.type == Gst.MessageType.LATENCY:
+                return "Latency", rospy.loginfo
+            elif msg.type == Gst.MessageType.NEW_CLOCK:
+                clock = msg.parse_new_clock()
+                return (
+                    f"New clock; sync: |{clock.is_synced()}|, resolution: |{clock.get_resolution()}|",
+                    rospy.loginfo,
+                )
+            elif msg.type == Gst.MessageType.ASYNC_DONE:
+                return "Async done", rospy.loginfo
+            else:
+                return (
+                    f"Unknow message of type |{Gst.MessageType.get_name(msg.type).upper().replace('-', '_')}|",
+                    rospy.loginfo,
+                )
+
+        msg_str, log_func = message_to_string(msg)
+        log_func(f"Gstreamer bus message: {msg_str}")
+        return True
 
     @staticmethod
     def _create_mux_pipeline(configuration: VideoRecorderConfiguration) -> str:
