@@ -15,6 +15,7 @@ class MulticlassClassificationPrecisionRecallMetric:
 
     def add(self, predicted_class_scores, target_classes):
         predicted_classes = (torch.sigmoid(predicted_class_scores) > self._threshold).float()
+        target_classes = (target_classes > self._threshold).float()
 
         self._true_positive_count += ((predicted_classes == 1.0) & (target_classes == 1.0)).sum().item()
         self._false_positive_count += ((predicted_classes == 1.0) & (target_classes == 0.0)).sum().item()

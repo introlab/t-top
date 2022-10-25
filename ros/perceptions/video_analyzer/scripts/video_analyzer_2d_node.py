@@ -21,15 +21,16 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
     def _image_cb(self, color_image_msg):
         try:
             color_image = self._cv_bridge.imgmsg_to_cv2(color_image_msg, 'rgb8')
-            object_analyses = self._analyse(color_image)
+            object_analyses, semantic_segmentation = self._analyse(color_image)
 
-            video_analysis_msg = self._object_analyses_to_msg(object_analyses, color_image_msg.header, color_image)
+            video_analysis_msg = self._analysis_to_msg(object_analyses, semantic_segmentation,
+                                                       color_image_msg.header, color_image)
             self._video_analysis_pub.publish(video_analysis_msg)
             self._publish_analysed_image(color_image, color_image_msg.header, object_analyses)
         except Exception as e:
             rospy.logerr(f'Image analysis error: {e} \n {traceback.format_exc()}')
 
-    def _object_analyses_to_msg(self, object_analyses, header, color_image):
+    def _analysis_to_msg(self, object_analyses, semantic_segmentation, header, color_image):
         image_height, image_width, _ = color_image.shape
 
         msg = VideoAnalysis()
@@ -38,6 +39,9 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
 
         for object_analysis in object_analyses:
             msg.objects.append(self._object_analysis_to_msg(object_analysis, image_height, image_width))
+
+        if semantic_segmentation is not None:
+            msg.semantic_segmentation.append(self._semantic_segmentation_to_msg(semantic_segmentation))
 
         return msg
 

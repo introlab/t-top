@@ -1,3 +1,5 @@
+import json
+
 import matplotlib.pyplot as plt
 
 
@@ -36,7 +38,11 @@ class YoloLearningCurves:
     def add_validation_class_accuracy_value(self, value):
         self._validation_class_accuracy_values.append(value)
 
-    def save_figure(self, output_path):
+    def save(self, figure_path, data_path):
+        self._save_figure(figure_path)
+        self._save_data(data_path)
+
+    def _save_figure(self, path):
         fig = plt.figure(figsize=(15, 5), dpi=300)
         ax1 = fig.add_subplot(131)
         ax2 = fig.add_subplot(132)
@@ -66,5 +72,17 @@ class YoloLearningCurves:
         ax3.set_ylabel(u'Accuracy (class)')
         ax3.legend()
 
-        fig.savefig(output_path)
+        fig.savefig(path)
         plt.close(fig)
+
+    def _save_data(self, path):
+        with open(path, 'w') as file:
+            data = {
+                'training_loss_values': self._training_loss_values,
+                'validation_loss_values': self._validation_loss_values,
+                'training_bbox_accuracy_values': self._training_bbox_accuracy_values,
+                'validation_bbox_accuracy_values': self._validation_bbox_accuracy_values,
+                'training_class_accuracy_values': self._training_class_accuracy_values,
+                'validation_class_accuracy_values': self._validation_class_accuracy_values
+            }
+            json.dump(data, file, indent=4, sort_keys=True)

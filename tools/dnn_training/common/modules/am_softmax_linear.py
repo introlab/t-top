@@ -9,4 +9,4 @@ class AmSoftmaxLinear(nn.Module):
 
     def forward(self, x):
         normalized_weight = F.normalize(self._weight, dim=1)
-        return F.linear(x, normalized_weight)
+        return F.linear(F.normalize(x, dim=1), normalized_weight)

@@ -55,6 +55,7 @@ add_message_files(
   FILES
   VideoAnalysis.msg
   VideoAnalysisObject.msg
+  SemanticSegmentation.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -4,15 +4,16 @@ import numpy as np
 import cv2
 
 import torch
+import torchvision.transforms.functional as F
 
 import rospy
 from cv_bridge import CvBridge
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
-from video_analyzer.msg import VideoAnalysis
+from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
 
-from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor
+from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
 import hbba_lite
 
 
@@ -82,6 +83,8 @@ class VideoAnalyzerNode:
 
         self._pose_enabled = rospy.get_param('~pose_enabled', True)
         self._face_descriptor_enabled = rospy.get_param('~face_descriptor_enabled', True)
+        self._semantic_segmentation_enabled = rospy.get_param('~semantic_segmentation_enabled', True)
+        self._semantic_segmentation_dataset = rospy.get_param('~semantic_segmentation_dataset', 'coco')
         self._cropped_image_enabled = rospy.get_param('~cropped_image_enabled', True)
 
         if self._face_descriptor_enabled and not self._pose_enabled:
@@ -100,6 +103,9 @@ class VideoAnalyzerNode:
             self._skeleton_pairs = self._pose_estimator.get_skeleton_pairs()
         if self._face_descriptor_enabled:
             self._face_descriptor_extractor = FaceDescriptorExtractor(inference_type=self._inference_type)
+        if self._semantic_segmentation_enabled:
+            self._semantic_segmentation_network = SemanticSegmentationNetwork(inference_type=self._inference_type,
+                                                                              dataset=self._semantic_segmentation_dataset)
 
         self._person_class_index = self._object_class_names.index('person')
 
@@ -129,10 +135,20 @@ class VideoAnalyzerNode:
 
             object_analyses.append(object_analysis)
 
-        return object_analyses
+        if self._semantic_segmentation_enabled:
+            equalized_color_image_tensor = self._convert_color_image_to_equalized_tensor(color_image)
+            semantic_segmentation = self._semantic_segmentation_network(equalized_color_image_tensor)
+        else:
+            semantic_segmentation = None
+
+        return object_analyses, semantic_segmentation
 
     def _convert_color_image_to_tensor(self, color_image):
         return torch.from_numpy(color_image).to(self._object_detector.device()).permute(2, 0, 1).float() / 255
+
+    def _convert_color_image_to_equalized_tensor(self, color_image):
+        color_image_tensor = torch.from_numpy(color_image).permute(2, 0, 1).to(self._object_detector.device())
+        return F.equalize(color_image_tensor).float() / 255
 
     def _analyse_person(self, cv_color_image, color_image_tensor, x0, y0):
         pose_coordinates, pose_confidence = self._pose_estimator(color_image_tensor)
@@ -160,6 +176,13 @@ class VideoAnalyzerNode:
         pose_analysis = PoseAnalysis(pose_coordinates.tolist(), pose_confidence.tolist(), pose_image)
 
         return pose_analysis, face_analysis
+
+    def _semantic_segmentation_to_msg(self, semantic_segmentation_tensor):
+        msg = SemanticSegmentation()
+        msg.class_names = self._semantic_segmentation_network.get_class_names()
+        msg.height, msg.width = semantic_segmentation_tensor.size()
+        msg.class_indexes = semantic_segmentation_tensor.view(-1).tolist()
+        return msg
 
     def _publish_analysed_image(self, color_image, header, object_analyses):
         if self._analysed_image_pub.is_filtering_all_messages:

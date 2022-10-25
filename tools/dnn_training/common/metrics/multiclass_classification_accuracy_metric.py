@@ -13,6 +13,7 @@ class MulticlassClassificationAccuracyMetric:
 
     def add(self, predicted_class_scores, target_classes):
         predicted_classes = (torch.sigmoid(predicted_class_scores) > self._threshold).float()
+        target_classes = (target_classes > self._threshold).float()
 
         self._good += (predicted_classes == target_classes).sum().item()
         self._total += target_classes.numel()

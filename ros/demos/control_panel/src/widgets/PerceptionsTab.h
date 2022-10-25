@@ -10,6 +10,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <video_analyzer/VideoAnalysis.h>
 #include <audio_analyzer/AudioAnalysis.h>
 #include <std_msgs/Empty.h>
 #include <person_identification/PersonNames.h>
@@ -26,6 +27,7 @@ class PerceptionsTab : public QWidget
     ros::NodeHandle& m_nodeHandle;
     ros::Subscriber m_analyzedImage3dSubscriber;
     ros::Subscriber m_analyzedImage2dWideSubscriber;
+    ros::Subscriber m_videoAnalysis2dWideSubscriber;
     ros::Subscriber m_audioAnalysisSubscriber;
     ros::Subscriber m_robotNameDetectedSubscriber;
     ros::Subscriber m_personNamesSubscriber;
@@ -54,6 +56,7 @@ private slots:
 private:
     void analyzedImage3dSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
     void analyzedImage2dWideSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
+    void videoAnalysis2dWideSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg);
     void audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
     void robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg);
     void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
@@ -71,6 +74,7 @@ private:
 
     ImageDisplay* m_videoAnalyzer3dImageDisplay;
     ImageDisplay* m_videoAnalyzer2dWideImageDisplay;
+    ImageDisplay* m_videoAnalyzer2dWideSegmentationcImageDisplay;
     QLineEdit* m_soundClassesLineEdit;
     QLineEdit* m_robotNameDetectionTimeLineEdit;
     QLineEdit* m_identifiedPersonsLineEdit;

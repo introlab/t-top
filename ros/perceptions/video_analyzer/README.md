@@ -15,6 +15,8 @@ This node uses RGB images, so the 3D positions are not set.
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu).
  - `pose_enabled` (bool): Indicates to estimate the pose of the people.
  - `face_descriptor_enabled` (bool): Indicates to extract an embedding for each face. The pose estimation must be enabled when the face embedding is enabled.
+ - `semantic_segmentation_enabled` (bool): Indicates to perform semantic segmentation.
+ - `semantic_segmentation_dataset` (string): Indicates which model to use semantic segmentation (coco, kitchen_open_images or person_other_open_images).
  - `cropped_image_enabled` (bool): Indicates to publish cropped images for each object, pose and face.
 
 #### Subscribed Topics
@@ -42,6 +44,8 @@ This node uses RGB-D images, so the 3D positions are set.
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu).
  - `pose_enabled` (bool): Indicates to estimate the pose of the people.
  - `face_descriptor_enabled` (bool): Indicates to extract an embedding for each face. The pose estimation must be enabled when the face embedding is enabled.
+ - `semantic_segmentation_enabled` (bool): Indicates to perform semantic segmentation.
+ - `semantic_segmentation_dataset` (string): Indicates which model to use semantic segmentation (coco, kitchen_open_images or person_other_open_images).
  - `cropped_image_enabled` (bool): Indicates to publish cropped images for each object, pose and face.
  - `depth_mean_offset` (int): The rectangle offset when calulating the depth of the object.
 

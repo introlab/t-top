@@ -9,7 +9,7 @@ class KeywordSpotter(nn.Module):
         super(KeywordSpotter, self).__init__()
 
         self._features_layers = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=(4, 10), stride=2, padding=(2, 5)),
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=(4, 10), stride=2, padding=(2, 5), bias=False),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
 
