@@ -23,7 +23,7 @@ from typing import (
 
 import gi
 
-gi.require_version("Gst", "1.0")
+gi.require_version('Gst', '1.0')
 from gi.repository import Gst  # type: ignore
 from gi.repository import GLib  # type: ignore
 from gi.repository import GObject  # type: ignore
@@ -83,8 +83,8 @@ class VideoCodecEnum(str, Enum):
 
     def gst_parser_string(self, config_name: str) -> str:
         if self._gst_parser is None:
-            return ""
-        return f" ! {self._gst_parser} name={self._gst_parser}_{config_name}"
+            return ''
+        return f' ! {self._gst_parser} name={self._gst_parser}_{config_name}'
 
 
 class AudioCodecEnum(str, Enum):
@@ -99,23 +99,23 @@ class AudioCodecEnum(str, Enum):
 
 
 class VideoFormat(FormatEnum):
-    RGB = ("rgb8", "RGB")
-    BGR = ("bgr8", "BGR")
+    RGB = ('rgb8', 'RGB')
+    BGR = ('bgr8', 'BGR')
 
 
 class VideoCodec(VideoCodecEnum):
-    H264 = ("h264", "x264enc", "nvv4l2h264enc", "h264parse")
-    H265 = ("h265", "x265enc", "nvv4l2h265enc", "h265parse")
-    VP8 = ("vp8", "vp8enc", "nvv4l2vp8enc")
-    VP9 = ("vp9", "vp9enc", "nvv4l2vp9enc")
+    H264 = ('h264', 'x264enc', 'nvv4l2h264enc', 'h264parse')
+    H265 = ('h265', 'x265enc', 'nvv4l2h265enc', 'h265parse')
+    VP8 = ('vp8', 'vp8enc', 'nvv4l2vp8enc')
+    VP9 = ('vp9', 'vp9enc', 'nvv4l2vp9enc')
 
     def get_software_bitrate_attribute(self) -> str:
         if self == VideoCodec.H264 or self == VideoCodec.H265:
-            return "bitrate"
+            return 'bitrate'
         elif self == VideoCodec.VP8 or self == VideoCodec.VP9:
-            return "target-bitrate"
+            return 'target-bitrate'
         else:
-            raise ValueError("Invalid video codec")
+            raise ValueError('Invalid video codec')
 
     def convert_software_bitrate(self, bitrate) -> int:
         if self == VideoCodec.H264 or self == VideoCodec.H265:
@@ -123,32 +123,32 @@ class VideoCodec(VideoCodecEnum):
         elif self == VideoCodec.VP8 or self == VideoCodec.VP9:
             return bitrate
         else:
-            raise ValueError("Invalid video codec")
+            raise ValueError('Invalid video codec')
 
     def convert_nvidia_hardware_bitrate(self, bitrate) -> int:
         return bitrate
 
 
 class AudioFormat(FormatEnum):
-    S8 = ("signed_8", "S8")
-    S16LE = ("signed_16", "S16LE")
-    S24LE = ("signed_24", "S24LE")
-    S24_32LE = ("signed_padded_24", "S24_32LE")
-    S32LE = ("signed_32", "S32LE")
-    U8 = ("unsigned_8", "U8")
-    U16LE = ("unsigned_16", "U16LE")
-    U24LE = ("unsigned_24", "U24LE")
-    U24_32LE = ("unsigned_padded_24", "U24_32LE")
-    U32LE = ("unsigned_32", "U32LE")
-    F32LE = ("float", "F32LE")
-    F64LE = ("double", "F64LE")
+    S8 = ('signed_8', 'S8')
+    S16LE = ('signed_16', 'S16LE')
+    S24LE = ('signed_24', 'S24LE')
+    S24_32LE = ('signed_padded_24', 'S24_32LE')
+    S32LE = ('signed_32', 'S32LE')
+    U8 = ('unsigned_8', 'U8')
+    U16LE = ('unsigned_16', 'U16LE')
+    U24LE = ('unsigned_24', 'U24LE')
+    U24_32LE = ('unsigned_padded_24', 'U24_32LE')
+    U32LE = ('unsigned_32', 'U32LE')
+    F32LE = ('float', 'F32LE')
+    F64LE = ('double', 'F64LE')
 
 
 class AudioCodec(AudioCodecEnum):
-    AAC = ("aac", "voaacenc")
-    MP3 = ("mp3", "lamemp3enc")
-    OPUS = ("opus", "opusenc")
-    FLAC = ("flac", "flacenc")
+    AAC = ('aac', 'voaacenc')
+    MP3 = ('mp3', 'lamemp3enc')
+    OPUS = ('opus', 'opusenc')
+    FLAC = ('flac', 'flacenc')
 
 
 @dataclass
@@ -165,7 +165,7 @@ class VideoStreamConfig:
 
     @property
     def full_name(self) -> str:
-        return f"video_{self.name}"
+        return f'video_{self.name}'
 
     class VideoStreamParams(TypedDict):
         name: str
@@ -178,18 +178,18 @@ class VideoStreamConfig:
         language_code: str
 
     @staticmethod
-    def from_parameters(params: VideoStreamParams) -> "VideoStreamConfig":
+    def from_parameters(params: VideoStreamParams) -> 'VideoStreamConfig':
 
         return VideoStreamConfig(
-            name=params["name"],
-            format=VideoFormat(params["format"]),
-            width=params["width"],
-            height=params["height"],
-            codec=VideoCodec(params["codec"]),
-            bitrate=params["bitrate"],
-            delay_s=params["delay_s"],
-            delay_ns=int(params["delay_s"] * 1e9),
-            language_code=params["language_code"],
+            name=params['name'],
+            format=VideoFormat(params['format']),
+            width=params['width'],
+            height=params['height'],
+            codec=VideoCodec(params['codec']),
+            bitrate=params['bitrate'],
+            delay_s=params['delay_s'],
+            delay_ns=int(params['delay_s'] * 1e9),
+            language_code=params['language_code'],
         )
 
 
@@ -205,7 +205,7 @@ class AudioStreamConfig:
 
     @property
     def full_name(self) -> str:
-        return f"audio_{self.name}"
+        return f'audio_{self.name}'
 
     class AudioStreamParams(TypedDict):
         name: str
@@ -217,18 +217,18 @@ class AudioStreamConfig:
         language_code: str
 
     @staticmethod
-    def from_parameters(params: AudioStreamParams) -> "AudioStreamConfig":
+    def from_parameters(params: AudioStreamParams) -> 'AudioStreamConfig':
 
         return AudioStreamConfig(
-            name=params["name"],
-            format=AudioFormat(params["format"]),
-            channel_count=params["channel_count"],
-            sampling_frequency=params["sampling_frequency"],
-            codec=AudioCodec(params["codec"]),
-            merge_channels=params["merge_channels"]
-            if "merge_channels" in params
+            name=params['name'],
+            format=AudioFormat(params['format']),
+            channel_count=params['channel_count'],
+            sampling_frequency=params['sampling_frequency'],
+            codec=AudioCodec(params['codec']),
+            merge_channels=params['merge_channels']
+            if 'merge_channels' in params
             else True,
-            language_code=params["language_code"],
+            language_code=params['language_code'],
         )
 
 
@@ -248,7 +248,7 @@ class VideoRecorderConfiguration:
 
     @staticmethod
     def _is_valid_name(name: str) -> bool:
-        return name.replace("_", "").isalnum() and name.isascii()
+        return name.replace('_', '').isalnum() and name.isascii()
 
     @staticmethod
     def _is_valid_language_code(language_code: str) -> bool:
@@ -259,35 +259,35 @@ class VideoRecorderConfiguration:
         )
 
     @staticmethod
-    def from_parameters() -> "VideoRecorderConfiguration":
+    def from_parameters() -> 'VideoRecorderConfiguration':
 
-        output_directory = cast(str, rospy.get_param("~output_directory"))
+        output_directory = cast(str, rospy.get_param('~output_directory'))
         filename_prefix = cast(
-            str, rospy.get_param("~filename_prefix", "")  # type: ignore
+            str, rospy.get_param('~filename_prefix', '')  # type: ignore
         )
         video_streams = [
-            VideoStreamConfig.from_parameters(video_stream) for video_stream in rospy.get_param(f"~video_streams")  # type: ignore
+            VideoStreamConfig.from_parameters(video_stream) for video_stream in rospy.get_param(f'~video_streams')  # type: ignore
         ]
         audio_streams = [
-            AudioStreamConfig.from_parameters(audio_stream) for audio_stream in rospy.get_param(f"~audio_streams")  # type: ignore
+            AudioStreamConfig.from_parameters(audio_stream) for audio_stream in rospy.get_param(f'~audio_streams')  # type: ignore
         ]
 
         streams_count = len(video_streams) + len(audio_streams)
         if streams_count < 1:
-            rospy.logerr(f"At least one video or audio stream must be specified")
+            rospy.logerr(f'At least one video or audio stream must be specified')
             sys.exit(os.EX_CONFIG)
 
         video_names = [video_stream.name for video_stream in video_streams]
         if len(duplicates := get_duplicates(video_names)) > 0:
             rospy.logerr(
-                f"Video stream names must be unique, duplicates found: {duplicates}"
+                f'Video stream names must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
 
         audio_names = [audio_stream.name for audio_stream in audio_streams]
         if len(duplicates := get_duplicates(audio_names)) > 0:
             rospy.logerr(
-                f"Audio stream names must be unique, duplicates found: {duplicates}"
+                f'Audio stream names must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
 
@@ -296,7 +296,7 @@ class VideoRecorderConfiguration:
         ]
         if len(duplicates := get_duplicates(video_lang_codes)) > 0:
             rospy.logerr(
-                f"Video language codes must be unique, duplicates found: {duplicates}"
+                f'Video language codes must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
 
@@ -305,7 +305,7 @@ class VideoRecorderConfiguration:
         ]
         if len(duplicates := get_duplicates(audio_lang_codes)) > 0:
             rospy.logerr(
-                f"Audio language codes must be unique, duplicates found: {duplicates}"
+                f'Audio language codes must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
 
@@ -313,14 +313,14 @@ class VideoRecorderConfiguration:
         for stream_name in itertools.chain(video_names, audio_names):
             if not VideoRecorderConfiguration._is_valid_name(stream_name):
                 rospy.logerr(
-                    f"Stream names must only contain alphanumeric ascii characters and underscores; invalid name: {stream_name}"
+                    f'Stream names must only contain alphanumeric ascii characters and underscores; invalid name: {stream_name}'
                 )
                 should_exit = True
         for lang_code in itertools.chain(video_lang_codes, audio_lang_codes):
             if not VideoRecorderConfiguration._is_valid_language_code(lang_code):
                 rospy.logerr(
-                    "Language codes must be ISO 639-3 codes, and should be a 3-letter code (see https://iso639-3.sil.org/code_tables/639/data)"
-                    f"; invalid language code: {lang_code}"
+                    'Language codes must be ISO 639-3 codes, and should be a 3-letter code (see https://iso639-3.sil.org/code_tables/639/data)'
+                    f'; invalid language code: {lang_code}'
                 )
                 should_exit = True
         if should_exit:
@@ -382,7 +382,7 @@ class VideoRecorder:
     def _image_cb(self, msg: Image, config: VideoStreamConfig):
         if not VideoRecorder._verify_image_msg(config, msg):
             rospy.logerr(
-                f"Invalid image (encoding={msg.encoding}, width={msg.width}, height={msg.height})"
+                f'Invalid image (encoding={msg.encoding}, width={msg.width}, height={msg.height})'
             )
             return
 
@@ -399,9 +399,9 @@ class VideoRecorder:
         self._last_video_frame_timestamp_ns[config.name] = timestamp_ns
 
         if timestamp_ns >= 0:
-            rospy.logdebug(f"Pushing image {msg.header.seq} for {config.name}")
+            rospy.logdebug(f'Pushing image {msg.header.seq} for {config.name}')
             self._video_srcs[config.name].emit(  # type: ignore
-                "push-buffer",
+                'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
             )
 
@@ -419,7 +419,7 @@ class VideoRecorder:
     def _audio_cb(self, msg: AudioFrame, config: AudioStreamConfig):
         if not VideoRecorder._verify_audio_frame_msg(config, msg):
             rospy.logerr(
-                f"Invalid audio frame (format={msg.format}, channel_count={msg.channel_count}, sampling_frequency={msg.sampling_frequency})"
+                f'Invalid audio frame (format={msg.format}, channel_count={msg.channel_count}, sampling_frequency={msg.sampling_frequency})'
             )
             return
 
@@ -432,9 +432,9 @@ class VideoRecorder:
         duration_ns = int(1 / msg.sampling_frequency * msg.frame_sample_count)
 
         if timestamp_ns >= 0:
-            rospy.logdebug(f"Pushing audio frame {msg.header.seq} for {config.name}")
+            rospy.logdebug(f'Pushing audio frame {msg.header.seq} for {config.name}')
             self._audio_srcs[config.name].emit(  # type: ignore
-                "push-buffer",
+                'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
             )
 
@@ -470,24 +470,24 @@ class VideoRecorder:
             )
 
             pipeline_str = (
-                f"{next(video_and_audio_pipelines)} ! {mux_pipeline}  "
-                + "  ".join(f"{p} ! mux." for p in video_and_audio_pipelines)
+                f'{next(video_and_audio_pipelines)} ! {mux_pipeline}  '
+                + '  '.join(f'{p} ! mux.' for p in video_and_audio_pipelines)
             )
 
-            rospy.loginfo(f"Launching gstreamer pipeline: {pipeline_str}")
+            rospy.loginfo(f'Launching gstreamer pipeline: {pipeline_str}')
 
             try:
                 pipeline = Gst.parse_launch(pipeline_str)
 
                 video_srcs = {
                     video_stream_config.name: pipeline.get_by_name(
-                        f"appsrc_{video_stream_config.full_name}"
+                        f'appsrc_{video_stream_config.full_name}'
                     )
                     for video_stream_config in self._configuration.video_streams
                 }
                 audio_srcs = {
                     audio_stream_config.name: pipeline.get_by_name(
-                        f"appsrc_{audio_stream_config.full_name}"
+                        f'appsrc_{audio_stream_config.full_name}'
                     )
                     for audio_stream_config in self._configuration.audio_streams
                 }
@@ -502,24 +502,24 @@ class VideoRecorder:
                 self._audio_srcs = audio_srcs
                 self._bus = bus
             except GLib.Error as e:  # type: ignore
-                rospy.loginfo(f"GStreamer pipeline failed({e})")
+                rospy.loginfo(f'GStreamer pipeline failed({e})')
                 sys.exit(-2)
 
-            graph_export(self._pipeline, "started")
+            graph_export(self._pipeline, 'started')
 
     def _stop_if_started(self):
         with self.lock:
             if self._pipeline is None:
                 return
 
-            graph_export(self._pipeline, "stop")
+            graph_export(self._pipeline, 'stop')
 
             # We don't want the message callback to pop the messages anymore, so that we don't miss the EOS message
             self._glib_main_loop.quit()
 
-            apply(lambda s: s.emit("end-of-stream"), self._video_srcs.values())  # type: ignore
-            apply(lambda s: s.emit("end-of-stream"), self._audio_srcs.values())  # type: ignore
-            rospy.loginfo("Sent EOS to all sources")
+            apply(lambda s: s.emit('end-of-stream'), self._video_srcs.values())  # type: ignore
+            apply(lambda s: s.emit('end-of-stream'), self._audio_srcs.values())  # type: ignore
+            rospy.loginfo('Sent EOS to all sources')
 
             if self._bus:
                 self._bus.timed_pop_filtered(  # type: ignore
@@ -527,7 +527,7 @@ class VideoRecorder:
                 )
                 self._bus.remove_watch()
 
-            rospy.loginfo("Received EOS on the bus")
+            rospy.loginfo('Received EOS on the bus')
 
             self._pipeline.set_state(Gst.State.NULL)
             self._pipeline = None
@@ -539,48 +539,48 @@ class VideoRecorder:
     def _on_bus_message_cb(self, bus, msg):
         def message_to_string(msg: Gst.Message) -> Tuple[str, Callable]:
             if msg.type == Gst.MessageType.EOS:
-                return "End-of-stream", rospy.loginfo
+                return 'End-of-stream', rospy.loginfo
             elif msg.type == Gst.MessageType.WARNING:
                 err, debug = msg.parse_warning()
-                return f"Warning: |{err}|: {debug}", rospy.logwarn
+                return f'Warning: |{err}|: {debug}', rospy.logwarn
             elif msg.type == Gst.MessageType.ERROR:
                 err, debug = msg.parse_error()
-                return f"Bus call: Error: |{err}|: {debug}", rospy.logerr
+                return f'Bus call: Error: |{err}|: {debug}', rospy.logerr
             elif msg.type == Gst.MessageType.BUFFERING:
                 percent = msg.parse_buffering()
-                return f"Buffering ({percent}%)", rospy.loginfo
+                return f'Buffering ({percent}%)', rospy.loginfo
             elif msg.type == Gst.MessageType.STATE_CHANGED:
                 old_state, new_state, pending_state = msg.parse_state_changed()
                 return (
-                    f"Element |{msg.src.get_name()}| (of type |{type(msg.src).__name__}|) state changed from |{old_state.value_nick}| to |{new_state.value_nick}| "
-                    f"(pending |{pending_state.value_nick}|)"
+                    f'Element |{msg.src.get_name()}| (of type |{type(msg.src).__name__}|) state changed from |{old_state.value_nick}| to |{new_state.value_nick}| '
+                    f'(pending |{pending_state.value_nick}|)'
                 ), rospy.loginfo
             elif msg.type == Gst.MessageType.STREAM_START:
-                return "Stream started", rospy.loginfo
+                return 'Stream started', rospy.loginfo
             elif msg.type == Gst.MessageType.STREAM_STATUS:
                 status_type, owner = msg.parse_stream_status()
                 return (
-                    f"Stream status; status: |{status_type.value_nick}|, owner: |{type(owner).__name__}|",
+                    f'Stream status; status: |{status_type.value_nick}|, owner: |{type(owner).__name__}|',
                     rospy.loginfo,
                 )
             elif msg.type == Gst.MessageType.LATENCY:
-                return "Latency", rospy.loginfo
+                return 'Latency', rospy.loginfo
             elif msg.type == Gst.MessageType.NEW_CLOCK:
                 clock = msg.parse_new_clock()
                 return (
-                    f"New clock; sync: |{clock.is_synced()}|, resolution: |{clock.get_resolution()}|",
+                    f'New clock; sync: |{clock.is_synced()}|, resolution: |{clock.get_resolution()}|',
                     rospy.loginfo,
                 )
             elif msg.type == Gst.MessageType.ASYNC_DONE:
-                return "Async done", rospy.loginfo
+                return 'Async done', rospy.loginfo
             else:
                 return (
-                    f"Unknow message of type |{Gst.MessageType.get_name(msg.type).upper().replace('-', '_')}|",
+                    f'Unknow message of type |{Gst.MessageType.get_name(msg.type).upper().replace("-", "_")}|',
                     rospy.loginfo,
                 )
 
         msg_str, log_func = message_to_string(msg)
-        log_func(f"Gstreamer bus message: {msg_str}")
+        log_func(f'Gstreamer bus message: {msg_str}')
         return True
 
     @staticmethod
@@ -588,27 +588,15 @@ class VideoRecorder:
         path = os.path.join(
             configuration.output_directory, VideoRecorder._get_filename(configuration)
         )
-        # if (
-        #     configuration.video_codec == VideoCodec.H264
-        #     or configuration.video_codec == VideoCodec.H265
-        # ):
-        #     attributes = "reserved-bytes-per-sec=100 reserved-max-duration=20184000000000 reserved-moov-update-period=100000000"
-        #     return f"qtmux name=mux {attributes} ! filesink location={path}.mp4"
-        # elif (
-        #     configuration.video_codec == VideoCodec.VP8
-        #     or configuration.video_codec == VideoCodec.VP9
-        # ):
         return (
             f'matroskamux name=mux writing-app="{Path(__file__).stem}"'
-            f" ! filesink name=filesink location={path}.mkv"
+            f' ! filesink name=filesink location={path}.mkv'
         )
-        # else:
-        # raise ValueError(f"Unsupported video codec: {configuration.video_codec}")
 
     @staticmethod
     def _get_filename(configuration: VideoRecorderConfiguration) -> str:
         now = datetime.datetime.utcfromtimestamp(rospy.Time.now().to_sec())
-        return configuration.filename_prefix + now.strftime("%Y-%m-%d_%H-%M-%S")
+        return configuration.filename_prefix + now.strftime('%Y-%m-%d_%H-%M-%S')
 
     @staticmethod
     def _create_video_pipeline(config: VideoStreamConfig) -> str:
@@ -618,22 +606,22 @@ class VideoRecorder:
             encoder = config.codec.nv_hw_enc
             bitrate = config.codec.convert_nvidia_hardware_bitrate(config.bitrate)
             pipeline += (
-                f" ! videoconvert name=videoconvert_{config.full_name}"
-                f" ! nvvidconv name=nvvidconv_{config.full_name}"
-                f" ! capsfilter name=capsfilter_{config.full_name} caps=video/x-raw(memory:NVMM),format=(string)I420"
-                f" ! {encoder} name={encoder}_{config.full_name} bitrate={bitrate}"
+                f' ! videoconvert name=videoconvert_{config.full_name}'
+                f' ! nvvidconv name=nvvidconv_{config.full_name}'
+                f' ! capsfilter name=capsfilter_{config.full_name} caps=video/x-raw(memory:NVMM),format=(string)I420'
+                f' ! {encoder} name={encoder}_{config.full_name} bitrate={bitrate}'
             )
         else:
-            rospy.logwarn("NVIDIA hardware encoder are not available.")
+            rospy.logwarn('NVIDIA hardware encoder are not available.')
 
             encoder = config.codec.sw_enc
             bitrate_attribute = config.codec.get_software_bitrate_attribute()
             bitrate = config.codec.convert_software_bitrate(config.bitrate)
             pipeline += (
-                f" ! videoconvert name=videoconvert_{config.full_name}"
-                f" ! capsfilter name=capsfilter_{config.full_name} caps=video/x-raw,format=I420"
-                f" ! {encoder} name={encoder}_{config.full_name} {bitrate_attribute}={bitrate}"
-                f"{config.codec.gst_parser_string(config.full_name)}"
+                f' ! videoconvert name=videoconvert_{config.full_name}'
+                f' ! capsfilter name=capsfilter_{config.full_name} caps=video/x-raw,format=I420'
+                f' ! {encoder} name={encoder}_{config.full_name} {bitrate_attribute}={bitrate}'
+                f'{config.codec.gst_parser_string(config.full_name)}'
                 f' ! taginject name=taginject_{config.full_name} tags="language-code={config.language_code}"'
             )
 
@@ -642,18 +630,18 @@ class VideoRecorder:
     @staticmethod
     def _create_video_input_pipeline(config: VideoStreamConfig) -> str:
         caps = (
-            f"video/x-raw,format={config.format.gst_value}"
-            f",width={config.width},height={config.height}"
+            f'video/x-raw,format={config.format.gst_value}'
+            f',width={config.width},height={config.height}'
         )
         return (
-            f"appsrc name=appsrc_video_{config.name} emit-signals=true is-live=true format=time caps={caps}"
-            f" ! queue name=queue_video_{config.name} max-size-buffers=100"
+            f'appsrc name=appsrc_video_{config.name} emit-signals=true is-live=true format=time caps={caps}'
+            f' ! queue name=queue_video_{config.name} max-size-buffers=100'
         )
 
     @staticmethod
     def _verify_nvidia_hardware_encoder(config: VideoStreamConfig) -> bool:
         return (
-            Gst.ElementFactory.find("nvvidconv") is not None
+            Gst.ElementFactory.find('nvvidconv') is not None
             and Gst.ElementFactory.find(config.codec.nv_hw_enc) is not None
         )
 
@@ -661,10 +649,10 @@ class VideoRecorder:
     def _create_audio_pipeline(config: AudioStreamConfig) -> str:
         pipeline = VideoRecorder._create_audio_input_pipeline(config)
 
-        audioconvert_attributes = ""
+        audioconvert_attributes = ''
         if config.channel_count > 1 and config.merge_channels:
-            values = [f"(float){1 / config.channel_count}"] * config.channel_count
-            audioconvert_attributes = ' mix-matrix="<<' + ",".join(values) + '>>"'
+            values = [f'(float){1 / config.channel_count}'] * config.channel_count
+            audioconvert_attributes = ' mix-matrix="<<' + ','.join(values) + '>>"'
         elif not config.merge_channels:
             # If the number of channels is bigger than the max number of channels that can be encoded together,
             # we would need to split the audio into multiple streams.
@@ -672,31 +660,31 @@ class VideoRecorder:
             # The number of streams is the number of channels divided by the max number of channels that can be encoded together based on the encoder used.
             # Sample command doing this (but with only opus, specific rate, and 4 channels; also results in bad opus headers according to VLC):
             # `gst-launch-1.0 audiotestsrc ! "audio/x-raw,channels=4,layout=interleaved,rate=48000" ! deinterleave name=d  d.src_0 ! queue ! interleave name=i ! opusenc ! matroskamux name=m ! filesink location=test.mkv  d.src_1 ! queue ! i.  d.src_2 ! queue ! interleave name=ii ! opusenc ! m.  d.src_3 ! queue ! ii.`
-            raise NotImplementedError("Not merging channels is not implemented yet.")
+            raise NotImplementedError('Not merging channels is not implemented yet.')
 
         encoder = config.codec.enc
         pipeline += (
-            f" ! audioconvert{audioconvert_attributes} name=audioconvert_audio_{config.name}"
-            f" ! capsfilter name=capsfilter_audio_{config.name} caps=audio/x-raw,channels=1"
-            f" ! audiorate name=audiorate_audio_{config.name}"
-            f" ! {encoder} name={encoder}_audio_{config.name}"
+            f' ! audioconvert{audioconvert_attributes} name=audioconvert_audio_{config.name}'
+            f' ! capsfilter name=capsfilter_audio_{config.name} caps=audio/x-raw,channels=1'
+            f' ! audiorate name=audiorate_audio_{config.name}'
+            f' ! {encoder} name={encoder}_audio_{config.name}'
             f' ! taginject name=taginject_audio_{config.name} tags="language-code={config.language_code}"'
         )
         return pipeline
 
     @staticmethod
     def _create_audio_input_pipeline(config: AudioStreamConfig) -> str:
-        channel_mask = ""
+        channel_mask = ''
         if config.channel_count > 2:
-            channel_mask = ",channel-mask=(bitmask)0x0"
+            channel_mask = ',channel-mask=(bitmask)0x0'
 
         caps = (
-            f"audio/x-raw,format={config.format.gst_value},channels={config.channel_count}"
-            f",rate={config.sampling_frequency},layout=interleaved{channel_mask}"
+            f'audio/x-raw,format={config.format.gst_value},channels={config.channel_count}'
+            f',rate={config.sampling_frequency},layout=interleaved{channel_mask}'
         )
         return (
-            f"appsrc name=appsrc_audio_{config.name} emit-signals=true is-live=true format=time caps={caps}"
-            f" ! queue name=queue_audio_{config.name} max-size-buffers=100"
+            f'appsrc name=appsrc_audio_{config.name} emit-signals=true is-live=true format=time caps={caps}'
+            f' ! queue name=queue_audio_{config.name} max-size-buffers=100'
         )
 
     @staticmethod
@@ -732,7 +720,7 @@ class VideoRecorderNode:
         self._recorder_configuration = VideoRecorderConfiguration.from_parameters()
 
         self._filter_state = hbba_lite.OnOffHbbaFilterState(  # type: ignore
-            "video_recorder/filter_state"
+            'video_recorder/filter_state'
         )
         self._filter_state.on_changed(self._on_filter_state_changed)
 
@@ -757,7 +745,7 @@ class VideoRecorderNode:
 
 
 def main():
-    rospy.init_node("video_recorder_node")
+    rospy.init_node('video_recorder_node')
 
     Gst.init(None)
 
@@ -765,7 +753,7 @@ def main():
     video_recorder_node.run()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     try:
         main()
     except rospy.ROSInterruptException:
