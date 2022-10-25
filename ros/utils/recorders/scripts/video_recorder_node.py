@@ -51,50 +51,50 @@ def get_duplicates(iterable: Iterable[Hashable]) -> Set[Hashable]:
 
 
 class FormatEnum(str, Enum):
-    gst_value: str
+    gstreamer_value: str
 
     def __new__(cls, value: str, gstreamer_value: str):
         obj = str.__new__(cls, value)
         obj._value_ = value
 
-        obj.gst_value = gstreamer_value
+        obj.gstreamer_value = gstreamer_value
         return obj
 
 
 class VideoCodecEnum(str, Enum):
-    sw_enc: str
-    nv_hw_enc: Optional[str]
-    _gst_parser: Optional[str]
+    software_encoder: str
+    nvidia_hardware_encoder: Optional[str]
+    _gstreamer_parser: Optional[str]
 
     def __new__(
         cls,
         value: str,
-        sw_enc: str,
-        nv_hw_enc: Optional[str] = None,
+        software_encoder: str,
+        nvidia_hardware_encoder: Optional[str] = None,
         parser: Optional[str] = None,
     ):
         obj = str.__new__(cls, value)
         obj._value_ = value
 
-        obj.sw_enc = sw_enc
-        obj.nv_hw_enc = nv_hw_enc
-        obj._gst_parser = parser
+        obj.software_encoder = software_encoder
+        obj.nvidia_hardware_encoder = nvidia_hardware_encoder
+        obj._gstreamer_parser = parser
         return obj
 
-    def gst_parser_string(self, config_name: str) -> str:
-        if self._gst_parser is None:
+    def gstreamer_parser_string(self, configuration_name: str) -> str:
+        if self._gstreamer_parser is None:
             return ''
-        return f' ! {self._gst_parser} name={self._gst_parser}_{config_name}'
+        return f' ! {self._gstreamer_parser} name={self._gstreamer_parser}_{configuration_name}'
 
 
 class AudioCodecEnum(str, Enum):
-    enc: str
+    encoder: str
 
     def __new__(cls, value: str, enc: str):
         obj = str.__new__(cls, value)
         obj._value_ = value
 
-        obj.enc = enc
+        obj.encoder = enc
         return obj
 
 
@@ -152,7 +152,7 @@ class AudioCodec(AudioCodecEnum):
 
 
 @dataclass
-class VideoStreamConfig:
+class VideoStreamConfiguration:
     name: str
     format: VideoFormat
     width: int
@@ -167,7 +167,7 @@ class VideoStreamConfig:
     def full_name(self) -> str:
         return f'video_{self.name}'
 
-    class VideoStreamParams(TypedDict):
+    class VideoStreamParameters(TypedDict):
         name: str
         format: str
         width: int
@@ -178,23 +178,25 @@ class VideoStreamConfig:
         language_code: str
 
     @staticmethod
-    def from_parameters(params: VideoStreamParams) -> 'VideoStreamConfig':
+    def from_parameters(
+        parameters: VideoStreamParameters,
+    ) -> 'VideoStreamConfiguration':
 
-        return VideoStreamConfig(
-            name=params['name'],
-            format=VideoFormat(params['format']),
-            width=params['width'],
-            height=params['height'],
-            codec=VideoCodec(params['codec']),
-            bitrate=params['bitrate'],
-            delay_s=params['delay_s'],
-            delay_ns=int(params['delay_s'] * 1e9),
-            language_code=params['language_code'],
+        return VideoStreamConfiguration(
+            name=parameters['name'],
+            format=VideoFormat(parameters['format']),
+            width=parameters['width'],
+            height=parameters['height'],
+            codec=VideoCodec(parameters['codec']),
+            bitrate=parameters['bitrate'],
+            delay_s=parameters['delay_s'],
+            delay_ns=int(parameters['delay_s'] * 1e9),
+            language_code=parameters['language_code'],
         )
 
 
 @dataclass
-class AudioStreamConfig:
+class AudioStreamConfiguration:
     name: str
     format: AudioFormat
     channel_count: int
@@ -207,7 +209,7 @@ class AudioStreamConfig:
     def full_name(self) -> str:
         return f'audio_{self.name}'
 
-    class AudioStreamParams(TypedDict):
+    class AudioStreamParameters(TypedDict):
         name: str
         format: str
         channel_count: int
@@ -217,18 +219,20 @@ class AudioStreamConfig:
         language_code: str
 
     @staticmethod
-    def from_parameters(params: AudioStreamParams) -> 'AudioStreamConfig':
+    def from_parameters(
+        parameters: AudioStreamParameters,
+    ) -> 'AudioStreamConfiguration':
 
-        return AudioStreamConfig(
-            name=params['name'],
-            format=AudioFormat(params['format']),
-            channel_count=params['channel_count'],
-            sampling_frequency=params['sampling_frequency'],
-            codec=AudioCodec(params['codec']),
-            merge_channels=params['merge_channels']
-            if 'merge_channels' in params
+        return AudioStreamConfiguration(
+            name=parameters['name'],
+            format=AudioFormat(parameters['format']),
+            channel_count=parameters['channel_count'],
+            sampling_frequency=parameters['sampling_frequency'],
+            codec=AudioCodec(parameters['codec']),
+            merge_channels=parameters['merge_channels']
+            if 'merge_channels' in parameters
             else True,
-            language_code=params['language_code'],
+            language_code=parameters['language_code'],
         )
 
 
@@ -237,8 +241,8 @@ class VideoRecorderConfiguration:
         self,
         output_directory: str,
         filename_prefix: str,
-        video_streams: List[VideoStreamConfig],
-        audio_streams: List[AudioStreamConfig],
+        video_streams: List[VideoStreamConfiguration],
+        audio_streams: List[AudioStreamConfiguration],
     ):
         self.output_directory = output_directory
         self.filename_prefix = filename_prefix
@@ -266,10 +270,10 @@ class VideoRecorderConfiguration:
             str, rospy.get_param('~filename_prefix', '')  # type: ignore
         )
         video_streams = [
-            VideoStreamConfig.from_parameters(video_stream) for video_stream in rospy.get_param(f'~video_streams')  # type: ignore
+            VideoStreamConfiguration.from_parameters(video_stream) for video_stream in rospy.get_param(f'~video_streams')  # type: ignore
         ]
         audio_streams = [
-            AudioStreamConfig.from_parameters(audio_stream) for audio_stream in rospy.get_param(f'~audio_streams')  # type: ignore
+            AudioStreamConfiguration.from_parameters(audio_stream) for audio_stream in rospy.get_param(f'~audio_streams')  # type: ignore
         ]
 
         streams_count = len(video_streams) + len(audio_streams)
@@ -355,32 +359,32 @@ class VideoRecorder:
 
         self._clear_sources_lists()
 
-        self._image_subs = {
-            video_stream_config.name: rospy.Subscriber(
-                video_stream_config.full_name,
+        self._image_subscribers = {
+            video_stream_configuration.name: rospy.Subscriber(
+                video_stream_configuration.full_name,
                 Image,
                 self._image_cb,
-                video_stream_config,
+                video_stream_configuration,
             )
-            for video_stream_config in self._configuration.video_streams
+            for video_stream_configuration in self._configuration.video_streams
         }
-        self._audio_subs = {
-            audio_stream_config.name: rospy.Subscriber(
-                audio_stream_config.full_name,
+        self._audio_subscribers = {
+            audio_stream_configuration.name: rospy.Subscriber(
+                audio_stream_configuration.full_name,
                 AudioFrame,
                 self._audio_cb,
-                audio_stream_config,
+                audio_stream_configuration,
             )
-            for audio_stream_config in self._configuration.audio_streams
+            for audio_stream_configuration in self._configuration.audio_streams
         }
 
     def close(self):
-        apply(rospy.Subscriber.unregister, self._image_subs.values())
-        apply(rospy.Subscriber.unregister, self._audio_subs.values())
+        apply(rospy.Subscriber.unregister, self._image_subscribers.values())
+        apply(rospy.Subscriber.unregister, self._audio_subscribers.values())
         self._stop_if_started()
 
-    def _image_cb(self, msg: Image, config: VideoStreamConfig):
-        if not VideoRecorder._verify_image_msg(config, msg):
+    def _image_cb(self, msg: Image, configuration: VideoStreamConfiguration):
+        if not VideoRecorder._verify_image_msg(configuration, msg):
             rospy.logerr(
                 f'Invalid image (encoding={msg.encoding}, width={msg.width}, height={msg.height})'
             )
@@ -388,36 +392,38 @@ class VideoRecorder:
 
         msg_timestamp_ns = msg.header.stamp.to_nsec()
         self._start_if_not_started(msg_timestamp_ns)
-        if self._video_srcs[config.name] is None:
+        if self._video_srcs[configuration.name] is None:
             return
 
-        timestamp_ns = msg_timestamp_ns - self._record_start_time_ns + config.delay_ns
+        timestamp_ns = (
+            msg_timestamp_ns - self._record_start_time_ns + configuration.delay_ns
+        )
         duration_ns = max(
             0,
-            timestamp_ns - self._last_video_frame_timestamp_ns[config.name],
+            timestamp_ns - self._last_video_frame_timestamp_ns[configuration.name],
         )
-        self._last_video_frame_timestamp_ns[config.name] = timestamp_ns
+        self._last_video_frame_timestamp_ns[configuration.name] = timestamp_ns
 
         if timestamp_ns >= 0:
-            rospy.logdebug(f'Pushing image {msg.header.seq} for {config.name}')
-            self._video_srcs[config.name].emit(  # type: ignore
+            rospy.logdebug(f'Pushing image {msg.header.seq} for {configuration.name}')
+            self._video_srcs[configuration.name].emit(  # type: ignore
                 'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
             )
 
     @staticmethod
-    def _verify_image_msg(config: VideoStreamConfig, msg: Image):
+    def _verify_image_msg(configuration: VideoStreamConfiguration, msg: Image):
         try:
             return (
-                VideoFormat(msg.encoding) == config.format
-                and msg.width == config.width
-                and msg.height == config.height
+                VideoFormat(msg.encoding) == configuration.format
+                and msg.width == configuration.width
+                and msg.height == configuration.height
             )
         except ValueError:
             return False
 
-    def _audio_cb(self, msg: AudioFrame, config: AudioStreamConfig):
-        if not VideoRecorder._verify_audio_frame_msg(config, msg):
+    def _audio_cb(self, msg: AudioFrame, configuration: AudioStreamConfiguration):
+        if not VideoRecorder._verify_audio_frame_msg(configuration, msg):
             rospy.logerr(
                 f'Invalid audio frame (format={msg.format}, channel_count={msg.channel_count}, sampling_frequency={msg.sampling_frequency})'
             )
@@ -425,26 +431,30 @@ class VideoRecorder:
 
         msg_timestamp_ns = msg.header.stamp.to_nsec()
         self._start_if_not_started(msg_timestamp_ns)
-        if self._audio_srcs[config.name] is None:
+        if self._audio_srcs[configuration.name] is None:
             return
 
         timestamp_ns = msg_timestamp_ns - self._record_start_time_ns
         duration_ns = int(1 / msg.sampling_frequency * msg.frame_sample_count)
 
         if timestamp_ns >= 0:
-            rospy.logdebug(f'Pushing audio frame {msg.header.seq} for {config.name}')
-            self._audio_srcs[config.name].emit(  # type: ignore
+            rospy.logdebug(
+                f'Pushing audio frame {msg.header.seq} for {configuration.name}'
+            )
+            self._audio_srcs[configuration.name].emit(  # type: ignore
                 'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
             )
 
     @staticmethod
-    def _verify_audio_frame_msg(config: AudioStreamConfig, msg: AudioFrame):
+    def _verify_audio_frame_msg(
+        configuration: AudioStreamConfiguration, msg: AudioFrame
+    ):
         try:
             return (
-                AudioFormat(msg.format) == config.format
-                and msg.channel_count == config.channel_count
-                and msg.sampling_frequency == config.sampling_frequency
+                AudioFormat(msg.format) == configuration.format
+                and msg.channel_count == configuration.channel_count
+                and msg.sampling_frequency == configuration.sampling_frequency
             )
         except ValueError:
             return False
@@ -460,12 +470,12 @@ class VideoRecorder:
             mux_pipeline = VideoRecorder._create_mux_pipeline(self._configuration)
             video_and_audio_pipelines = itertools.chain(
                 (
-                    VideoRecorder._create_video_pipeline(video_stream_config)
-                    for video_stream_config in self._configuration.video_streams
+                    VideoRecorder._create_video_pipeline(video_stream_configuration)
+                    for video_stream_configuration in self._configuration.video_streams
                 ),
                 (
-                    VideoRecorder._create_audio_pipeline(audio_stream_config)
-                    for audio_stream_config in self._configuration.audio_streams
+                    VideoRecorder._create_audio_pipeline(audio_stream_configuration)
+                    for audio_stream_configuration in self._configuration.audio_streams
                 ),
             )
 
@@ -480,16 +490,16 @@ class VideoRecorder:
                 pipeline = Gst.parse_launch(pipeline_str)
 
                 video_srcs = {
-                    video_stream_config.name: pipeline.get_by_name(
-                        f'appsrc_{video_stream_config.full_name}'
+                    video_stream_configuration.name: pipeline.get_by_name(
+                        f'appsrc_{video_stream_configuration.full_name}'
                     )
-                    for video_stream_config in self._configuration.video_streams
+                    for video_stream_configuration in self._configuration.video_streams
                 }
                 audio_srcs = {
-                    audio_stream_config.name: pipeline.get_by_name(
-                        f'appsrc_{audio_stream_config.full_name}'
+                    audio_stream_configuration.name: pipeline.get_by_name(
+                        f'appsrc_{audio_stream_configuration.full_name}'
                     )
-                    for audio_stream_config in self._configuration.audio_streams
+                    for audio_stream_configuration in self._configuration.audio_streams
                 }
 
                 bus = pipeline.get_bus()
@@ -599,61 +609,70 @@ class VideoRecorder:
         return configuration.filename_prefix + now.strftime('%Y-%m-%d_%H-%M-%S')
 
     @staticmethod
-    def _create_video_pipeline(config: VideoStreamConfig) -> str:
-        pipeline = VideoRecorder._create_video_input_pipeline(config)
+    def _create_video_pipeline(configuration: VideoStreamConfiguration) -> str:
+        pipeline = VideoRecorder._create_video_input_pipeline(configuration)
 
-        if VideoRecorder._verify_nvidia_hardware_encoder(config):
-            encoder = config.codec.nv_hw_enc
-            bitrate = config.codec.convert_nvidia_hardware_bitrate(config.bitrate)
+        if VideoRecorder._verify_nvidia_hardware_encoder(configuration):
+            encoder = configuration.codec.nvidia_hardware_encoder
+            bitrate = configuration.codec.convert_nvidia_hardware_bitrate(
+                configuration.bitrate
+            )
             pipeline += (
-                f' ! videoconvert name=videoconvert_{config.full_name}'
-                f' ! nvvidconv name=nvvidconv_{config.full_name}'
-                f' ! capsfilter name=capsfilter_{config.full_name} caps=video/x-raw(memory:NVMM),format=(string)I420'
-                f' ! {encoder} name={encoder}_{config.full_name} bitrate={bitrate}'
+                f' ! videoconvert name=videoconvert_{configuration.full_name}'
+                f' ! nvvidconv name=nvvidconv_{configuration.full_name}'
+                f' ! capsfilter name=capsfilter_{configuration.full_name} caps=video/x-raw(memory:NVMM),format=(string)I420'
+                f' ! {encoder} name={encoder}_{configuration.full_name} bitrate={bitrate}'
             )
         else:
             rospy.logwarn('NVIDIA hardware encoder are not available.')
 
-            encoder = config.codec.sw_enc
-            bitrate_attribute = config.codec.get_software_bitrate_attribute()
-            bitrate = config.codec.convert_software_bitrate(config.bitrate)
+            encoder = configuration.codec.software_encoder
+            bitrate_attribute = configuration.codec.get_software_bitrate_attribute()
+            bitrate = configuration.codec.convert_software_bitrate(
+                configuration.bitrate
+            )
             pipeline += (
-                f' ! videoconvert name=videoconvert_{config.full_name}'
-                f' ! capsfilter name=capsfilter_{config.full_name} caps=video/x-raw,format=I420'
-                f' ! {encoder} name={encoder}_{config.full_name} {bitrate_attribute}={bitrate}'
-                f'{config.codec.gst_parser_string(config.full_name)}'
-                f' ! taginject name=taginject_{config.full_name} tags="language-code={config.language_code}"'
+                f' ! videoconvert name=videoconvert_{configuration.full_name}'
+                f' ! capsfilter name=capsfilter_{configuration.full_name} caps=video/x-raw,format=I420'
+                f' ! {encoder} name={encoder}_{configuration.full_name} {bitrate_attribute}={bitrate}'
+                f'{configuration.codec.gstreamer_parser_string(configuration.full_name)}'
+                f' ! taginject name=taginject_{configuration.full_name} tags="language-code={configuration.language_code}"'
             )
 
         return pipeline
 
     @staticmethod
-    def _create_video_input_pipeline(config: VideoStreamConfig) -> str:
+    def _create_video_input_pipeline(configuration: VideoStreamConfiguration) -> str:
         caps = (
-            f'video/x-raw,format={config.format.gst_value}'
-            f',width={config.width},height={config.height}'
+            f'video/x-raw,format={configuration.format.gstreamer_value}'
+            f',width={configuration.width},height={configuration.height}'
         )
         return (
-            f'appsrc name=appsrc_video_{config.name} emit-signals=true is-live=true format=time caps={caps}'
-            f' ! queue name=queue_video_{config.name} max-size-buffers=100'
+            f'appsrc name=appsrc_video_{configuration.name} emit-signals=true is-live=true format=time caps={caps}'
+            f' ! queue name=queue_video_{configuration.name} max-size-buffers=100'
         )
 
     @staticmethod
-    def _verify_nvidia_hardware_encoder(config: VideoStreamConfig) -> bool:
+    def _verify_nvidia_hardware_encoder(
+        configuration: VideoStreamConfiguration,
+    ) -> bool:
         return (
             Gst.ElementFactory.find('nvvidconv') is not None
-            and Gst.ElementFactory.find(config.codec.nv_hw_enc) is not None
+            and Gst.ElementFactory.find(configuration.codec.nvidia_hardware_encoder)
+            is not None
         )
 
     @staticmethod
-    def _create_audio_pipeline(config: AudioStreamConfig) -> str:
-        pipeline = VideoRecorder._create_audio_input_pipeline(config)
+    def _create_audio_pipeline(configuration: AudioStreamConfiguration) -> str:
+        pipeline = VideoRecorder._create_audio_input_pipeline(configuration)
 
         audioconvert_attributes = ''
-        if config.channel_count > 1 and config.merge_channels:
-            values = [f'(float){1 / config.channel_count}'] * config.channel_count
+        if configuration.channel_count > 1 and configuration.merge_channels:
+            values = [
+                f'(float){1 / configuration.channel_count}'
+            ] * configuration.channel_count
             audioconvert_attributes = ' mix-matrix="<<' + ','.join(values) + '>>"'
-        elif not config.merge_channels:
+        elif not configuration.merge_channels:
             # If the number of channels is bigger than the max number of channels that can be encoded together,
             # we would need to split the audio into multiple streams.
             # `deinterleave` splits the audio into multiple streams, and `interleave` merges them back together.
@@ -662,29 +681,29 @@ class VideoRecorder:
             # `gst-launch-1.0 audiotestsrc ! "audio/x-raw,channels=4,layout=interleaved,rate=48000" ! deinterleave name=d  d.src_0 ! queue ! interleave name=i ! opusenc ! matroskamux name=m ! filesink location=test.mkv  d.src_1 ! queue ! i.  d.src_2 ! queue ! interleave name=ii ! opusenc ! m.  d.src_3 ! queue ! ii.`
             raise NotImplementedError('Not merging channels is not implemented yet.')
 
-        encoder = config.codec.enc
+        encoder = configuration.codec.encoder
         pipeline += (
-            f' ! audioconvert{audioconvert_attributes} name=audioconvert_audio_{config.name}'
-            f' ! capsfilter name=capsfilter_audio_{config.name} caps=audio/x-raw,channels=1'
-            f' ! audiorate name=audiorate_audio_{config.name}'
-            f' ! {encoder} name={encoder}_audio_{config.name}'
-            f' ! taginject name=taginject_audio_{config.name} tags="language-code={config.language_code}"'
+            f' ! audioconvert{audioconvert_attributes} name=audioconvert_audio_{configuration.name}'
+            f' ! capsfilter name=capsfilter_audio_{configuration.name} caps=audio/x-raw,channels=1'
+            f' ! audiorate name=audiorate_audio_{configuration.name}'
+            f' ! {encoder} name={encoder}_audio_{configuration.name}'
+            f' ! taginject name=taginject_audio_{configuration.name} tags="language-code={configuration.language_code}"'
         )
         return pipeline
 
     @staticmethod
-    def _create_audio_input_pipeline(config: AudioStreamConfig) -> str:
+    def _create_audio_input_pipeline(configuration: AudioStreamConfiguration) -> str:
         channel_mask = ''
-        if config.channel_count > 2:
+        if configuration.channel_count > 2:
             channel_mask = ',channel-mask=(bitmask)0x0'
 
         caps = (
-            f'audio/x-raw,format={config.format.gst_value},channels={config.channel_count}'
-            f',rate={config.sampling_frequency},layout=interleaved{channel_mask}'
+            f'audio/x-raw,format={configuration.format.gstreamer_value},channels={configuration.channel_count}'
+            f',rate={configuration.sampling_frequency},layout=interleaved{channel_mask}'
         )
         return (
-            f'appsrc name=appsrc_audio_{config.name} emit-signals=true is-live=true format=time caps={caps}'
-            f' ! queue name=queue_audio_{config.name} max-size-buffers=100'
+            f'appsrc name=appsrc_audio_{configuration.name} emit-signals=true is-live=true format=time caps={caps}'
+            f' ! queue name=queue_audio_{configuration.name} max-size-buffers=100'
         )
 
     @staticmethod
@@ -698,18 +717,18 @@ class VideoRecorder:
 
     def _clear_sources_lists(self) -> None:
         self._video_srcs: Dict[str, Optional[Gst.Element]] = {
-            video_stream_config.name: None
-            for video_stream_config in self._configuration.video_streams
+            video_stream_configuration.name: None
+            for video_stream_configuration in self._configuration.video_streams
         }
         self._audio_srcs: Dict[str, Optional[Gst.Element]] = {
-            audio_stream_config.name: None
-            for audio_stream_config in self._configuration.audio_streams
+            audio_stream_configuration.name: None
+            for audio_stream_configuration in self._configuration.audio_streams
         }
 
     def _clear_last_timestamps(self) -> None:
         self._last_video_frame_timestamp_ns = {
-            video_stream_config.name: 0
-            for video_stream_config in self._configuration.video_streams
+            video_stream_configuration.name: 0
+            for video_stream_configuration in self._configuration.video_streams
         }
 
 
