@@ -57,6 +57,6 @@ class SemanticSegmentationNetwork(DnnModel):
         with torch.no_grad():
             equalized_image_tensor = F.interpolate(equalized_image_tensor.to(self._device).unsqueeze(0),
                                                    size=IMAGE_SIZE, mode='bilinear')
-            prediction = super(SemanticSegmentationNetwork, self).__call__(equalized_image_tensor.unsqueeze(0))[0]
+            prediction = super(SemanticSegmentationNetwork, self).__call__(equalized_image_tensor)[0]
             semantic_segmentation = prediction[0].argmax(dim=0)
             return semantic_segmentation.cpu()
