@@ -6,17 +6,22 @@
         <param name="output_directory" value="$(arg output_directory)"/>
         <param name="filename_prefix" value="camera_3d_"/>
 
-        <param name="video_format" value="rgb8"/>
-        <param name="video_width" value="1280"/>
-        <param name="video_height" value="720"/>
-        <param name="video_codec" value="vp9"/>
-        <param name="video_bitrate" value="2000000"/>
-        <param name="video_delay_s" value="0.35"/>
-
-        <param name="audio_format" value="signed_16"/>
-        <param name="audio_channel_count" value="1"/>
-        <param name="audio_sampling_frequency" value="16000"/>
-        <param name="audio_codec" value="aac"/>
+        <rosparam param="video_streams">
+            -   name: camera_3d
+                format: rgb8
+                width: 1280
+                height: 720
+                codec: vp9
+                bitrate: 2000000
+                delay_s: 0.35
+        </rosparam>
+        <rosparam param="audio_streams">
+            -   name: odas
+                format: signed_16
+                channel_count: 1
+                sampling_frequency: 16000
+                codec: aac
+        </rosparam>
 
         <remap from="image" to="camera_3d/color/image_raw"/>
         <remap from="audio" to="audio_input_signed_16_16000"/>
@@ -27,17 +32,22 @@
         <param name="output_directory" value="$(arg output_directory)"/>
         <param name="filename_prefix" value="camera_2d_wide_"/>
 
-        <param name="video_format" value="bgr8"/>
-        <param name="video_width" value="1280"/>
-        <param name="video_height" value="720"/>
-        <param name="video_codec" value="vp9"/>
-        <param name="video_bitrate" value="2000000"/>
-        <param name="video_delay_s" value="0.0"/>
-
-        <param name="audio_format" value="signed_32"/>
-        <param name="audio_channel_count" value="16"/>
-        <param name="audio_sampling_frequency" value="16000"/>
-        <param name="audio_codec" value="aac"/>
+        <rosparam param="video_streams">
+            -   name: camera_2d_wide
+                format: bgr8
+                width: 1280
+                height: 720
+                codec: vp9
+                bitrate: 2000000
+                delay_s: 0.0
+        </rosparam>
+        <rosparam param="audio_streams">
+            -   name: raw
+                format: signed_32
+                channel_count: 16
+                sampling_frequency: 16000
+                codec: aac
+        </rosparam>
 
         <remap from="image" to="camera_2d_wide/image_rect"/>
         <remap from="audio" to="audio_input_before_ego_noise_signed_32_16000"/>
