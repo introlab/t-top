@@ -50,8 +50,3 @@ class ClassificationOpenImages(OpenImages):
     def __getitem__(self, index):
         image, target, _ = super(ClassificationOpenImages, self).__getitem__(index)
         return image, target
-
-
-
-
-

@@ -7,7 +7,7 @@ import torchvision.transforms as transforms
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 
-sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', 'tools', 'dnn_training'))
+sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', '..', 'tools', 'dnn_training'))
 from pose_estimation.pose_estimator import get_coordinates
 
 

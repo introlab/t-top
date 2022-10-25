@@ -11,7 +11,7 @@ import torchvision.transforms as transforms
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 
-sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', 'tools', 'dnn_training'))
+sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', '..', 'tools', 'dnn_training'))
 from face_recognition.datasets.align_faces import get_landmarks_from_pose, cv2_transform_to_theta
 
 

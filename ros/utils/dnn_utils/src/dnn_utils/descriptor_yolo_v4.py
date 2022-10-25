@@ -7,7 +7,7 @@ import torchaudio
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 
-sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', 'tools', 'dnn_training'))
+sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', '..', 'tools', 'dnn_training'))
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CONFIDENCE_INDEX, CLASSES_INDEX
 from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
 

@@ -22,9 +22,9 @@ def mean_abs_diff(a, b):
     return torch.mean(torch.abs(a.cpu() - b.cpu())).item()
 
 
-def launch_test(function):
+def launch_test(function, *args):
     try:
-        function()
+        function(*args)
     except Exception as e:
         print('Test error: {} \n {}'.format(e, traceback.format_exc()))
 
@@ -180,12 +180,12 @@ def test_ttop_keyword_spotter():
           mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
 
 
-def test_semantic_segmentation_network():
+def test_semantic_segmentation_network(dataset):
     print('----------test_semantic_segmentation_network----------')
 
-    cpu_model = SemanticSegmentationNetwork(inference_type='cpu')
-    torch_gpu_model = SemanticSegmentationNetwork(inference_type='torch_gpu')
-    trt_gpu_model = SemanticSegmentationNetwork(inference_type='trt_gpu')
+    cpu_model = SemanticSegmentationNetwork(inference_type='cpu', dataset=dataset)
+    torch_gpu_model = SemanticSegmentationNetwork(inference_type='torch_gpu', dataset=dataset)
+    trt_gpu_model = SemanticSegmentationNetwork(inference_type='trt_gpu', dataset=dataset)
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.randn(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
@@ -209,7 +209,9 @@ def main():
     launch_test(test_multiclass_audio_descriptor_extractor)
     launch_test(test_voice_descriptor_extractor)
     launch_test(test_ttop_keyword_spotter)
-    launch_test(test_semantic_segmentation_network)
+    launch_test(test_semantic_segmentation_network, 'coco')
+    launch_test(test_semantic_segmentation_network, 'kitchen_open_images')
+    launch_test(test_semantic_segmentation_network, 'person_other_open_images')
 
 
 if __name__ == '__main__':
