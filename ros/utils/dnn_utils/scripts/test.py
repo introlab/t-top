@@ -181,7 +181,7 @@ def test_ttop_keyword_spotter():
 
 
 def test_semantic_segmentation_network(dataset):
-    print('----------test_semantic_segmentation_network----------')
+    print(f'----------test_semantic_segmentation_network({dataset})----------')
 
     cpu_model = SemanticSegmentationNetwork(inference_type='cpu', dataset=dataset)
     torch_gpu_model = SemanticSegmentationNetwork(inference_type='torch_gpu', dataset=dataset)
