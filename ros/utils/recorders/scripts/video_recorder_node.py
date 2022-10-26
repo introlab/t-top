@@ -365,6 +365,7 @@ class VideoRecorder:
                 Image,
                 self._image_cb,
                 video_stream_configuration,
+                queue_size=1,
             )
             for video_stream_configuration in self._configuration.video_streams
         }
@@ -374,6 +375,7 @@ class VideoRecorder:
                 AudioFrame,
                 self._audio_cb,
                 audio_stream_configuration,
+                queue_size=1,
             )
             for audio_stream_configuration in self._configuration.audio_streams
         }
