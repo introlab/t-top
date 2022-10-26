@@ -26,7 +26,6 @@ import gi
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst  # type: ignore
 from gi.repository import GLib  # type: ignore
-from gi.repository import GObject  # type: ignore
 
 import rospy
 
@@ -157,6 +156,7 @@ class VideoStreamConfiguration:
     format: VideoFormat
     width: int
     height: int
+    framerate: int
     codec: VideoCodec
     bitrate: int
     delay_s: float
@@ -172,26 +172,65 @@ class VideoStreamConfiguration:
         format: str
         width: int
         height: int
+        framerate: int
         codec: str
         bitrate: int
         delay_s: float
         language_code: str
 
     @staticmethod
+    def check_parameters(parameters: VideoStreamParameters, index: int) -> None:
+        sould_exit = False
+        if 'name' not in parameters:
+            debug_str = f'at index |{index}|'
+            rospy.logerr(f'Video stream parameters {debug_str} must have a name')
+            sould_exit = True
+        else:
+            debug_str = f'for name |{parameters["name"]}|'
+
+        if 'format' not in parameters:
+            rospy.logerr(f'Video stream parameters {debug_str} must have a format')
+            sould_exit = True
+        if 'width' not in parameters:
+            rospy.logerr(f'Video stream parameters {debug_str} must have a width')
+            sould_exit = True
+        if 'height' not in parameters:
+            rospy.logerr(f'Video stream parameters {debug_str} must have a height')
+            sould_exit = True
+        if 'framerate' not in parameters:
+            rospy.logerr(f'Video stream parameters {debug_str} must have a framerate')
+            sould_exit = True
+        if 'codec' not in parameters:
+            rospy.logerr(f'Video stream parameters {debug_str} must have a codec')
+            sould_exit = True
+        if 'bitrate' not in parameters:
+            rospy.logerr(f'Video stream parameters {debug_str} must have a bitrate')
+            sould_exit = True
+
+        if sould_exit:
+            sys.exit(os.EX_CONFIG)
+
+    @staticmethod
     def from_parameters(
         parameters: VideoStreamParameters,
+        index: int,
     ) -> 'VideoStreamConfiguration':
+
+        VideoStreamConfiguration.check_parameters(parameters, index)
 
         return VideoStreamConfiguration(
             name=parameters['name'],
             format=VideoFormat(parameters['format']),
             width=parameters['width'],
             height=parameters['height'],
+            framerate=parameters['framerate'],
             codec=VideoCodec(parameters['codec']),
             bitrate=parameters['bitrate'],
-            delay_s=parameters['delay_s'],
-            delay_ns=int(parameters['delay_s'] * 1e9),
-            language_code=parameters['language_code'],
+            delay_s=parameters['delay_s'] if 'delay_s' in parameters else 0.0,
+            delay_ns=int(parameters['delay_s'] * 1e9 if 'delay_s' in parameters else 0),
+            language_code=parameters['language_code']
+            if 'language_code' in parameters
+            else 'eng',
         )
 
 
@@ -219,9 +258,42 @@ class AudioStreamConfiguration:
         language_code: str
 
     @staticmethod
+    def check_parameters(parameters: AudioStreamParameters, index: int) -> None:
+        sould_exit = False
+        if 'name' not in parameters:
+            debug_str = f'at index |{index}|'
+            rospy.logerr(f'Audio stream parameters {debug_str} must have a name')
+            sould_exit = True
+        else:
+            debug_str = f'for name |{parameters["name"]}|'
+
+        if 'format' not in parameters:
+            rospy.logerr(f'Audio stream parameters {debug_str} must have a format')
+            sould_exit = True
+        if 'channel_count' not in parameters:
+            rospy.logerr(
+                f'Audio stream parameters {debug_str} must have a channel_count'
+            )
+            sould_exit = True
+        if 'sampling_frequency' not in parameters:
+            rospy.logerr(
+                f'Audio stream parameters {debug_str} must have a sampling_frequency'
+            )
+            sould_exit = True
+        if 'codec' not in parameters:
+            rospy.logerr(f'Audio stream parameters {debug_str} must have a codec')
+            sould_exit = True
+
+        if sould_exit:
+            sys.exit(os.EX_CONFIG)
+
+    @staticmethod
     def from_parameters(
         parameters: AudioStreamParameters,
+        index: int,
     ) -> 'AudioStreamConfiguration':
+
+        AudioStreamConfiguration.check_parameters(parameters, index)
 
         return AudioStreamConfiguration(
             name=parameters['name'],
@@ -232,7 +304,9 @@ class AudioStreamConfiguration:
             merge_channels=parameters['merge_channels']
             if 'merge_channels' in parameters
             else True,
-            language_code=parameters['language_code'],
+            language_code=parameters['language_code']
+            if 'language_code' in parameters
+            else 'eng',
         )
 
 
@@ -270,10 +344,10 @@ class VideoRecorderConfiguration:
             str, rospy.get_param('~filename_prefix', '')  # type: ignore
         )
         video_streams = [
-            VideoStreamConfiguration.from_parameters(video_stream) for video_stream in rospy.get_param(f'~video_streams')  # type: ignore
+            VideoStreamConfiguration.from_parameters(video_stream, index) for index, video_stream in enumerate(rospy.get_param(f'~video_streams'))  # type: ignore
         ]
         audio_streams = [
-            AudioStreamConfiguration.from_parameters(audio_stream) for audio_stream in rospy.get_param(f'~audio_streams')  # type: ignore
+            AudioStreamConfiguration.from_parameters(audio_stream, index) for index, audio_stream in enumerate(rospy.get_param(f'~audio_streams'))  # type: ignore
         ]
 
         streams_count = len(video_streams) + len(audio_streams)
@@ -351,7 +425,6 @@ class VideoRecorder:
         self._bus = None
 
         self._glib_main_loop = GLib.MainLoop()
-        GObject.threads_init()
         self._glib_thread = threading.Thread(target=self._glib_main_loop.run)
         self._glib_thread.start()
 
@@ -365,7 +438,7 @@ class VideoRecorder:
                 Image,
                 self._image_cb,
                 video_stream_configuration,
-                queue_size=1,
+                queue_size=10,
             )
             for video_stream_configuration in self._configuration.video_streams
         }
@@ -375,7 +448,7 @@ class VideoRecorder:
                 AudioFrame,
                 self._audio_cb,
                 audio_stream_configuration,
-                queue_size=1,
+                queue_size=10,
             )
             for audio_stream_configuration in self._configuration.audio_streams
         }
@@ -637,17 +710,23 @@ class VideoRecorder:
                 f' ! videoconvert name=videoconvert_{configuration.full_name}'
                 f' ! capsfilter name=capsfilter_{configuration.full_name} caps=video/x-raw,format=I420'
                 f' ! {encoder} name={encoder}_{configuration.full_name} {bitrate_attribute}={bitrate}'
-                f'{configuration.codec.gstreamer_parser_string(configuration.full_name)}'
-                f' ! taginject name=taginject_{configuration.full_name} tags="language-code={configuration.language_code}"'
             )
+
+        pipeline += (
+            f'{configuration.codec.gstreamer_parser_string(configuration.full_name)}'
+            f' ! taginject name=taginject_{configuration.full_name} tags="language-code={configuration.language_code}"'
+        )
 
         return pipeline
 
     @staticmethod
     def _create_video_input_pipeline(configuration: VideoStreamConfiguration) -> str:
         caps = (
-            f'video/x-raw,format={configuration.format.gstreamer_value}'
-            f',width={configuration.width},height={configuration.height}'
+            f'video/x-raw'
+            f',format={configuration.format.gstreamer_value}'
+            f',width={configuration.width}'
+            f',height={configuration.height}'
+            f',framerate={configuration.framerate}/1'
         )
         return (
             f'appsrc name=appsrc_video_{configuration.name} emit-signals=true is-live=true format=time caps={caps}'
