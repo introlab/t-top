@@ -23,8 +23,8 @@
                 codec: aac
         </rosparam>
 
-        <remap from="image" to="camera_3d/color/image_raw"/>
-        <remap from="audio" to="audio_input_signed_16_16000"/>
+        <remap from="video_camera_3d" to="camera_3d/color/image_raw"/>
+        <remap from="audio_odas" to="audio_input_signed_16_16000"/>
         <remap from="video_recorder/filter_state" to="video_recorder_camera_3d/filter_state"/>
     </node>
 
@@ -49,8 +49,8 @@
                 codec: aac
         </rosparam>
 
-        <remap from="image" to="camera_2d_wide/image_rect"/>
-        <remap from="audio" to="audio_input_before_ego_noise_signed_32_16000"/>
+        <remap from="video_camera_2d_wide" to="camera_2d_wide/image_rect"/>
+        <remap from="audio_raw" to="audio_input_before_ego_noise_signed_32_16000"/>
         <remap from="video_recorder/filter_state" to="video_recorder_camera_2d_wide/filter_state"/>
     </node>
 </launch>
