@@ -11,6 +11,7 @@
                 format: rgb8
                 width: 1280
                 height: 720
+                framerate: 15
                 codec: vp9
                 bitrate: 2000000
                 delay_s: 0.35
@@ -37,6 +38,7 @@
                 format: bgr8
                 width: 1280
                 height: 720
+                framerate: 30
                 codec: vp9
                 bitrate: 2000000
                 delay_s: 0.0
