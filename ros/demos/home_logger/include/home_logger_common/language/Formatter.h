@@ -111,7 +111,7 @@ inline const std::vector<std::string>& Formatter::weekDayNames()
 {
     if (m_instance == nullptr)
     {
-        throw std::runtime_error("The formatter is are not initialized.");
+        throw std::runtime_error("The formatter is not initialized.");
     }
 
     return m_instance->m_weekDayNames;
@@ -121,7 +121,7 @@ inline const std::vector<std::string>& Formatter::monthNames()
 {
     if (m_instance == nullptr)
     {
-        throw std::runtime_error("The formatter is are not initialized.");
+        throw std::runtime_error("The formatter is not initialized.");
     }
 
     return m_instance->m_monthNames;
@@ -138,7 +138,7 @@ auto Formatter::format(Time const& time, FormatContext& ctx)
 {
     if (m_instance == nullptr)
     {
-        throw std::runtime_error("The formatter is are not initialized.");
+        throw std::runtime_error("The formatter is not initialized.");
     }
 
     if (m_instance->m_language == Language::ENGLISH)
@@ -167,7 +167,7 @@ auto Formatter::format(Date const& date, FormatContext& ctx)
 {
     if (m_instance == nullptr)
     {
-        throw std::runtime_error("The formatter is are not initialized.");
+        throw std::runtime_error("The formatter is not initialized.");
     }
 
     int month = std::max(0, std::min(date.month, 11));

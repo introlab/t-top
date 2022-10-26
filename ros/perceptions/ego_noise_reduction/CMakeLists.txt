@@ -124,7 +124,7 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} STATIC
   src/${PROJECT_NAME}/StftNoiseRemover.cpp
   src/${PROJECT_NAME}/SpectralSubtractionNoiseRemover.cpp
   src/${PROJECT_NAME}/LogMmseNoiseRemover.cpp
@@ -138,6 +138,8 @@ add_library(${PROJECT_NAME}
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
