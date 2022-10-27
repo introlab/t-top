@@ -38,7 +38,7 @@
                 format: bgr8
                 width: 1280
                 height: 720
-                framerate: 30
+                framerate: 5
                 codec: vp9
                 bitrate: 2000000
                 delay_s: 0.0
