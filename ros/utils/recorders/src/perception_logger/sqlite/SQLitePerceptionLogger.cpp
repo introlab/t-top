@@ -22,7 +22,7 @@ SQLitePerceptionLogger::SQLitePerceptionLogger(SQLite::Database& database) : m_d
     applyMigrations(database, "perception", migrations);
 }
 
-SQLitePerceptionLogger::~SQLitePerceptionLogger() {}
+SQLitePerceptionLogger::~SQLitePerceptionLogger() = default;
 
 int64_t SQLitePerceptionLogger::insertPerception(
     Timestamp timestamp,

@@ -243,6 +243,7 @@ catkin_add_gtest(perception_logger-test
 )
 if(TARGET perception_logger-test)
   target_link_libraries(perception_logger-test perception_logger ${catkin_LIBRARIES})
+  target_include_directories(perception_logger-test PUBLIC test/perception_logger)
 endif()
 
 ## Add folders to be run by python nosetests

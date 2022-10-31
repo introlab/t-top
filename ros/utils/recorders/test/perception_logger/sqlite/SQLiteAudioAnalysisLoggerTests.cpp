@@ -28,11 +28,11 @@ TEST(SQLiteAudioAnalysisLoggerTests, log_shouldInsertAndReturnId)
 
     SQLiteAudioAnalysisLogger logger(database);
 
-    int64_t id0 = logger.log(AudioAnalysis(Timestamp(101), Direction(1, 2, 3), "music,water"));
-    int64_t id1 = logger.log(AudioAnalysis(Timestamp(102), Direction(4, 5, 6), "voice", {7, 8}));
+    int64_t id0 = logger.log(AudioAnalysis(Timestamp(101), Direction{1, 2, 3}, "music,water"));
+    int64_t id1 = logger.log(AudioAnalysis(Timestamp(102), Direction{4, 5, 6}, "voice", {7, 8}));
 
-    EXPECT_TRUE(perceptionExists(database, id0, Timestamp(101), Direction(1, 2, 3)));
-    EXPECT_TRUE(perceptionExists(database, id1, Timestamp(102), Direction(4, 5, 6)));
+    EXPECT_TRUE(perceptionExists(database, id0, Timestamp(101), Direction{1, 2, 3}));
+    EXPECT_TRUE(perceptionExists(database, id1, Timestamp(102), Direction{4, 5, 6}));
 
     string classes;
     vector<float> voiceDescriptor;

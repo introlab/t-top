@@ -8,17 +8,27 @@ struct __attribute__((packed)) Position
     double x;
     double y;
     double z;
-
-    Position(double x, double y, double z) : x(x), y(y), z(z) {}
 };
+
+struct __attribute__((packed)) ImagePosition
+{
+    double x;
+    double y;
+};
+
+struct BoundingBox
+{
+    ImagePosition centre;
+    double width;
+    double height;
+};
+
 
 struct __attribute__((packed)) Direction
 {
     double x;
     double y;
     double z;
-
-    Direction(double x, double y, double z) : x(x), y(y), z(z) {}
 };
 
 struct __attribute__((packed)) Timestamp
