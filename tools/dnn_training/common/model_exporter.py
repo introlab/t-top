@@ -48,10 +48,10 @@ def export_model(model, model_checkpoint, x, output_dir, torch_script_filename, 
         sys.exit(-1)
 
     with handle_sigs(rm_ts):
-    _export_torch_script(model, x, output_dir, torch_script_filename)
+        _export_torch_script(model, x, output_dir, torch_script_filename)
     if torch2trt_found:
         with handle_sigs(rm_trt):
-        _export_trt(model, x, output_dir, trt_filename, fp16_mode=trt_fp16)
+            _export_trt(model, x, output_dir, trt_filename, fp16_mode=trt_fp16)
 
 
 def _export_torch_script(model, x, output_dir, filename):
