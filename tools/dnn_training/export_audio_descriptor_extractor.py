@@ -40,6 +40,8 @@ def main():
 
     parser.add_argument('--trt_fp16', action='store_true', help='Choose the model checkpoint file')
 
+    parser.add_argument('--force_export_if_exists', action='store_true')
+
     args = parser.parse_args()
 
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
@@ -48,7 +50,7 @@ def main():
     x = torch.ones((1, 1, image_size[0], image_size[1]))
     keys_to_remove = ['_classifier._weight'] if args.dataset_class_count is None else []
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
-                 trt_fp16=args.trt_fp16, keys_to_remove=keys_to_remove)
+                 trt_fp16=args.trt_fp16, keys_to_remove=keys_to_remove, force_export_if_exists=args.force_export_if_exists)
 
 
 if __name__ == '__main__':

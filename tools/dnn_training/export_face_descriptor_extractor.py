@@ -23,12 +23,14 @@ def main():
 
     parser.add_argument('--trt_fp16', action='store_true', help='Choose the model checkpoint file')
 
+    parser.add_argument('--force_export_if_exists', action='store_true')
+
     args = parser.parse_args()
 
     model = FaceDescriptorExtractor(embedding_size=args.embedding_size)
     x = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
-                 trt_fp16=args.trt_fp16, keys_to_remove=['_classifier._weight'])
+                 trt_fp16=args.trt_fp16, keys_to_remove=['_classifier._weight'], force_export_if_exists=args.force_export_if_exists)
 
 
 if __name__ == '__main__':

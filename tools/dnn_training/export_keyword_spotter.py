@@ -24,13 +24,15 @@ def main():
 
     parser.add_argument('--trt_fp16', action='store_true', help='Choose the model checkpoint file')
 
+    parser.add_argument('--force_export_if_exists', action='store_true')
+
     args = parser.parse_args()
 
     model = create_model(args.dataset_type)
 
     x = torch.ones((1, 1, args.mfcc_feature_count, 51))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
-                 trt_fp16=args.trt_fp16)
+                 trt_fp16=args.trt_fp16, force_export_if_exists=args.force_export_if_exists)
 
 
 if __name__ == '__main__':

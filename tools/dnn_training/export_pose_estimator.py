@@ -25,12 +25,14 @@ def main():
 
     parser.add_argument('--trt_fp16', action='store_true', help='Choose the model checkpoint file')
 
+    parser.add_argument('--force_export_if_exists', action='store_true')
+
     args = parser.parse_args()
 
     model = create_model(args.backbone_type, args.upsampling_count)
     x = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
-                 trt_fp16=args.trt_fp16)
+                 trt_fp16=args.trt_fp16, force_export_if_exists=args.force_export_if_exists)
 
 
 if __name__ == '__main__':
