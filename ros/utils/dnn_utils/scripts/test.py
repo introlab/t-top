@@ -200,7 +200,7 @@ def test_semantic_segmentation_network(dataset):
 
 
 def main():
-    rospy.init_node('dnn_utils_test')
+    rospy.init_node('dnn_utils_test', disable_signals=True)
 
     launch_test(test_descriptor_yolo_v4)
     launch_test(test_yolo_v4)
@@ -217,5 +217,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except rospy.ROSInterruptException:
+    except KeyboardInterrupt:
         pass

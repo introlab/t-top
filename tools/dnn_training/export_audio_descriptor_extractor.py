@@ -4,12 +4,7 @@ You need to install : https://github.com/NVIDIA-AI-IOT/torch2trt#option-2---with
 
 import argparse
 
-import torch
-
-from common.model_exporter import export_model
-
-from train_audio_descriptor_extractor import create_model
-
+from common.file_presence_checker import terminate_if_already_exported
 
 def main():
     parser = argparse.ArgumentParser(description='Export audio descriptor extractor')
@@ -40,7 +35,17 @@ def main():
 
     parser.add_argument('--trt_fp16', action='store_true', help='Choose the model checkpoint file')
 
+    parser.add_argument('--force_export_if_exists', action='store_true')
+
     args = parser.parse_args()
+
+    terminate_if_already_exported(args.output_dir, args.torch_script_filename, args.trt_filename, args.force_export_if_exists)
+
+    import torch
+
+    from common.model_exporter import export_model
+
+    from train_audio_descriptor_extractor import create_model
 
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
     model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.dataset_class_count,
