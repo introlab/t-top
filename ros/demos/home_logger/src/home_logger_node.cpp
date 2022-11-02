@@ -227,7 +227,7 @@ int startNode(int argc, char** argv)
     }
 
     float noseConfidenceThreshold;
-    if (!privateNodeHandle.getParam("nose_confidence_threshold", faceDescriptorThreshold))
+    if (!privateNodeHandle.getParam("nose_confidence_threshold", noseConfidenceThreshold))
     {
         ROS_ERROR("The parameter nose_confidence_threshold must be set.");
         return -1;

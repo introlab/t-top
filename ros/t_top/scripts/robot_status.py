@@ -6,7 +6,7 @@ import os
 import re
 import json
 from opentera_webrtc_ros_msgs.msg import RobotStatus
-from std_msgs.msg import String, Float32MultiArray
+from std_msgs.msg import String, Float32MultiArray, Float32, Bool
 from subprocess import Popen, PIPE
 from typing import List, Optional, Union
 from threading import Lock
@@ -41,20 +41,32 @@ class RobotStatusPublisher():
     def __init__(self):
         rospy.init_node("robot_status_publisher")
 
-        self.base_status = BaseStatus()
-        self.base_status_lock = Lock()
         self.pub_rate = 1
-
         self.status_pub = rospy.Publisher(
             '/robot_status', RobotStatus, queue_size=10)
         self.status_webrtc_pub = rospy.Publisher(
             '/webrtc_data_outgoing', String, queue_size=10)
 
+        self.mic_volume_sub = rospy.Subscriber(
+            'mic_volume', Float32, self._set_mic_volume_cb, queue_size=10)
+        self.mic_volume = 1
+        self.enable_camera_sub = rospy.Subscriber(
+            'enable_camera', Bool, self._set_enable_camera_cb, queue_size=10)
+        self.camera_enabled = True
+        self.volume_sub = rospy.Subscriber(
+            'volume', Float32, self._set_volume_cb, queue_size=10)
+        self.volume = 1
+        self.io = psutil.net_io_counters(pernic=True)
+        self.bytes_sent = 0
+        self.bytes_recv = 0
+
+        self.base_status = BaseStatus()
+        self.base_status_lock = Lock()
         self.base_status_sub = rospy.Subscriber(
             "/opencr/base_status",
-            Float32MultiArray, self.base_status_cb, queue_size=1)
+            Float32MultiArray, self._base_status_cb, queue_size=1)
 
-    def get_ip_address(self, ifname: str):
+    def get_ip_address(self, ifname: str) -> str:
         try:
             address = get_command_output(["ip", "addr", "show", ifname]).split(
                 "inet ")[1].split("/")[0]
@@ -69,7 +81,16 @@ class RobotStatusPublisher():
         free_blocks = result.f_bfree
         return 100 - (free_blocks * 100 / total_blocks)
 
-    def base_status_cb(self, msg):
+    def _set_mic_volume_cb(self, msg):
+        self.mic_volume: float = msg.data
+
+    def _set_enable_camera_cb(self, msg):
+        self.camera_enabled: bool = msg.data
+
+    def _set_volume_cb(self, msg):
+        self.volume: float = msg.data
+
+    def _base_status_cb(self, msg):
         with self.base_status_lock:
             self.base_status = BaseStatus(*msg.data)
 
@@ -91,8 +112,12 @@ class RobotStatusPublisher():
             status.mem_usage = psutil.virtual_memory().percent
             status.disk_usage = self.get_disk_usage()
 
+            status.mic_volume = self.mic_volume
+            status.is_camera_on = self.camera_enabled
+            status.volume = self.volume
+
             status.wifi_network = get_command_output(["iwgetid"])
-            if status.wifi_network:
+            if status.wifi_network != "":
                 wifi_interface_name = status.wifi_network.split()[0]
 
                 wifi_usage = get_command_output(
@@ -106,13 +131,20 @@ class RobotStatusPublisher():
                     numerator, denominator = (0, 1)
                 status.wifi_strength = numerator / denominator * 100
                 status.local_ip = self.get_ip_address(wifi_interface_name)
+
+                io_2 = psutil.net_io_counters(pernic=True)
+                status.upload_speed = (io_2[wifi_interface_name].bytes_sent - self.bytes_sent) * 8
+                status.download_speed = (io_2[wifi_interface_name].bytes_recv - self.bytes_recv) * 8
+                self.bytes_sent = io_2[wifi_interface_name].bytes_sent
+                self.bytes_recv = io_2[wifi_interface_name].bytes_recv
             else:
                 status.wifi_strength = 0
                 status.local_ip = '127.0.0.1'
+                status.upload_speed = 0
+                status.download_speed = 0
 
-            # TODO Get data about mute and camera status from webrtc when it is implemented
-            status.is_muted = False
-            status.is_camera_on = True
+            # Publish for ROS
+            self.status_pub.publish(status)
 
             # Publish for webrtc
             status_dict = {
@@ -128,15 +160,18 @@ class RobotStatusPublisher():
                     'diskUsage': status.disk_usage,
                     'wifiNetwork': status.wifi_network,
                     'wifiStrength': status.wifi_strength,
+                    'uploadSpeed': status.upload_speed,
+                    'downloadSpeed': status.download_speed,
                     'localIp': status.local_ip,
-                    'isMuted': status.is_muted,
-                    'isCameraOn': status.is_camera_on
+                    'micVolume': status.mic_volume,
+                    'isCameraOn': status.is_camera_on,
+                    'volume': status.volume,
                 }
             }
             self.status_webrtc_pub.publish(json.dumps(status_dict))
 
-            # Publish
-            self.status_pub.publish(status)
+            if rospy.is_shutdown():
+                break
 
             rate.sleep()
 

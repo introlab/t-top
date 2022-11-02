@@ -23,7 +23,7 @@ from common.trainers import Trainer
 class DescriptorYoloV4Trainer(Trainer):
     def __init__(self, device, model, dataset_root='', dataset_type='', class_criterion_type='', output_path='',
                  epoch_count=10, learning_rate=0.01, batch_size=128, batch_size_division=4,
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 model_checkpoint=None):
         self._dataset_type = dataset_type
         self._class_criterion_type = class_criterion_type
 
@@ -34,9 +34,7 @@ class DescriptorYoloV4Trainer(Trainer):
                                                       learning_rate=learning_rate,
                                                       batch_size=batch_size,
                                                       batch_size_division=batch_size_division,
-                                                      model_checkpoint=model_checkpoint,
-                                                      optimizer_checkpoint=optimizer_checkpoint,
-                                                      scheduler_checkpoint=scheduler_checkpoint)
+                                                      model_checkpoint=model_checkpoint)
 
         self._training_loss_metric = LossMetric()
         self._training_accuracy_metric = YoloAccuracyMetric(model.get_class_count())
@@ -161,7 +159,8 @@ class DescriptorYoloV4Trainer(Trainer):
         self._learning_curves.add_validation_bbox_accuracy_value(self._validation_accuracy_metric.get_bbox_accuracy())
         self._learning_curves.add_validation_class_accuracy_value(self._validation_accuracy_metric.get_class_accuracy())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation', flush=True)

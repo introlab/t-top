@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   sensor_msgs
   visualization_msgs
+  hbba_lite
 )
 
 ## System dependencies are found with CMake's conventions
@@ -55,6 +56,7 @@ add_message_files(
   FILES
   VideoAnalysis.msg
   VideoAnalysisObject.msg
+  SemanticSegmentation.msg
 )
 
 ## Generate services in the 'srv' folder

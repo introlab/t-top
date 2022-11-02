@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
   t_top_hbba_lite
   tf
   speech_to_text
+  sound_player
 )
 
 ## System dependencies are found with CMake's conventions

@@ -155,7 +155,7 @@ private:
         {
             ROS_ERROR(
                 "Not supported audio frame (msg->format=%s, msg->channel_count=%d,"
-                "sampling_frequency=%d, frame_sample_count=%d, data_size=%d)",
+                "sampling_frequency=%d, frame_sample_count=%d, data_size=%lu)",
                 msg->format.c_str(),
                 msg->channel_count,
                 msg->sampling_frequency,
@@ -333,7 +333,7 @@ int main(int argc, char** argv)
     }
     catch (const std::exception& e)
     {
-        ROS_ERROR(e.what());
+        ROS_ERROR_STREAM(e.what());
         return -1;
     }
 

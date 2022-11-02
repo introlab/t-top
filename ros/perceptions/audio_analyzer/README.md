@@ -6,7 +6,6 @@ This folder contains the node to analyze the audio.
 This node classifies the audio and extracts a general audio embedding. If the audio contains a voice, it extracts a voice embedding.
 
 #### Parameters
- - `multiclass_audio_descriptor` (bool): Indicates to use the multiclass network or the single class one.
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu).
  - `interval` (int): The interval between inferences in sample (low_quality_audio_in).
  - `voice_probability_threshold` (double): The voice probability threshold for the voice embedding.

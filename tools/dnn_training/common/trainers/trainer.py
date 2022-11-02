@@ -10,9 +10,9 @@ from common.modules import load_checkpoint
 
 
 class Trainer:
-    def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
-                 batch_size=128, batch_size_division=4,
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+    def __init__(self, device, model, dataset_root='', output_path='',
+                 epoch_count=10, learning_rate=0.01, weight_decay=0.0, batch_size=128, batch_size_division=4,
+                 model_checkpoint=None):
         self._device = device
         self._output_path = output_path
         os.makedirs(self._output_path, exist_ok=True)
@@ -30,13 +30,14 @@ class Trainer:
             model = nn.DataParallel(model)
 
         self._model = model.to(device)
-        self._optimizer = torch.optim.Adam(self._model.parameters(), lr=learning_rate)
+        bias_parameters = [parameter for name, parameter in model.named_parameters() if name.endswith('.bias')]
+        other_parameters = [parameter for name, parameter in model.named_parameters() if not name.endswith('.bias')]
+        parameter_groups = [
+            {'params': other_parameters},
+            {'params': bias_parameters, 'weight_decay': 0.0}
+        ]
+        self._optimizer = torch.optim.Adam(parameter_groups, lr=learning_rate, weight_decay=weight_decay)
         self._scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self._optimizer, epoch_count)
-
-        if optimizer_checkpoint is not None:
-            self._optimizer.load_state_dict(torch.load(optimizer_checkpoint))
-        if scheduler_checkpoint is not None:
-            self._scheduler.load_state_dict(torch.load(scheduler_checkpoint))
 
         self._training_dataset_loader = self._create_training_dataset_loader(dataset_root,
                                                                              batch_size,
@@ -95,9 +96,12 @@ class Trainer:
             model_output = self._model(data[0].to(self._device))
             target = self._move_target_to_device(data[1], self._device)
             loss = self._criterion(model_output, target)
-            loss.backward()
 
-            self._measure_training_metrics(loss, model_output, target)
+            if torch.all(torch.isfinite(loss)):
+                loss.backward()
+                self._measure_training_metrics(loss, model_output, target)
+            else:
+                print('Warning the loss is not finite.')
 
             division += 1
             if division == self._batch_size_division:
@@ -148,10 +152,6 @@ class Trainer:
     def _save_states(self, epoch):
         torch.save(self._model.state_dict(),
                    os.path.join(self._output_path, 'model_checkpoint_epoch_{}.pth'.format(epoch)))
-        torch.save(self._optimizer.state_dict(),
-                   os.path.join(self._output_path, 'optimizer_checkpoint_epoch_{}.pth'.format(epoch)))
-        torch.save(self._scheduler.state_dict(),
-                   os.path.join(self._output_path, 'scheduler_checkpoint_epoch_{}.pth'.format(epoch)))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         raise NotImplementedError()

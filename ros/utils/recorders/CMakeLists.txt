@@ -1,8 +1,5 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.14.2)
 project(recorders)
-
-add_subdirectory(3rd_party/SQLiteCpp)
-add_subdirectory(3rd_party/optional)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -122,6 +119,12 @@ catkin_package(
   # DEPENDS system_lib
 )
 
+add_subdirectory(3rd_party/SQLiteCpp)
+
+# Setting the policy with cmake_policy doesn't work, but this way it does
+set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
+add_subdirectory(3rd_party/optional)
+
 ###########
 ## Build ##
 ###########
@@ -240,6 +243,7 @@ catkin_add_gtest(perception_logger-test
 )
 if(TARGET perception_logger-test)
   target_link_libraries(perception_logger-test perception_logger ${catkin_LIBRARIES})
+  target_include_directories(perception_logger-test PUBLIC test/perception_logger)
 endif()
 
 ## Add folders to be run by python nosetests

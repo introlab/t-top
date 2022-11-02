@@ -24,6 +24,7 @@
 
         <param name="pose_enabled" value="false"/>
         <param name="face_descriptor_enabled" value="false"/>
+        <param name="semantic_segmentation_enabled" value="false"/>
         <param name="cropped_image_enabled" value="false"/>
 
         <param name="depth_mean_offset" value="2"/>

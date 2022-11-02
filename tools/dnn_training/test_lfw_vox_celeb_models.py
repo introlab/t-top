@@ -16,7 +16,7 @@ from common.metrics.roc_evaluation import RocDistancesThresholdsEvaluation
 from face_recognition.trainers.face_descriptor_extractor_trainer import create_validation_image_transform
 from train_face_descriptor_extractor import create_model as create_face_model
 
-from audio_descriptor.datasets import AudioDescriptorValidationTransforms
+from audio_descriptor.datasets import AudioDescriptorTestTransforms
 from train_audio_descriptor_extractor import create_model as create_voice_model
 
 
@@ -85,11 +85,12 @@ class LfwVoxCelebEvaluation(RocDistancesThresholdsEvaluation):
             face_image_0 = self._load_face_image(face_path_0)
             face_image_1 = self._load_face_image(face_path_1)
 
-            voice_descriptors = self._voice_model(torch.stack((voice_sound_0, voice_sound_1)))#
+            voice_descriptor_0 = self._voice_model(voice_sound_0)
+            voice_descriptor_1 = self._voice_model(voice_sound_1)
             face_descriptors = self._face_model(torch.stack((face_image_0, face_image_1)))
 
-            descriptor_0 = torch.cat((voice_descriptors[0], face_descriptors[0]))
-            descriptor_1 = torch.cat((voice_descriptors[1], face_descriptors[1]))
+            descriptor_0 = torch.cat((voice_descriptor_0[0], face_descriptors[0]))
+            descriptor_1 = torch.cat((voice_descriptor_1[0], face_descriptors[1]))
             distance = torch.dist(descriptor_0, descriptor_1, p=2).item()
             distances.append(distance)
 
@@ -125,8 +126,7 @@ def main():
     parser.add_argument('--lfw_dataset_root', type=str, help='Choose the lfw dataset root path', required=True)
     parser.add_argument('--vox_celeb_dataset_root', type=str, help='Choose the vox celeb dataset root path',
                         required=True)
-    parser.add_argument('--pairs_file', type=str, help='Choose the file that contains the pairs',
-                        required=True)
+    parser.add_argument('--pairs_file', type=str, help='Choose the file that contains the pairs', required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
 
     parser.add_argument('--face_embedding_size', type=int, help='Set the face embedding size', required=True)
@@ -135,14 +135,17 @@ def main():
 
     parser.add_argument('--voice_backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
                                                           'resnet18', 'resnet34', 'resnet50',
-                                                          'open_face_inception'],
-                        help='Choose the voice backbone type', required=True)
+                                                          'open_face_inception', 'thin_resnet_34',
+                                                          'ecapa_tdnn_512', 'ecapa_tdnn_1024',
+                                                          'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
+                                                          'small_ecapa_tdnn_512'],
+                        help='Choose the backbone type', required=True)
     parser.add_argument('--voice_embedding_size', type=int, help='Set the voice embedding size', required=True)
-    parser.add_argument('--voice_vlad', action='store_true', help='Use VLAD pooling layer for the voice')
+    parser.add_argument('--voice_pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the voice pooling layer')
     parser.add_argument('--voice_waveform_size', type=int, help='Set the voice waveform size', required=True)
     parser.add_argument('--voice_n_features', type=int, help='Set voice n_features', required=True)
     parser.add_argument('--voice_n_fft', type=int, help='Set voice n_fft', required=True)
-    parser.add_argument('--voice_audio_transform_type', choices=['mfcc', 'mel_spectrogram'],
+    parser.add_argument('--voice_audio_transform_type', choices=['mfcc', 'mel_spectrogram', 'spectrogram'],
                         help='Choose the voice audio transform type', required=True)
     parser.add_argument('--voice_model_checkpoint', type=str, help='Choose the voice model checkpoint path',
                         required=True)
@@ -150,17 +153,18 @@ def main():
     args = parser.parse_args()
 
     face_model = create_face_model(args.face_embedding_size)
-    load_checkpoint(face_model, args.face_model_checkpoint)
+    load_checkpoint(face_model, args.face_model_checkpoint, keys_to_remove=['_classifier._weight'])
     face_model.eval()
     face_transforms = create_validation_image_transform()
 
-    voice_model = create_voice_model(args.voice_backbone_type, args.voice_embedding_size, vlad=args.voice_vlad)
-    load_checkpoint(voice_model, args.voice_model_checkpoint)
+    voice_model = create_voice_model(args.voice_backbone_type, args.voice_n_features, args.voice_embedding_size,
+                                     pooling_layer=args.voice_pooling_layer)
+    load_checkpoint(voice_model, args.voice_model_checkpoint, keys_to_remove=['_classifier._weight'])
     voice_model.eval()
-    voice_transforms = AudioDescriptorValidationTransforms(waveform_size=args.voice_waveform_size,
-                                                           n_features=args.voice_n_features,
-                                                           n_fft=args.voice_n_fft,
-                                                           audio_transform_type=args.voice_audio_transform_type)
+    voice_transforms = AudioDescriptorTestTransforms(waveform_size=args.voice_waveform_size,
+                                                     n_features=args.voice_n_features,
+                                                     n_fft=args.voice_n_fft,
+                                                     audio_transform_type=args.voice_audio_transform_type)
 
     evaluation = LfwVoxCelebEvaluation(args.lfw_dataset_root,
                                        args.vox_celeb_dataset_root,

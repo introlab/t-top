@@ -12,15 +12,15 @@
     <node pkg="tf" type="static_transform_publisher" name="opencr_tf_publisher" args="-0.028881 0 0.005936 0 0 0 stewart_base opencr 100"/>
     <node pkg="tf" type="static_transform_publisher" name="opencr_imu_tf_publisher" args="0 0 0 1.570796 3.141592 1.570796 opencr opencr_imu 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_link_tf_publisher" args="0.06396 0 0.15139 0 0 0 head camera_3d_link 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_depth_tf_publisher" args="0.01995 0 0 0 0 0 camera_3d_link camera_3d_depth_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_depth_frame camera_3d_depth_optical_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_color_tf_publisher" args="0 0 0 0 0 0 camera_3d_depth_frame camera_3d_color_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cammera_3d_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_color_frame camera_3d_color_optical_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_3d_link_tf_publisher" args="0.06396 0 0.15139 0 0 0 head camera_3d_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_3d_depth_tf_publisher" args="0.01995 0 0 0 0 0 camera_3d_link camera_3d_depth_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_3d_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_depth_frame camera_3d_depth_optical_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_3d_color_tf_publisher" args="0 0 0 0 0 0 camera_3d_depth_frame camera_3d_color_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_3d_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_color_frame camera_3d_color_optical_frame 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="cammera_2d_wide_link_tf_publisher" args="0.06728 0 0.11968 0 0 0 head camera_2d_wide_link 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cammera_2d_wide_frame_tf_publisher" args="0.0015 0 0 0 0 0 camera_2d_wide_link camera_2d_wide_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="cammera_2d_wide_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_2d_wide_frame camera_2d_wide_optical_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_link_tf_publisher" args="0.06728 0 0.11968 0 0 0 head camera_2d_wide_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_frame_tf_publisher" args="0.0015 0 0 0 0 0 camera_2d_wide_link camera_2d_wide_frame 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_2d_wide_frame camera_2d_wide_optical_frame 100"/>
 
     <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.37968650962 0 0 0 base_link odas 100"/>
 

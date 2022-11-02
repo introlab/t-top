@@ -14,16 +14,17 @@ from common.metrics import ClassificationAccuracyMetric, LossMetric, LossLearnin
 
 from audio_descriptor.criterions import AudioDescriptorAmSoftmaxLoss
 from audio_descriptor.datasets import AudioDescriptorDataset, \
-    AudioDescriptorTrainingTransforms, AudioDescriptorValidationTransforms
+    AudioDescriptorTrainingTransforms, AudioDescriptorValidationTransforms, AudioDescriptorTestTransforms
 from audio_descriptor.metrics import AudioDescriptorEvaluation
 
 
 class AudioDescriptorExtractorTrainer(Trainer):
-    def __init__(self, device, model, dataset_root='', output_path='', epoch_count=10, learning_rate=0.01,
-                 batch_size=128, criterion_type='triplet_loss',
+    def __init__(self, device, model, dataset_root='', output_path='',
+                 epoch_count=10, learning_rate=0.01, weight_decay=0.0, batch_size=128, criterion_type='triplet_loss',
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
-                 enable_pitch_shifting=False, enable_time_stretching=False, margin=0.2,
-                 model_checkpoint=None, optimizer_checkpoint=None, scheduler_checkpoint=None):
+                 enable_pitch_shifting=False, enable_time_stretching=False,
+                 enable_time_masking=False, enable_frequency_masking=False, margin=0.2,
+                 model_checkpoint=None):
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
         self._n_features = n_features
@@ -31,6 +32,8 @@ class AudioDescriptorExtractorTrainer(Trainer):
         self._audio_transform_type = audio_transform_type
         self._enable_pitch_shifting = enable_pitch_shifting
         self._enable_time_stretching = enable_time_stretching
+        self._enable_time_masking = enable_time_masking
+        self._enable_frequency_masking = enable_frequency_masking
         self._margin = margin
         self._class_count = model.class_count()
         super(AudioDescriptorExtractorTrainer, self).__init__(device, model,
@@ -38,11 +41,10 @@ class AudioDescriptorExtractorTrainer(Trainer):
                                                               output_path=output_path,
                                                               epoch_count=epoch_count,
                                                               learning_rate=learning_rate,
+                                                              weight_decay=weight_decay,
                                                               batch_size=batch_size,
                                                               batch_size_division=1,
-                                                              model_checkpoint=model_checkpoint,
-                                                              optimizer_checkpoint=optimizer_checkpoint,
-                                                              scheduler_checkpoint=scheduler_checkpoint)
+                                                              model_checkpoint=model_checkpoint)
 
         self._dataset_root = dataset_root
 
@@ -63,9 +65,9 @@ class AudioDescriptorExtractorTrainer(Trainer):
             criterion = nn.CrossEntropyLoss()
             return lambda model_output, target: criterion(model_output[1], target)
         elif self._criterion_type == 'am_softmax_loss':
-            return AudioDescriptorAmSoftmaxLoss(s=10.0, m=0.2,
+            return AudioDescriptorAmSoftmaxLoss(s=30.0, m=self._margin,
                                                 start_annealing_epoch=0,
-                                                end_annealing_epoch=self._epoch_count // 2)
+                                                end_annealing_epoch=self._epoch_count // 4)
         else:
             raise ValueError('Invalid criterion type')
 
@@ -78,7 +80,9 @@ class AudioDescriptorExtractorTrainer(Trainer):
                                                        noise_p=0.5,
                                                        audio_transform_type=self._audio_transform_type,
                                                        enable_pitch_shifting=self._enable_pitch_shifting,
-                                                       enable_time_stretching=self._enable_time_stretching)
+                                                       enable_time_stretching=self._enable_time_stretching,
+                                                       enable_time_masking=self._enable_time_masking,
+                                                       enable_frequency_masking=self._enable_frequency_masking)
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
@@ -89,11 +93,11 @@ class AudioDescriptorExtractorTrainer(Trainer):
         return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms)
 
     def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        transforms = AudioDescriptorValidationTransforms(waveform_size=self._waveform_size,
-                                                         n_features=self._n_features,
-                                                         n_fft=self._n_fft,
-                                                         audio_transform_type=self._audio_transform_type)
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'testing', transforms)
+        transforms = AudioDescriptorTestTransforms(waveform_size=self._waveform_size,
+                                                   n_features=self._n_features,
+                                                   n_fft=self._n_fft,
+                                                   audio_transform_type=self._audio_transform_type)
+        return self._create_dataset_loader(dataset_root, 1, 1, 'testing', transforms)
 
     def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms):
         dataset = AudioDescriptorDataset(dataset_root, split=split, transforms=transforms)
@@ -153,7 +157,8 @@ class AudioDescriptorExtractorTrainer(Trainer):
             self._learning_curves.add_training_accuracy_value(self._training_accuracy_metric.get_accuracy())
             self._learning_curves.add_validation_accuracy_value(self._validation_accuracy_metric.get_accuracy())
 
-        self._learning_curves.save_figure(os.path.join(self._output_path, 'learning_curves.png'))
+        self._learning_curves.save(os.path.join(self._output_path, 'learning_curves.png'),
+                                   os.path.join(self._output_path, 'learning_curves.json'))
 
     def _evaluate(self, model, device, dataset_loader, output_path):
         print('Evaluation - ROC', flush=True)

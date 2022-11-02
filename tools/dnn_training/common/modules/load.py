@@ -3,9 +3,15 @@ from collections import OrderedDict
 import torch
 
 
-def load_checkpoint(model, file, strict=True):
+def load_checkpoint(model, file, strict=True, keys_to_remove=None):
+    if keys_to_remove is None:
+        keys_to_remove = []
+
     state_dict = torch.load(file, map_location=torch.device('cpu'))
     state_dict = OrderedDict([(k[7:], v) if k.startswith('module.') else (k, v) for k, v in state_dict.items()])
+
+    for k in keys_to_remove:
+        state_dict.pop(k, None)
 
     try:
         model.load_state_dict(state_dict, strict=strict)

@@ -39,6 +39,13 @@ class LfwEvaluation(RocDistancesThresholdsEvaluation):
                                                                         eer))
         self._save_roc_curve(true_positive_rate_curve, false_positive_rate_curve)
         self._save_roc_curve_data(true_positive_rate_curve, false_positive_rate_curve, thresholds)
+        self._save_performances({
+            'accuracy': accuracy,
+            'accuracy_std': accuracy_std,
+            'best_threshold': best_threshold,
+            'auc': auc,
+            'eer': eer
+        })
 
     def _read_image_pairs(self):
         image_pairs = []

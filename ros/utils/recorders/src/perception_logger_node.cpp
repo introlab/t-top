@@ -138,34 +138,60 @@ public:
     void run() { ros::spin(); }
 
 private:
-    Position pointToPosition(const geometry_msgs::Point& point, const tf::StampedTransform& transform)
+    static Position pointToPosition(const geometry_msgs::Point& point, const tf::StampedTransform& transform)
     {
         tf::Point transformedPoint = transform * tf::Point(point.x, point.y, point.z);
-        return Position(transformedPoint.x(), transformedPoint.y(), transformedPoint.z());
+        return Position{transformedPoint.x(), transformedPoint.y(), transformedPoint.z()};
     }
 
-    Direction positionToDirection(const Position& p)
+    static ImagePosition pointToImagePosition(const geometry_msgs::Point& point)
+    {
+        return ImagePosition{point.x, point.y};
+    }
+
+    static BoundingBox centreWidthHeightToBoundingBox(const geometry_msgs::Point& centre, double width, double height)
+    {
+        return BoundingBox{pointToImagePosition(centre), width, height};
+    }
+
+    static Direction positionToDirection(const Position& p)
     {
         double n = sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
-        return Direction(p.x / n, p.y / n, p.z / n);
+        return Direction{p.x / n, p.y / n, p.z / n};
     }
 
-    VideoAnalysis msgToAnalysis(
+    static VideoAnalysis msgToAnalysis(
         const video_analyzer::VideoAnalysisObject& msg,
         const ros::Time& timestamp,
         const tf::StampedTransform& transform)
     {
         Position position = pointToPosition(msg.center_3d, transform);
-        VideoAnalysis videoAnalysis(timestamp, position, positionToDirection(position), msg.object_class);
+        VideoAnalysis videoAnalysis{
+            timestamp,
+            position,
+            positionToDirection(position),
+            msg.object_class,
+            centreWidthHeightToBoundingBox(msg.center_2d, msg.width_2d, msg.height_2d)};
 
+        if (!msg.person_pose_2d.empty())
+        {
+            videoAnalysis.personPoseImage = vector<ImagePosition>();
+            videoAnalysis.personPoseImage->reserve(msg.person_pose_2d.size());
+            std::transform(
+                std::begin(msg.person_pose_2d),
+                std::end(msg.person_pose_2d),
+                std::back_inserter(videoAnalysis.personPoseImage.value()),
+                pointToImagePosition);
+        }
         if (!msg.person_pose_3d.empty())
         {
             videoAnalysis.personPose = vector<Position>();
             videoAnalysis.personPose.value().reserve(msg.person_pose_3d.size());
-            for (auto& point : msg.person_pose_3d)
-            {
-                videoAnalysis.personPose.value().push_back(pointToPosition(point, transform));
-            }
+            std::transform(
+                std::begin(msg.person_pose_3d),
+                std::end(msg.person_pose_3d),
+                std::back_inserter(videoAnalysis.personPose.value()),
+                [&transform](const geometry_msgs::Point& point) { return pointToPosition(point, transform); });
         }
         if (!msg.person_pose_confidence.empty())
         {
@@ -179,11 +205,11 @@ private:
         return videoAnalysis;
     }
 
-    AudioAnalysis msgToAnalysis(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
+    static AudioAnalysis msgToAnalysis(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
     {
         AudioAnalysis audioAnalysis(
             msg->header.stamp,
-            Direction(msg->direction_x, msg->direction_y, msg->direction_z),
+            Direction{msg->direction_x, msg->direction_y, msg->direction_z},
             mergeClasses(msg->audio_classes));
 
         if (!msg->voice_descriptor.empty())

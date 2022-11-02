@@ -72,7 +72,7 @@
     <!-- Sound -->
     <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg pulse_audio_source) $(arg pulse_audio_sink) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
 
-    <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen" launch-prefix="bash -c 'sleep 5; $0 $1 $2 $3 $4 $5 $6' ">
+    <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen">
         <param name="backend" value="pulse_audio"/>
         <param unless="$(arg use_echo_cancellation)" name="device" value="$(arg pulse_audio_source)"/>
         <param if="$(arg use_echo_cancellation)" name="device" value="$(arg echo_cancellation_dest)_ec"/>

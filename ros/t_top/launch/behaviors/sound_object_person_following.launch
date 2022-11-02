@@ -17,9 +17,7 @@
         <param name="max_valid_sst_pitch" value="1.4"/>
         <param name="direction_frame_id" value="odas"/>
 
-        <rosparam param="object_classes">
-            [bottle, 'wine glass', cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, 'hot dog', pizza, donut, cake]
-        </rosparam>
+        <rosparam param="object_classes">[all]</rosparam>
         <param name="padding" value="0.075"/>
         <param name="target_lambda" value="0.005"/>
 

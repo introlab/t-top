@@ -16,7 +16,7 @@ class MulticlassClassificationMeanAveragePrecisionMetric:
 
     def add(self, prediction, target):
         prediction = torch.sigmoid(prediction).cpu().detach().numpy()
-        target = target.cpu().detach().numpy()
+        target = (target > 0.0).float().cpu().detach().numpy()
 
         self._predictions.append(prediction)
         self._targets.append(target)

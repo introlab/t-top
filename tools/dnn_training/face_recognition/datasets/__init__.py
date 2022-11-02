@@ -1,3 +1,2 @@
 from face_recognition.datasets.align_faces import ALIGNED_IMAGE_SIZE as IMAGE_SIZE
-from face_recognition.datasets.face_recognition_folder_dataset import FaceRecognitionFolderDataset, \
-    LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
+from face_recognition.datasets.vggface2_dataset import Vggface2Dataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES

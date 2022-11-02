@@ -50,14 +50,11 @@ class OpenImagesDetectionTrainingTransforms:
         self._image_only_transform = transforms.Compose([
             transforms.ColorJitter(brightness=0.2, saturation=0.2, contrast=0.2, hue=0.2),
             transforms.RandomGrayscale(p=0.1),
-            transforms.RandomHorizontalFlip(p=0.5),
             RandomSharpnessChange(),
             RandomAutocontrast(),
             RandomEqualize(),
             RandomPosterize(),
         ])
-
-        self._horizontal_flip_p = 0.5
 
     def __call__(self, image, target):
         image = self._image_only_transform(image)

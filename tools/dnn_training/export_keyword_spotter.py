@@ -1,15 +1,15 @@
+"""
+You need to install : https://github.com/NVIDIA-AI-IOT/torch2trt#option-2---with-plugins-experimental
+"""
+
 import argparse
 
-import torch
-
-from common.model_exporter import export_model
-
-from train_keyword_spotter import create_model
+from common.file_presence_checker import terminate_if_already_exported
 
 
 def main():
     parser = argparse.ArgumentParser(description='Export keyword spotter')
-    parser.add_argument('--database_type', choices=['google_speech_commands', 'ttop_keyword'],
+    parser.add_argument('--dataset_type', choices=['google_speech_commands', 'ttop_keyword'],
                         help='Choose the database type', required=True)
     parser.add_argument('--mfcc_feature_count', type=int, help='Choose the MFCC feature count', required=True)
 
@@ -20,9 +20,19 @@ def main():
 
     parser.add_argument('--trt_fp16', action='store_true', help='Choose the model checkpoint file')
 
+    parser.add_argument('--force_export_if_exists', action='store_true')
+
     args = parser.parse_args()
 
-    model = create_model(args.database_type)
+    terminate_if_already_exported(args.output_dir, args.torch_script_filename, args.trt_filename, args.force_export_if_exists)
+
+    import torch
+
+    from common.model_exporter import export_model
+
+    from train_keyword_spotter import create_model
+
+    model = create_model(args.dataset_type)
 
     x = torch.ones((1, 1, args.mfcc_feature_count, 51))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
