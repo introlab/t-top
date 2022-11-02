@@ -4,12 +4,7 @@ You need to install : https://github.com/NVIDIA-AI-IOT/torch2trt#option-2---with
 
 import argparse
 
-import torch
-
-from common.model_exporter import export_model
-
-from train_audio_descriptor_extractor import create_model
-
+from common.file_presence_checker import terminate_if_already_exported
 
 def main():
     parser = argparse.ArgumentParser(description='Export audio descriptor extractor')
@@ -44,13 +39,21 @@ def main():
 
     args = parser.parse_args()
 
+    terminate_if_already_exported(args.output_dir, args.torch_script_filename, args.trt_filename, args.force_export_if_exists)
+
+    import torch
+
+    from common.model_exporter import export_model
+
+    from train_audio_descriptor_extractor import create_model
+
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
     model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.dataset_class_count,
                          args.am_softmax_linear, args.pooling_layer, conv_bias=args.conv_bias)
     x = torch.ones((1, 1, image_size[0], image_size[1]))
     keys_to_remove = ['_classifier._weight'] if args.dataset_class_count is None else []
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
-                 trt_fp16=args.trt_fp16, keys_to_remove=keys_to_remove, force_export_if_exists=args.force_export_if_exists)
+                 trt_fp16=args.trt_fp16, keys_to_remove=keys_to_remove)
 
 
 if __name__ == '__main__':

@@ -27,13 +27,9 @@ def handle_sigs(func):
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
 
 def export_model(model, model_checkpoint, x, output_dir, torch_script_filename, trt_filename, trt_fp16=False,
-                 keys_to_remove=None, force_export_if_exists=False):
+                 keys_to_remove=None):
     ts_path: Path = Path(output_dir) / torch_script_filename
     trt_path: Path = Path(output_dir) / trt_filename
-
-    if ts_path.exists() and trt_path.exists() and not force_export_if_exists:
-        print(f'TorchScript ({torch_script_filename}) and TensorRT ({trt_filename}) models already exist, skipping export.')
-        return
 
     load_checkpoint(model, model_checkpoint, keys_to_remove=keys_to_remove)
     model.eval()
