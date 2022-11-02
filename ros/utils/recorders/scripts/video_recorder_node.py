@@ -107,6 +107,7 @@ class VideoCodec(VideoCodecEnum):
     H265 = ('h265', 'x265enc', 'nvv4l2h265enc', 'h265parse')
     VP8 = ('vp8', 'vp8enc', 'nvv4l2vp8enc')
     VP9 = ('vp9', 'vp9enc', 'nvv4l2vp9enc')
+    AV1 = ('av1', 'av1enc', 'nvv4l2av1enc')
 
     def get_software_bitrate_attribute(self) -> str:
         if self == VideoCodec.H264 or self == VideoCodec.H265:
