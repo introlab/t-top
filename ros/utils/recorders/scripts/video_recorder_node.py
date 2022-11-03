@@ -682,7 +682,9 @@ class VideoRecorder:
     @staticmethod
     def _get_filename(configuration: VideoRecorderConfiguration) -> str:
         now = datetime.datetime.utcfromtimestamp(rospy.Time.now().to_sec())
-        return configuration.filename_prefix + now.strftime('%Y-%m-%d_%H-%M-%S')
+        filename_us = configuration.filename_prefix + now.strftime('%Y-%m-%d_%H-%M-%S.%f')
+        filename_ms = filename_us[:-3]
+        return filename_ms
 
     @staticmethod
     def _create_video_pipeline(configuration: VideoStreamConfiguration) -> str:

@@ -39,8 +39,8 @@ TEST(PerceptionLoggerTests, direction_aggregateinit_shouldSetAttributes)
 TEST(PerceptionLoggerTests, timestamp_constructor_shouldSetAttributes)
 {
     Timestamp t0(5);
-    EXPECT_EQ(t0.unixEpoch, 5);
+    EXPECT_EQ(t0.unixEpochMs, 5);
 
     Timestamp t1(ros::Time(5.2));
-    EXPECT_EQ(t1.unixEpoch, 5);
+    EXPECT_EQ(t1.unixEpochMs, 5200);
 }

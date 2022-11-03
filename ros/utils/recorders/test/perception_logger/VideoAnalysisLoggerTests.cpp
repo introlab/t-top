@@ -14,7 +14,7 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
         Direction{5.0, 6.0, 7.0},
         "a",
         BoundingBox{{8.0, 9.0}, 10.0, 11.0}};
-    EXPECT_EQ(analysis0.timestamp.unixEpoch, 1);
+    EXPECT_EQ(analysis0.timestamp.unixEpochMs, 1);
     EXPECT_EQ(analysis0.position.x, 2.0);
     EXPECT_EQ(analysis0.position.y, 3.0);
     EXPECT_EQ(analysis0.position.z, 4.0);
@@ -40,7 +40,7 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
         {ImagePosition{120.0, 130.0}},
         {Position{140.0, 150.0, 160.0}},
         {0.5f}};
-    EXPECT_EQ(analysis1.timestamp.unixEpoch, 10);
+    EXPECT_EQ(analysis1.timestamp.unixEpochMs, 10);
     EXPECT_EQ(analysis1.position.x, 20.0);
     EXPECT_EQ(analysis1.position.y, 30.0);
     EXPECT_EQ(analysis1.position.z, 40.0);
@@ -67,7 +67,7 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
         {Position{1400.0, 1500.0, 1600.0}},
         {0.5f},
         {200.f}};
-    EXPECT_EQ(analysis2.timestamp.unixEpoch, 100);
+    EXPECT_EQ(analysis2.timestamp.unixEpochMs, 100);
     EXPECT_EQ(analysis2.position.x, 200.0);
     EXPECT_EQ(analysis2.position.y, 300.0);
     EXPECT_EQ(analysis2.position.z, 400.0);
