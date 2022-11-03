@@ -13,7 +13,7 @@ TEST(SpeechLoggerTests, speechSourceToString_shouldConvertTheSpeechSource)
 TEST(SpeechLoggerTests, speech_constructor_shouldSetAttributes)
 {
     Speech speech(Timestamp(1), SpeechSource::ROBOT, "ab");
-    EXPECT_EQ(speech.timestamp.unixEpoch, 1);
+    EXPECT_EQ(speech.timestamp.unixEpochMs, 1);
     EXPECT_EQ(speech.source, SpeechSource::ROBOT);
     EXPECT_EQ(speech.text, "ab");
 }

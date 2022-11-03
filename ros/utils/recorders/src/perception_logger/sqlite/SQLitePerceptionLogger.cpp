@@ -9,7 +9,7 @@ SQLitePerceptionLogger::SQLitePerceptionLogger(SQLite::Database& database) : m_d
     vector<SQLiteMigration> migrations{SQLiteMigration("BEGIN;"
                                                        "CREATE TABLE perception("
                                                        "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                                       "    timestamp INTEGER,"
+                                                       "    timestamp_ms INTEGER,"
                                                        "    position_x REAL,"
                                                        "    position_y REAL,"
                                                        "    position_z REAL,"
@@ -31,10 +31,10 @@ int64_t SQLitePerceptionLogger::insertPerception(
 {
     SQLite::Statement insert(
         m_database,
-        "INSERT INTO perception(timestamp, position_x, position_y, position_z, direction_x, direction_y, direction_z) "
+        "INSERT INTO perception(timestamp_ms, position_x, position_y, position_z, direction_x, direction_y, direction_z) "
         "VALUES(?, ?, ?, ?, ?, ?, ?)");
     insert.clearBindings();
-    insert.bind(1, timestamp.unixEpoch);
+    insert.bind(1, timestamp.unixEpochMs);
 
     if (position.has_value())
     {

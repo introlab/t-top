@@ -9,12 +9,12 @@ bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestam
     SQLite::Statement query(
         database,
         "SELECT COUNT(*) FROM perception "
-        "WHERE id=? AND timestamp=? AND "
+        "WHERE id=? AND timestamp_ms=? AND "
         "      position_x is NULL AND position_y is NULL AND position_z is NULL AND "
         "      direction_x is NULL AND direction_y is NULL AND direction_z is NULL");
 
     query.bind(1, id);
-    query.bind(2, timestamp.unixEpoch);
+    query.bind(2, timestamp.unixEpochMs);
 
     query.executeStep();
     return static_cast<int>(query.getColumn(0)) != 0;
@@ -25,12 +25,12 @@ bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestam
     SQLite::Statement query(
         database,
         "SELECT COUNT(*) FROM perception "
-        "WHERE id=? AND timestamp=? AND "
+        "WHERE id=? AND timestamp_ms=? AND "
         "      position_x=? AND position_y=? AND position_z=? AND "
         "      direction_x is NULL AND direction_y is NULL AND direction_z is NULL");
 
     query.bind(1, id);
-    query.bind(2, timestamp.unixEpoch);
+    query.bind(2, timestamp.unixEpochMs);
     query.bind(3, position.x);
     query.bind(4, position.y);
     query.bind(5, position.z);
@@ -43,12 +43,12 @@ bool perceptionExists(SQLite::Database& database, int64_t id, Timestamp timestam
     SQLite::Statement query(
         database,
         "SELECT COUNT(*) FROM perception "
-        "WHERE id=? AND timestamp=? AND "
+        "WHERE id=? AND timestamp_ms=? AND "
         "      position_x is NULL AND position_y is NULL AND position_z is NULL AND "
         "      direction_x=? AND direction_y=? AND direction_z=?");
 
     query.bind(1, id);
-    query.bind(2, timestamp.unixEpoch);
+    query.bind(2, timestamp.unixEpochMs);
     query.bind(3, direction.x);
     query.bind(4, direction.y);
     query.bind(5, direction.z);
@@ -66,12 +66,12 @@ bool perceptionExists(
     SQLite::Statement query(
         database,
         "SELECT COUNT(*) FROM perception "
-        "WHERE id=? AND timestamp=? AND "
+        "WHERE id=? AND timestamp_ms=? AND "
         "      position_x=? AND position_y=? AND position_z=? AND "
         "      direction_x=? AND direction_y=? AND direction_z=?");
 
     query.bind(1, id);
-    query.bind(2, timestamp.unixEpoch);
+    query.bind(2, timestamp.unixEpochMs);
     query.bind(3, position.x);
     query.bind(4, position.y);
     query.bind(5, position.z);

@@ -33,11 +33,11 @@ struct __attribute__((packed)) Direction
 
 struct __attribute__((packed)) Timestamp
 {
-    int64_t unixEpoch;
+    int64_t unixEpochMs;
 
-    Timestamp(int64_t unixEpoch) : unixEpoch(unixEpoch) {}
+    explicit Timestamp(int64_t unixEpochMs) : unixEpochMs(unixEpochMs) {}
 
-    Timestamp(const ros::Time& time) : unixEpoch(time.sec) {}
+    Timestamp(const ros::Time& time) : unixEpochMs(time.sec * 1'000 + time.nsec / 1'000'000) {}
 };
 
 #endif
