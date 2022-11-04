@@ -115,7 +115,7 @@
         "min_silk_clearance": 0.0,
         "min_through_hole_diameter": 0.19999999999999998,
         "min_track_width": 0.127,
-        "min_via_annular_width": 0.3,
+        "min_via_annular_width": 0.13,
         "min_via_diameter": 0.19999999999999998,
         "use_height_for_length_calcs": true
       },
@@ -452,6 +452,10 @@
     [
       "b36928e5-affa-478f-96f8-c66ff2db9108",
       "Battery"
+    ],
+    [
+      "5b98d348-acd8-4690-b761-a355bd4cff53",
+      "RS232"
     ]
   ],
   "text_variables": {}
