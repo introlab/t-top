@@ -1474,6 +1474,9 @@
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/60bada2f-d866-4bfe-82e6-47d0ea1aa229"
       (reference "#PWR0131") (unit 1) (value "GND") (footprint "")
     )
+    (path "/b36928e5-affa-478f-96f8-c66ff2db9108/cdc6a231-c91e-4230-b7de-ace739496c4c"
+      (reference "#PWR0132") (unit 1) (value "+3.3V") (footprint "")
+    )
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/6ab3a728-c49e-4b3d-84d6-f033e890b946"
       (reference "#PWR0133") (unit 1) (value "GND") (footprint "")
     )
@@ -1639,6 +1642,9 @@
     (path "/5b98d348-acd8-4690-b761-a355bd4cff53/a5cc2310-8038-4084-9fda-f04f78ca658c"
       (reference "#PWR0187") (unit 1) (value "GND") (footprint "")
     )
+    (path "/b36928e5-affa-478f-96f8-c66ff2db9108/c42185dd-6d83-4f5f-9a13-1dd2db2ce918"
+      (reference "#PWR0188") (unit 1) (value "GND") (footprint "")
+    )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/1c68e84d-e8ea-44ef-967d-9e6200ae574b"
       (reference "C1") (unit 1) (value "0.1µF/25V") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
@@ -1701,6 +1707,9 @@
     )
     (path "/5b98d348-acd8-4690-b761-a355bd4cff53/a76dc3ee-12d1-4546-95d5-4ea9608fe15e"
       (reference "C21") (unit 1) (value "0.1µF/25V") (footprint "Capacitor_SMD:C_0805_2012Metric")
+    )
+    (path "/b36928e5-affa-478f-96f8-c66ff2db9108/13c602f9-1482-4b15-b06a-de0850f56924"
+      (reference "C22") (unit 1) (value "0.1µF/25V") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/3e8707ff-3009-4738-a8fb-46e7f9774d1f"
       (reference "D1") (unit 1) (value "DSS16U") (footprint "Diode_SMD:D_SOD-123F")
@@ -1781,7 +1790,7 @@
       (reference "Q1") (unit 1) (value "SSM3J372R") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/0809d4d3-1d96-45bd-90ca-260d8d265f6b"
-      (reference "Q2") (unit 1) (value "IPD042P03L3GATMA1") (footprint "Package_TO_SOT_SMD:TO-252-2")
+      (reference "Q2") (unit 1) (value "IPD068P03L3GATMA1") (footprint "Package_TO_SOT_SMD:TO-252-2")
     )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/4ea3e622-4a9d-494f-9837-88e22ec4d38d"
       (reference "Q3") (unit 1) (value "T2N7002AK") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -1925,19 +1934,19 @@
       (reference "SW1") (unit 2) (value "Non-Momentary DPST ") (footprint "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical")
     )
     (path "/9f16fa28-5de4-4e8c-a283-9e845ce8c031/c5d650f3-9de0-492e-a01b-81a16416aa3f"
-      (reference "SW2") (unit 1) (value "SW_SPST") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "SW2") (unit 1) (value "BUTTON") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/9f16fa28-5de4-4e8c-a283-9e845ce8c031/bde32ca9-83b5-489b-849b-1427940a48ed"
-      (reference "SW3") (unit 1) (value "SW_SPST") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "SW3") (unit 1) (value "BUTTON") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/9f16fa28-5de4-4e8c-a283-9e845ce8c031/bbc4311f-99b5-4173-99dc-29e3bc48a4e0"
-      (reference "SW4") (unit 1) (value "SW_SPST") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "SW4") (unit 1) (value "BUTTON") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/9f16fa28-5de4-4e8c-a283-9e845ce8c031/ae0c2160-feb2-4973-92f8-338da8afcc3f"
-      (reference "SW5") (unit 1) (value "SW_SPST") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "SW5") (unit 1) (value "BUTTON") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/9f16fa28-5de4-4e8c-a283-9e845ce8c031/18872941-52a3-4e6b-9867-1d189f122104"
-      (reference "SW6") (unit 1) (value "SW_SPST") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
+      (reference "SW6") (unit 1) (value "BUTTON") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/9f16fa28-5de4-4e8c-a283-9e845ce8c031/eb271099-456f-4221-a630-3c2f644369d6"
       (reference "TH1") (unit 1) (value "10k") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
@@ -1983,6 +1992,15 @@
     )
     (path "/5b98d348-acd8-4690-b761-a355bd4cff53/8fdb659b-a77d-41e2-8602-74927cebfd2c"
       (reference "U7") (unit 1) (value "MAX3221E") (footprint "Package_SO:TSSOP-16_4.4x5mm_P0.65mm")
+    )
+    (path "/b36928e5-affa-478f-96f8-c66ff2db9108/58542465-12a9-467a-a491-642af66223f5"
+      (reference "U8") (unit 1) (value "74LVC2G34") (footprint "Package_SO:TSOP-6_1.65x3.05mm_P0.95mm")
+    )
+    (path "/b36928e5-affa-478f-96f8-c66ff2db9108/618dc0d2-a691-4efe-842f-440cba1568d9"
+      (reference "U8") (unit 2) (value "74LVC2G34") (footprint "Package_SO:TSOP-6_1.65x3.05mm_P0.95mm")
+    )
+    (path "/b36928e5-affa-478f-96f8-c66ff2db9108/6c9950b3-c524-41dd-b518-9e9dc4c55b67"
+      (reference "U8") (unit 3) (value "74LVC2G34") (footprint "Package_SO:TSOP-6_1.65x3.05mm_P0.95mm")
     )
   )
 )
