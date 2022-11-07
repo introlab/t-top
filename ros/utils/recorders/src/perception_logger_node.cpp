@@ -124,14 +124,14 @@ public:
 
     void talkTextSubscriberCallback(const talk::Text::ConstPtr& msg)
     {
-        m_speechLogger->log(Speech(Timestamp(ros::Time::now().sec), SpeechSource::ROBOT, msg->text));
+        m_speechLogger->log(Speech(ros::Time::now(), SpeechSource::ROBOT, msg->text));
     }
 
     void speechToTextTranscriptSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
     {
         if (msg->is_final)
         {
-            m_speechLogger->log(Speech(Timestamp(ros::Time::now().sec), SpeechSource::HUMAN, msg->text));
+            m_speechLogger->log(Speech(ros::Time::now(), SpeechSource::HUMAN, msg->text));
         }
     }
 
