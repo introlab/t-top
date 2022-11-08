@@ -89,22 +89,22 @@ void TalkState::onDisabling()
     if (m_faceFollowingDesireId.has_value())
     {
         m_desireSet->removeDesire(m_faceFollowingDesireId.value());
-        m_faceFollowingDesireId = std::nullopt;
+        m_faceFollowingDesireId = nullopt;
     }
     if (m_talkDesireId.has_value())
     {
         m_desireSet->removeDesire(m_talkDesireId.value());
-        m_talkDesireId = std::nullopt;
+        m_talkDesireId = nullopt;
     }
     if (m_gestureDesireId.has_value())
     {
         m_desireSet->removeDesire(m_gestureDesireId.value());
-        m_gestureDesireId = std::nullopt;
+        m_gestureDesireId = nullopt;
     }
     if (m_faceAnimationDesireId.has_value())
     {
         m_desireSet->removeDesire(m_faceAnimationDesireId.value());
-        m_faceAnimationDesireId = std::nullopt;
+        m_faceAnimationDesireId = nullopt;
     }
 
     m_parameter = TalkStateParameter();

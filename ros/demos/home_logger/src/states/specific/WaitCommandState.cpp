@@ -39,12 +39,12 @@ void WaitCommandState::onDisabling()
     if (m_faceAnimationDesireId.has_value())
     {
         m_desireSet->removeDesire(m_faceAnimationDesireId.value());
-        m_faceAnimationDesireId = std::nullopt;
+        m_faceAnimationDesireId = nullopt;
     }
     if (m_speechToTextDesireId.has_value())
     {
         m_desireSet->removeDesire(m_speechToTextDesireId.value());
-        m_speechToTextDesireId = std::nullopt;
+        m_speechToTextDesireId = nullopt;
     }
 }
 
