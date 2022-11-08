@@ -149,7 +149,7 @@ struct BinarySerializer
         return bytes;
     }
 
-    static Bytes serialize(T&&) = delete;  // Disallow temporary
+    static Bytes serialize(T&&) = delete;  // Disallow temporaries
 };
 
 
@@ -176,7 +176,7 @@ struct BinarySerializer<std::vector<T>>
         return bytes;
     }
 
-    static Bytes serialize(std::vector<T>&&) = delete;  // Disallow temporary
+    static Bytes serialize(std::vector<T>&&) = delete;  // Disallow temporaries
 };
 
 #endif
