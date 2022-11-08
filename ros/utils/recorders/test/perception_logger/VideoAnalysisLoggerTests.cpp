@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#include "comparisons.hpp"
+#include "comparisons.h"
 
 TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
 {
@@ -22,8 +22,8 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis0.direction.y, 6.0);
     EXPECT_EQ(analysis0.direction.z, 7.0);
     EXPECT_EQ(analysis0.objectClass, "a");
-    EXPECT_EQ(analysis0.boundingBox.centre.x, 8.0);
-    EXPECT_EQ(analysis0.boundingBox.centre.y, 9.0);
+    EXPECT_EQ(analysis0.boundingBox.center.x, 8.0);
+    EXPECT_EQ(analysis0.boundingBox.center.y, 9.0);
     EXPECT_EQ(analysis0.boundingBox.width, 10.0);
     EXPECT_EQ(analysis0.boundingBox.height, 11.0);
     EXPECT_EQ(analysis0.personPoseImage, tl::nullopt);
@@ -48,8 +48,8 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis1.direction.y, 60.0);
     EXPECT_EQ(analysis1.direction.z, 70.0);
     EXPECT_EQ(analysis1.objectClass, "b");
-    EXPECT_EQ(analysis1.boundingBox.centre.x, 80.0);
-    EXPECT_EQ(analysis1.boundingBox.centre.y, 90.0);
+    EXPECT_EQ(analysis1.boundingBox.center.x, 80.0);
+    EXPECT_EQ(analysis1.boundingBox.center.y, 90.0);
     EXPECT_EQ(analysis1.boundingBox.width, 100.0);
     EXPECT_EQ(analysis1.boundingBox.height, 110.0);
     EXPECT_EQ(analysis1.personPoseImage, vector<ImagePosition>({ImagePosition{120.0, 130.0}}));
@@ -75,8 +75,8 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis2.direction.y, 600.0);
     EXPECT_EQ(analysis2.direction.z, 700.0);
     EXPECT_EQ(analysis2.objectClass, "c");
-    EXPECT_EQ(analysis2.boundingBox.centre.x, 800.0);
-    EXPECT_EQ(analysis2.boundingBox.centre.y, 900.0);
+    EXPECT_EQ(analysis2.boundingBox.center.x, 800.0);
+    EXPECT_EQ(analysis2.boundingBox.center.y, 900.0);
     EXPECT_EQ(analysis2.boundingBox.width, 1000.0);
     EXPECT_EQ(analysis2.boundingBox.height, 1100.0);
     EXPECT_EQ(analysis2.personPoseImage, vector<ImagePosition>({ImagePosition{1200.0, 1300.0}}));

@@ -142,6 +142,7 @@ include_directories(
 add_library(perception_logger
   src/perception_logger/AudioAnalysisLogger.cpp
   src/perception_logger/VideoAnalysisLogger.cpp
+  src/perception_logger/BinarySerialization.cpp
   src/perception_logger/SpeechLogger.cpp
   src/perception_logger/sqlite/SQLiteMigration.cpp
   src/perception_logger/sqlite/SQLitePerceptionLogger.cpp
@@ -231,6 +232,7 @@ catkin_install_python(PROGRAMS
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(perception_logger-test
   test/perception_logger/main.cpp
+  test/perception_logger/BinarySerializationTests.cpp
   test/perception_logger/PerceptionLoggerTests.cpp
   test/perception_logger/AudioAnalysisLoggerTests.cpp
   test/perception_logger/VideoAnalysisLoggerTests.cpp

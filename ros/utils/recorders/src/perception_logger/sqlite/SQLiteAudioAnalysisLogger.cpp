@@ -1,6 +1,7 @@
 #include <perception_logger/sqlite/SQLiteAudioAnalysisLogger.h>
 
 #include <perception_logger/sqlite/SQLiteMigration.h>
+#include <perception_logger/BinarySerialization.h>
 
 using namespace std;
 
@@ -29,12 +30,11 @@ int64_t SQLiteAudioAnalysisLogger::log(const AudioAnalysis& analysis)
     insert.bind(1, id);
     insert.bindNoCopy(2, analysis.classes);
 
+    tl::optional<Bytes> voiceDescriptorBytes;
     if (analysis.voiceDescriptor.has_value())
     {
-        insert.bindNoCopy(
-            3,
-            reinterpret_cast<const void*>(analysis.voiceDescriptor.value().data()),
-            analysis.voiceDescriptor.value().size() * sizeof(float));
+        voiceDescriptorBytes = BinarySerializer<vector<float>>::serialize(analysis.voiceDescriptor.value());
+        insert.bindNoCopy(3, voiceDescriptorBytes->data(), voiceDescriptorBytes->size());
     }
 
     insert.exec();

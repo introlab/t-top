@@ -1,6 +1,7 @@
 #include <perception_logger/sqlite/SQLiteAudioAnalysisLogger.h>
 
 #include "SQLitePerceptionLoggerTests.h"
+#include "../BinarySerializationTests.h"
 
 #include <gtest/gtest.h>
 
@@ -29,7 +30,7 @@ TEST(SQLiteAudioAnalysisLoggerTests, log_shouldInsertAndReturnId)
     SQLiteAudioAnalysisLogger logger(database);
 
     int64_t id0 = logger.log(AudioAnalysis(Timestamp(101), Direction{1, 2, 3}, "music,water"));
-    int64_t id1 = logger.log(AudioAnalysis(Timestamp(102), Direction{4, 5, 6}, "voice", {7, 8}));
+    int64_t id1 = logger.log(AudioAnalysis(Timestamp(102), Direction{4, 5, 6}, "voice", {7.f, 8.f}));
 
     EXPECT_TRUE(perceptionExists(database, id0, Timestamp(101), Direction{1, 2, 3}));
     EXPECT_TRUE(perceptionExists(database, id1, Timestamp(102), Direction{4, 5, 6}));
@@ -43,5 +44,5 @@ TEST(SQLiteAudioAnalysisLoggerTests, log_shouldInsertAndReturnId)
 
     readAudioAnalysis(database, id1, classes, voiceDescriptor);
     EXPECT_EQ(classes, "voice");
-    EXPECT_EQ(voiceDescriptor, vector<float>({7, 8}));
+    EXPECT_EQ(voiceDescriptor, vector<float>({nativeToLittleEndian(7.f), nativeToLittleEndian(8.f)}));
 }

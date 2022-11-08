@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COMPARISONS_H
+#define COMPARISONS_H
 
 #include <perception_logger/PerceptionLogger.h>
 #include <gtest/gtest.h>
@@ -40,5 +41,7 @@ static bool operator==(const BoundingBox& l, const BoundingBox& r)
     EXPECT_TRUE(represents_integer(r.width));
     EXPECT_TRUE(represents_integer(r.height));
 
-    return l.centre == r.centre && l.width == r.width && l.height == r.height;
+    return l.center == r.center && l.width == r.width && l.height == r.height;
 }
+
+#endif
