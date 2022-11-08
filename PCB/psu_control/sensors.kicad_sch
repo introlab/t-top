@@ -1100,6 +1100,10 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid dca9dc10-2a71-4cfd-9633-ee5984ee6d33)
   )
+  (text "Light Sensor Model: Adafruit 2748" (at 82.55 59.69 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid e902fe1c-95f2-4859-853b-a9c1ecf5630c)
+  )
 
   (hierarchical_label "BUTTON_VOLUME_UP" (shape output) (at 179.07 86.36 0)
     (effects (font (size 1.27 1.27)) (justify left))

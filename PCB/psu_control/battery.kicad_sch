@@ -591,6 +591,11 @@
     (effects (font (size 2.54 2.54)) (justify left bottom))
     (uuid 1ba077d7-0eb9-48dc-be9a-b0acccea2256)
   )
+  (text "U8 is useful to prevent apply voltage to the Teensy when it is unpowered."
+    (at 93.98 66.04 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 5ba4c2fb-6b24-4bbf-a1b9-99b9f862d2fa)
+  )
   (text "J15: JST PH Connector" (at 87.63 15.24 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 74dc931e-db90-4791-a218-3171f1b3b9d3)

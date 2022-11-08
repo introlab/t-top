@@ -2064,7 +2064,7 @@
     (effects (font (size 2.54 2.54)) (justify left bottom))
     (uuid ac207a31-029c-46f8-96a8-b85274e90637)
   )
-  (text "1000000: R7=NI, R9=0,  R8=NI, R10=0\n1000001: R7=NI, R9=0,  R8=0,  R10=NI\n1000100: R7=0,  R9=NI, R8=NI, R10=0\n1000101: R7=0,  R9=NI, R8=0,  R10=NI\nNI: Not Installed"
+  (text "I2C Address\n1000000: R7=NI, R9=0,  R8=NI, R10=0\n1000001: R7=NI, R9=0,  R8=0,  R10=NI\n1000100: R7=0,  R9=NI, R8=NI, R10=0\n1000101: R7=0,  R9=NI, R8=0,  R10=NI\nNI: Not Installed"
     (at 121.92 29.21 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid af668a80-bcbb-4986-b7cf-72c1d8c44162)
