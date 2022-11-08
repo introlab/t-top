@@ -59,17 +59,17 @@ void IdleState::onDisabling()
     if (m_faceAnimationDesireId.has_value())
     {
         m_desireSet->removeDesire(m_faceAnimationDesireId.value());
-        m_faceAnimationDesireId = std::nullopt;
+        m_faceAnimationDesireId = nullopt;
     }
     if (m_robotNameDetectorDesireId.has_value())
     {
         m_desireSet->removeDesire(m_robotNameDetectorDesireId.value());
-        m_robotNameDetectorDesireId = std::nullopt;
+        m_robotNameDetectorDesireId = nullopt;
     }
     if (m_videoAnalyzer3dDesireId.has_value())
     {
         m_desireSet->removeDesire(m_videoAnalyzer3dDesireId.value());
-        m_videoAnalyzer3dDesireId = std::nullopt;
+        m_videoAnalyzer3dDesireId = nullopt;
     }
 }
 
@@ -152,7 +152,7 @@ void IdleState::onEveryTenMinutesTimeout()
     m_todayReminders = m_reminderManager.listReminders(Date::now());
 }
 
-std::optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg)
 {
     for (auto& object : msg->objects)
     {
@@ -170,7 +170,7 @@ std::optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnaly
         }
     }
 
-    return std::nullopt;
+    return nullopt;
 }
 
 void IdleState::switchToAlarmState(vector<unique_ptr<Alarm>> alarms)
