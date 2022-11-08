@@ -31,7 +31,8 @@ int64_t SQLitePerceptionLogger::insertPerception(
 {
     SQLite::Statement insert(
         m_database,
-        "INSERT INTO perception(timestamp_ms, position_x, position_y, position_z, direction_x, direction_y, direction_z) "
+        "INSERT INTO perception(timestamp_ms, position_x, position_y, position_z, direction_x, direction_y, "
+        "direction_z) "
         "VALUES(?, ?, ?, ?, ?, ?, ?)");
     insert.clearBindings();
     insert.bind(1, timestamp.unixEpochMs);
