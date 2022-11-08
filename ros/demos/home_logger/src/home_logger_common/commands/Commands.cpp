@@ -19,7 +19,9 @@ bool Command::isComplete() const
 
 WeatherCommand::WeatherCommand(string transcript) : Command(move(transcript)) {}
 
-WeatherCommand::WeatherCommand(string transcript, optional<WeatherTime> time) : Command(move(transcript)), m_time(time)
+WeatherCommand::WeatherCommand(string transcript, std::optional<WeatherTime> time)
+    : Command(move(transcript)),
+      m_time(time)
 {
 }
 
@@ -41,7 +43,7 @@ DecreaseVolumeCommand::~DecreaseVolumeCommand() {}
 
 SetVolumeCommand::SetVolumeCommand(string transcript) : Command(move(transcript)) {}
 
-SetVolumeCommand::SetVolumeCommand(string transcript, optional<float> volumePercent)
+SetVolumeCommand::SetVolumeCommand(string transcript, std::optional<float> volumePercent)
     : Command(move(transcript)),
       m_volumePercent(volumePercent)
 {
@@ -81,10 +83,10 @@ AddAlarmCommand::AddAlarmCommand(string transcript) : Command(move(transcript)) 
 
 AddAlarmCommand::AddAlarmCommand(
     string transcript,
-    optional<AlarmType> alarmType,
-    optional<int> weekDay,
-    optional<Date> date,
-    optional<Time> time)
+    std::optional<AlarmType> alarmType,
+    std::optional<int> weekDay,
+    std::optional<Date> date,
+    std::optional<Time> time)
     : Command(move(transcript)),
       m_alarmType(alarmType),
       m_weekDay(weekDay),
@@ -124,7 +126,11 @@ ListAlarmsCommand::~ListAlarmsCommand() {}
 
 RemoveAlarmCommand::RemoveAlarmCommand(string transcript) : Command(move(transcript)) {}
 
-RemoveAlarmCommand::RemoveAlarmCommand(string transcript, optional<int64_t> id) : Command(move(transcript)), m_id(id) {}
+RemoveAlarmCommand::RemoveAlarmCommand(string transcript, std::optional<int64_t> id)
+    : Command(move(transcript)),
+      m_id(id)
+{
+}
 
 RemoveAlarmCommand::~RemoveAlarmCommand() {}
 
@@ -195,10 +201,10 @@ AddReminderCommand::AddReminderCommand(string transcript) : Command(move(transcr
 
 AddReminderCommand::AddReminderCommand(
     string transcript,
-    optional<string> text,
-    optional<Date> date,
-    optional<Time> time,
-    optional<FaceDescriptor> faceDescriptor)
+    std::optional<string> text,
+    std::optional<Date> date,
+    std::optional<Time> time,
+    std::optional<FaceDescriptor> faceDescriptor)
     : Command(move(transcript)),
       m_text(text),
       m_date(date),
@@ -220,7 +226,7 @@ ListRemindersCommand::~ListRemindersCommand() {}
 
 RemoveReminderCommand::RemoveReminderCommand(string transcript) : Command(move(transcript)) {}
 
-RemoveReminderCommand::RemoveReminderCommand(string transcript, optional<int64_t> id)
+RemoveReminderCommand::RemoveReminderCommand(string transcript, std::optional<int64_t> id)
     : Command(move(transcript)),
       m_id(id)
 {

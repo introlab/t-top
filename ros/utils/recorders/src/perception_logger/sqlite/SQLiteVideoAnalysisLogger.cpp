@@ -45,28 +45,28 @@ int64_t SQLiteVideoAnalysisLogger::log(const VideoAnalysis& analysis)
     insert.bind(5, analysis.boundingBox.width);
     insert.bind(6, analysis.boundingBox.height);
 
-    optional<Bytes> personPoseImageBytes;
+    std::optional<Bytes> personPoseImageBytes;
     if (analysis.personPoseImage.has_value())
     {
         personPoseImageBytes = BinarySerializer<vector<ImagePosition>>::serialize(analysis.personPoseImage.value());
         insert.bindNoCopy(7, personPoseImageBytes->data(), personPoseImageBytes->size());
     }
 
-    optional<Bytes> personPoseBytes;
+    std::optional<Bytes> personPoseBytes;
     if (analysis.personPose.has_value())
     {
         personPoseBytes = BinarySerializer<vector<Position>>::serialize(analysis.personPose.value());
         insert.bindNoCopy(8, personPoseBytes->data(), personPoseBytes->size());
     }
 
-    optional<Bytes> personPoseConfidenceBytes;
+    std::optional<Bytes> personPoseConfidenceBytes;
     if (analysis.personPoseConfidence.has_value())
     {
         personPoseConfidenceBytes = BinarySerializer<vector<float>>::serialize(analysis.personPoseConfidence.value());
         insert.bindNoCopy(9, personPoseConfidenceBytes->data(), personPoseConfidenceBytes->size());
     }
 
-    optional<Bytes> faceDescriptorBytes;
+    std::optional<Bytes> faceDescriptorBytes;
     if (analysis.faceDescriptor.has_value())
     {
         faceDescriptorBytes = BinarySerializer<vector<float>>::serialize(analysis.faceDescriptor.value());

@@ -38,9 +38,9 @@ AllCommandParametersParser::~AllCommandParametersParser() {}
 
 shared_ptr<Command> AllCommandParametersParser::parse(
     const shared_ptr<Command>& command,
-    const optional<string>& parameterName,
-    const optional<string>& parameterResponse,
-    const optional<FaceDescriptor>& faceDescriptor)
+    const std::optional<string>& parameterName,
+    const std::optional<string>& parameterResponse,
+    const std::optional<FaceDescriptor>& faceDescriptor)
 {
     auto it = m_commandParameterParsersByCommandType.find(command->type());
     if (it == m_commandParameterParsersByCommandType.end())

@@ -37,7 +37,7 @@ std::array<std::byte, sizeof(T)> toLittleEndianBytes(const T& v)
     std::array<std::byte, sizeof(T)> bytes;
     std::memcpy(bytes.data(), &v, sizeof(T));
 
-    if constexpr (!isLittleEndian())
+    if (!isLittleEndian())
     {
         for (size_t i = 0; i < sizeof(T) / 2; i++)
         {
@@ -58,7 +58,7 @@ T fromLittleEndianBytes(const std::array<std::byte, sizeof(T)>& bytes)
     T v;
     std::memcpy(&v, bytes.data(), sizeof(T));
 
-    if constexpr (!isLittleEndian())
+    if (!isLittleEndian())
     {
         std::byte* ptr = reinterpret_cast<std::byte*>(&v);
         for (size_t i = 0; i < sizeof(T) / 2; i++)
@@ -106,7 +106,7 @@ struct BinarySerializer
             std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
             "Not supported type: T must inherit ValueType or be a builtin value type");
 
-        if constexpr (isLittleEndian())
+        if (isLittleEndian())
         {
             return Bytes(reinterpret_cast<const std::byte*>(&v), sizeof(T));
         }
@@ -130,7 +130,7 @@ struct BinarySerializer<std::vector<T>>
             std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
             "Not supported type: T must be a value type or be a builtin value type");
 
-        if constexpr (isLittleEndian())
+        if (isLittleEndian())
         {
             return Bytes(reinterpret_cast<const std::byte*>(v.data()), v.size() * sizeof(T));
         }
