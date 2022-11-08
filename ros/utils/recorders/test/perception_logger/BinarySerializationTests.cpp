@@ -41,9 +41,9 @@ TEST(BinarySerializationTests, switchEndianness_double_shouldSwitchEndianness)
 TEST(BinarySerializationTests, bytes_shouldBehaveLikeUniquePtr)
 {
     int intValue = 56;
-    Bytes notOwned(&intValue, sizeof(int));
+    Bytes notOwned(reinterpret_cast<byte*>(&intValue), sizeof(int));
     EXPECT_FALSE(notOwned.owned());
-    EXPECT_EQ(notOwned.data(), &intValue);
+    EXPECT_EQ(notOwned.data(), reinterpret_cast<byte*>(&intValue));
     EXPECT_EQ(notOwned.size(), sizeof(int));
 
     Bytes owned(10);
@@ -53,7 +53,7 @@ TEST(BinarySerializationTests, bytes_shouldBehaveLikeUniquePtr)
 
     Bytes moved(move(notOwned));
     EXPECT_FALSE(moved.owned());
-    EXPECT_EQ(moved.data(), &intValue);
+    EXPECT_EQ(moved.data(), reinterpret_cast<byte*>(&intValue));
     EXPECT_EQ(moved.size(), sizeof(int));
     EXPECT_FALSE(notOwned.owned());
     EXPECT_EQ(notOwned.data(), nullptr);

@@ -16,9 +16,9 @@ public:
 
     std::shared_ptr<Command> parse(
         const std::shared_ptr<Command>& command,
-        const tl::optional<std::string>& parameterName,
-        const tl::optional<std::string>& parameterResponse,
-        const tl::optional<FaceDescriptor>& faceDescriptor);
+        const std::optional<std::string>& parameterName,
+        const std::optional<std::string>& parameterResponse,
+        const std::optional<FaceDescriptor>& faceDescriptor);
 };
 
 #endif

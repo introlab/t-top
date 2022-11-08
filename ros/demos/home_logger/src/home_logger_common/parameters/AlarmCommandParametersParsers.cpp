@@ -14,9 +14,9 @@ AddAlarmCommandParametersParser::~AddAlarmCommandParametersParser() {}
 
 shared_ptr<AddAlarmCommand> AddAlarmCommandParametersParser::parseSpecific(
     const shared_ptr<AddAlarmCommand>& command,
-    const tl::optional<string>& parameterName,
-    const tl::optional<string>& parameterResponse,
-    const tl::optional<FaceDescriptor>& faceDescriptor)
+    const std::optional<string>& parameterName,
+    const std::optional<string>& parameterResponse,
+    const std::optional<FaceDescriptor>& faceDescriptor)
 {
     if (faceDescriptor.has_value())
     {
@@ -54,7 +54,7 @@ shared_ptr<AddAlarmCommand>
     AddAlarmCommandParametersParser::parseType(const shared_ptr<AddAlarmCommand>& command, const string& text)
 {
     string lowerCaseText = toLowerString(text);
-    tl::optional<AlarmType> alarmType;
+    std::optional<AlarmType> alarmType;
     if (containsAny(lowerCaseText, m_punctualKeywords))
     {
         alarmType = AlarmType::PUNCTUAL;
@@ -117,9 +117,9 @@ RemoveAlarmCommandParametersParser::~RemoveAlarmCommandParametersParser() {}
 
 shared_ptr<RemoveAlarmCommand> RemoveAlarmCommandParametersParser::parseSpecific(
     const shared_ptr<RemoveAlarmCommand>& command,
-    const tl::optional<string>& parameterName,
-    const tl::optional<string>& parameterResponse,
-    const tl::optional<FaceDescriptor>& faceDescriptor)
+    const std::optional<string>& parameterName,
+    const std::optional<string>& parameterResponse,
+    const std::optional<FaceDescriptor>& faceDescriptor)
 {
     if (faceDescriptor.has_value())
     {

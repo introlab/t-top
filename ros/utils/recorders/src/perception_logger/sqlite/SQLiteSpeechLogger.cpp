@@ -23,7 +23,7 @@ int64_t SQLiteSpeechLogger::log(const Speech& speech)
 {
     string sourceString = speechSourceToString(speech.source);
 
-    int64_t id = insertPerception(speech.timestamp, tl::nullopt, tl::nullopt);
+    int64_t id = insertPerception(speech.timestamp, std::nullopt, std::nullopt);
     SQLite::Statement insert(m_database, "INSERT INTO speech(perception_id, source, text) VALUES(?, ?, ?)");
 
     insert.bind(1, id);

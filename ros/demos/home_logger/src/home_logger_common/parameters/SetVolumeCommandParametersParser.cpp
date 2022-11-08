@@ -8,9 +8,9 @@ SetVolumeCommandParametersParser::~SetVolumeCommandParametersParser() {}
 
 shared_ptr<SetVolumeCommand> SetVolumeCommandParametersParser::parseSpecific(
     const shared_ptr<SetVolumeCommand>& command,
-    const tl::optional<string>& parameterName,
-    const tl::optional<string>& parameterResponse,
-    const tl::optional<FaceDescriptor>& faceDescriptor)
+    const std::optional<string>& parameterName,
+    const std::optional<string>& parameterResponse,
+    const std::optional<FaceDescriptor>& faceDescriptor)
 {
     if (faceDescriptor.has_value())
     {
@@ -35,6 +35,6 @@ shared_ptr<SetVolumeCommand> SetVolumeCommandParametersParser::parseSpecific(
 shared_ptr<SetVolumeCommand>
     SetVolumeCommandParametersParser::parseVolume(const shared_ptr<SetVolumeCommand>& command, const string& text)
 {
-    tl::optional<float> volume = findInt(text).map([](int v) { return static_cast<float>(v); });
+    std::optional<float> volume = findInt(text).map([](int v) { return static_cast<float>(v); });
     return make_shared<SetVolumeCommand>(command->transcript(), volume);
 }

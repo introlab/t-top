@@ -63,6 +63,6 @@ void SoundFaceFollowingState::setFollowingDesire(unique_ptr<Desire> desire)
     else
     {
         m_followingDesireType = DesireType::null();
-        m_followingDesireId = tl::nullopt;
+        m_followingDesireId = std::nullopt;
     }
 }

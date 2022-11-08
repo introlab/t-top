@@ -115,9 +115,9 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(boundingBox, (BoundingBox{{17, 18}, 19, 20}));
     ASSERT_EQ(personPoseImage.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPoseImage[0]), ImagePosition(21, 22));
+    EXPECT_EQ(littleEndianToNative(personPoseImage[0]), (ImagePosition{21, 22}));
     ASSERT_EQ(personPose.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPose[0]), Position(23, 24, 25));
+    EXPECT_EQ(littleEndianToNative(personPose[0]), (Position{23, 24, 25}));
     EXPECT_EQ(personPoseConfidence, vector<float>({nativeToLittleEndian(0.5f)}));
     EXPECT_EQ(faceDescriptor, vector<float>({}));
 
@@ -133,9 +133,9 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(boundingBox, (BoundingBox{{32, 33}, 34, 35}));
     ASSERT_EQ(personPoseImage.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPoseImage[0]), ImagePosition(36, 37));
+    EXPECT_EQ(littleEndianToNative(personPoseImage[0]), (ImagePosition{36, 37}));
     ASSERT_EQ(personPose.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPose[0]), Position(38, 39, 40));
+    EXPECT_EQ(littleEndianToNative(personPose[0]), (Position{38, 39, 40}));
     EXPECT_EQ(personPoseConfidence, vector<float>({nativeToLittleEndian(0.75f)}));
     EXPECT_EQ(faceDescriptor, vector<float>({nativeToLittleEndian(41.f), nativeToLittleEndian(42.f)}));
 }

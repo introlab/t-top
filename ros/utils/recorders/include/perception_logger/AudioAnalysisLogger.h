@@ -3,8 +3,7 @@
 
 #include <perception_logger/PerceptionLogger.h>
 
-#include <tl/optional.hpp>
-
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +12,7 @@ struct AudioAnalysis
     Timestamp timestamp;
     Direction direction;
     std::string classes;
-    tl::optional<std::vector<float>> voiceDescriptor;
+    std::optional<std::vector<float>> voiceDescriptor;
 
     AudioAnalysis(Timestamp timestamp, Direction direction, std::string classes);
     AudioAnalysis(Timestamp timestamp, Direction direction, std::string classes, std::vector<float> voiceDescriptor);

@@ -3,7 +3,7 @@
 
 #include "../State.h"
 
-#include <tl/optional.hpp>
+#include <optional>
 
 class TalkStateParameter : public StateParameter
 {
@@ -33,10 +33,10 @@ class TalkState : public State
 {
     TalkStateParameter m_parameter;
 
-    tl::optional<uint64_t> m_faceFollowingDesireId;
-    tl::optional<uint64_t> m_talkDesireId;
-    tl::optional<uint64_t> m_gestureDesireId;
-    tl::optional<uint64_t> m_faceAnimationDesireId;
+    std::optional<uint64_t> m_faceFollowingDesireId;
+    std::optional<uint64_t> m_talkDesireId;
+    std::optional<uint64_t> m_gestureDesireId;
+    std::optional<uint64_t> m_faceAnimationDesireId;
 
 public:
     TalkState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);

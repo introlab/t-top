@@ -5,8 +5,7 @@
 
 #include <home_logger_common/DateTime.h>
 
-#include <tl/optional.hpp>
-
+#include <optional>
 #include <chrono>
 
 class SleepState : public State
@@ -21,7 +20,7 @@ class SleepState : public State
     bool m_hadAudioAnalyzerDesire;
     bool m_hadFastVideoAnalyzer3dDesire;
 
-    tl::optional<uint64_t> m_faceAnimationDesireId;
+    std::optional<uint64_t> m_faceAnimationDesireId;
 
 public:
     SleepState(

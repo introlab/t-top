@@ -47,7 +47,7 @@ void SleepState::onDisabling()
     if (m_faceAnimationDesireId.has_value())
     {
         m_desireSet->removeDesire(m_faceAnimationDesireId.value());
-        m_faceAnimationDesireId = tl::nullopt;
+        m_faceAnimationDesireId = std::nullopt;
     }
 
     if (m_hadCamera3dRecordingDesire)

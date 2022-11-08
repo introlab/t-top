@@ -64,12 +64,12 @@ void WaitFaceDescriptorCommandParameterState::onDisabling()
     if (m_faceAnimationDesireId.has_value())
     {
         m_desireSet->removeDesire(m_faceAnimationDesireId.value());
-        m_faceAnimationDesireId = tl::nullopt;
+        m_faceAnimationDesireId = std::nullopt;
     }
     if (m_videoAnalyzer3dDesireId.has_value())
     {
         m_desireSet->removeDesire(m_videoAnalyzer3dDesireId.value());
-        m_videoAnalyzer3dDesireId = tl::nullopt;
+        m_videoAnalyzer3dDesireId = std::nullopt;
     }
 }
 
@@ -93,13 +93,13 @@ void WaitFaceDescriptorCommandParameterState::onStateTimeout()
     switchState();
 }
 
-tl::optional<FaceDescriptor> WaitFaceDescriptorCommandParameterState::findNearestFaceDescriptor(
+std::optional<FaceDescriptor> WaitFaceDescriptorCommandParameterState::findNearestFaceDescriptor(
     const video_analyzer::VideoAnalysis::ConstPtr& msg)
 {
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;
 
     double nearestDistance = numeric_limits<double>::infinity();
-    tl::optional<FaceDescriptor> nearestFaceDescriptor;
+    std::optional<FaceDescriptor> nearestFaceDescriptor;
 
     for (const auto& object : msg->objects)
     {

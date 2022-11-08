@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14.2)
 project(recorders)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++17)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -112,7 +112,6 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/SQLiteCpp/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/optional/include
     include
   LIBRARIES SQLiteCpp perception_logger
   # CATKIN_DEPENDS audio_utils rospy sensor_msgs
@@ -120,10 +119,6 @@ catkin_package(
 )
 
 add_subdirectory(3rd_party/SQLiteCpp)
-
-# Setting the policy with cmake_policy doesn't work, but this way it does
-set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
-add_subdirectory(3rd_party/optional)
 
 ###########
 ## Build ##
@@ -134,7 +129,6 @@ add_subdirectory(3rd_party/optional)
 include_directories(
   include
   3rd_party/SQLiteCpp/include
-  3rd_party/optional/include
   ${catkin_INCLUDE_DIRS}
 )
 

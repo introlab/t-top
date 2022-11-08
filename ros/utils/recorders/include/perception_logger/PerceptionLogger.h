@@ -5,14 +5,16 @@
 
 #include <ros/ros.h>
 
-struct __attribute__((packed)) Position : public ValueType
+struct __attribute__((packed)) Position
 {
     double x;
     double y;
     double z;
+};
 
-    Position() : x(0.0), y(0.0), z(0.0) {}
-    Position(double x, double y, double z) : x(x), y(y), z(z) {}
+template<>
+struct is_value_type<Position> : std::true_type
+{
 };
 
 template<>
@@ -22,13 +24,15 @@ inline Position switchEndianness(const Position& v)
 }
 
 
-struct __attribute__((packed)) ImagePosition : public ValueType
+struct __attribute__((packed)) ImagePosition
 {
     double x;
     double y;
+};
 
-    ImagePosition() : x(0.0), y(0.0) {}
-    ImagePosition(double x, double y) : x(x), y(y) {}
+template<>
+struct is_value_type<ImagePosition> : std::true_type
+{
 };
 
 template<>
@@ -37,7 +41,7 @@ inline ImagePosition switchEndianness(const ImagePosition& v)
     return ImagePosition{switchEndianness(v.x), switchEndianness(v.y)};
 }
 
-struct BoundingBox
+struct __attribute__((packed)) BoundingBox
 {
     ImagePosition center;
     double width;
@@ -45,14 +49,16 @@ struct BoundingBox
 };
 
 
-struct __attribute__((packed)) Direction : public ValueType
+struct __attribute__((packed)) Direction
 {
     double x;
     double y;
     double z;
+};
 
-    Direction() : x(0), y(0), z(0) {}
-    Direction(double x, double y, double z) : x(x), y(y), z(z) {}
+template<>
+struct is_value_type<Direction> : std::true_type
+{
 };
 
 template<>
