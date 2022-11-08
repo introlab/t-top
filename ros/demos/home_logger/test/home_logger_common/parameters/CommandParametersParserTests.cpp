@@ -19,8 +19,8 @@ protected:
 
 TEST(CommandParametersParserTests, findInt_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findInt(""), std::nullopt);
-    EXPECT_EQ(findInt("Bonjour"), std::nullopt);
+    EXPECT_EQ(findInt(""), nullopt);
+    EXPECT_EQ(findInt("Bonjour"), nullopt);
 }
 
 TEST(CommandParametersParserTests, findInt_valid_shouldReturnTheNumber)
@@ -37,22 +37,22 @@ TEST(CommandParametersParserTests, findInt_valid_shouldReturnTheNumber)
 
 TEST_F(CommandParametersParserFrenchTests, findTime_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findTime(""), std::nullopt);
-    EXPECT_EQ(findTime("10"), std::nullopt);
-    EXPECT_EQ(findTime("10 00"), std::nullopt);
+    EXPECT_EQ(findTime(""), nullopt);
+    EXPECT_EQ(findTime("10"), nullopt);
+    EXPECT_EQ(findTime("10 00"), nullopt);
 
-    EXPECT_EQ(findTime("allo :"), std::nullopt);
-    EXPECT_EQ(findTime("allo h"), std::nullopt);
-    EXPECT_EQ(findTime("allo h"), std::nullopt);
+    EXPECT_EQ(findTime("allo :"), nullopt);
+    EXPECT_EQ(findTime("allo h"), nullopt);
+    EXPECT_EQ(findTime("allo h"), nullopt);
 
-    EXPECT_EQ(findTime("-1h"), std::nullopt);
-    EXPECT_EQ(findTime("24 h"), std::nullopt);
+    EXPECT_EQ(findTime("-1h"), nullopt);
+    EXPECT_EQ(findTime("24 h"), nullopt);
 
-    EXPECT_EQ(findTime("1h-1"), std::nullopt);
-    EXPECT_EQ(findTime("1h60"), std::nullopt);
+    EXPECT_EQ(findTime("1h-1"), nullopt);
+    EXPECT_EQ(findTime("1h60"), nullopt);
 
-    EXPECT_EQ(findTime("10h00 AM PM"), std::nullopt);
-    EXPECT_EQ(findTime("12h00 AM"), std::nullopt);
+    EXPECT_EQ(findTime("10h00 AM PM"), nullopt);
+    EXPECT_EQ(findTime("12h00 AM"), nullopt);
 }
 
 TEST_F(CommandParametersParserFrenchTests, findTime_valid_shouldReturnTheTime)
@@ -67,16 +67,16 @@ TEST_F(CommandParametersParserFrenchTests, findTime_valid_shouldReturnTheTime)
 
 TEST_F(CommandParametersParserFrenchTests, findDate_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findDate("", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("0", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("32", 0, 0), std::nullopt);
+    EXPECT_EQ(findDate("", 0, 0), nullopt);
+    EXPECT_EQ(findDate("0", 0, 0), nullopt);
+    EXPECT_EQ(findDate("32", 0, 0), nullopt);
 
-    EXPECT_EQ(findDate("janvier", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("0 février", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("32 février", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("février 2022", 0, 0), std::nullopt);
+    EXPECT_EQ(findDate("janvier", 0, 0), nullopt);
+    EXPECT_EQ(findDate("0 février", 0, 0), nullopt);
+    EXPECT_EQ(findDate("32 février", 0, 0), nullopt);
+    EXPECT_EQ(findDate("février 2022", 0, 0), nullopt);
 
-    EXPECT_EQ(findDate("1 janvier février", 0, 0), std::nullopt);
+    EXPECT_EQ(findDate("1 janvier février", 0, 0), nullopt);
 }
 
 TEST_F(CommandParametersParserFrenchTests, findDate_valid_shouldReturnTheDate)
@@ -103,10 +103,10 @@ TEST_F(CommandParametersParserFrenchTests, findDate_valid_shouldReturnTheDate)
 
 TEST_F(CommandParametersParserFrenchTests, findWeekDay_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findWeekDay(""), std::nullopt);
-    EXPECT_EQ(findWeekDay("1"), std::nullopt);
-    EXPECT_EQ(findWeekDay("mar"), std::nullopt);
-    EXPECT_EQ(findWeekDay("dimanche lundi"), std::nullopt);
+    EXPECT_EQ(findWeekDay(""), nullopt);
+    EXPECT_EQ(findWeekDay("1"), nullopt);
+    EXPECT_EQ(findWeekDay("mar"), nullopt);
+    EXPECT_EQ(findWeekDay("dimanche lundi"), nullopt);
 }
 
 TEST_F(CommandParametersParserFrenchTests, findWeekDay_valid_shouldReturnTheWeekDay)
@@ -123,22 +123,22 @@ TEST_F(CommandParametersParserFrenchTests, findWeekDay_valid_shouldReturnTheWeek
 
 TEST_F(CommandParametersParserEnglishTests, findTime_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findTime(""), std::nullopt);
-    EXPECT_EQ(findTime("10"), std::nullopt);
-    EXPECT_EQ(findTime("10 00"), std::nullopt);
+    EXPECT_EQ(findTime(""), nullopt);
+    EXPECT_EQ(findTime("10"), nullopt);
+    EXPECT_EQ(findTime("10 00"), nullopt);
 
-    EXPECT_EQ(findTime("allo :"), std::nullopt);
-    EXPECT_EQ(findTime("allo h"), std::nullopt);
-    EXPECT_EQ(findTime("allo h"), std::nullopt);
+    EXPECT_EQ(findTime("allo :"), nullopt);
+    EXPECT_EQ(findTime("allo h"), nullopt);
+    EXPECT_EQ(findTime("allo h"), nullopt);
 
-    EXPECT_EQ(findTime("-1h"), std::nullopt);
-    EXPECT_EQ(findTime("24 h"), std::nullopt);
+    EXPECT_EQ(findTime("-1h"), nullopt);
+    EXPECT_EQ(findTime("24 h"), nullopt);
 
-    EXPECT_EQ(findTime("1h-1"), std::nullopt);
-    EXPECT_EQ(findTime("1h60"), std::nullopt);
+    EXPECT_EQ(findTime("1h-1"), nullopt);
+    EXPECT_EQ(findTime("1h60"), nullopt);
 
-    EXPECT_EQ(findTime("10 AM PM"), std::nullopt);
-    EXPECT_EQ(findTime("10h00 AM PM"), std::nullopt);
+    EXPECT_EQ(findTime("10 AM PM"), nullopt);
+    EXPECT_EQ(findTime("10h00 AM PM"), nullopt);
 }
 
 TEST_F(CommandParametersParserEnglishTests, findTime_valid_shouldReturnTheTime)
@@ -154,15 +154,15 @@ TEST_F(CommandParametersParserEnglishTests, findTime_valid_shouldReturnTheTime)
 
 TEST_F(CommandParametersParserEnglishTests, findDate_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findDate("", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("0", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("32", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("32 31", 0, 0), std::nullopt);
+    EXPECT_EQ(findDate("", 0, 0), nullopt);
+    EXPECT_EQ(findDate("0", 0, 0), nullopt);
+    EXPECT_EQ(findDate("32", 0, 0), nullopt);
+    EXPECT_EQ(findDate("32 31", 0, 0), nullopt);
 
-    EXPECT_EQ(findDate("January", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("february 0", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("february 32", 0, 0), std::nullopt);
-    EXPECT_EQ(findDate("february 2022", 0, 0), std::nullopt);
+    EXPECT_EQ(findDate("January", 0, 0), nullopt);
+    EXPECT_EQ(findDate("february 0", 0, 0), nullopt);
+    EXPECT_EQ(findDate("february 32", 0, 0), nullopt);
+    EXPECT_EQ(findDate("february 2022", 0, 0), nullopt);
 }
 
 TEST_F(CommandParametersParserEnglishTests, findDate_valid_shouldReturnTheDate)
@@ -189,10 +189,10 @@ TEST_F(CommandParametersParserEnglishTests, findDate_valid_shouldReturnTheDate)
 
 TEST_F(CommandParametersParserEnglishTests, findWeekDay_invalid_shouldReturnNullopt)
 {
-    EXPECT_EQ(findWeekDay(""), std::nullopt);
-    EXPECT_EQ(findWeekDay("1"), std::nullopt);
-    EXPECT_EQ(findWeekDay("mar"), std::nullopt);
-    EXPECT_EQ(findWeekDay("Sunday Monday"), std::nullopt);
+    EXPECT_EQ(findWeekDay(""), nullopt);
+    EXPECT_EQ(findWeekDay("1"), nullopt);
+    EXPECT_EQ(findWeekDay("mar"), nullopt);
+    EXPECT_EQ(findWeekDay("Sunday Monday"), nullopt);
 }
 
 TEST_F(CommandParametersParserEnglishTests, findWeekDay_valid_shouldReturnTheWeekDay)
