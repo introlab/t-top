@@ -22,7 +22,7 @@ SQLiteAudioAnalysisLogger::~SQLiteAudioAnalysisLogger() {}
 
 int64_t SQLiteAudioAnalysisLogger::log(const AudioAnalysis& analysis)
 {
-    int64_t id = insertPerception(analysis.timestamp, std::nullopt, analysis.direction);
+    int64_t id = insertPerception(analysis.timestamp, nullopt, analysis.direction);
     SQLite::Statement insert(
         m_database,
         "INSERT INTO audio_analysis(perception_id, classes, voice_descriptor) VALUES(?, ?, ?)");
@@ -30,7 +30,7 @@ int64_t SQLiteAudioAnalysisLogger::log(const AudioAnalysis& analysis)
     insert.bind(1, id);
     insert.bindNoCopy(2, analysis.classes);
 
-    std::optional<Bytes> voiceDescriptorBytes;
+    optional<Bytes> voiceDescriptorBytes;
     if (analysis.voiceDescriptor.has_value())
     {
         voiceDescriptorBytes = BinarySerializer<vector<float>>::serialize(analysis.voiceDescriptor.value());

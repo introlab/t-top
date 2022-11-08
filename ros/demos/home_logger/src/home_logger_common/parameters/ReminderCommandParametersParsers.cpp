@@ -9,9 +9,9 @@ AddReminderCommandParametersParser::~AddReminderCommandParametersParser() {}
 
 shared_ptr<AddReminderCommand> AddReminderCommandParametersParser::parseSpecific(
     const shared_ptr<AddReminderCommand>& command,
-    const std::optional<string>& parameterName,
-    const std::optional<string>& parameterResponse,
-    const std::optional<FaceDescriptor>& faceDescriptor)
+    const optional<string>& parameterName,
+    const optional<string>& parameterResponse,
+    const optional<FaceDescriptor>& faceDescriptor)
 {
     if (faceDescriptor.has_value())
     {
@@ -94,9 +94,9 @@ RemoveReminderCommandParametersParser::~RemoveReminderCommandParametersParser() 
 
 shared_ptr<RemoveReminderCommand> RemoveReminderCommandParametersParser::parseSpecific(
     const shared_ptr<RemoveReminderCommand>& command,
-    const std::optional<string>& parameterName,
-    const std::optional<string>& parameterResponse,
-    const std::optional<FaceDescriptor>& faceDescriptor)
+    const optional<string>& parameterName,
+    const optional<string>& parameterResponse,
+    const optional<FaceDescriptor>& faceDescriptor)
 {
     if (faceDescriptor.has_value())
     {

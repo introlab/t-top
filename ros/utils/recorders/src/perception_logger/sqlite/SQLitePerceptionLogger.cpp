@@ -26,8 +26,8 @@ SQLitePerceptionLogger::~SQLitePerceptionLogger() = default;
 
 int64_t SQLitePerceptionLogger::insertPerception(
     Timestamp timestamp,
-    std::optional<Position> position,
-    std::optional<Direction> direction)
+    optional<Position> position,
+    optional<Direction> direction)
 {
     SQLite::Statement insert(
         m_database,
