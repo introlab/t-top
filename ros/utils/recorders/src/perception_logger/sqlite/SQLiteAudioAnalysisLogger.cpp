@@ -33,7 +33,7 @@ int64_t SQLiteAudioAnalysisLogger::log(const AudioAnalysis& analysis)
     optional<Bytes> voiceDescriptorBytes;
     if (analysis.voiceDescriptor.has_value())
     {
-        voiceDescriptorBytes = BinarySerializer<vector<float>>::serialize(analysis.voiceDescriptor.value());
+        voiceDescriptorBytes = BinarySerializer<vector<float>>::serializeNoCopy(analysis.voiceDescriptor.value());
         insert.bindNoCopy(3, voiceDescriptorBytes->data(), voiceDescriptorBytes->size());
     }
 

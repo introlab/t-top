@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+using namespace std;
 
 class CommandParametersParserFrenchTests : public ::testing::Test
 {

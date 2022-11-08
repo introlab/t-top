@@ -59,10 +59,10 @@ TEST(BinarySerializationTests, bytes_shouldBehaveLikeUniquePtr)
     EXPECT_EQ(owned.size(), sizeof(int));
 }
 
-TEST(BinarySerializationTests, serialize_uint32_shouldReturnLittleEndianBytes)
+TEST(BinarySerializationTests, serializeNoCopy_uint32_shouldReturnLittleEndianBytes)
 {
     constexpr uint32_t VALUE = 0x04030201;
-    Bytes bytes = BinarySerializer<uint32_t>::serialize(VALUE);
+    Bytes bytes = BinarySerializer<uint32_t>::serializeNoCopy(VALUE);
     ASSERT_EQ(bytes.size(), 4);
 
     EXPECT_EQ(bytes.data()[0], byte{1});
@@ -71,10 +71,10 @@ TEST(BinarySerializationTests, serialize_uint32_shouldReturnLittleEndianBytes)
     EXPECT_EQ(bytes.data()[3], byte{4});
 }
 
-TEST(BinarySerializationTests, serialize_vectoruint32_shouldReturnLittleEndianBytes)
+TEST(BinarySerializationTests, serializeNoCopy_vectoruint32_shouldReturnLittleEndianBytes)
 {
     vector<uint32_t> values = {0x04030201, 0x08070605};
-    Bytes bytes = BinarySerializer<vector<uint32_t>>::serialize(values);
+    Bytes bytes = BinarySerializer<vector<uint32_t>>::serializeNoCopy(values);
     ASSERT_EQ(bytes.size(), 8);
 
     const float* ptr = reinterpret_cast<const float*>(bytes.data());

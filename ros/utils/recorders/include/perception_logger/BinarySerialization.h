@@ -100,7 +100,7 @@ public:
 template<class T>
 struct BinarySerializer
 {
-    static Bytes serialize(const T& v)
+    static Bytes serializeNoCopy(const T& v)
     {
         static_assert(
             std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
@@ -117,14 +117,14 @@ struct BinarySerializer
         return bytes;
     }
 
-    static Bytes serialize(T&&) = delete;  // Disallow temporaries
+    static Bytes serializeNoCopy(T&&) = delete;  // Disallow temporaries
 };
 
 
 template<class T>
 struct BinarySerializer<std::vector<T>>
 {
-    static Bytes serialize(const std::vector<T>& v)
+    static Bytes serializeNoCopy(const std::vector<T>& v)
     {
         static_assert(
             std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
@@ -145,7 +145,7 @@ struct BinarySerializer<std::vector<T>>
         return bytes;
     }
 
-    static Bytes serialize(std::vector<T>&&) = delete;  // Disallow temporaries
+    static Bytes serializeNoCopy(std::vector<T>&&) = delete;  // Disallow temporaries
 };
 
 #endif
