@@ -44,4 +44,17 @@ static bool operator==(const BoundingBox& l, const BoundingBox& r)
     return l.center == r.center && l.width == r.width && l.height == r.height;
 }
 
+static bool operator==(const Direction& l, const Direction& r)
+{
+    EXPECT_TRUE(represents_integer(l.x));
+    EXPECT_TRUE(represents_integer(l.y));
+    EXPECT_TRUE(represents_integer(l.z));
+
+    EXPECT_TRUE(represents_integer(r.x));
+    EXPECT_TRUE(represents_integer(r.y));
+    EXPECT_TRUE(represents_integer(r.z));
+
+    return l.x == r.x && l.y == r.y && l.z == r.z;
+}
+
 #endif

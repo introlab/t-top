@@ -1,7 +1,9 @@
 #ifndef RECORDERS_PERCEPTION_LOGGER_BINARY_SERIALIZATION_H
 #define RECORDERS_PERCEPTION_LOGGER_BINARY_SERIALIZATION_H
 
+#include <array>
 #include <cstdint>
+#include <cstring>
 #include <algorithm>
 #include <type_traits>
 #include <vector>
@@ -15,83 +17,57 @@ inline constexpr bool isLittleEndian()
 #endif
 }
 
+
 template<class T>
-struct always_false : std::false_type
+struct is_value_type : std::false_type
 {
 };
 
 template<class T>
-inline constexpr bool always_false_v = always_false<T>::value;
+inline constexpr bool is_value_type_v = is_value_type<T>::value;
+
 
 template<class T>
-T switchEndianness(const T& v)
+std::array<std::byte, sizeof(T)> toLittleEndianBytes(const T& v)
 {
-    static_assert(always_false_v<T>, "Not supported type");
+    static_assert(
+        std::is_integral_v<T> || std::is_floating_point_v<T>,
+        "Not supported type: T must be a builtin value type");
+
+    std::array<std::byte, sizeof(T)> bytes;
+    std::memcpy(bytes.data(), &v, sizeof(T));
+
+    if (!isLittleEndian())
+    {
+        for (size_t i = 0; i < sizeof(T) / 2; i++)
+        {
+            std::swap(bytes[i], bytes[sizeof(T) - 1 - i]);
+        }
+    }
+
+    return bytes;
 }
 
-template<>
-inline uint32_t switchEndianness(const uint32_t& v)
+template<class T>
+T fromLittleEndianBytes(const std::array<std::byte, sizeof(T)>& bytes)
 {
-    union
+    static_assert(
+        std::is_integral_v<T> || std::is_floating_point_v<T>,
+        "Not supported type: T must be a builtin value type");
+
+    T v;
+    std::memcpy(&v, bytes.data(), sizeof(T));
+
+    if (!isLittleEndian())
     {
-        uint32_t intValue;
-        uint8_t bytes[4];
-    } unionValue = {v};
+        std::byte* ptr = reinterpret_cast<std::byte*>(&v);
+        for (size_t i = 0; i < sizeof(T) / 2; i++)
+        {
+            std::swap(ptr[i], ptr[sizeof(T) - 1 - i]);
+        }
+    }
 
-    std::swap(unionValue.bytes[0], unionValue.bytes[3]);
-    std::swap(unionValue.bytes[1], unionValue.bytes[2]);
-
-    return unionValue.intValue;
-}
-
-template<>
-inline float switchEndianness(const float& v)
-{
-    union
-    {
-        float floatValue;
-        uint8_t bytes[4];
-    } unionValue = {v};
-
-    std::swap(unionValue.bytes[0], unionValue.bytes[3]);
-    std::swap(unionValue.bytes[1], unionValue.bytes[2]);
-
-    return unionValue.floatValue;
-}
-
-
-template<>
-inline uint64_t switchEndianness(const uint64_t& v)
-{
-    union
-    {
-        uint64_t intValue;
-        uint8_t bytes[8];
-    } unionValue = {v};
-
-    std::swap(unionValue.bytes[0], unionValue.bytes[7]);
-    std::swap(unionValue.bytes[1], unionValue.bytes[6]);
-    std::swap(unionValue.bytes[2], unionValue.bytes[5]);
-    std::swap(unionValue.bytes[3], unionValue.bytes[4]);
-
-    return unionValue.intValue;
-}
-
-template<>
-inline double switchEndianness(const double& v)
-{
-    union
-    {
-        double doubleValue;
-        uint8_t bytes[8];
-    } unionValue = {v};
-
-    std::swap(unionValue.bytes[0], unionValue.bytes[7]);
-    std::swap(unionValue.bytes[1], unionValue.bytes[6]);
-    std::swap(unionValue.bytes[2], unionValue.bytes[5]);
-    std::swap(unionValue.bytes[3], unionValue.bytes[4]);
-
-    return unionValue.doubleValue;
+    return v;
 }
 
 
@@ -122,15 +98,6 @@ public:
 
 
 template<class T>
-struct is_value_type : std::false_type
-{
-};
-
-template<class T>
-inline constexpr bool is_value_type_v = is_value_type<T>::value;
-
-
-template<class T>
 struct BinarySerializer
 {
     static Bytes serialize(const T& v)
@@ -145,8 +112,8 @@ struct BinarySerializer
         }
 
         Bytes bytes(sizeof(T));
-        T* ptr = reinterpret_cast<T*>(bytes.m_data);
-        *ptr = switchEndianness(v);
+        auto littleEndianBytes = toLittleEndianBytes(v);
+        memcpy(bytes.m_data, littleEndianBytes.data(), sizeof(T));
         return bytes;
     }
 
@@ -172,7 +139,8 @@ struct BinarySerializer<std::vector<T>>
         T* ptr = reinterpret_cast<T*>(bytes.m_data);
         for (size_t i = 0; i < v.size(); i++)
         {
-            ptr[i] = switchEndianness(v[i]);
+            auto littleEndianBytes = toLittleEndianBytes(v[i]);
+            memcpy(ptr + i, littleEndianBytes.data(), sizeof(T));
         }
         return bytes;
     }

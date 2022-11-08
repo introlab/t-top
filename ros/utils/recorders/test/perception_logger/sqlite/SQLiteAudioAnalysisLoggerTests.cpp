@@ -1,7 +1,6 @@
 #include <perception_logger/sqlite/SQLiteAudioAnalysisLogger.h>
 
 #include "SQLitePerceptionLoggerTests.h"
-#include "../BinarySerializationTests.h"
 
 #include <gtest/gtest.h>
 
@@ -44,5 +43,5 @@ TEST(SQLiteAudioAnalysisLoggerTests, log_shouldInsertAndReturnId)
 
     readAudioAnalysis(database, id1, classes, voiceDescriptor);
     EXPECT_EQ(classes, "voice");
-    EXPECT_EQ(voiceDescriptor, vector<float>({nativeToLittleEndian(7.f), nativeToLittleEndian(8.f)}));
+    EXPECT_EQ(voiceDescriptor, vector<float>({7.f, 8.f}));
 }

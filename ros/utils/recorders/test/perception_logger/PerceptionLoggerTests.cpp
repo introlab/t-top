@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include "comparisons.h"
+
 using namespace std;
 
 TEST(PerceptionLoggerTests, position_aggregateinit_shouldSetAttributes)
@@ -12,13 +14,22 @@ TEST(PerceptionLoggerTests, position_aggregateinit_shouldSetAttributes)
     EXPECT_EQ(p.z, 3.0);
 }
 
-TEST(PerceptionLoggerTests, position_switchEndianness)
+TEST(PerceptionLoggerTests, position_toLittleEndianBytes_shouldSwitchEndiannessIfNeeded)
 {
-    Position p = switchEndianness(Position{1.0, 2.0, 3.0});
-    EXPECT_DOUBLE_EQ(p.x, 3.0386519416174186e-319);
-    EXPECT_DOUBLE_EQ(p.y, 3.1620201333839779e-322);
-    EXPECT_DOUBLE_EQ(p.z, 1.0434666440167127e-320);
+    constexpr array<byte, 24> BYTES = {byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0xF0}, byte{0x3F},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0},    byte{0x40},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0x08}, byte{0x40}};
+    EXPECT_EQ(toLittleEndianBytes(Position{1.0, 2.0, 3.0}), BYTES);
 }
+
+TEST(PerceptionLoggerTests, position_fromLittleEndianBytes_shouldSwitchEndiannessIfNeeded)
+{
+    constexpr array<byte, 24> BYTES = {byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0xF0}, byte{0x3F},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0},    byte{0x40},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0x08}, byte{0x40}};
+    EXPECT_EQ(fromLittleEndianBytes<Position>(BYTES), (Position{1.0, 2.0, 3.0}));
+}
+
 
 TEST(PerceptionLoggerTests, imagePosition_aggregateinit_shouldSetAttributes)
 {
@@ -27,11 +38,48 @@ TEST(PerceptionLoggerTests, imagePosition_aggregateinit_shouldSetAttributes)
     EXPECT_EQ(p.y, 2.0);
 }
 
-TEST(PerceptionLoggerTests, imagePosition_switchEndianness)
+TEST(PerceptionLoggerTests, imagePosition_toLittleEndianBytes_shouldSwitchEndiannessIfNeeded)
 {
-    ImagePosition p = switchEndianness(ImagePosition{1.0, 2.0});
-    EXPECT_DOUBLE_EQ(p.x, 3.0386519416174186e-319);
-    EXPECT_DOUBLE_EQ(p.y, 3.1620201333839779e-322);
+    constexpr array<byte, 16> BYTES = {
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0xF0},
+        byte{0x3F},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0x40}};
+    EXPECT_EQ(toLittleEndianBytes(ImagePosition{1.0, 2.0}), BYTES);
+}
+
+TEST(PerceptionLoggerTests, imagePosition_fromLittleEndianBytes_shouldSwitchEndiannessIfNeeded)
+{
+    constexpr array<byte, 16> BYTES = {
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0xF0},
+        byte{0x3F},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0},
+        byte{0x40}};
+    EXPECT_EQ(fromLittleEndianBytes<ImagePosition>(BYTES), (ImagePosition{1.0, 2.0}));
 }
 
 TEST(PerceptionLoggerTests, boundingBox_aggregateinit_shouldSetAttributes)
@@ -51,12 +99,20 @@ TEST(PerceptionLoggerTests, direction_aggregateinit_shouldSetAttributes)
     EXPECT_EQ(d.z, 3.0);
 }
 
-TEST(PerceptionLoggerTests, direction_switchEndianness)
+TEST(PerceptionLoggerTests, direction_toLittleEndianBytes_shouldSwitchEndiannessIfNeeded)
 {
-    Direction d = switchEndianness(Direction{1.0, 2.0, 3.0});
-    EXPECT_DOUBLE_EQ(d.x, 3.0386519416174186e-319);
-    EXPECT_DOUBLE_EQ(d.y, 3.1620201333839779e-322);
-    EXPECT_DOUBLE_EQ(d.z, 1.0434666440167127e-320);
+    constexpr array<byte, 24> BYTES = {byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0xF0}, byte{0x3F},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0},    byte{0x40},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0x08}, byte{0x40}};
+    EXPECT_EQ(toLittleEndianBytes(Direction{1.0, 2.0, 3.0}), BYTES);
+}
+
+TEST(PerceptionLoggerTests, direction_fromLittleEndianBytes_shouldSwitchEndiannessIfNeeded)
+{
+    constexpr array<byte, 24> BYTES = {byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0xF0}, byte{0x3F},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0},    byte{0x40},
+                                       byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0}, byte{0x08}, byte{0x40}};
+    EXPECT_EQ(fromLittleEndianBytes<Direction>(BYTES), (Direction{1.0, 2.0, 3.0}));
 }
 
 TEST(PerceptionLoggerTests, timestamp_constructor_shouldSetAttributes)

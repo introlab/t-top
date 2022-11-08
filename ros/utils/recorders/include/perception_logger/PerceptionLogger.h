@@ -18,9 +18,33 @@ struct is_value_type<Position> : std::true_type
 };
 
 template<>
-inline Position switchEndianness(const Position& v)
+inline std::array<std::byte, sizeof(Position)> toLittleEndianBytes(const Position& v)
 {
-    return Position{switchEndianness(v.x), switchEndianness(v.y), switchEndianness(v.z)};
+    std::array<std::byte, sizeof(Position)> bytes;
+    std::array<std::byte, sizeof(double)> xBytes = toLittleEndianBytes(v.x);
+    std::array<std::byte, sizeof(double)> yBytes = toLittleEndianBytes(v.y);
+    std::array<std::byte, sizeof(double)> zBytes = toLittleEndianBytes(v.z);
+    std::memcpy(bytes.data(), xBytes.data(), sizeof(double));
+    std::memcpy(bytes.data() + sizeof(double), yBytes.data(), sizeof(double));
+    std::memcpy(bytes.data() + 2 * sizeof(double), zBytes.data(), sizeof(double));
+
+    return bytes;
+}
+
+template<>
+inline Position fromLittleEndianBytes(const std::array<std::byte, sizeof(Position)>& bytes)
+{
+    std::array<std::byte, sizeof(double)> xBytes;
+    std::array<std::byte, sizeof(double)> yBytes;
+    std::array<std::byte, sizeof(double)> zBytes;
+    std::memcpy(xBytes.data(), bytes.data(), sizeof(double));
+    std::memcpy(yBytes.data(), bytes.data() + sizeof(double), sizeof(double));
+    std::memcpy(zBytes.data(), bytes.data() + 2 * sizeof(double), sizeof(double));
+
+    return Position{
+        fromLittleEndianBytes<double>(xBytes),
+        fromLittleEndianBytes<double>(yBytes),
+        fromLittleEndianBytes<double>(zBytes)};
 }
 
 
@@ -36,10 +60,28 @@ struct is_value_type<ImagePosition> : std::true_type
 };
 
 template<>
-inline ImagePosition switchEndianness(const ImagePosition& v)
+inline std::array<std::byte, sizeof(ImagePosition)> toLittleEndianBytes(const ImagePosition& v)
 {
-    return ImagePosition{switchEndianness(v.x), switchEndianness(v.y)};
+    std::array<std::byte, sizeof(ImagePosition)> bytes;
+    std::array<std::byte, sizeof(double)> xBytes = toLittleEndianBytes(v.x);
+    std::array<std::byte, sizeof(double)> yBytes = toLittleEndianBytes(v.y);
+    std::memcpy(bytes.data(), xBytes.data(), sizeof(double));
+    std::memcpy(bytes.data() + sizeof(double), yBytes.data(), sizeof(double));
+
+    return bytes;
 }
+
+template<>
+inline ImagePosition fromLittleEndianBytes(const std::array<std::byte, sizeof(ImagePosition)>& bytes)
+{
+    std::array<std::byte, sizeof(double)> xBytes;
+    std::array<std::byte, sizeof(double)> yBytes;
+    std::memcpy(xBytes.data(), bytes.data(), sizeof(double));
+    std::memcpy(yBytes.data(), bytes.data() + sizeof(double), sizeof(double));
+
+    return ImagePosition{fromLittleEndianBytes<double>(xBytes), fromLittleEndianBytes<double>(yBytes)};
+}
+
 
 struct __attribute__((packed)) BoundingBox
 {
@@ -62,9 +104,33 @@ struct is_value_type<Direction> : std::true_type
 };
 
 template<>
-inline Direction switchEndianness(const Direction& v)
+inline std::array<std::byte, sizeof(Direction)> toLittleEndianBytes(const Direction& v)
 {
-    return Direction{switchEndianness(v.x), switchEndianness(v.y), switchEndianness(v.z)};
+    std::array<std::byte, sizeof(Position)> bytes;
+    std::array<std::byte, sizeof(double)> xBytes = toLittleEndianBytes(v.x);
+    std::array<std::byte, sizeof(double)> yBytes = toLittleEndianBytes(v.y);
+    std::array<std::byte, sizeof(double)> zBytes = toLittleEndianBytes(v.z);
+    std::memcpy(bytes.data(), xBytes.data(), sizeof(double));
+    std::memcpy(bytes.data() + sizeof(double), yBytes.data(), sizeof(double));
+    std::memcpy(bytes.data() + 2 * sizeof(double), zBytes.data(), sizeof(double));
+
+    return bytes;
+}
+
+template<>
+inline Direction fromLittleEndianBytes(const std::array<std::byte, sizeof(Direction)>& bytes)
+{
+    std::array<std::byte, sizeof(double)> xBytes;
+    std::array<std::byte, sizeof(double)> yBytes;
+    std::array<std::byte, sizeof(double)> zBytes;
+    std::memcpy(xBytes.data(), bytes.data(), sizeof(double));
+    std::memcpy(yBytes.data(), bytes.data() + sizeof(double), sizeof(double));
+    std::memcpy(zBytes.data(), bytes.data() + 2 * sizeof(double), sizeof(double));
+
+    return Direction{
+        fromLittleEndianBytes<double>(xBytes),
+        fromLittleEndianBytes<double>(yBytes),
+        fromLittleEndianBytes<double>(zBytes)};
 }
 
 struct Timestamp

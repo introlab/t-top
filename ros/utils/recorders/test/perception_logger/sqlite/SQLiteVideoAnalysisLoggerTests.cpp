@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 
 #include "comparisons.h"
-#include "../BinarySerializationTests.h"
 
 using namespace std;
 
@@ -114,11 +113,9 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         faceDescriptor);
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(boundingBox, (BoundingBox{{17, 18}, 19, 20}));
-    ASSERT_EQ(personPoseImage.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPoseImage[0]), (ImagePosition{21, 22}));
-    ASSERT_EQ(personPose.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPose[0]), (Position{23, 24, 25}));
-    EXPECT_EQ(personPoseConfidence, vector<float>({nativeToLittleEndian(0.5f)}));
+    ASSERT_EQ(personPoseImage, vector<ImagePosition>({ImagePosition{21, 22}}));
+    ASSERT_EQ(personPose, vector<Position>({Position{23, 24, 25}}));
+    EXPECT_EQ(personPoseConfidence, vector<float>({0.5f}));
     EXPECT_EQ(faceDescriptor, vector<float>({}));
 
     readVideoAnalysis(
@@ -132,10 +129,8 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         faceDescriptor);
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(boundingBox, (BoundingBox{{32, 33}, 34, 35}));
-    ASSERT_EQ(personPoseImage.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPoseImage[0]), (ImagePosition{36, 37}));
-    ASSERT_EQ(personPose.size(), 1);
-    EXPECT_EQ(littleEndianToNative(personPose[0]), (Position{38, 39, 40}));
-    EXPECT_EQ(personPoseConfidence, vector<float>({nativeToLittleEndian(0.75f)}));
-    EXPECT_EQ(faceDescriptor, vector<float>({nativeToLittleEndian(41.f), nativeToLittleEndian(42.f)}));
+    ASSERT_EQ(personPoseImage, vector<ImagePosition>({ImagePosition{36, 37}}));
+    ASSERT_EQ(personPose, vector<Position>({Position{38, 39, 40}}));
+    EXPECT_EQ(personPoseConfidence, vector<float>({0.75f}));
+    EXPECT_EQ(faceDescriptor, vector<float>({41.f, 42.f}));
 }
