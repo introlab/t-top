@@ -1,10 +1,11 @@
 # Serial MCU Communucation Protocol
 
+
 ## General Format
 All fields are big endians.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="9">Bytes</th>
@@ -35,6 +36,7 @@ All fields are big endians.
         </tr>
         <tr>
             <td>CRC8</td>
+            <td colspan="8"></td>
         </tr>
     </tbody>
 </table>
@@ -83,7 +85,7 @@ All fields are big endians.
 This message contains the status of the base.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="8">Bytes</th>
@@ -127,6 +129,7 @@ This message contains the status of the base.
         </tr>
         <tr>
             <td>Volume</td>
+            <td colspan="7"></td>
         </tr>
     </tbody>
 </table>
@@ -154,7 +157,7 @@ This message contains the status of the base.
 This message indicates that a button is pressed.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th>Bytes</th>
@@ -188,7 +191,7 @@ This message indicates that a button is pressed.
 This message sets the volume of the audio amplifier.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th>Bytes</th>
@@ -216,7 +219,7 @@ This message sets the volume of the audio amplifier.
 This message sets the volume of the audio amplifier.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="8">Bytes</th>
@@ -263,7 +266,7 @@ This message sets the volume of the audio amplifier.
 This message contains the status of all motors.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="8">Bytes</th>
@@ -327,6 +330,7 @@ This message contains the status of all motors.
             <td colspan="2">Head Pose Orientation Y</td>
             <td colspan="4">Head Pose Orientation Z</td>
             <td>Is Head Pose Reachable</td>
+            <td></td>
         </tr>
     </tbody>
 </table>
@@ -358,11 +362,11 @@ This message contains the status of all motors.
 | Is Head Pose Reachable  | bool  | This field indicates if the last desired head pose is reachable.                     |
 
 
-## IMU Data
+## IMU Data Payload
 This message contains the status of all motors.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="8">Bytes</th>
@@ -411,7 +415,7 @@ This message contains the status of all motors.
 This message sets the torso orientation.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="8">Bytes</th>
@@ -442,7 +446,7 @@ This message sets the torso orientation.
 This message sets the head pose.
 
 ### Table View
-<table style="text-align: center">
+<table>
     <thead>
         <tr>
             <th colspan="8">Bytes</th>
@@ -475,6 +479,7 @@ This message sets the head pose.
         </tr>
         <tr>
             <td colspan="4">Head Pose Orientation Z</td>
+            <td colspan="4"></td>
         </tr>
     </tbody>
 </table>
