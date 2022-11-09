@@ -1,9 +1,9 @@
 # Serial MCU Communucation Protocol
+This document presents the serial communication protocol between the MCUs and the computer.
 
 ## General Format
-All fields use little-endian ordering.
+It is a binary protocol and all fields use little-endian ordering.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -66,17 +66,19 @@ All fields use little-endian ordering.
 | 2         | Computer          |
 
 ### Message Types
-| Message Type | Name                                                    | Source            | Destination       | Description                                          |
-| ------------ | ------------------------------------------------------- | ----------------- | ----------------- | ---------------------------------------------------- |
-| 0            | [Acknowledgment](#acknowledgment-payload)               | Any               | Any               | This message indicates that a message is received.   |
-| 1            | [Base Status](#base-Status-payload)                     | PSU Control       | Computer          | This message contains the status of the base.        |
-| 2            | [Button Pressed](#button-pressed-payload)               | PSU Control       | Computer          | This message indicates that a button is pressed.     |
-| 3            | [Set Volume](#set-volume-payload)                       | Computer          | PSU Control       | This message sets the volume of the audio amplifier. |
-| 4            | [Set LED Colors](#set-led-colors-payload)               | Computer          | PSU Control       | This message sets the LED colors of the base.        |
-| 5            | [Motor Status](#motor-status-payload)                   | Dynamixel Control | Computer          | This message contains the status of all motors.      |
-| 6            | [IMU Data](#imu-data-payload)                           | Dynamixel Control | Computer          | This message contains the IMU data.                  |
-| 7            | [Set Torso Orientation](#set-torso-orientation-payload) | Computer          | Dynamixel Control | This message sets the torso orientation.             |
-| 8            | [Set Head Pose](#set-head-pose-payload)                 | Computer          | Dynamixel Control | This message sets the head pose.                     |
+| Message Type | Name                                                    | Source            | Destination       | Description                                                                           |
+| ------------ | ------------------------------------------------------- | ----------------- | ----------------- | ------------------------------------------------------------------------------------- |
+| 0            | [Acknowledgment](#acknowledgment-payload)               | Any               | Any               | This message indicates that a message is received.                                    |
+| 1            | [Base Status](#base-Status-payload)                     | PSU Control       | Computer          | This message contains the status of the base.                                         |
+| 2            | [Button Pressed](#button-pressed-payload)               | PSU Control       | Computer          | This message indicates that a button is pressed.                                      |
+| 3            | [Set Volume](#set-volume-payload)                       | Computer          | PSU Control       | This message sets the volume of the audio amplifier.                                  |
+| 4            | [Set LED Colors](#set-led-colors-payload)               | Computer          | PSU Control       | This message sets the LED colors of the base.                                         |
+| 5            | [Motor Status](#motor-status-payload)                   | Dynamixel Control | Computer          | This message contains the status of all motors.                                       |
+| 6            | [IMU Data](#imu-data-payload)                           | Dynamixel Control | Computer          | This message contains the IMU data.                                                   |
+| 7            | [Set Torso Orientation](#set-torso-orientation-payload) | Computer          | Dynamixel Control | This message sets the torso orientation.                                              |
+| 8            | [Set Head Pose](#set-head-pose-payload)                 | Computer          | Dynamixel Control | This message sets the head pose.                                                      |
+| 9            | Shutdown                                                | PSU Control       | Computer          | This message indicates that the computer must shut down. This message has no payload. |
+| 10           | Ready for Shutdown                                      | Computer          | PSU Control       | This message is sent just before the computer shut down. This message has no payload. |
 
 ### Behaviors
 - All receivers check the preamble to detect the beginning of a message. So, a byte can be missed and the receivers are not out of synchronization with the senders. Only the message containing the missing byte is dropped.
@@ -91,7 +93,6 @@ All fields use little-endian ordering.
 ## Acknowledgment Payload
 This message indicates that a message is received.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -120,7 +121,6 @@ This message indicates that a message is received.
 ## Base Status Payload
 This message contains the status of the base.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -165,7 +165,7 @@ This message contains the status of the base.
         </tr>
         <tr>
             <td>Volume</td>
-            <td>Volume Maximum</td>
+            <td>Maximum Volume</td>
             <td colspan="6"></td>
         </tr>
     </tbody>
@@ -174,11 +174,11 @@ This message contains the status of the base.
 ### Field Description
 | Field Name             | Type   | Description                                                                                                            |
 | ---------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Is PSU Connected       | bool   | This field indicates if the PSU is connected to the robot.                                                             |
-| Has Charger Error      | bool   | This field indicates if there is a charger error.                                                                      |
-| Is Battery Charging    | bool   | This field indicates the battery is charging.                                                                          |
-| Has Battery Error      | bool   | This field indicates if there is a battery error.                                                                      |
-| State of Charge        | float  | This field contains the actual battery state of charge (0 to 100).                                                     |
+| Is PSU Connected       | bool   | This field indicates whether the PSU is connected to the robot.                                                        |
+| Has Charger Error      | bool   | This field indicates whether there is a charger error.                                                                 |
+| Is Battery Charging    | bool   | This field indicates whether the battery is charging.                                                                  |
+| Has Battery Error      | bool   | This field indicates whether there is a battery error.                                                                 |
+| State of Charge        | float  | This field contains the actual battery state of charge in percent (0 to 100).                                          |
 | Current                | float  | This field contains the actual current in A.                                                                           |
 | Voltage                | float  | This field contains the actual voltage in V.                                                                           |
 | Onboard Temperature    | float  | This field contains the actual temperature in °C on the PSU Control PCB.                                               |
@@ -188,13 +188,12 @@ This message contains the status of the base.
 | Left Light Sensor      | float  | This field contains the left light level (0 to 1).                                                                     |
 | Right Light Sensor     | float  | This field contains the right light level (0 to 1).                                                                    |
 | Volume                 | uint8  | This field contains the actual volume (0 to 63).                                                                       |
-| Volume Maximum         | uint8  | This field contains the actual volume maximum (0 to 63). The maximum depends on whether the power supply is connected. |
+| Maximum Volume         | uint8  | This field contains the actual volume maximum (0 to 63). The maximum depends on whether the power supply is connected. |
 
 
 ## Button Pressed Payload
 This message indicates that a button is pressed.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -214,9 +213,9 @@ This message indicates that a button is pressed.
 </table>
 
 ### Field Description
-| Field Name | Type  | Description                                        |
-| ---------- | ----- | -------------------------------------------------- |
-| Button Id  | uint8 | This field contains the button id that is pressed. |
+| Field Name | Type  | Description                                                    |
+| ---------- | ----- | -------------------------------------------------------------- |
+| Button Id  | uint8 | This field indicates which button was pressed (start or stop). |
 
 ### Device Id Descriptions
 | Button Id | Name  |
@@ -228,7 +227,6 @@ This message indicates that a button is pressed.
 ## Set Volume Payload
 This message sets the volume of the audio amplifier.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -256,7 +254,6 @@ This message sets the volume of the audio amplifier.
 ## Set LED Colors Payload
 This message sets the volume of the audio amplifier.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -303,7 +300,6 @@ This message sets the volume of the audio amplifier.
 ## Motor Status Payload
 This message contains the status of all motors.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -403,7 +399,6 @@ This message contains the status of all motors.
 ## IMU Data Payload
 This message contains the status of all motors.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -452,7 +447,6 @@ This message contains the status of all motors.
 ## Set Torso Orientation Payload
 This message sets the torso orientation.
 
-### Table View
 <table>
     <thead>
         <tr>
@@ -483,7 +477,6 @@ This message sets the torso orientation.
 ## Set Head Pose Payload
 This message sets the head pose.
 
-### Table View
 <table>
     <thead>
         <tr>
