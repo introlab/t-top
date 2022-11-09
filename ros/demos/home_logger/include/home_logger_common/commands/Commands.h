@@ -3,8 +3,7 @@
 
 #include <home_logger_common/DateTime.h>
 
-#include <tl/optional.hpp>
-
+#include <optional>
 #include <string>
 #include <typeindex>
 #include <cstdint>
@@ -128,20 +127,20 @@ enum class WeatherTime
 
 class WeatherCommand : public Command
 {
-    tl::optional<WeatherTime> m_time;
+    std::optional<WeatherTime> m_time;
 
 public:
     explicit WeatherCommand(std::string transcript);
-    WeatherCommand(std::string transcript, tl::optional<WeatherTime> time);
+    WeatherCommand(std::string transcript, std::optional<WeatherTime> time);
     ~WeatherCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(WeatherCommand)
 
     bool isComplete() const override;
-    tl::optional<WeatherTime> time() const;
+    std::optional<WeatherTime> time() const;
 };
 
-inline tl::optional<WeatherTime> WeatherCommand::time() const
+inline std::optional<WeatherTime> WeatherCommand::time() const
 {
     return m_time;
 }
@@ -167,20 +166,20 @@ public:
 
 class SetVolumeCommand : public Command
 {
-    tl::optional<float> m_volumePercent;
+    std::optional<float> m_volumePercent;
 
 public:
     explicit SetVolumeCommand(std::string transcript);
-    SetVolumeCommand(std::string transcript, tl::optional<float> volumePercent);
+    SetVolumeCommand(std::string transcript, std::optional<float> volumePercent);
     ~SetVolumeCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(SetVolumeCommand)
 
     bool isComplete() const override;
-    tl::optional<float> volumePercent() const;
+    std::optional<float> volumePercent() const;
 };
 
-inline tl::optional<float> SetVolumeCommand::volumePercent() const
+inline std::optional<float> SetVolumeCommand::volumePercent() const
 {
     return m_volumePercent;
 }
@@ -242,49 +241,49 @@ enum class AlarmType
 
 class AddAlarmCommand : public Command
 {
-    tl::optional<AlarmType> m_alarmType;
+    std::optional<AlarmType> m_alarmType;
 
-    tl::optional<int> m_weekDay;
-    tl::optional<Date> m_date;
-    tl::optional<Time> m_time;
+    std::optional<int> m_weekDay;
+    std::optional<Date> m_date;
+    std::optional<Time> m_time;
 
 public:
     explicit AddAlarmCommand(std::string transcript);
     AddAlarmCommand(
         std::string transcript,
-        tl::optional<AlarmType> alarmType,
-        tl::optional<int> weekDay,
-        tl::optional<Date> date,
-        tl::optional<Time> time);
+        std::optional<AlarmType> alarmType,
+        std::optional<int> weekDay,
+        std::optional<Date> date,
+        std::optional<Time> time);
     ~AddAlarmCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(AddAlarmCommand)
 
     bool isComplete() const override;
 
-    tl::optional<AlarmType> alarmType() const;
+    std::optional<AlarmType> alarmType() const;
 
-    tl::optional<int> weekDay() const;
-    tl::optional<Date> date() const;
-    tl::optional<Time> time() const;
+    std::optional<int> weekDay() const;
+    std::optional<Date> date() const;
+    std::optional<Time> time() const;
 };
 
-inline tl::optional<AlarmType> AddAlarmCommand::alarmType() const
+inline std::optional<AlarmType> AddAlarmCommand::alarmType() const
 {
     return m_alarmType;
 }
 
-inline tl::optional<int> AddAlarmCommand::weekDay() const
+inline std::optional<int> AddAlarmCommand::weekDay() const
 {
     return m_weekDay;
 }
 
-inline tl::optional<Date> AddAlarmCommand::date() const
+inline std::optional<Date> AddAlarmCommand::date() const
 {
     return m_date;
 }
 
-inline tl::optional<Time> AddAlarmCommand::time() const
+inline std::optional<Time> AddAlarmCommand::time() const
 {
     return m_time;
 }
@@ -300,20 +299,20 @@ public:
 
 class RemoveAlarmCommand : public Command
 {
-    tl::optional<int64_t> m_id;
+    std::optional<int64_t> m_id;
 
 public:
     explicit RemoveAlarmCommand(std::string transcript);
-    RemoveAlarmCommand(std::string transcript, tl::optional<int64_t> id);
+    RemoveAlarmCommand(std::string transcript, std::optional<int64_t> id);
     ~RemoveAlarmCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(RemoveAlarmCommand)
 
     bool isComplete() const override;
-    tl::optional<int64_t> id() const;
+    std::optional<int64_t> id() const;
 };
 
-inline tl::optional<int64_t> RemoveAlarmCommand::id() const
+inline std::optional<int64_t> RemoveAlarmCommand::id() const
 {
     return m_id;
 }
@@ -341,46 +340,46 @@ inline const std::vector<float>& FaceDescriptor::data() const
 
 class AddReminderCommand : public Command
 {
-    tl::optional<std::string> m_text;
-    tl::optional<Date> m_date;
-    tl::optional<Time> m_time;
-    tl::optional<FaceDescriptor> m_faceDescriptor;
+    std::optional<std::string> m_text;
+    std::optional<Date> m_date;
+    std::optional<Time> m_time;
+    std::optional<FaceDescriptor> m_faceDescriptor;
 
 public:
     explicit AddReminderCommand(std::string transcript);
     AddReminderCommand(
         std::string transcript,
-        tl::optional<std::string> text,
-        tl::optional<Date> date,
-        tl::optional<Time> time,
-        tl::optional<FaceDescriptor> faceDescriptor);
+        std::optional<std::string> text,
+        std::optional<Date> date,
+        std::optional<Time> time,
+        std::optional<FaceDescriptor> faceDescriptor);
     ~AddReminderCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(AddReminderCommand)
 
     bool isComplete() const override;
-    tl::optional<std::string> text() const;
-    tl::optional<Date> date() const;
-    tl::optional<Time> time() const;
-    tl::optional<FaceDescriptor> faceDescriptor() const;
+    std::optional<std::string> text() const;
+    std::optional<Date> date() const;
+    std::optional<Time> time() const;
+    std::optional<FaceDescriptor> faceDescriptor() const;
 };
 
-inline tl::optional<std::string> AddReminderCommand::text() const
+inline std::optional<std::string> AddReminderCommand::text() const
 {
     return m_text;
 }
 
-inline tl::optional<Date> AddReminderCommand::date() const
+inline std::optional<Date> AddReminderCommand::date() const
 {
     return m_date;
 }
 
-inline tl::optional<Time> AddReminderCommand::time() const
+inline std::optional<Time> AddReminderCommand::time() const
 {
     return m_time;
 }
 
-inline tl::optional<FaceDescriptor> AddReminderCommand::faceDescriptor() const
+inline std::optional<FaceDescriptor> AddReminderCommand::faceDescriptor() const
 {
     return m_faceDescriptor;
 }
@@ -397,20 +396,20 @@ public:
 
 class RemoveReminderCommand : public Command
 {
-    tl::optional<int64_t> m_id;
+    std::optional<int64_t> m_id;
 
 public:
     explicit RemoveReminderCommand(std::string transcript);
-    RemoveReminderCommand(std::string transcript, tl::optional<int64_t> id);
+    RemoveReminderCommand(std::string transcript, std::optional<int64_t> id);
     ~RemoveReminderCommand() override;
 
     DECLARE_COMMAND_PUBLIC_METHODS(RemoveReminderCommand)
 
     bool isComplete() const override;
-    tl::optional<int64_t> id() const;
+    std::optional<int64_t> id() const;
 };
 
-inline tl::optional<int64_t> RemoveReminderCommand::id() const
+inline std::optional<int64_t> RemoveReminderCommand::id() const
 {
     return m_id;
 }

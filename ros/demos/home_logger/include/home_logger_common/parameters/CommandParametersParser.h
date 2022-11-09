@@ -14,9 +14,9 @@ public:
     virtual CommandType commandType() const = 0;
     virtual std::shared_ptr<Command> parse(
         const std::shared_ptr<Command>& command,
-        const tl::optional<std::string>& parameterName,
-        const tl::optional<std::string>& parameterResponse,
-        const tl::optional<FaceDescriptor>& faceDescriptor) = 0;
+        const std::optional<std::string>& parameterName,
+        const std::optional<std::string>& parameterResponse,
+        const std::optional<FaceDescriptor>& faceDescriptor) = 0;
 };
 
 
@@ -30,16 +30,16 @@ public:
     CommandType commandType() const final;
     std::shared_ptr<Command> parse(
         const std::shared_ptr<Command>& command,
-        const tl::optional<std::string>& parameterName,
-        const tl::optional<std::string>& parameterResponse,
-        const tl::optional<FaceDescriptor>& faceDescriptor) final;
+        const std::optional<std::string>& parameterName,
+        const std::optional<std::string>& parameterResponse,
+        const std::optional<FaceDescriptor>& faceDescriptor) final;
 
 protected:
     virtual std::shared_ptr<T> parseSpecific(
         const std::shared_ptr<T>& command,
-        const tl::optional<std::string>& parameterName,
-        const tl::optional<std::string>& parameterResponse,
-        const tl::optional<FaceDescriptor>& faceDescriptor) = 0;
+        const std::optional<std::string>& parameterName,
+        const std::optional<std::string>& parameterResponse,
+        const std::optional<FaceDescriptor>& faceDescriptor) = 0;
 };
 
 template<class T>
@@ -61,9 +61,9 @@ CommandType SpecificCommandParametersParser<T>::commandType() const
 template<class T>
 std::shared_ptr<Command> SpecificCommandParametersParser<T>::parse(
     const std::shared_ptr<Command>& command,
-    const tl::optional<std::string>& parameterName,
-    const tl::optional<std::string>& parameterResponse,
-    const tl::optional<FaceDescriptor>& faceDescriptor)
+    const std::optional<std::string>& parameterName,
+    const std::optional<std::string>& parameterResponse,
+    const std::optional<FaceDescriptor>& faceDescriptor)
 {
     if ((parameterName.has_value() && !parameterResponse.has_value()) ||
         (!parameterName.has_value() && parameterResponse.has_value()))
@@ -84,9 +84,9 @@ std::shared_ptr<Command> SpecificCommandParametersParser<T>::parse(
 
 bool containsAny(const std::string& text, const std::vector<std::string>& keywords);
 
-tl::optional<int> findInt(const std::string& text);
-tl::optional<Time> findTime(const std::string& text);
-tl::optional<Date> findDate(const std::string& text, int defaultYear, int defaultMonth);
-tl::optional<int> findWeekDay(const std::string& text);
+std::optional<int> findInt(const std::string& text);
+std::optional<Time> findTime(const std::string& text);
+std::optional<Date> findDate(const std::string& text, int defaultYear, int defaultMonth);
+std::optional<int> findWeekDay(const std::string& text);
 
 #endif

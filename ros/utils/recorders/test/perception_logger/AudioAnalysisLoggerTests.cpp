@@ -12,7 +12,7 @@ TEST(AudioAnalysisLoggerTests, audioAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis0.direction.y, 3.0);
     EXPECT_EQ(analysis0.direction.z, 4.0);
     EXPECT_EQ(analysis0.classes, "a");
-    EXPECT_EQ(analysis0.voiceDescriptor, tl::nullopt);
+    EXPECT_EQ(analysis0.voiceDescriptor, std::nullopt);
 
     AudioAnalysis analysis1(Timestamp(5), Direction{6.0, 7.0, 8.0}, "b", {9.f});
     EXPECT_EQ(analysis1.timestamp.unixEpochMs, 5.0);

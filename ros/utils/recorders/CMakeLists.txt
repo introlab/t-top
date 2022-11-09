@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.14.2)
 project(recorders)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -112,7 +113,6 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/SQLiteCpp/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/optional/include
     include
   LIBRARIES SQLiteCpp perception_logger
   # CATKIN_DEPENDS audio_utils rospy sensor_msgs
@@ -120,10 +120,6 @@ catkin_package(
 )
 
 add_subdirectory(3rd_party/SQLiteCpp)
-
-# Setting the policy with cmake_policy doesn't work, but this way it does
-set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
-add_subdirectory(3rd_party/optional)
 
 ###########
 ## Build ##
@@ -134,7 +130,6 @@ add_subdirectory(3rd_party/optional)
 include_directories(
   include
   3rd_party/SQLiteCpp/include
-  3rd_party/optional/include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -142,6 +137,7 @@ include_directories(
 add_library(perception_logger
   src/perception_logger/AudioAnalysisLogger.cpp
   src/perception_logger/VideoAnalysisLogger.cpp
+  src/perception_logger/BinarySerialization.cpp
   src/perception_logger/SpeechLogger.cpp
   src/perception_logger/sqlite/SQLiteMigration.cpp
   src/perception_logger/sqlite/SQLitePerceptionLogger.cpp
@@ -231,6 +227,7 @@ catkin_install_python(PROGRAMS
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(perception_logger-test
   test/perception_logger/main.cpp
+  test/perception_logger/BinarySerializationTests.cpp
   test/perception_logger/PerceptionLoggerTests.cpp
   test/perception_logger/AudioAnalysisLoggerTests.cpp
   test/perception_logger/VideoAnalysisLoggerTests.cpp

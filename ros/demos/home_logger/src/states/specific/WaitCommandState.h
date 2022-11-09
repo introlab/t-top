@@ -11,8 +11,8 @@ class WaitCommandState : public SoundFaceFollowingState
     bool m_transcriptReceived;
     std::vector<std::unique_ptr<Command>> m_commands;
 
-    tl::optional<uint64_t> m_faceAnimationDesireId;
-    tl::optional<uint64_t> m_speechToTextDesireId;
+    std::optional<uint64_t> m_faceAnimationDesireId;
+    std::optional<uint64_t> m_speechToTextDesireId;
 
 public:
     WaitCommandState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);

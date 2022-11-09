@@ -23,7 +23,7 @@ class AlarmState : public SoundFaceFollowingState
     std::string m_alarmPath;
 
     AlarmStateParameter m_parameter;
-    tl::optional<uint64_t> m_playSoundDesireId;
+    std::optional<uint64_t> m_playSoundDesireId;
 
 public:
     AlarmState(

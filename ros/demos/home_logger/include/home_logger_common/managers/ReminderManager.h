@@ -14,7 +14,7 @@
 
 class Reminder
 {
-    tl::optional<int> m_id;
+    std::optional<int> m_id;
     std::string m_text;
     DateTime m_datetime;
     FaceDescriptor m_faceDescriptor;
@@ -24,13 +24,13 @@ public:
     Reminder(int id, std::string text, DateTime datetime, FaceDescriptor faceDescriptor);
     virtual ~Reminder();
 
-    tl::optional<int> id() const;
+    std::optional<int> id() const;
     const std::string& text() const;
     DateTime datetime() const;
     const FaceDescriptor& faceDescriptor() const;
 };
 
-inline tl::optional<int> Reminder::id() const
+inline std::optional<int> Reminder::id() const
 {
     return m_id;
 }

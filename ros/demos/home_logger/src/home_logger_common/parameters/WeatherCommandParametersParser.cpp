@@ -15,9 +15,9 @@ WeatherCommandParametersParser::~WeatherCommandParametersParser() {}
 
 shared_ptr<WeatherCommand> WeatherCommandParametersParser::parseSpecific(
     const shared_ptr<WeatherCommand>& command,
-    const tl::optional<string>& parameterName,
-    const tl::optional<string>& parameterResponse,
-    const tl::optional<FaceDescriptor>& faceDescriptor)
+    const optional<string>& parameterName,
+    const optional<string>& parameterResponse,
+    const optional<FaceDescriptor>& faceDescriptor)
 {
     if (faceDescriptor.has_value())
     {
@@ -43,7 +43,7 @@ shared_ptr<WeatherCommand>
     WeatherCommandParametersParser::parseTime(const shared_ptr<WeatherCommand>& command, const string& text)
 {
     string lowerCaseText = toLowerString(text);
-    tl::optional<WeatherTime> time;
+    optional<WeatherTime> time;
     if (containsAny(lowerCaseText, m_currentKeywords))
     {
         time = WeatherTime::CURRENT;

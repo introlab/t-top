@@ -3,8 +3,7 @@
 
 #include <perception_logger/PerceptionLogger.h>
 
-#include <tl/optional.hpp>
-
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,11 +16,11 @@ struct VideoAnalysis
     std::string objectClass;
     BoundingBox boundingBox;
 
-    tl::optional<std::vector<ImagePosition>> personPoseImage;
-    tl::optional<std::vector<Position>> personPose;
-    tl::optional<std::vector<float>> personPoseConfidence;
+    std::optional<std::vector<ImagePosition>> personPoseImage;
+    std::optional<std::vector<Position>> personPose;
+    std::optional<std::vector<float>> personPoseConfidence;
 
-    tl::optional<std::vector<float>> faceDescriptor;
+    std::optional<std::vector<float>> faceDescriptor;
 
     VideoAnalysis(
         Timestamp timestamp,

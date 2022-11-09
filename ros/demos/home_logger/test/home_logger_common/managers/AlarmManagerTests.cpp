@@ -9,7 +9,7 @@ using namespace std;
 TEST(AlarmManagerTests, punctualAlarmConstructors_shouldSetAttributes)
 {
     PunctualAlarm testee0(Date(2022, 8, 1), Time(22, 15));
-    EXPECT_EQ(testee0.id(), tl::nullopt);
+    EXPECT_EQ(testee0.id(), nullopt);
     EXPECT_EQ(testee0.date(), Date(2022, 8, 1));
     EXPECT_EQ(testee0.time(), Time(22, 15));
 
@@ -36,7 +36,7 @@ TEST(AlarmManagerTests, toSpeech_punctualEnglish_shouldReturn)
 TEST(AlarmManagerTests, dailyAlarmConstructors_shouldSetAttributes)
 {
     DailyAlarm testee0(Time(20, 15));
-    EXPECT_EQ(testee0.id(), tl::nullopt);
+    EXPECT_EQ(testee0.id(), nullopt);
     EXPECT_EQ(testee0.time(), Time(20, 15));
 
     DailyAlarm testee1(11, Time(19, 15));
@@ -61,7 +61,7 @@ TEST(AlarmManagerTests, toSpeech_dailyEnglish_shouldReturn)
 TEST(AlarmManagerTests, weeklyAlarmConstructors_shouldSetAttributes)
 {
     WeeklyAlarm testee0(2, Time(18, 15));
-    EXPECT_EQ(testee0.id(), tl::nullopt);
+    EXPECT_EQ(testee0.id(), nullopt);
     EXPECT_EQ(testee0.weekDay(), 2);
     EXPECT_EQ(testee0.time(), Time(18, 15));
 
@@ -92,7 +92,7 @@ TEST(AlarmManagerTests, toAlarm_incomplete_shouldThrow)
 
 TEST(AlarmManagerTests, toAlarm_punctual_shouldReturnPuntualAlarm)
 {
-    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::PUNCTUAL, tl::nullopt, Date(2022, 8, 1), Time(6, 30)));
+    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::PUNCTUAL, nullopt, Date(2022, 8, 1), Time(6, 30)));
 
     auto punctualAlarm = dynamic_cast<const PunctualAlarm&>(*alarm);
     EXPECT_EQ(punctualAlarm.date(), Date(2022, 8, 1));
@@ -101,7 +101,7 @@ TEST(AlarmManagerTests, toAlarm_punctual_shouldReturnPuntualAlarm)
 
 TEST(AlarmManagerTests, toAlarm_daily_shouldReturnDailyAlarm)
 {
-    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::DAILY, tl::nullopt, tl::nullopt, Time(7, 30)));
+    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::DAILY, nullopt, nullopt, Time(7, 30)));
 
     auto dailyAlarm = dynamic_cast<const DailyAlarm&>(*alarm);
     EXPECT_EQ(dailyAlarm.time(), Time(7, 30));
@@ -109,7 +109,7 @@ TEST(AlarmManagerTests, toAlarm_daily_shouldReturnDailyAlarm)
 
 TEST(AlarmManagerTests, toAlarm_weekly_shouldReturnWeeklyAlarm)
 {
-    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::WEEKLY, 0, tl::nullopt, Time(8, 30)));
+    auto alarm = toAlarm(AddAlarmCommand("allo", AlarmType::WEEKLY, 0, nullopt, Time(8, 30)));
 
     auto weeklyAlarm = dynamic_cast<const WeeklyAlarm&>(*alarm);
     EXPECT_EQ(weeklyAlarm.weekDay(), 0);

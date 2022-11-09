@@ -24,8 +24,8 @@ class WaitFaceDescriptorCommandParameterState : public SoundFaceFollowingState
     WaitFaceDescriptorCommandParameterStateParameter m_parameter;
     std::vector<FaceDescriptor> m_faceDescriptors;
 
-    tl::optional<uint64_t> m_faceAnimationDesireId;
-    tl::optional<uint64_t> m_videoAnalyzer3dDesireId;
+    std::optional<uint64_t> m_faceAnimationDesireId;
+    std::optional<uint64_t> m_videoAnalyzer3dDesireId;
 
 public:
     WaitFaceDescriptorCommandParameterState(
@@ -45,7 +45,7 @@ protected:
     void onStateTimeout() override;
 
 private:
-    tl::optional<FaceDescriptor> findNearestFaceDescriptor(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+    std::optional<FaceDescriptor> findNearestFaceDescriptor(const video_analyzer::VideoAnalysis::ConstPtr& msg);
     void switchState();
 };
 

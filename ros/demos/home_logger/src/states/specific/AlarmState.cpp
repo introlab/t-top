@@ -44,7 +44,7 @@ void AlarmState::onDisabling()
     if (m_playSoundDesireId.has_value())
     {
         m_desireSet->removeDesire(m_playSoundDesireId.value());
-        m_playSoundDesireId = tl::nullopt;
+        m_playSoundDesireId = nullopt;
     }
 
     m_alarmManager.informPerformedAlarms(m_parameter.alarmIds);

@@ -90,9 +90,9 @@ TEST(SQLitePerceptionLoggerTests, insertPerception_shouldInsertAndReturnId)
 
     SQLitePerceptionLogger logger(database);
 
-    int64_t id0 = logger.insertPerception(Timestamp(101), tl::nullopt, tl::nullopt);
-    int64_t id1 = logger.insertPerception(Timestamp(102), Position{10, 11, 12}, tl::nullopt);
-    int64_t id2 = logger.insertPerception(Timestamp(103), tl::nullopt, Direction{20, 21, 22});
+    int64_t id0 = logger.insertPerception(Timestamp(101), nullopt, nullopt);
+    int64_t id1 = logger.insertPerception(Timestamp(102), Position{10, 11, 12}, nullopt);
+    int64_t id2 = logger.insertPerception(Timestamp(103), nullopt, Direction{20, 21, 22});
     int64_t id3 = logger.insertPerception(Timestamp(104), Position{30, 31, 32}, Direction{33, 34, 35});
 
     EXPECT_TRUE(perceptionExists(database, id0, Timestamp(101)));
