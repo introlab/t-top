@@ -20,26 +20,17 @@ struct is_value_type<Position> : std::true_type
 template<>
 inline std::array<std::byte, sizeof(Position)> toLittleEndianBytes(const Position& v)
 {
-    std::array<std::byte, sizeof(Position)> bytes;
     std::array<std::byte, sizeof(double)> xBytes = toLittleEndianBytes(v.x);
     std::array<std::byte, sizeof(double)> yBytes = toLittleEndianBytes(v.y);
     std::array<std::byte, sizeof(double)> zBytes = toLittleEndianBytes(v.z);
-    std::memcpy(bytes.data(), xBytes.data(), sizeof(double));
-    std::memcpy(bytes.data() + sizeof(double), yBytes.data(), sizeof(double));
-    std::memcpy(bytes.data() + 2 * sizeof(double), zBytes.data(), sizeof(double));
 
-    return bytes;
+    return joinArrays(xBytes, yBytes, zBytes);
 }
 
 template<>
 inline Position fromLittleEndianBytes(const std::array<std::byte, sizeof(Position)>& bytes)
 {
-    std::array<std::byte, sizeof(double)> xBytes;
-    std::array<std::byte, sizeof(double)> yBytes;
-    std::array<std::byte, sizeof(double)> zBytes;
-    std::memcpy(xBytes.data(), bytes.data(), sizeof(double));
-    std::memcpy(yBytes.data(), bytes.data() + sizeof(double), sizeof(double));
-    std::memcpy(zBytes.data(), bytes.data() + 2 * sizeof(double), sizeof(double));
+    auto [xBytes, yBytes, zBytes] = splitArray<double, double, double>(bytes);
 
     return Position{
         fromLittleEndianBytes<double>(xBytes),

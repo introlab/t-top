@@ -27,6 +27,64 @@ template<class T>
 inline constexpr bool is_value_type_v = is_value_type<T>::value;
 
 
+template<class... Pack>
+inline constexpr std::size_t total_sizeof_pack = (sizeof(Pack) + ... + 0);
+
+template<std::size_t... Pack>
+inline constexpr std::size_t sum_pack = (Pack + ... + 0);
+
+
+template<std::size_t... Sizes>
+std::array<std::byte, sum_pack<Sizes...>> joinArrays(const std::array<std::byte, Sizes>&... arrays)
+{
+    std::array<std::byte, sum_pack<Sizes...>> result;
+    std::size_t index{};
+
+    ((std::copy_n(arrays.begin(), arrays.size(), result.begin() + index), index += arrays.size()), ...);
+
+    return result;
+}
+
+// https://artificial-mind.net/blog/2020/10/31/constexpr-for
+template<size_t Start, size_t End, size_t Inc, class F>
+constexpr void constexpr_for(F&& f)
+{
+    if constexpr (Start < End)
+    {
+        f(std::integral_constant<size_t, Start>());
+        constexpr_for<Start + Inc, End, Inc>(f);
+    }
+}
+template<class F, class Tuple>
+constexpr void constexpr_for_tuple(F&& f, Tuple&& tuple)
+{
+    constexpr size_t cnt = std::tuple_size_v<std::decay_t<Tuple>>;
+
+    constexpr_for<size_t{0}, cnt, size_t{1}>([&](auto i) { f(std::get<i.value>(tuple)); });
+}
+
+
+template<class... ArraysTypes, size_t N>
+std::tuple<std::array<std::byte, sizeof(ArraysTypes)>...> splitArray(const std::array<std::byte, N>& arr)
+{
+    static_assert(total_sizeof_pack<ArraysTypes...> == N, "Sum of output sizeofs should match length of input array");
+
+    using TupleType = std::tuple<std::array<std::byte, sizeof(ArraysTypes)>...>;
+    TupleType result;
+    std::size_t index{};
+
+    constexpr_for_tuple(
+        [&index, &arr](auto& v)
+        {
+            std::copy_n(arr.begin() + index, v.size(), v.begin());
+            index += v.size();
+        },
+        result);
+
+    return result;
+}
+
+
 template<class T>
 std::array<std::byte, sizeof(T)> toLittleEndianBytes(const T& v)
 {
@@ -118,15 +176,15 @@ Bytes serializeToBytesNoCopy(const T& v)
     return bytes;
 }
 
+/**
+ * To prevent the compiler to call "Bytes serializeToBytesNoCopy(T&&)" when a non-const type is provided.
+ */
 template<class T>
 Bytes serializeToBytesNoCopy(T& v)
 {
     return serializeToBytesNoCopy(const_cast<const T&>(v));
 };
 
-/**
- * To prevent the compiler to call "Bytes serializeToBytesNoCopy(T&&)" when a non-const type is provided.
- */
 template<class T>
 Bytes serializeToBytesNoCopy(T&&) = delete;  // Disallow temporaries
 
