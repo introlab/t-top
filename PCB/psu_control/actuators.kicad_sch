@@ -1730,7 +1730,7 @@
     (property "Reference" "J9" (id 0) (at 82.55 107.9499 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Value" "Amplifier 2 I2C" (id 1) (at 82.55 110.4899 0)
+    (property "Value" "Other 2 I2C" (id 1) (at 82.55 110.4899 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Footprint" "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical" (id 2) (at 81.28 109.22 0)

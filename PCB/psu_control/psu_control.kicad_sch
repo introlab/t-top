@@ -1763,7 +1763,7 @@
       (reference "J8") (unit 1) (value "Amplifier 1 I2C") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
     )
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/bf411f1b-304f-4fba-b213-05cd489bd07b"
-      (reference "J9") (unit 1) (value "Amplifier 2 I2C") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
+      (reference "J9") (unit 1) (value "Other 2 I2C") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
     )
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/37f3935e-1f53-4775-b396-3e6fbb432be0"
       (reference "J10") (unit 1) (value "Other 1 I2C") (footprint "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical")
