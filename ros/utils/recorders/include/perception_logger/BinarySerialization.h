@@ -124,6 +124,9 @@ Bytes serializeToBytesNoCopy(T& v)
     return serializeToBytesNoCopy(const_cast<const T&>(v));
 };
 
+/**
+ * To prevent the compiler to call "Bytes serializeToBytesNoCopy(T&&)" when a non-const type is provided.
+ */
 template<class T>
 Bytes serializeToBytesNoCopy(T&&) = delete;  // Disallow temporaries
 
@@ -149,6 +152,9 @@ Bytes serializeToBytesNoCopy(const std::vector<T>& v)
     return bytes;
 }
 
+/**
+ * To prevent the compiler to call "Bytes serializeToBytesNoCopy(std::vector<T>&&)" when a non-const vector is provided.
+ */
 template<class T>
 Bytes serializeToBytesNoCopy(std::vector<T>& v)
 {
