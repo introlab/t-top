@@ -1,6 +1,5 @@
 # Serial MCU Communucation Protocol
 
-
 ## General Format
 All fields use little-endian ordering.
 
@@ -47,17 +46,17 @@ All fields use little-endian ordering.
 </table>
 
 ### Field Description
-| Field Name             | Type   | Description                                                              |
-| ---------------------- | ------ | ------------------------------------------------------------------------ |
-| Preamble               | uint32 | This field is used to detect the beginning of a message (0xAAAAAAAA).    |
-| Full Message Length    | uint8  | This field is equal to the message length in bytes including this field. |
-| Message Source Id      | uint8  | This field contains the device id of the source device.                  |
-| Message Destination Id | uint8  | This field contains the device id of the destination device.             |
-| Acknowledgment Needed  | bool   | This field indicates if an acknowledgment is needed).                    |
-| Message Id             | uint16 | This field contains a random id identifying the message.                 |
-| Message Type           | uint16 | This field contains the message type.                                    |
-| Payload                |        | The payload depends on the message type.                                 |
-| CRC8                   | uint8  | This field contains the CRC8 value excluding this field.                 |
+| Field Name             | Type   | Description                                                                                       |
+| ---------------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| Preamble               | uint32 | This field is used to detect the beginning of a message (0xAAAAAAAA).                             |
+| Full Message Length    | uint8  | This field is equal to the message length in bytes including this field and without the preamble. |
+| Message Source Id      | uint8  | This field contains the device id of the source device.                                           |
+| Message Destination Id | uint8  | This field contains the device id of the destination device.                                      |
+| Acknowledgment Needed  | bool   | This field indicates if an acknowledgment is needed).                                             |
+| Message Id             | uint16 | This field contains a random id identifying the message.                                          |
+| Message Type           | uint16 | This field contains the message type.                                                             |
+| Payload                |        | The payload depends on the message type.                                                          |
+| CRC8                   | uint8  | This field contains the CRC8 value excluding this field.                                          |
 
 ### Device Id Descriptions
 | Device Id | Name              |
