@@ -2,11 +2,11 @@
 <export version="E">
   <design>
     <source>/home/marc-antoine/Bureau/Maitrîse/t-top_ws/src/t-top/PCB/dynamixel_control/dynamixel_control.kicad_sch</source>
-    <date>sam 05 nov 2022 14:35:53</date>
+    <date>mer 09 nov 2022 09:17:29</date>
     <tool>Eeschema 6.0.9-8da3e8f707~116~ubuntu20.04.1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
-        <title/>
+        <title>Dynamixel Control</title>
         <company/>
         <rev/>
         <date/>
@@ -44,6 +44,7 @@
   <components>
     <comp ref="C1">
       <value>10µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -52,6 +53,7 @@
     </comp>
     <comp ref="C2">
       <value>4.7µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -60,6 +62,7 @@
     </comp>
     <comp ref="C3">
       <value>10µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -68,6 +71,7 @@
     </comp>
     <comp ref="C4">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -76,6 +80,7 @@
     </comp>
     <comp ref="C5">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -83,12 +88,13 @@
       <tstamps>62b611bc-53a2-4b6f-a91f-187048045fc9</tstamps>
     </comp>
     <comp ref="C6">
-      <value>0.1µF/25V</value>
+      <value>10nF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamps>0dbbe78a-5b40-4592-8849-39d4b86f0b96</tstamps>
+      <tstamps>0e3888c0-7ced-4387-b101-2f4183e1c987</tstamps>
     </comp>
     <comp ref="C7">
       <value>0.1µF/25V</value>
@@ -155,6 +161,7 @@
     </comp>
     <comp ref="J1">
       <value>12V</value>
+      <footprint>t-top:t-connector</footprint>
       <libsource lib="Connector" part="Conn_01x02_Male" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -163,7 +170,7 @@
     </comp>
     <comp ref="J2">
       <value>RS232</value>
-      <footprint>Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical</footprint>
+      <footprint>Connector_JST:JST_PH_S3B-PH-K_1x03_P2.00mm_Horizontal</footprint>
       <libsource lib="Connector" part="Conn_01x03_Male" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -172,6 +179,7 @@
     </comp>
     <comp ref="J3">
       <value>5V</value>
+      <footprint>Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical</footprint>
       <libsource lib="Connector" part="Conn_01x02_Male" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -180,6 +188,7 @@
     </comp>
     <comp ref="J4">
       <value>3.3V</value>
+      <footprint>Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical</footprint>
       <libsource lib="Connector" part="Conn_01x02_Male" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -188,6 +197,7 @@
     </comp>
     <comp ref="J5">
       <value>I2C</value>
+      <footprint>Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical</footprint>
       <libsource lib="Connector" part="Conn_01x03_Male" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -196,6 +206,7 @@
     </comp>
     <comp ref="L1">
       <value>12µH (RLS-126)</value>
+      <footprint>Inductor_SMD:L_1812_4532Metric</footprint>
       <libsource lib="Device" part="L" description="Inductor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -213,35 +224,21 @@
     </comp>
     <comp ref="R1">
       <value>10k</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>df8e66d2-4c32-4e51-8dc4-3f665f1f8bd2</tstamps>
     </comp>
-    <comp ref="R2">
-      <value>10k</value>
-      <libsource lib="Device" part="R" description="Resistor"/>
-      <property name="Sheetname" value=""/>
-      <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>76146421-054d-4e89-be9b-e996669eab9b</tstamps>
-    </comp>
     <comp ref="R3">
       <value>10k</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>c80a79fe-7398-4ca0-a2db-9a623c1c357d</tstamps>
-    </comp>
-    <comp ref="R4">
-      <value>10k</value>
-      <libsource lib="Device" part="R" description="Resistor"/>
-      <property name="Sheetname" value=""/>
-      <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>95ae1ad8-1d04-4047-a006-6fd26954797b</tstamps>
     </comp>
     <comp ref="R5">
       <value>100k</value>
@@ -263,6 +260,7 @@
     </comp>
     <comp ref="R7">
       <value>2.2k</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -271,6 +269,7 @@
     </comp>
     <comp ref="R8">
       <value>2.2k</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -279,6 +278,7 @@
     </comp>
     <comp ref="R9">
       <value>NI</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -287,6 +287,7 @@
     </comp>
     <comp ref="R10">
       <value>0</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -295,22 +296,16 @@
     </comp>
     <comp ref="SW1">
       <value>LIMIT_SWITCH</value>
+      <footprint>Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical</footprint>
       <libsource lib="Switch" part="SW_SPST" description="Single Pole Single Throw (SPST) switch"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>b783f2f8-c26a-486d-8962-845d8404ca33</tstamps>
     </comp>
-    <comp ref="SW2">
-      <value>BUTTON</value>
-      <libsource lib="Switch" part="SW_SPST" description="Single Pole Single Throw (SPST) switch"/>
-      <property name="Sheetname" value=""/>
-      <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamps>0232a4b3-285c-43f8-978c-e5f0313f8cbc</tstamps>
-    </comp>
     <comp ref="U1">
       <value>R-78E5.0-0.5</value>
+      <footprint>t-top:R-78E-0.5</footprint>
       <libsource lib="t-top" part="R-78E5.0-0.5" description=""/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -318,13 +313,14 @@
       <tstamps>a754a1e0-8ff6-42ff-83be-72b2e78332d8</tstamps>
     </comp>
     <comp ref="U2">
-      <value>74HC2G14</value>
-      <datasheet>https://assets.nexperia.com/documents/data-sheet/74HC_HCT2G14.pdf</datasheet>
-      <libsource lib="t-top" part="74HC2G14" description="Hex inverter schmitt trigger"/>
+      <value>SN74AHC1G14</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-5</footprint>
+      <datasheet>https://www.ti.com/lit/ds/symlink/sn74ahc1g14.pdf</datasheet>
+      <libsource lib="t-top" part="SN74AHC1G14" description="Single Power Supply, Single Buffer GATE, CMOS Logic, Level Shifter, SOT-23-5"/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamps>e62c051c-dc62-4b2b-901d-57ff543bf996 b1cc55e3-c339-415f-95f3-644be412f896 7ab2ba1c-9e7b-48bb-ad73-6d2580575f98</tstamps>
+      <tstamps>5c044790-1562-4d41-a32d-729b0cbff506</tstamps>
     </comp>
     <comp ref="U3">
       <value>LM810M3-4.63</value>
@@ -337,6 +333,7 @@
     </comp>
     <comp ref="U4">
       <value>Teensy_4.0</value>
+      <footprint>t-top:Teensy_4.0</footprint>
       <libsource lib="t-top" part="Teensy_4.0" description=""/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
@@ -354,46 +351,25 @@
     </comp>
     <comp ref="U6">
       <value>ICM-40627</value>
+      <footprint>t-top:ICM-40627</footprint>
       <libsource lib="t-top" part="ICM-40627" description=""/>
       <property name="Sheetname" value=""/>
       <property name="Sheetfile" value="dynamixel_control.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>7d19cc23-7b93-4a41-844a-abd34722bd1b</tstamps>
     </comp>
-    <comp ref="C14">
-      <value>0.1µF/25V</value>
-      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>a7b74eda-ee10-4c73-8178-11f020a296db</tstamps>
-    </comp>
     <comp ref="C15">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>1cc4ec7e-d0ba-486f-9278-cc1498a2e9d6</tstamps>
     </comp>
-    <comp ref="C16">
-      <value>0.1µF/25V</value>
-      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>41fc889c-67b6-4a9f-a587-fbd7c666b42c</tstamps>
-    </comp>
-    <comp ref="C17">
-      <value>0.1µF/25V</value>
-      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>153cee95-8b40-49ec-96a2-6adc33d8dbf3</tstamps>
-    </comp>
     <comp ref="C18">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
@@ -402,30 +378,16 @@
     </comp>
     <comp ref="C19">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>cc154378-928e-4764-8c8e-fb1b0fa3c35e</tstamps>
     </comp>
-    <comp ref="C20">
-      <value>0.1µF/25V</value>
-      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>f919b240-a474-4cb6-aec3-5702293f3a21</tstamps>
-    </comp>
-    <comp ref="C21">
-      <value>0.1µF/25V</value>
-      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>55feae17-f388-4dfe-8325-6a85dd601d2a</tstamps>
-    </comp>
     <comp ref="C22">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
@@ -434,19 +396,12 @@
     </comp>
     <comp ref="C23">
       <value>0.1µF/25V</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>0d90bddb-a2fb-4579-9f16-651fe6b56693</tstamps>
-    </comp>
-    <comp ref="C24">
-      <value>0.1µF/25V</value>
-      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>c3baa52d-c7f8-400c-8d65-7666193bce93</tstamps>
     </comp>
     <comp ref="C25">
       <value>2.2µF/25V</value>
@@ -457,48 +412,18 @@
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>749ee14f-35ce-43be-b405-199b08a9d1cf</tstamps>
     </comp>
-    <comp ref="J6">
-      <value>Dynamixel RS485</value>
-      <libsource lib="Connector" part="Conn_01x04_Male" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>c73f5fe0-c460-4b15-8e5a-eac556ed73b4</tstamps>
-    </comp>
-    <comp ref="J7">
-      <value>Dynamixel RS485</value>
-      <libsource lib="Connector" part="Conn_01x04_Male" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>bb27c17b-c9af-43ef-bb73-8617d000f2b1</tstamps>
-    </comp>
     <comp ref="J8">
       <value>Dynamixel TTL</value>
+      <footprint>t-top:25SH-C-03-TS</footprint>
       <libsource lib="Connector" part="Conn_01x03_Male" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>a88625c8-ea46-49fd-853f-e88ba2b2fda3</tstamps>
     </comp>
-    <comp ref="J9">
-      <value>Dynamixel RS485</value>
-      <libsource lib="Connector" part="Conn_01x04_Male" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>bb8eb12d-96be-47a2-adad-45f232413c3d</tstamps>
-    </comp>
-    <comp ref="J10">
-      <value>Dynamixel RS485</value>
-      <libsource lib="Connector" part="Conn_01x04_Male" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>9dd5b7ef-5f51-4be5-895b-9d97be6644cb</tstamps>
-    </comp>
     <comp ref="J11">
       <value>Dynamixel TTL</value>
+      <footprint>t-top:25SH-C-03-TS</footprint>
       <libsource lib="Connector" part="Conn_01x03_Male" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
@@ -507,19 +432,12 @@
     </comp>
     <comp ref="J12">
       <value>Dynamixel TTL</value>
+      <footprint>t-top:25SH-C-03-TS</footprint>
       <libsource lib="Connector" part="Conn_01x03_Male" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>f212513e-0b3a-4111-a728-cf06098efc41</tstamps>
-    </comp>
-    <comp ref="J13">
-      <value>Dynamixel TTL</value>
-      <libsource lib="Connector" part="Conn_01x03_Male" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>ca8eae9b-315d-4d35-a450-8af3cc3ef71d</tstamps>
     </comp>
     <comp ref="Q2">
       <value>IPD068P03L3GATMA1</value>
@@ -539,32 +457,18 @@
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>6f19aa1f-3827-478b-8816-3c27661cc5ec</tstamps>
     </comp>
-    <comp ref="R11">
-      <value>10</value>
-      <libsource lib="Device" part="R" description="Resistor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>41a4d21c-43a5-42b2-8d85-f54bbf74b828</tstamps>
-    </comp>
     <comp ref="R12">
       <value>10k</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>ae188407-3d3c-4db0-9302-10395829041a</tstamps>
     </comp>
-    <comp ref="R13">
-      <value>10</value>
-      <libsource lib="Device" part="R" description="Resistor"/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>68a76ed9-b025-4d8b-a537-0a93d11de217</tstamps>
-    </comp>
     <comp ref="R14">
       <value>47</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
@@ -608,29 +512,23 @@
       <tstamps>2c02fa58-60f5-4dbd-a8a5-164adf47a287</tstamps>
     </comp>
     <comp ref="U7">
-      <value>74LVC2G34</value>
-      <datasheet>https://assets.nexperia.com/documents/data-sheet/74LVC2G34.pdf</datasheet>
-      <libsource lib="t-top" part="74LVC2G34" description="Buffer"/>
+      <value>SN74LV1T34</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-5</footprint>
+      <datasheet>https://www.ti.com/lit/ds/symlink/sn74lv1t34.pdf</datasheet>
+      <libsource lib="t-top" part="SN74LV1T34" description="Single Power Supply, Single Buffer GATE, CMOS Logic, Level Shifter, SOT-23-5"/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>c90a6a07-4ffd-4132-9644-f937c88c6976 38546cd5-b605-41ec-b280-1f2c1a655abd 030eecda-af40-4d97-a807-cf218ac84a28</tstamps>
+      <tstamps>fefc5669-8d6d-4190-9e2a-1a7fcee2d8b5</tstamps>
     </comp>
     <comp ref="U8">
       <value>SN74LVC2G241</value>
+      <footprint>Package_SO:VSSOP-8_2.3x2mm_P0.5mm</footprint>
       <libsource lib="t-top" part="SN74LVC2G241" description=""/>
       <property name="Sheetname" value="Dynamixel"/>
       <property name="Sheetfile" value="dynamixel.kicad_sch"/>
       <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
       <tstamps>66b8e76d-878c-4213-b10f-af138188ec2f</tstamps>
-    </comp>
-    <comp ref="U9">
-      <value>SP481E</value>
-      <libsource lib="t-top" part="SP481E" description=""/>
-      <property name="Sheetname" value="Dynamixel"/>
-      <property name="Sheetfile" value="dynamixel.kicad_sch"/>
-      <sheetpath names="/Dynamixel/" tstamps="/d35e0dd5-65a6-42a8-88be-82a5f6d1ca91/"/>
-      <tstamps>beef82b0-f932-43df-937b-802435c0134f</tstamps>
     </comp>
   </components>
   <libparts>
@@ -665,24 +563,6 @@
         <pin num="1" name="Pin_1" type="passive"/>
         <pin num="2" name="Pin_2" type="passive"/>
         <pin num="3" name="Pin_3" type="passive"/>
-      </pins>
-    </libpart>
-    <libpart lib="Connector" part="Conn_01x04_Male">
-      <description>Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
-      <docs>~</docs>
-      <footprints>
-        <fp>Connector*:*_1x??_*</fp>
-      </footprints>
-      <fields>
-        <field name="Reference">J</field>
-        <field name="Value">Conn_01x04_Male</field>
-        <field name="Datasheet">~</field>
-      </fields>
-      <pins>
-        <pin num="1" name="Pin_1" type="passive"/>
-        <pin num="2" name="Pin_2" type="passive"/>
-        <pin num="3" name="Pin_3" type="passive"/>
-        <pin num="4" name="Pin_4" type="passive"/>
       </pins>
     </libpart>
     <libpart lib="Device" part="C">
@@ -791,46 +671,6 @@
         <pin num="2" name="B" type="passive"/>
       </pins>
     </libpart>
-    <libpart lib="t-top" part="74HC2G14">
-      <description>Hex inverter schmitt trigger</description>
-      <docs>https://assets.nexperia.com/documents/data-sheet/74HC_HCT2G14.pdf</docs>
-      <footprints>
-        <fp>DIP*W7.62mm*</fp>
-      </footprints>
-      <fields>
-        <field name="Reference">U</field>
-        <field name="Value">74HC2G14</field>
-        <field name="Datasheet">https://assets.nexperia.com/documents/data-sheet/74HC_HCT2G14.pdf</field>
-      </fields>
-      <pins>
-        <pin num="1" name="" type="input"/>
-        <pin num="2" name="GND" type="power_in"/>
-        <pin num="3" name="" type="input"/>
-        <pin num="4" name="" type="output"/>
-        <pin num="5" name="VCC" type="power_in"/>
-        <pin num="6" name="" type="output"/>
-      </pins>
-    </libpart>
-    <libpart lib="t-top" part="74LVC2G34">
-      <description>Buffer</description>
-      <docs>https://assets.nexperia.com/documents/data-sheet/74LVC2G34.pdf</docs>
-      <footprints>
-        <fp>DIP*W7.62mm*</fp>
-      </footprints>
-      <fields>
-        <field name="Reference">U</field>
-        <field name="Value">74LVC2G34</field>
-        <field name="Datasheet">https://assets.nexperia.com/documents/data-sheet/74LVC2G34.pdf</field>
-      </fields>
-      <pins>
-        <pin num="1" name="" type="input"/>
-        <pin num="2" name="GND" type="power_in"/>
-        <pin num="3" name="" type="input"/>
-        <pin num="4" name="" type="output"/>
-        <pin num="5" name="VCC" type="power_in"/>
-        <pin num="6" name="" type="output"/>
-      </pins>
-    </libpart>
     <libpart lib="t-top" part="ICM-40627">
       <fields>
         <field name="Reference">U</field>
@@ -899,6 +739,46 @@
         <pin num="3" name="VOUT" type="power_out"/>
       </pins>
     </libpart>
+    <libpart lib="t-top" part="SN74AHC1G14">
+      <description>Single Power Supply, Single Buffer GATE, CMOS Logic, Level Shifter, SOT-23-5</description>
+      <docs>https://www.ti.com/lit/ds/symlink/sn74ahc1g14.pdf</docs>
+      <footprints>
+        <fp>SOT?23*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">SN74AHC1G14</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23-5</field>
+        <field name="Datasheet">https://www.ti.com/lit/ds/symlink/sn74ahc1g14.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="NC" type="no_connect"/>
+        <pin num="2" name="A" type="input"/>
+        <pin num="3" name="GND" type="power_in"/>
+        <pin num="4" name="Y" type="output"/>
+        <pin num="5" name="VCC" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="t-top" part="SN74LV1T34">
+      <description>Single Power Supply, Single Buffer GATE, CMOS Logic, Level Shifter, SOT-23-5</description>
+      <docs>https://www.ti.com/lit/ds/symlink/sn74lv1t34.pdf</docs>
+      <footprints>
+        <fp>SOT?23*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">SN74LV1T34</field>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23-5</field>
+        <field name="Datasheet">https://www.ti.com/lit/ds/symlink/sn74lv1t34.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="NC" type="no_connect"/>
+        <pin num="2" name="A" type="input"/>
+        <pin num="3" name="GND" type="power_in"/>
+        <pin num="4" name="Y" type="output"/>
+        <pin num="5" name="VCC" type="power_in"/>
+      </pins>
+    </libpart>
     <libpart lib="t-top" part="SN74LVC2G241">
       <fields>
         <field name="Reference">U</field>
@@ -912,22 +792,6 @@
         <pin num="5" name="2A" type="input"/>
         <pin num="6" name="1Y" type="output"/>
         <pin num="7" name="2OE" type="input"/>
-        <pin num="8" name="VCC" type="power_in"/>
-      </pins>
-    </libpart>
-    <libpart lib="t-top" part="SP481E">
-      <fields>
-        <field name="Reference">U</field>
-        <field name="Value">SP481E</field>
-      </fields>
-      <pins>
-        <pin num="1" name="RO" type="output"/>
-        <pin num="2" name="~{RE}" type="input"/>
-        <pin num="3" name="DE" type="input"/>
-        <pin num="4" name="DI" type="input"/>
-        <pin num="5" name="GND" type="power_in"/>
-        <pin num="6" name="A" type="bidirectional"/>
-        <pin num="7" name="B" type="bidirectional"/>
         <pin num="8" name="VCC" type="power_in"/>
       </pins>
     </libpart>
@@ -988,10 +852,10 @@
       <node ref="C13" pin="1" pintype="passive"/>
       <node ref="C18" pin="1" pintype="passive"/>
       <node ref="C4" pin="1" pintype="passive"/>
+      <node ref="C6" pin="1" pintype="passive"/>
       <node ref="C7" pin="1" pintype="passive"/>
       <node ref="J4" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="R1" pin="1" pintype="passive"/>
-      <node ref="R2" pin="1" pintype="passive"/>
       <node ref="R7" pin="1" pintype="passive"/>
       <node ref="R8" pin="1" pintype="passive"/>
       <node ref="R9" pin="1" pintype="passive"/>
@@ -1006,7 +870,6 @@
       <node ref="U7" pin="5" pinfunction="VCC" pintype="power_in"/>
     </net>
     <net code="2" name="+5V">
-      <node ref="C14" pin="1" pintype="passive"/>
       <node ref="C15" pin="1" pintype="passive"/>
       <node ref="C3" pin="1" pintype="passive"/>
       <node ref="J3" pin="2" pinfunction="Pin_2" pintype="passive"/>
@@ -1016,7 +879,6 @@
       <node ref="U1" pin="3" pinfunction="VOUT" pintype="power_out"/>
       <node ref="U3" pin="3" pinfunction="VCC" pintype="power_in"/>
       <node ref="U8" pin="8" pinfunction="VCC" pintype="power_in"/>
-      <node ref="U9" pin="8" pinfunction="VCC" pintype="power_in"/>
     </net>
     <net code="3" name="+12V">
       <node ref="C1" pin="1" pintype="passive"/>
@@ -1026,316 +888,247 @@
       <node ref="Q2" pin="3" pinfunction="S" pintype="passive"/>
       <node ref="R15" pin="1" pintype="passive"/>
     </net>
-    <net code="4" name="/BUTTON">
-      <node ref="U2" pin="4" pintype="output"/>
-    </net>
-    <net code="5" name="/Dynamixel/DYNAMIXEL_ENABLE">
+    <net code="4" name="/Dynamixel/DYNAMIXEL_ENABLE">
       <node ref="R17" pin="1" pintype="passive"/>
-      <node ref="U4" pin="10" pinfunction="10/CS/MQSR/PWM" pintype="bidirectional"/>
+      <node ref="U4" pin="0" pinfunction="0/RX1/CRX2/PWM" pintype="bidirectional"/>
     </net>
-    <net code="6" name="/Dynamixel/DYNAMIXEL_POWER">
-      <node ref="C16" pin="1" pintype="passive"/>
-      <node ref="C17" pin="1" pintype="passive"/>
+    <net code="5" name="/Dynamixel/DYNAMIXEL_POWER">
       <node ref="C19" pin="1" pintype="passive"/>
-      <node ref="C20" pin="1" pintype="passive"/>
-      <node ref="C21" pin="1" pintype="passive"/>
       <node ref="C22" pin="1" pintype="passive"/>
       <node ref="C23" pin="1" pintype="passive"/>
-      <node ref="C24" pin="1" pintype="passive"/>
-      <node ref="J10" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="J11" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="J12" pin="2" pinfunction="Pin_2" pintype="passive"/>
-      <node ref="J13" pin="2" pinfunction="Pin_2" pintype="passive"/>
-      <node ref="J6" pin="2" pinfunction="Pin_2" pintype="passive"/>
-      <node ref="J7" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="J8" pin="2" pinfunction="Pin_2" pintype="passive"/>
-      <node ref="J9" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="Q2" pin="2" pinfunction="D" pintype="passive"/>
     </net>
-    <net code="7" name="/Dynamixel/DYNAMIXEL_RS485+">
-      <node ref="J10" pin="3" pinfunction="Pin_3" pintype="passive"/>
-      <node ref="J6" pin="3" pinfunction="Pin_3" pintype="passive"/>
-      <node ref="J7" pin="3" pinfunction="Pin_3" pintype="passive"/>
-      <node ref="J9" pin="3" pinfunction="Pin_3" pintype="passive"/>
-      <node ref="R13" pin="2" pintype="passive"/>
-    </net>
-    <net code="8" name="/Dynamixel/DYNAMIXEL_RS485-">
-      <node ref="J10" pin="4" pinfunction="Pin_4" pintype="passive"/>
-      <node ref="J6" pin="4" pinfunction="Pin_4" pintype="passive"/>
-      <node ref="J7" pin="4" pinfunction="Pin_4" pintype="passive"/>
-      <node ref="J9" pin="4" pinfunction="Pin_4" pintype="passive"/>
-      <node ref="R11" pin="2" pintype="passive"/>
-    </net>
-    <net code="9" name="/Dynamixel/DYNAMIXEL_RS485_DIR">
-      <node ref="U4" pin="12" pinfunction="12/MISO/MQSL/PWM" pintype="bidirectional"/>
-      <node ref="U9" pin="2" pinfunction="~{RE}" pintype="input"/>
-      <node ref="U9" pin="3" pinfunction="DE" pintype="input"/>
-    </net>
-    <net code="10" name="/Dynamixel/DYNAMIXEL_RS485_RX">
-      <node ref="U4" pin="16" pinfunction="16/A2/RX4/SCL1" pintype="bidirectional"/>
-      <node ref="U7" pin="4" pintype="output"/>
-    </net>
-    <net code="11" name="/Dynamixel/DYNAMIXEL_RS485_TX">
-      <node ref="U4" pin="17" pinfunction="17/A3/TX4/SDA1" pintype="bidirectional"/>
-      <node ref="U9" pin="4" pinfunction="DI" pintype="input"/>
-    </net>
-    <net code="12" name="/Dynamixel/DYNAMIXEL_TTL_DATA">
+    <net code="6" name="/Dynamixel/DYNAMIXEL_TTL_DATA">
       <node ref="J11" pin="3" pinfunction="Pin_3" pintype="passive"/>
       <node ref="J12" pin="3" pinfunction="Pin_3" pintype="passive"/>
-      <node ref="J13" pin="3" pinfunction="Pin_3" pintype="passive"/>
       <node ref="J8" pin="3" pinfunction="Pin_3" pintype="passive"/>
       <node ref="R14" pin="2" pintype="passive"/>
     </net>
-    <net code="13" name="/Dynamixel/DYNAMIXEL_TTL_DIR">
-      <node ref="U4" pin="11" pinfunction="11/MOSI/PWM" pintype="bidirectional"/>
+    <net code="7" name="/Dynamixel/DYNAMIXEL_TTL_DIR">
+      <node ref="U4" pin="9" pinfunction="9/OUT1C/PWM" pintype="bidirectional"/>
       <node ref="U8" pin="1" pinfunction="~{1OE}" pintype="input"/>
       <node ref="U8" pin="7" pinfunction="2OE" pintype="input"/>
     </net>
-    <net code="14" name="/Dynamixel/DYNAMIXEL_TTL_RX">
-      <node ref="U4" pin="15" pinfunction="15/A1/RX3/SPDIF_IN/PWM" pintype="bidirectional"/>
-      <node ref="U7" pin="6" pintype="output"/>
+    <net code="8" name="/Dynamixel/DYNAMIXEL_TTL_RX">
+      <node ref="U4" pin="7" pinfunction="7/RX2/OUT1A/PWM" pintype="bidirectional"/>
+      <node ref="U7" pin="4" pinfunction="Y" pintype="output"/>
     </net>
-    <net code="15" name="/Dynamixel/DYNAMIXEL_TTL_TX">
-      <node ref="U4" pin="14" pinfunction="14/A0/TX3/SPDIF_OUT/PWM" pintype="bidirectional"/>
+    <net code="9" name="/Dynamixel/DYNAMIXEL_TTL_TX">
+      <node ref="U4" pin="8" pinfunction="8/TX2/IN1/PWM" pintype="bidirectional"/>
       <node ref="U8" pin="5" pinfunction="2A" pintype="input"/>
     </net>
-    <net code="16" name="/I2C_SCL">
+    <net code="10" name="/I2C_SCL">
       <node ref="J5" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="R7" pin="2" pintype="passive"/>
       <node ref="U4" pin="19" pinfunction="19/A5/SCL0/PWM" pintype="bidirectional"/>
       <node ref="U6" pin="13" pinfunction="AP_SCL/AP_SCLK" pintype="output"/>
     </net>
-    <net code="17" name="/I2C_SDA">
+    <net code="11" name="/I2C_SDA">
       <node ref="J5" pin="3" pinfunction="Pin_3" pintype="passive"/>
       <node ref="R8" pin="2" pintype="passive"/>
       <node ref="U4" pin="18" pinfunction="18/A4/SDA0/PWM" pintype="bidirectional"/>
       <node ref="U6" pin="14" pinfunction="AP_SDA/AP_SDIO/AP_SDI" pintype="bidirectional"/>
     </net>
-    <net code="18" name="/IMU_INT1">
+    <net code="12" name="/IMU_INT1">
+      <node ref="U4" pin="14" pinfunction="14/A0/TX3/SPDIF_OUT/PWM" pintype="bidirectional"/>
       <node ref="U6" pin="4" pinfunction="INT1/INT" pintype="output"/>
     </net>
-    <net code="19" name="/IMU_INT2">
+    <net code="13" name="/IMU_INT2">
+      <node ref="U4" pin="15" pinfunction="15/A1/RX3/SPDIF_IN/PWM" pintype="bidirectional"/>
       <node ref="U6" pin="9" pinfunction="INT2/FSYNC" pintype="bidirectional"/>
     </net>
-    <net code="20" name="/LIMIT_SWITCH">
-      <node ref="U2" pin="6" pintype="output"/>
+    <net code="14" name="/LIMIT_SWITCH">
+      <node ref="U2" pin="4" pinfunction="Y" pintype="output"/>
+      <node ref="U4" pin="22" pinfunction="22/A8/CTX1/PWM" pintype="bidirectional"/>
     </net>
-    <net code="21" name="/UART_RX">
-      <node ref="U4" pin="0" pinfunction="0/RX1/CRX2/PWM" pintype="bidirectional"/>
+    <net code="15" name="/UART_RX">
+      <node ref="U4" pin="21" pinfunction="21/A7/RX5/BCLK1" pintype="bidirectional"/>
       <node ref="U5" pin="9" pinfunction="ROUT" pintype="output"/>
     </net>
-    <net code="22" name="/UART_TX">
-      <node ref="U4" pin="1" pinfunction="1/TX1/CTX2" pintype="bidirectional"/>
+    <net code="16" name="/UART_TX">
+      <node ref="U4" pin="20" pinfunction="20/A6/TX5/LRCLK1" pintype="bidirectional"/>
       <node ref="U5" pin="11" pinfunction="DIN" pintype="input"/>
     </net>
-    <net code="23" name="/~{INVALID}">
+    <net code="17" name="/~{RS232_INVALID}">
+      <node ref="U4" pin="23" pinfunction="23/A9/CRX1/MCLK1/PWM" pintype="bidirectional"/>
       <node ref="U5" pin="10" pinfunction="~{INVALID}" pintype="output"/>
     </net>
-    <net code="24" name="GND">
+    <net code="18" name="GND">
       <node ref="C1" pin="2" pintype="passive"/>
       <node ref="C10" pin="2" pintype="passive"/>
       <node ref="C11" pin="2" pintype="passive"/>
       <node ref="C12" pin="2" pintype="passive"/>
       <node ref="C13" pin="2" pintype="passive"/>
-      <node ref="C14" pin="2" pintype="passive"/>
       <node ref="C15" pin="2" pintype="passive"/>
-      <node ref="C16" pin="2" pintype="passive"/>
-      <node ref="C17" pin="2" pintype="passive"/>
       <node ref="C18" pin="2" pintype="passive"/>
       <node ref="C19" pin="2" pintype="passive"/>
       <node ref="C2" pin="2" pintype="passive"/>
-      <node ref="C20" pin="2" pintype="passive"/>
-      <node ref="C21" pin="2" pintype="passive"/>
       <node ref="C22" pin="2" pintype="passive"/>
       <node ref="C23" pin="2" pintype="passive"/>
-      <node ref="C24" pin="2" pintype="passive"/>
       <node ref="C3" pin="2" pintype="passive"/>
       <node ref="C4" pin="2" pintype="passive"/>
       <node ref="C5" pin="2" pintype="passive"/>
       <node ref="C6" pin="2" pintype="passive"/>
       <node ref="C7" pin="2" pintype="passive"/>
       <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="J10" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J11" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J12" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="J13" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J2" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J3" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J4" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J5" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="J6" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="J7" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="J8" pin="1" pinfunction="Pin_1" pintype="passive"/>
-      <node ref="J9" pin="1" pinfunction="Pin_1" pintype="passive"/>
       <node ref="Q3" pin="2" pinfunction="S" pintype="passive"/>
       <node ref="R10" pin="2" pintype="passive"/>
       <node ref="R18" pin="2" pintype="passive"/>
       <node ref="SW1" pin="1" pinfunction="A" pintype="passive"/>
-      <node ref="SW2" pin="1" pinfunction="A" pintype="passive"/>
       <node ref="U1" pin="2" pinfunction="GND" pintype="power_in"/>
-      <node ref="U2" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="U2" pin="3" pinfunction="GND" pintype="power_in"/>
       <node ref="U3" pin="1" pinfunction="GND" pintype="power_in"/>
       <node ref="U4" pin="GND_1" pinfunction="GND" pintype="power_in"/>
       <node ref="U5" pin="1" pinfunction="~{EN}" pintype="input"/>
       <node ref="U5" pin="14" pinfunction="GND" pintype="power_in"/>
       <node ref="U6" pin="6" pinfunction="GND" pintype="power_in"/>
-      <node ref="U7" pin="2" pinfunction="GND" pintype="power_in"/>
+      <node ref="U7" pin="3" pinfunction="GND" pintype="power_in"/>
       <node ref="U8" pin="4" pinfunction="GND" pintype="power_in"/>
-      <node ref="U9" pin="5" pinfunction="GND" pintype="power_in"/>
     </net>
-    <net code="25" name="Net-(C2-Pad1)">
+    <net code="19" name="Net-(C2-Pad1)">
       <node ref="C2" pin="1" pintype="passive"/>
       <node ref="L1" pin="2" pinfunction="2" pintype="passive"/>
       <node ref="U1" pin="1" pinfunction="VIN" pintype="power_in"/>
     </net>
-    <net code="26" name="Net-(C5-Pad1)">
+    <net code="20" name="Net-(C5-Pad1)">
       <node ref="C5" pin="1" pintype="passive"/>
       <node ref="R3" pin="2" pintype="passive"/>
-      <node ref="U2" pin="1" pintype="input"/>
+      <node ref="U2" pin="2" pinfunction="A" pintype="input"/>
     </net>
-    <net code="27" name="Net-(C6-Pad1)">
-      <node ref="C6" pin="1" pintype="passive"/>
-      <node ref="R4" pin="2" pintype="passive"/>
-      <node ref="U2" pin="3" pintype="input"/>
-    </net>
-    <net code="28" name="Net-(C8-Pad1)">
+    <net code="21" name="Net-(C8-Pad1)">
       <node ref="C8" pin="1" pintype="passive"/>
       <node ref="U5" pin="2" pinfunction="C1+" pintype="passive"/>
     </net>
-    <net code="29" name="Net-(C8-Pad2)">
+    <net code="22" name="Net-(C8-Pad2)">
       <node ref="C8" pin="2" pintype="passive"/>
       <node ref="U5" pin="4" pinfunction="C1-" pintype="passive"/>
     </net>
-    <net code="30" name="Net-(C9-Pad1)">
+    <net code="23" name="Net-(C9-Pad1)">
       <node ref="C9" pin="1" pintype="passive"/>
       <node ref="U5" pin="5" pinfunction="C2+" pintype="passive"/>
     </net>
-    <net code="31" name="Net-(C9-Pad2)">
+    <net code="24" name="Net-(C9-Pad2)">
       <node ref="C9" pin="2" pintype="passive"/>
       <node ref="U5" pin="6" pinfunction="C2-" pintype="passive"/>
     </net>
-    <net code="32" name="Net-(C10-Pad1)">
+    <net code="25" name="Net-(C10-Pad1)">
       <node ref="C10" pin="1" pintype="passive"/>
       <node ref="U5" pin="3" pinfunction="V+" pintype="power_out"/>
     </net>
-    <net code="33" name="Net-(C11-Pad1)">
+    <net code="26" name="Net-(C11-Pad1)">
       <node ref="C11" pin="1" pintype="passive"/>
       <node ref="U5" pin="7" pinfunction="V-" pintype="power_out"/>
     </net>
-    <net code="34" name="Net-(C25-Pad2)">
+    <net code="27" name="Net-(C25-Pad2)">
       <node ref="C25" pin="2" pintype="passive"/>
       <node ref="Q2" pin="1" pinfunction="G" pintype="input"/>
       <node ref="R15" pin="2" pintype="passive"/>
       <node ref="R16" pin="1" pintype="passive"/>
     </net>
-    <net code="35" name="Net-(J2-Pad2)">
+    <net code="28" name="Net-(J2-Pad2)">
       <node ref="J2" pin="2" pinfunction="Pin_2" pintype="passive"/>
       <node ref="U5" pin="8" pinfunction="RIN" pintype="input"/>
     </net>
-    <net code="36" name="Net-(J2-Pad3)">
+    <net code="29" name="Net-(J2-Pad3)">
       <node ref="J2" pin="3" pinfunction="Pin_3" pintype="passive"/>
       <node ref="U5" pin="13" pinfunction="DOUT" pintype="output"/>
     </net>
-    <net code="37" name="Net-(Q1-Pad1)">
+    <net code="30" name="Net-(Q1-Pad1)">
       <node ref="Q1" pin="1" pinfunction="G" pintype="input"/>
       <node ref="R5" pin="1" pintype="passive"/>
       <node ref="R6" pin="2" pintype="passive"/>
     </net>
-    <net code="38" name="Net-(Q1-Pad3)">
+    <net code="31" name="Net-(Q1-Pad3)">
       <node ref="Q1" pin="3" pinfunction="D" pintype="passive"/>
       <node ref="U4" pin="VIN" pinfunction="VIN" pintype="power_in"/>
     </net>
-    <net code="39" name="Net-(Q3-Pad1)">
+    <net code="32" name="Net-(Q3-Pad1)">
       <node ref="Q3" pin="1" pinfunction="G" pintype="input"/>
       <node ref="R17" pin="2" pintype="passive"/>
       <node ref="R18" pin="1" pintype="passive"/>
     </net>
-    <net code="40" name="Net-(Q3-Pad3)">
+    <net code="33" name="Net-(Q3-Pad3)">
       <node ref="Q3" pin="3" pinfunction="D" pintype="passive"/>
       <node ref="R16" pin="2" pintype="passive"/>
     </net>
-    <net code="41" name="Net-(R1-Pad2)">
+    <net code="34" name="Net-(R1-Pad2)">
       <node ref="R1" pin="2" pintype="passive"/>
       <node ref="R3" pin="1" pintype="passive"/>
       <node ref="SW1" pin="2" pinfunction="B" pintype="passive"/>
     </net>
-    <net code="42" name="Net-(R2-Pad2)">
-      <node ref="R2" pin="2" pintype="passive"/>
-      <node ref="R4" pin="1" pintype="passive"/>
-      <node ref="SW2" pin="2" pinfunction="B" pintype="passive"/>
-    </net>
-    <net code="43" name="Net-(R6-Pad1)">
+    <net code="35" name="Net-(R6-Pad1)">
       <node ref="R6" pin="1" pintype="passive"/>
       <node ref="U3" pin="2" pinfunction="RESET" pintype="output"/>
     </net>
-    <net code="44" name="Net-(R10-Pad1)">
+    <net code="36" name="Net-(R10-Pad1)">
       <node ref="R10" pin="1" pintype="passive"/>
       <node ref="R9" pin="2" pintype="passive"/>
       <node ref="U6" pin="1" pinfunction="AP_SDO/AP_AD0" pintype="bidirectional"/>
     </net>
-    <net code="45" name="Net-(R11-Pad1)">
-      <node ref="R11" pin="1" pintype="passive"/>
-      <node ref="U9" pin="7" pinfunction="B" pintype="bidirectional"/>
-    </net>
-    <net code="46" name="Net-(R12-Pad2)">
+    <net code="37" name="Net-(R12-Pad2)">
       <node ref="R12" pin="2" pintype="passive"/>
       <node ref="R14" pin="1" pintype="passive"/>
       <node ref="U8" pin="2" pinfunction="1A" pintype="input"/>
       <node ref="U8" pin="3" pinfunction="2Y" pintype="output"/>
     </net>
-    <net code="47" name="Net-(R13-Pad1)">
-      <node ref="R13" pin="1" pintype="passive"/>
-      <node ref="U9" pin="6" pinfunction="A" pintype="bidirectional"/>
-    </net>
-    <net code="48" name="Net-(U7-Pad1)">
-      <node ref="U7" pin="1" pintype="input"/>
+    <net code="38" name="Net-(U7-Pad2)">
+      <node ref="U7" pin="2" pinfunction="A" pintype="input"/>
       <node ref="U8" pin="6" pinfunction="1Y" pintype="output"/>
     </net>
-    <net code="49" name="Net-(U7-Pad3)">
-      <node ref="U7" pin="3" pintype="input"/>
-      <node ref="U9" pin="1" pinfunction="RO" pintype="output"/>
+    <net code="39" name="unconnected-(U2-Pad1)">
+      <node ref="U2" pin="1" pinfunction="NC" pintype="no_connect"/>
     </net>
-    <net code="50" name="unconnected-(U4-Pad2)">
-      <node ref="U4" pin="2" pinfunction="2/OUT2/PWM" pintype="bidirectional"/>
+    <net code="40" name="unconnected-(U4-Pad1)">
+      <node ref="U4" pin="1" pinfunction="1/TX1/CTX2" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="51" name="unconnected-(U4-Pad3)">
-      <node ref="U4" pin="3" pinfunction="3/LRCLK2/PWN" pintype="bidirectional"/>
+    <net code="41" name="unconnected-(U4-Pad2)">
+      <node ref="U4" pin="2" pinfunction="2/OUT2/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="52" name="unconnected-(U4-Pad4)">
-      <node ref="U4" pin="4" pinfunction="4/BCLK2/PWM" pintype="bidirectional"/>
+    <net code="42" name="unconnected-(U4-Pad3)">
+      <node ref="U4" pin="3" pinfunction="3/LRCLK2/PWN" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="53" name="unconnected-(U4-Pad5)">
-      <node ref="U4" pin="5" pinfunction="5/IN2/PWM" pintype="bidirectional"/>
+    <net code="43" name="unconnected-(U4-Pad4)">
+      <node ref="U4" pin="4" pinfunction="4/BCLK2/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="54" name="unconnected-(U4-Pad6)">
-      <node ref="U4" pin="6" pinfunction="6/OUT1D/PWM" pintype="bidirectional"/>
+    <net code="44" name="unconnected-(U4-Pad5)">
+      <node ref="U4" pin="5" pinfunction="5/IN2/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="55" name="unconnected-(U4-Pad7)">
-      <node ref="U4" pin="7" pinfunction="7/RX2/OUT1A/PWM" pintype="bidirectional"/>
+    <net code="45" name="unconnected-(U4-Pad6)">
+      <node ref="U4" pin="6" pinfunction="6/OUT1D/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="56" name="unconnected-(U4-Pad8)">
-      <node ref="U4" pin="8" pinfunction="8/TX2/IN1/PWM" pintype="bidirectional"/>
+    <net code="46" name="unconnected-(U4-Pad10)">
+      <node ref="U4" pin="10" pinfunction="10/CS/MQSR/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="57" name="unconnected-(U4-Pad9)">
-      <node ref="U4" pin="9" pinfunction="9/OUT1C/PWM" pintype="bidirectional"/>
+    <net code="47" name="unconnected-(U4-Pad11)">
+      <node ref="U4" pin="11" pinfunction="11/MOSI/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="58" name="unconnected-(U4-Pad13)">
+    <net code="48" name="unconnected-(U4-Pad12)">
+      <node ref="U4" pin="12" pinfunction="12/MISO/MQSL/PWM" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="49" name="unconnected-(U4-Pad13)">
       <node ref="U4" pin="13" pinfunction="13/LED/SCK/PWM" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="59" name="unconnected-(U4-Pad20)">
-      <node ref="U4" pin="20" pinfunction="20/A6/TX5/LRCLK1" pintype="bidirectional"/>
+    <net code="50" name="unconnected-(U4-Pad16)">
+      <node ref="U4" pin="16" pinfunction="16/A2/RX4/SCL1" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="60" name="unconnected-(U4-Pad21)">
-      <node ref="U4" pin="21" pinfunction="21/A7/RX5/BCLK1" pintype="bidirectional"/>
+    <net code="51" name="unconnected-(U4-Pad17)">
+      <node ref="U4" pin="17" pinfunction="17/A3/TX4/SDA1" pintype="bidirectional+no_connect"/>
     </net>
-    <net code="61" name="unconnected-(U4-Pad22)">
-      <node ref="U4" pin="22" pinfunction="22/A8/CTX1/PWM" pintype="bidirectional"/>
-    </net>
-    <net code="62" name="unconnected-(U4-Pad23)">
-      <node ref="U4" pin="23" pinfunction="23/A9/CRX1/MCLK1/PWM" pintype="bidirectional"/>
-    </net>
-    <net code="63" name="unconnected-(U4-PadGND_2)">
+    <net code="52" name="unconnected-(U4-PadGND_2)">
       <node ref="U4" pin="GND_2" pinfunction="GND_2" pintype="power_in+no_connect"/>
+    </net>
+    <net code="53" name="unconnected-(U7-Pad1)">
+      <node ref="U7" pin="1" pinfunction="NC" pintype="no_connect"/>
     </net>
   </nets>
 </export>

@@ -1,4 +1,4 @@
-20600365401597327
+20610374783465661
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -86436,6 +86436,27 @@ varistor
 2
 2
 t-top
+25SH-C-03-TS
+
+
+0
+3
+3
+t-top
+25SH-C-04-TS
+
+
+0
+4
+4
+t-top
+ICM-40627
+
+
+0
+14
+9
+t-top
 K7805-3AR3
 
 
@@ -86471,6 +86492,20 @@ PQ2617BHA-150K
 3
 2
 t-top
+R-78E-0.5
+
+
+0
+3
+3
+t-top
+Teensy_4.0
+
+
+0
+28
+28
+t-top
 Teensy_LC
 
 
@@ -86486,6 +86521,13 @@ V7805-1000
 3
 t-top
 WT-1205
+
+
+0
+2
+2
+t-top
+t-connector
 
 
 0
