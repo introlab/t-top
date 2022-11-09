@@ -2,7 +2,7 @@
 
 
 ## General Format
-All fields use big-endian ordering.
+All fields use little-endian ordering.
 
 ### Table View
 <table>
@@ -21,22 +21,27 @@ All fields use big-endian ordering.
             <th>6</th>
             <th>7</th>
             <th>8</th>
-            <th>...</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td colspan="4">Preamble</td>
             <td>Full Message Length</td>
             <td>Message Source Id</td>
             <td>Message Destination Id</td>
             <td>Acknowledgment Needed</td>
+        </tr>
+        <tr>
             <td colspan="2">Message Id</td>
             <td colspan="2">Message Type</td>
-            <td>Payload</td>
+            <td colspan="4">Payload</td>
+        </tr>
+        <tr>
+            <td colspan="8">...</td>
         </tr>
         <tr>
             <td>CRC8</td>
-            <td colspan="8"></td>
+            <td colspan="7"></td>
         </tr>
     </tbody>
 </table>
@@ -44,41 +49,43 @@ All fields use big-endian ordering.
 ### Field Description
 | Field Name             | Type   | Description                                                              |
 | ---------------------- | ------ | ------------------------------------------------------------------------ |
+| Preamble               | uint32 | This field is used to detect the beginning of a message (0xAAAAAAAA).    |
 | Full Message Length    | uint8  | This field is equal to the message length in bytes including this field. |
 | Message Source Id      | uint8  | This field contains the device id of the source device.                  |
 | Message Destination Id | uint8  | This field contains the device id of the destination device.             |
-| Acknowledgment Needed  | bool   | This field indicates if an acknowledgment is needed.                     |
+| Acknowledgment Needed  | bool   | This field indicates if an acknowledgment is needed).                    |
 | Message Id             | uint16 | This field contains a random id identifying the message.                 |
 | Message Type           | uint16 | This field contains the message type.                                    |
-| Payload                |        | The payload depending on the message type.                               |
+| Payload                |        | The payload depends on the message type.                                 |
 | CRC8                   | uint8  | This field contains the CRC8 value excluding this field.                 |
 
 ### Device Id Descriptions
 | Device Id | Name              |
 | --------- | ----------------- |
-| 0         | psu_control       |
-| 1         | dynamixel_control |
-| 2         | computer          |
+| 0         | PSU Control       |
+| 1         | Dynamixel Control |
+| 2         | Computer          |
 
 ### Message Types
 | Message Type | Name                                                    | Source            | Destination       | Description                                          |
 | ------------ | ------------------------------------------------------- | ----------------- | ----------------- | ---------------------------------------------------- |
 | 0            | [Acknowledgment](#acknowledgment-payload)               | Any               | Any               | This message indicates that a message is received.   |
-| 1            | [Base Status](#base-Status-payload)                     | psu_control       | computer          | This message contains the status of the base.        |
-| 2            | [Button Pressed](#button-pressed-payload)               | psu_control       | computer          | This message indicates that a button is pressed.     |
-| 3            | [Set Volume](#set-volume-payload)                       | computer          | psu_control       | This message sets the volume of the audio amplifier. |
-| 4            | [Set LED Colors](#set-led-colors-payload)               | computer          | psu_control       | This message sets the LED colors of the base.        |
-| 5            | [Motor Status](#motor-status-payload)                   | dynamixel_control | computer          | This message contains the status of all motors.      |
-| 6            | [IMU Data](#imu-data-payload)                           | dynamixel_control | computer          | This message contains the IMU data.                  |
-| 7            | [Set Torso Orientation](#set-torso-orientation-payload) | computer          | dynamixel_control | This message sets the torso orientation.             |
-| 8            | [Set Head Pose](#set-head-pose-payload)                 | computer          | dynamixel_control | This message sets the head pose.                     |
+| 1            | [Base Status](#base-Status-payload)                     | PSU Control       | Computer          | This message contains the status of the base.        |
+| 2            | [Button Pressed](#button-pressed-payload)               | PSU Control       | Computer          | This message indicates that a button is pressed.     |
+| 3            | [Set Volume](#set-volume-payload)                       | Computer          | PSU Control       | This message sets the volume of the audio amplifier. |
+| 4            | [Set LED Colors](#set-led-colors-payload)               | Computer          | PSU Control       | This message sets the LED colors of the base.        |
+| 5            | [Motor Status](#motor-status-payload)                   | Dynamixel Control | Computer          | This message contains the status of all motors.      |
+| 6            | [IMU Data](#imu-data-payload)                           | Dynamixel Control | Computer          | This message contains the IMU data.                  |
+| 7            | [Set Torso Orientation](#set-torso-orientation-payload) | Computer          | Dynamixel Control | This message sets the torso orientation.             |
+| 8            | [Set Head Pose](#set-head-pose-payload)                 | Computer          | Dynamixel Control | This message sets the head pose.                     |
 
 ### Behaviors
+- All receivers check the preamble to detect the beginning of a message. So, a byte can be missed and the receivers are not out of synchronization with the senders. Only the message containing the missing byte is dropped.
 - All devices route the message according to the destination id.
 - The message is dropped if the destination id is invalid.
 - The message is dropped if the source id is invalid.
-- The message is dropped if the CRC8 invalid.
-- The message is dropped if the length does not match with the message type.
+- The message is dropped if the CRC8 is invalid.
+- The message is dropped if the length does not match the message type.
 - The destination device sends an acknowledgment to the source device if the CRC8 is valid.
 
 
@@ -159,28 +166,30 @@ This message contains the status of the base.
         </tr>
         <tr>
             <td>Volume</td>
-            <td colspan="7"></td>
+            <td>Volume Maximum</td>
+            <td colspan="6"></td>
         </tr>
     </tbody>
 </table>
 
 ### Field Description
-| Field Name             | Type   | Description                                                              |
-| ---------------------- | ------ | ------------------------------------------------------------------------ |
-| Is PSU Connected       | bool   | This field indicates if the PSU is connected to the robot.               |
-| Has Charger Error      | bool   | This field indicates if there is a charger error.                        |
-| Is Battery Charging    | bool   | This field indicates the battery is charging.                            |
-| Has Battery Error      | bool   | This field indicates if there is a battery error.                        |
-| State of Charge        | float  | This field contains the actual battery state of charge (0 to 100).       |
-| Current                | float  | This field contains the actual current in A.                             |
-| Voltage                | float  | This field contains the actual voltage in V.                             |
-| Onboard Temperature    | float  | This field contains the actual temperature in °C on the psu_control PCB. |
-| External Temperature   | float  | This field contains the actual temperature in °C in the base (invalid).  |
-| Front Light Sensor     | float  | This field contains the front light level (0 to 1).                      |
-| Back Light Sensor      | float  | This field contains the back light level (0 to 1).                       |
-| Left Light Sensor      | float  | This field contains the left light level (0 to 1).                       |
-| Right Light Sensor     | float  | This field contains the right light level (0 to 1).                      |
-| Volume                 | uint8  | This field contains the actual volume (0 to 63).                         |
+| Field Name             | Type   | Description                                                                                                            |
+| ---------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Is PSU Connected       | bool   | This field indicates if the PSU is connected to the robot.                                                             |
+| Has Charger Error      | bool   | This field indicates if there is a charger error.                                                                      |
+| Is Battery Charging    | bool   | This field indicates the battery is charging.                                                                          |
+| Has Battery Error      | bool   | This field indicates if there is a battery error.                                                                      |
+| State of Charge        | float  | This field contains the actual battery state of charge (0 to 100).                                                     |
+| Current                | float  | This field contains the actual current in A.                                                                           |
+| Voltage                | float  | This field contains the actual voltage in V.                                                                           |
+| Onboard Temperature    | float  | This field contains the actual temperature in °C on the PSU Control PCB.                                               |
+| External Temperature   | float  | This field contains the actual temperature in °C in the base (invalid).                                                |
+| Front Light Sensor     | float  | This field contains the front light level (0 to 1).                                                                    |
+| Back Light Sensor      | float  | This field contains the back light level (0 to 1).                                                                     |
+| Left Light Sensor      | float  | This field contains the left light level (0 to 1).                                                                     |
+| Right Light Sensor     | float  | This field contains the right light level (0 to 1).                                                                    |
+| Volume                 | uint8  | This field contains the actual volume (0 to 63).                                                                       |
+| Volume Maximum         | uint8  | This field contains the actual volume maximum (0 to 63). The maximum depends on whether the power supply is connected. |
 
 
 ## Button Pressed Payload
@@ -289,7 +298,7 @@ This message sets the volume of the audio amplifier.
 | LED 2 Red Value   | uint8 | This field contains the LED 2 red value (0 to 255).       |
 | LED 2 Green Value | uint8 | This field contains the LED 2 red value (0 to 255).       |
 | LED 2 Blue Value  | uint8 | This field contains the LED 2 red value (0 to 255).       |
-| ...               |       | Those fields are repeated for each leds. There is 31 LEDs |
+| ...               |       | Those fields are repeated for each led. There are 31 LEDs |
 
 
 ## Motor Status Payload
