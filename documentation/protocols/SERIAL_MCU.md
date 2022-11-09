@@ -2,7 +2,7 @@
 
 
 ## General Format
-All fields are big endians.
+All fields use big-endian ordering.
 
 ### Table View
 <table>
