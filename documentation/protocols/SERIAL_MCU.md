@@ -63,6 +63,7 @@ All fields use big-endian ordering.
 ### Message Types
 | Message Type | Name                                                    | Source            | Destination       | Description                                          |
 | ------------ | ------------------------------------------------------- | ----------------- | ----------------- | ---------------------------------------------------- |
+| 0            | [Acknowledgment](#acknowledgment-payload)               | Any               | Any               | This message indicates that a message is received.   |
 | 1            | [Base Status](#base-Status-payload)                     | psu_control       | computer          | This message contains the status of the base.        |
 | 2            | [Button Pressed](#button-pressed-payload)               | psu_control       | computer          | This message indicates that a button is pressed.     |
 | 3            | [Set Volume](#set-volume-payload)                       | computer          | psu_control       | This message sets the volume of the audio amplifier. |
@@ -79,6 +80,35 @@ All fields use big-endian ordering.
 - The message is dropped if the CRC8 invalid.
 - The message is dropped if the length does not match with the message type.
 - The destination device sends an acknowledgment to the source device if the CRC8 is valid.
+
+
+## Acknowledgment Payload
+This message indicates that a message is received.
+
+### Table View
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">Bytes</th>
+        </tr>
+    </thead>
+    <thead>
+        <tr>
+            <th>1</th>
+            <th>2</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="2">Received Message Id</td>
+        </tr>
+    </tbody>
+</table>
+
+### Field Description
+| Field Name          | Type   | Description                                  |
+| ------------------- | ------ | -------------------------------------------- |
+| Received Message Id | uint16 | This field contains the received message id. |
 
 
 ## Base Status Payload
