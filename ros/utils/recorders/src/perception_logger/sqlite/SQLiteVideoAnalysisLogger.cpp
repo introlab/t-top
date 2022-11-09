@@ -48,28 +48,28 @@ int64_t SQLiteVideoAnalysisLogger::log(const VideoAnalysis& analysis)
     optional<Bytes> personPoseImageBytes;
     if (analysis.personPoseImage.has_value())
     {
-        personPoseImageBytes = BinarySerializer<vector<ImagePosition>>::serializeNoCopy(analysis.personPoseImage.value());
+        personPoseImageBytes = serializeToBytesNoCopy(analysis.personPoseImage.value());
         insert.bindNoCopy(7, personPoseImageBytes->data(), personPoseImageBytes->size());
     }
 
     optional<Bytes> personPoseBytes;
     if (analysis.personPose.has_value())
     {
-        personPoseBytes = BinarySerializer<vector<Position>>::serializeNoCopy(analysis.personPose.value());
+        personPoseBytes = serializeToBytesNoCopy(analysis.personPose.value());
         insert.bindNoCopy(8, personPoseBytes->data(), personPoseBytes->size());
     }
 
     optional<Bytes> personPoseConfidenceBytes;
     if (analysis.personPoseConfidence.has_value())
     {
-        personPoseConfidenceBytes = BinarySerializer<vector<float>>::serializeNoCopy(analysis.personPoseConfidence.value());
+        personPoseConfidenceBytes = serializeToBytesNoCopy(analysis.personPoseConfidence.value());
         insert.bindNoCopy(9, personPoseConfidenceBytes->data(), personPoseConfidenceBytes->size());
     }
 
     optional<Bytes> faceDescriptorBytes;
     if (analysis.faceDescriptor.has_value())
     {
-        faceDescriptorBytes = BinarySerializer<vector<float>>::serializeNoCopy(analysis.faceDescriptor.value());
+        faceDescriptorBytes = serializeToBytesNoCopy(analysis.faceDescriptor.value());
         insert.bindNoCopy(10, faceDescriptorBytes->data(), faceDescriptorBytes->size());
     }
 

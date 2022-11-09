@@ -93,59 +93,69 @@ public:
     Bytes& operator=(Bytes&& other);
 
     template<class T>
-    friend struct BinarySerializer;
+    friend Bytes serializeToBytesNoCopy(const T& v);
+
+    template<class T>
+    friend Bytes serializeToBytesNoCopy(const std::vector<T>& v);
 };
 
 
 template<class T>
-struct BinarySerializer
+Bytes serializeToBytesNoCopy(const T& v)
 {
-    static Bytes serializeNoCopy(const T& v)
+    static_assert(
+        std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
+        "Not supported type: T must inherit ValueType or be a builtin value type");
+
+    if constexpr (isLittleEndian())
     {
-        static_assert(
-            std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
-            "Not supported type: T must inherit ValueType or be a builtin value type");
-
-        if constexpr (isLittleEndian())
-        {
-            return Bytes(reinterpret_cast<const std::byte*>(&v), sizeof(T));
-        }
-
-        Bytes bytes(sizeof(T));
-        auto littleEndianBytes = toLittleEndianBytes(v);
-        memcpy(bytes.m_data, littleEndianBytes.data(), sizeof(T));
-        return bytes;
+        return Bytes(reinterpret_cast<const std::byte*>(&v), sizeof(T));
     }
 
-    static Bytes serializeNoCopy(T&&) = delete;  // Disallow temporaries
-};
-
+    Bytes bytes(sizeof(T));
+    auto littleEndianBytes = toLittleEndianBytes(v);
+    memcpy(bytes.m_data, littleEndianBytes.data(), sizeof(T));
+    return bytes;
+}
 
 template<class T>
-struct BinarySerializer<std::vector<T>>
+Bytes serializeToBytesNoCopy(T& v)
 {
-    static Bytes serializeNoCopy(const std::vector<T>& v)
+    return serializeToBytesNoCopy(const_cast<const T&>(v));
+};
+
+template<class T>
+Bytes serializeToBytesNoCopy(T&&) = delete;  // Disallow temporaries
+
+template<class T>
+Bytes serializeToBytesNoCopy(const std::vector<T>& v)
+{
+    static_assert(
+        std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
+        "Not supported type: T must be a value type or be a builtin value type");
+
+    if constexpr (isLittleEndian())
     {
-        static_assert(
-            std::is_integral_v<T> || std::is_floating_point_v<T> || is_value_type_v<T>,
-            "Not supported type: T must be a value type or be a builtin value type");
-
-        if constexpr (isLittleEndian())
-        {
-            return Bytes(reinterpret_cast<const std::byte*>(v.data()), v.size() * sizeof(T));
-        }
-
-        Bytes bytes(v.size() * sizeof(T));
-        T* ptr = reinterpret_cast<T*>(bytes.m_data);
-        for (size_t i = 0; i < v.size(); i++)
-        {
-            auto littleEndianBytes = toLittleEndianBytes(v[i]);
-            memcpy(ptr + i, littleEndianBytes.data(), sizeof(T));
-        }
-        return bytes;
+        return Bytes(reinterpret_cast<const std::byte*>(v.data()), v.size() * sizeof(T));
     }
 
-    static Bytes serializeNoCopy(std::vector<T>&&) = delete;  // Disallow temporaries
+    Bytes bytes(v.size() * sizeof(T));
+    T* ptr = reinterpret_cast<T*>(bytes.m_data);
+    for (size_t i = 0; i < v.size(); i++)
+    {
+        auto littleEndianBytes = toLittleEndianBytes(v[i]);
+        memcpy(ptr + i, littleEndianBytes.data(), sizeof(T));
+    }
+    return bytes;
+}
+
+template<class T>
+Bytes serializeToBytesNoCopy(std::vector<T>& v)
+{
+    return serializeToBytesNoCopy(const_cast<const std::vector<T>&>(v));
 };
+
+template<class T>
+Bytes serializeToBytesNoCopy(std::vector<T>&&) = delete;  // Disallow temporaries
 
 #endif
