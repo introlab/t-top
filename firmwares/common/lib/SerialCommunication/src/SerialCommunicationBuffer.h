@@ -19,12 +19,12 @@ struct enum_max : std::integral_constant<typename std::underlying_type<T>::type,
 {
 };
 
-#include <iostream>
-
 template<class T>
-bool put(uint8_t* data, size_t& writeIndex, size_t maxSize, const T& value)
+bool write(uint8_t* data, size_t& writeIndex, size_t maxSize, const T& value)
 {
-    static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value, "Not supported type: T must be a value type.");
+    static_assert(
+        std::is_integral<T>::value || std::is_floating_point<T>::value || std::is_enum<T>::value,
+        "Not supported type: T must be a value type.");
 
     if ((maxSize - writeIndex) < sizeof(T))
     {
@@ -50,16 +50,31 @@ bool put(uint8_t* data, size_t& writeIndex, size_t maxSize, const T& value)
     return true;
 }
 
-template<>
-inline bool put(uint8_t* data, size_t& writeIndex, size_t maxSize, const bool& value)
+inline bool write(uint8_t* data, size_t& writeIndex, size_t maxSize, const uint8_t* newData, size_t newDataSize)
 {
-    return put(data, writeIndex, maxSize, static_cast<uint8_t>(value));
+    if ((maxSize - writeIndex) < newDataSize)
+    {
+        return false;
+    }
+
+    std::memcpy(data + writeIndex, newData, newDataSize);
+    writeIndex += newDataSize;
+    return true;
+}
+
+template<>
+inline bool write(uint8_t* data, size_t& writeIndex, size_t maxSize, const bool& value)
+{
+    return write(data, writeIndex, maxSize, static_cast<uint8_t>(value));
 }
 
 template<class T>
-typename std::enable_if<!std::is_enum<T>::value && !std::is_same<T, bool>::value, tl::optional<T>>::type read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
+typename std::enable_if<!std::is_enum<T>::value && !std::is_same<T, bool>::value, tl::optional<T>>::type
+    read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
 {
-    static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value, "Not supported type: T must be a value type.");
+    static_assert(
+        std::is_integral<T>::value || std::is_floating_point<T>::value,
+        "Not supported type: T must be a value type.");
 
     if ((writeIndex - readIndex) < sizeof(T))
     {
@@ -88,7 +103,8 @@ typename std::enable_if<!std::is_enum<T>::value && !std::is_same<T, bool>::value
 }
 
 template<class T>
-typename std::enable_if<std::is_same<T, bool>::value, tl::optional<T>>::type read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
+typename std::enable_if<std::is_same<T, bool>::value, tl::optional<T>>::type
+    read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
 {
     auto value = read<uint8_t>(data, writeIndex, readIndex, maxSize);
     if (!value.has_value())
@@ -100,7 +116,8 @@ typename std::enable_if<std::is_same<T, bool>::value, tl::optional<T>>::type rea
 }
 
 template<class T>
-typename std::enable_if<std::is_enum<T>::value, tl::optional<T>>::type read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
+typename std::enable_if<std::is_enum<T>::value, tl::optional<T>>::type
+    read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
 {
     auto value = read<typename std::underlying_type<T>::type>(data, writeIndex, readIndex, maxSize);
     if (!value.has_value() || value.value() < enum_min<T>::value || value.value() > enum_max<T>::value)
@@ -118,7 +135,7 @@ class SerialCommunicationBuffer;
 
 /**
  * Little-endian buffer view
-*/
+ */
 class SerialCommunicationBufferView
 {
     uint8_t* m_data;
@@ -127,7 +144,6 @@ class SerialCommunicationBufferView
     size_t m_maxSize;
 
 public:
-
     template<size_t N>
     SerialCommunicationBufferView(SerialCommunicationBuffer<N>& buffer);
 
@@ -139,7 +155,8 @@ public:
     uint8_t operator[](size_t i) const;
 
     template<class T>
-    bool put(const T& value);
+    bool write(const T& value);
+    bool write(const uint8_t* data, size_t size);
 
     template<class T>
     tl::optional<T> read() const;
@@ -148,7 +165,7 @@ public:
 
 /**
  * Little-endian buffer
-*/
+ */
 template<size_t N>
 class SerialCommunicationBuffer
 {
@@ -167,7 +184,8 @@ public:
     uint8_t operator[](size_t i) const;
 
     template<class T>
-    bool put(const T& value);
+    bool write(const T& value);
+    bool write(const uint8_t* data, size_t size);
 
     template<class T>
     tl::optional<T> read() const;
@@ -176,7 +194,8 @@ public:
 };
 
 template<size_t N>
-SerialCommunicationBuffer<N>::SerialCommunicationBuffer() : m_writeIndex(0), m_readIndex(0)
+SerialCommunicationBuffer<N>::SerialCommunicationBuffer() : m_writeIndex(0),
+                                                            m_readIndex(0)
 {
 }
 
@@ -213,9 +232,15 @@ inline uint8_t SerialCommunicationBuffer<N>::operator[](size_t i) const
 
 template<size_t N>
 template<class T>
-inline bool SerialCommunicationBuffer<N>::put(const T& value)
+inline bool SerialCommunicationBuffer<N>::write(const T& value)
 {
-    return ::put(m_data, m_writeIndex, N, value);
+    return ::write(m_data, m_writeIndex, N, value);
+}
+
+template<size_t N>
+inline bool SerialCommunicationBuffer<N>::write(const uint8_t* data, size_t size)
+{
+    return ::write(m_data, m_writeIndex, N, data, size);
 }
 
 template<size_t N>
@@ -227,7 +252,11 @@ inline tl::optional<T> SerialCommunicationBuffer<N>::read() const
 
 
 template<size_t N>
-SerialCommunicationBufferView::SerialCommunicationBufferView(SerialCommunicationBuffer<N>& buffer) : m_data(buffer.m_data), m_writeIndex(buffer.m_writeIndex), m_readIndex(buffer.m_readIndex), m_maxSize(N)
+SerialCommunicationBufferView::SerialCommunicationBufferView(SerialCommunicationBuffer<N>& buffer)
+    : m_data(buffer.m_data),
+      m_writeIndex(buffer.m_writeIndex),
+      m_readIndex(buffer.m_readIndex),
+      m_maxSize(N)
 {
 }
 
@@ -258,10 +287,16 @@ inline uint8_t SerialCommunicationBufferView::operator[](size_t i) const
 }
 
 template<class T>
-inline bool SerialCommunicationBufferView::put(const T& value)
+inline bool SerialCommunicationBufferView::write(const T& value)
 {
-    return ::put(m_data, m_writeIndex, m_maxSize, value);
+    return ::write(m_data, m_writeIndex, m_maxSize, value);
 }
+
+inline bool SerialCommunicationBufferView::write(const uint8_t* data, size_t size)
+{
+    return ::write(m_data, m_writeIndex, m_maxSize, data, size);
+}
+
 template<class T>
 inline typename tl::optional<T> SerialCommunicationBufferView::read() const
 {

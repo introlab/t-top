@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <SerialCommunication.h>
+
 void setup() {  // initialize digital pin 13 as an output.
    pinMode(13, OUTPUT);
 }

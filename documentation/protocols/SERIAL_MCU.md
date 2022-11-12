@@ -78,7 +78,6 @@ It is a binary protocol and all fields use little-endian ordering.
 | 7            | [Set Torso Orientation](#set-torso-orientation-payload) | Computer          | Dynamixel Control | This message sets the torso orientation.                                              |
 | 8            | [Set Head Pose](#set-head-pose-payload)                 | Computer          | Dynamixel Control | This message sets the head pose.                                                      |
 | 9            | Shutdown                                                | PSU Control       | Computer          | This message indicates that the computer must shut down. This message has no payload. |
-| 10           | Ready for Shutdown                                      | Computer          | PSU Control       | This message is sent just before the computer shut down. This message has no payload. |
 
 ### Behaviors
 - All receivers check the preamble to detect the beginning of a message. So, a byte can be missed and the receivers are not out of synchronization with the senders. Only the message containing the missing byte is dropped.
