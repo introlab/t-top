@@ -1,17 +1,15 @@
 #ifndef _SYSTEM_TRAY_APP_H_
 #define _SYSTEM_TRAY_APP_H_
 
-#include <QGuiApplication>
+#include <QApplication>
 #include <QObject>
 #include "SystemTrayIcon.h"
 
-class SystemTrayApp : public QGuiApplication
+class SystemTrayApp : public QApplication
 {
     Q_OBJECT
 public:
     SystemTrayApp(int argc, char* argv[]);
-
-
 
 private:
     SystemTrayIcon *m_trayIcon;
