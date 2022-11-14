@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QObject>
 #include "SystemTrayIcon.h"
+#include "WebSocketDaemonClient.h"
 
 class SystemTrayApp : public QApplication
 {
@@ -13,6 +14,7 @@ public:
 
 private:
     SystemTrayIcon *m_trayIcon;
+    WebSocketDaemonClient *m_webSocketClient;
 };
 
 #endif // _SYSTEM_TRAY_APP_H_
