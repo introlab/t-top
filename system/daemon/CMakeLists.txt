@@ -4,7 +4,7 @@ project(TTOP_Deamon)
 
 
 ## Set compile options
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Required Qt5 Modules
@@ -14,15 +14,21 @@ find_package(Qt5 REQUIRED COMPONENTS Core Network WebSockets SerialPort)
 file(GLOB serial_message_common_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.cpp)
 file(GLOB serial_message_common_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.h)
 add_library(serial_message_common STATIC ${serial_message_common_srcs} ${serial_message_common_headers})
-target_include_directories(serial_message_common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../ros/utils/recorders/3rd_party/optional/include)
+target_include_directories(serial_message_common PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/SerialCommunication/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ros/utils/recorders/3rd_party/optional/include)
 
 
 set (deamon_headers
     src/DaemonApp.h
+    src/DaemonWebSocketServer.h
+    src/DaemonSerialManager.h
 )
 
 set (daemon_srcs
     src/DaemonApp.cpp
+    src/DaemonWebSocketServer.cpp
+    src/DaemonSerialManager.cpp
     src/main.cpp
 )
 
