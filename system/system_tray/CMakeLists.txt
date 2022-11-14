@@ -22,11 +22,13 @@ target_include_directories(serial_communication_common PUBLIC
 set (system_tray_headers
     src/SystemTrayIcon.h
     src/SystemTrayApp.h
+    src/WebSocketDaemonClient.h
 )
 
 set (system_tray_srcs
     src/SystemTrayIcon.cpp
     src/SystemTrayApp.cpp
+    src/WebSocketDaemonClient.cpp
     src/main.cpp
 )
 

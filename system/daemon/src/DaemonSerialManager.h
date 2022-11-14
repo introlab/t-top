@@ -7,9 +7,7 @@
 
 // From common library
 #include "SerialCommunication.h"
-#include "SerialCommunicationBuffer.h"
-#include "SerialMessagePayloads.h"
-#include "SerialMessages.h"
+
 
 class DaemonSerialManager : public QObject {
 

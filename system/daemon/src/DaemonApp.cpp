@@ -18,10 +18,10 @@ void DeamonApp::setupWebSocketServers()
     // Create websocket server for ROS, CLI & TaskBar
     DaemonWebSocketServer *rosServer = new DaemonWebSocketServer("DeamonApp-ROSWebSocketServer", 8080, 1, this);
     DaemonWebSocketServer *cliServer = new DaemonWebSocketServer("DeamonApp-CLIWebSocketServer", 8081, 1, this);
-    DaemonWebSocketServer *taskbarServer = new DaemonWebSocketServer("DeamonApp-TaskBarWebSocketServer", 8082, 1, this);
+    DaemonWebSocketServer *systemTrayServer = new DaemonWebSocketServer("DeamonApp-SystemTrayWebSocketServer", 8082, 1, this);
 
     // Add all servers to the list
-    m_webSocketServers << rosServer << cliServer << taskbarServer;
+    m_webSocketServers << rosServer << cliServer << systemTrayServer;
 }
 
 void DeamonApp::setupSerialManager()
