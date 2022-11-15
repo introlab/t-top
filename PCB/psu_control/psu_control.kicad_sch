@@ -1936,6 +1936,9 @@
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/b395609d-953f-4d9b-b9f1-555b6c59ae2d"
       (reference "R41") (unit 1) (value "2.2k") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
+    (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/8f0da9ec-0122-4a01-ac99-5770897f6aa5"
+      (reference "R42") (unit 1) (value "47") (footprint "Resistor_SMD:R_0805_2012Metric")
+    )
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/b5ffe216-b282-4ae6-a745-3676b6de3634"
       (reference "RV1") (unit 1) (value "V12ZA1P") (footprint "Varistor:RV_Disc_D7mm_W4mm_P5mm")
     )
