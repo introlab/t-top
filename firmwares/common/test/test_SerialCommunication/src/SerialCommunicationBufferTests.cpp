@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-enum class TestEnum: uint8_t
+enum class TestEnum : uint8_t
 {
     A = 0
 };

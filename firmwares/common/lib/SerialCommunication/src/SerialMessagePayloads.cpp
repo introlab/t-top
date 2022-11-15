@@ -12,9 +12,9 @@ constexpr MessageType ButtonPressedPayload::MESSAGE_TYPE;
 constexpr bool SetVolumePayload::DEFAULT_ACKNOWLEDGMENT_NEEDED;
 constexpr MessageType SetVolumePayload::MESSAGE_TYPE;
 
-constexpr bool SetLEDColorsPayload::DEFAULT_ACKNOWLEDGMENT_NEEDED;
-constexpr MessageType SetLEDColorsPayload::MESSAGE_TYPE;
-constexpr size_t SetLEDColorsPayload::LED_COUNT;
+constexpr bool SetLedColorsPayload::DEFAULT_ACKNOWLEDGMENT_NEEDED;
+constexpr MessageType SetLedColorsPayload::MESSAGE_TYPE;
+constexpr size_t SetLedColorsPayload::LED_COUNT;
 
 constexpr bool MotorStatusPayload::DEFAULT_ACKNOWLEDGMENT_NEEDED;
 constexpr MessageType MotorStatusPayload::MESSAGE_TYPE;

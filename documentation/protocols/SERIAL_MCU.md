@@ -66,18 +66,18 @@ It is a binary protocol and all fields use little-endian ordering.
 | 2         | Computer          |
 
 ### Message Types
-| Message Type | Name                                                    | Source            | Destination       | Description                                                                           |
-| ------------ | ------------------------------------------------------- | ----------------- | ----------------- | ------------------------------------------------------------------------------------- |
-| 0            | [Acknowledgment](#acknowledgment-payload)               | Any               | Any               | This message indicates that a message is received.                                    |
-| 1            | [Base Status](#base-Status-payload)                     | PSU Control       | Computer          | This message contains the status of the base.                                         |
-| 2            | [Button Pressed](#button-pressed-payload)               | PSU Control       | Computer          | This message indicates that a button is pressed.                                      |
-| 3            | [Set Volume](#set-volume-payload)                       | Computer          | PSU Control       | This message sets the volume of the audio amplifier.                                  |
-| 4            | [Set LED Colors](#set-led-colors-payload)               | Computer          | PSU Control       | This message sets the LED colors of the base.                                         |
-| 5            | [Motor Status](#motor-status-payload)                   | Dynamixel Control | Computer          | This message contains the status of all motors.                                       |
-| 6            | [IMU Data](#imu-data-payload)                           | Dynamixel Control | Computer          | This message contains the IMU data.                                                   |
-| 7            | [Set Torso Orientation](#set-torso-orientation-payload) | Computer          | Dynamixel Control | This message sets the torso orientation.                                              |
-| 8            | [Set Head Pose](#set-head-pose-payload)                 | Computer          | Dynamixel Control | This message sets the head pose.                                                      |
-| 9            | Shutdown                                                | PSU Control       | Computer          | This message indicates that the computer must shut down. This message has no payload. |
+| Message Type | Name                                                    | Source            | Destination                         | Description                                                                           |
+| ------------ | ------------------------------------------------------- | ----------------- | ----------------------------------- | ------------------------------------------------------------------------------------- |
+| 0            | [Acknowledgment](#acknowledgment-payload)               | Any               | Any                                 | This message indicates that a message is received.                                    |
+| 1            | [Base Status](#base-Status-payload)                     | PSU Control       | Computer                            | This message contains the status of the base.                                         |
+| 2            | [Button Pressed](#button-pressed-payload)               | PSU Control       | Computer                            | This message indicates that a button is pressed.                                      |
+| 3            | [Set Volume](#set-volume-payload)                       | Computer          | PSU Control                         | This message sets the volume of the audio amplifier.                                  |
+| 4            | [Set LED Colors](#set-led-colors-payload)               | Computer          | PSU Control                         | This message sets the LED colors of the base.                                         |
+| 5            | [Motor Status](#motor-status-payload)                   | Dynamixel Control | Computer                            | This message contains the status of all motors.                                       |
+| 6            | [IMU Data](#imu-data-payload)                           | Dynamixel Control | Computer                            | This message contains the IMU data.                                                   |
+| 7            | [Set Torso Orientation](#set-torso-orientation-payload) | Computer          | Dynamixel Control                   | This message sets the torso orientation.                                              |
+| 8            | [Set Head Pose](#set-head-pose-payload)                 | Computer          | Dynamixel Control                   | This message sets the head pose.                                                      |
+| 9            | Shutdown                                                | PSU Control       | Computer/Dynamixel Control          | This message indicates that the computer must shut down. This message has no payload. |
 
 ### Behaviors
 - All receivers check the preamble to detect the beginning of a message. So, a byte can be missed and the receivers are not out of synchronization with the senders. Only the message containing the missing byte is dropped.

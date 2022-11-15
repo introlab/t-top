@@ -198,7 +198,7 @@ struct Color
     uint8_t blue;
 };
 
-struct SetLEDColorsPayload
+struct SetLedColorsPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SET_LED_COLORS;
@@ -210,11 +210,11 @@ struct SetLEDColorsPayload
     bool writeTo(Buffer& buffer);
 
     template<class Buffer>
-    static tl::optional<SetLEDColorsPayload> readFrom(Buffer& buffer);
+    static tl::optional<SetLedColorsPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool SetLEDColorsPayload::writeTo(Buffer& buffer)
+bool SetLedColorsPayload::writeTo(Buffer& buffer)
 {
     for (size_t i = 0; i < LED_COUNT; i++)
     {
@@ -227,9 +227,9 @@ bool SetLEDColorsPayload::writeTo(Buffer& buffer)
 }
 
 template<class Buffer>
-tl::optional<SetLEDColorsPayload> SetLEDColorsPayload::readFrom(Buffer& buffer)
+tl::optional<SetLedColorsPayload> SetLedColorsPayload::readFrom(Buffer& buffer)
 {
-    SetLEDColorsPayload payload;
+    SetLedColorsPayload payload;
 
     for (size_t i = 0; i < LED_COUNT; i++)
     {

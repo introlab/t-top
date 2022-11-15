@@ -103,7 +103,7 @@ TEST(MessageTests, constructor_defaultAcknowledgment_shouldSetRightValues)
     EXPECT_TRUE(testee4.header().acknowledgmentNeeded());
     EXPECT_EQ(testee4.header().messageType(), MessageType::SET_VOLUME);
 
-    Message<SetLEDColorsPayload> testee5(Device::PSU_CONTROL, Device::COMPUTER, SetLEDColorsPayload{});
+    Message<SetLedColorsPayload> testee5(Device::PSU_CONTROL, Device::COMPUTER, SetLedColorsPayload{});
     EXPECT_TRUE(testee5.header().acknowledgmentNeeded());
     EXPECT_EQ(testee5.header().messageType(), MessageType::SET_LED_COLORS);
 

@@ -2,10 +2,10 @@
 
 #include <gtest/gtest.h>
 
-#define EXPECT_BUFFER_EQ(bytes1, bytes2, size) \
-    for (size_t i = 0; i < (size); i++) \
-    { \
-        EXPECT_EQ((bytes1)[i], (bytes2)[i]) << "i=" << i; \
+#define EXPECT_BUFFER_EQ(bytes1, bytes2, size)                                                                         \
+    for (size_t i = 0; i < (size); i++)                                                                                \
+    {                                                                                                                  \
+        EXPECT_EQ((bytes1)[i], (bytes2)[i]) << "i=" << i;                                                              \
     }
 
 TEST(AcknowledgmentPayloadTests, writeTo_tooSmallBuffer_shouldReturnFalse)
@@ -76,21 +76,20 @@ TEST(BaseStatusPayloadTests, writeTo_buffer_shouldWriteTheBytes)
     payload.volume = 0x11;
     payload.maximumVolume = 0x22;
 
-    constexpr uint8_t EXPECT_DATA[] =
-    {
-        0x01, 0x00, 0x01, 0x00, // isPsuConnected, hasChargerError, isBatteryCharging, hasBatteryError
+    constexpr uint8_t EXPECT_DATA[] = {
+        0x01, 0x00, 0x01, 0x00,  // isPsuConnected, hasChargerError, isBatteryCharging, hasBatteryError
 
-        0x00, 0x00, 0x80, 0x3f, // stateOfCharge
-        0x00, 0x00, 0x00, 0x40, // current
-        0x00, 0x00, 0x40, 0x40, // voltage
-        0x00, 0x00, 0x80, 0x40, // onboardTemperature
-        0x00, 0x00, 0xA0, 0x40, // externalTemperature
-        0x00, 0x00, 0xC0, 0x40, // frontLightSensor
-        0x00, 0x00, 0xE0, 0x40, // backLightSensor
-        0x00, 0x00, 0x10, 0x41, // leftLightSensor
-        0x00, 0x00, 0x20, 0x41, // rightLightSensor
+        0x00, 0x00, 0x80, 0x3f,  // stateOfCharge
+        0x00, 0x00, 0x00, 0x40,  // current
+        0x00, 0x00, 0x40, 0x40,  // voltage
+        0x00, 0x00, 0x80, 0x40,  // onboardTemperature
+        0x00, 0x00, 0xA0, 0x40,  // externalTemperature
+        0x00, 0x00, 0xC0, 0x40,  // frontLightSensor
+        0x00, 0x00, 0xE0, 0x40,  // backLightSensor
+        0x00, 0x00, 0x10, 0x41,  // leftLightSensor
+        0x00, 0x00, 0x20, 0x41,  // rightLightSensor
 
-        0x11, 0x22 // volume, maximumVolume
+        0x11, 0x22  // volume, maximumVolume
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -109,21 +108,20 @@ TEST(BaseStatusPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
 
 TEST(BaseStatusPayloadTests, readFrom_shouldReturnThePayload)
 {
-    constexpr uint8_t DATA[] =
-    {
-        0x01, 0x00, 0x01, 0x00, // isPsuConnected, hasChargerError, isBatteryCharging, hasBatteryError
+    constexpr uint8_t DATA[] = {
+        0x01, 0x00, 0x01, 0x00,  // isPsuConnected, hasChargerError, isBatteryCharging, hasBatteryError
 
-        0x00, 0x00, 0x80, 0x3f, // stateOfCharge
-        0x00, 0x00, 0x00, 0x40, // current
-        0x00, 0x00, 0x40, 0x40, // voltage
-        0x00, 0x00, 0x80, 0x40, // onboardTemperature
-        0x00, 0x00, 0xA0, 0x40, // externalTemperature
-        0x00, 0x00, 0xC0, 0x40, // frontLightSensor
-        0x00, 0x00, 0xE0, 0x40, // backLightSensor
-        0x00, 0x00, 0x10, 0x41, // leftLightSensor
-        0x00, 0x00, 0x20, 0x41, // rightLightSensor
+        0x00, 0x00, 0x80, 0x3f,  // stateOfCharge
+        0x00, 0x00, 0x00, 0x40,  // current
+        0x00, 0x00, 0x40, 0x40,  // voltage
+        0x00, 0x00, 0x80, 0x40,  // onboardTemperature
+        0x00, 0x00, 0xA0, 0x40,  // externalTemperature
+        0x00, 0x00, 0xC0, 0x40,  // frontLightSensor
+        0x00, 0x00, 0xE0, 0x40,  // backLightSensor
+        0x00, 0x00, 0x10, 0x41,  // leftLightSensor
+        0x00, 0x00, 0x20, 0x41,  // rightLightSensor
 
-        0x11, 0x22 // volume, maximumVolume
+        0x11, 0x22  // volume, maximumVolume
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -223,38 +221,29 @@ TEST(SetVolumePayloadTests, readFrom_shouldReturnThePayload)
 }
 
 
-TEST(SetLEDColorsPayloadTests, writeTo_tooSmallBuffer_shouldReturnFalse)
+TEST(SetLedColorsPayloadTests, writeTo_tooSmallBuffer_shouldReturnFalse)
 {
-    SetLEDColorsPayload payload;
+    SetLedColorsPayload payload;
 
     SerialCommunicationBuffer<1> buffer;
     EXPECT_FALSE(payload.writeTo(buffer));
 }
 
-TEST(SetLEDColorsPayloadTests, writeTo_buffer_shouldWriteTheBytes)
+TEST(SetLedColorsPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 {
-    SetLEDColorsPayload payload;
-    for (size_t i = 0; i < SetLEDColorsPayload::LED_COUNT; i++)
+    SetLedColorsPayload payload;
+    for (size_t i = 0; i < SetLedColorsPayload::LED_COUNT; i++)
     {
         payload.colors[i].red = i;
         payload.colors[i].green = i + 1;
         payload.colors[i].blue = i + 2;
     }
 
-    constexpr uint8_t EXPECT_DATA[] =
-    {
-        0, 1, 2, 1, 2, 3, 2, 3, 4,
-        3, 4, 5, 4, 5, 6, 5, 6, 7,
-        6, 7, 8, 7, 8, 9, 8, 9, 10,
-        9, 10, 11, 10, 11, 12, 11, 12, 13,
-        12, 13, 14, 13, 14, 15, 14, 15, 16,
-        15, 16, 17, 16, 17, 18, 17, 18, 19,
-        18, 19, 20, 19, 20, 21, 20, 21, 22,
-        21, 22, 23, 22, 23, 24, 23, 24, 25,
-        24, 25, 26, 25, 26, 27, 26, 27, 28,
-        27, 28, 29, 28, 29, 30, 29, 30, 31,
-        30, 31, 32
-    };
+    constexpr uint8_t EXPECT_DATA[] = {0,  1,  2,  1,  2,  3,  2,  3,  4,  3,  4,  5,  4,  5,  6,  5,  6,  7,  6,
+                                       7,  8,  7,  8,  9,  8,  9,  10, 9,  10, 11, 10, 11, 12, 11, 12, 13, 12, 13,
+                                       14, 13, 14, 15, 14, 15, 16, 15, 16, 17, 16, 17, 18, 17, 18, 19, 18, 19, 20,
+                                       19, 20, 21, 20, 21, 22, 21, 22, 23, 22, 23, 24, 23, 24, 25, 24, 25, 26, 25,
+                                       26, 27, 26, 27, 28, 27, 28, 29, 28, 29, 30, 29, 30, 31, 30, 31, 32};
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
@@ -262,36 +251,27 @@ TEST(SetLEDColorsPayloadTests, writeTo_buffer_shouldWriteTheBytes)
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
-TEST(SetLEDColorsPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
+TEST(SetLedColorsPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
 {
     SerialCommunicationBuffer<100> buffer;
     buffer.write(static_cast<uint8_t>(0x00));
 
-    EXPECT_FALSE(SetLEDColorsPayload::readFrom(buffer).has_value());
+    EXPECT_FALSE(SetLedColorsPayload::readFrom(buffer).has_value());
 }
 
-TEST(SetLEDColorsPayloadTests, readFrom_shouldReturnThePayload)
+TEST(SetLedColorsPayloadTests, readFrom_shouldReturnThePayload)
 {
-    constexpr uint8_t DATA[] =
-    {
-        1, 2, 3, 2, 3, 4, 3, 4, 5,
-        4, 5, 6, 5, 6, 7, 6, 7, 8,
-        7, 8, 9, 8, 9, 10, 9, 10, 11,
-        10, 11, 12, 11, 12, 13, 12, 13, 14,
-        13, 14, 15, 14, 15, 16, 15, 16, 17,
-        16, 17, 18, 17, 18, 19, 18, 19, 20,
-        19, 20, 21, 20, 21, 22, 21, 22, 23,
-        22, 23, 24, 23, 24, 25, 24, 25, 26,
-        25, 26, 27, 26, 27, 28, 27, 28, 29,
-        28, 29, 30, 29, 30, 31, 30, 31, 32,
-        31, 32, 33
-    };
+    constexpr uint8_t DATA[] = {1,  2,  3,  2,  3,  4,  3,  4,  5,  4,  5,  6,  5,  6,  7,  6,  7,  8,  7,
+                                8,  9,  8,  9,  10, 9,  10, 11, 10, 11, 12, 11, 12, 13, 12, 13, 14, 13, 14,
+                                15, 14, 15, 16, 15, 16, 17, 16, 17, 18, 17, 18, 19, 18, 19, 20, 19, 20, 21,
+                                20, 21, 22, 21, 22, 23, 22, 23, 24, 23, 24, 25, 24, 25, 26, 25, 26, 27, 26,
+                                27, 28, 27, 28, 29, 28, 29, 30, 29, 30, 31, 30, 31, 32, 31, 32, 33};
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(buffer.write(DATA, sizeof(DATA)));
 
-    auto payload = SetLEDColorsPayload::readFrom(buffer);
-    for (size_t i = 0; i < SetLEDColorsPayload::LED_COUNT; i++)
+    auto payload = SetLedColorsPayload::readFrom(buffer);
+    for (size_t i = 0; i < SetLedColorsPayload::LED_COUNT; i++)
     {
         EXPECT_EQ(payload->colors[i].red, i + 1);
         EXPECT_EQ(payload->colors[i].green, i + 2);
@@ -334,27 +314,26 @@ TEST(MotorStatusPayloadTests, writeTo_buffer_shouldWriteTheBytes)
     payload.headPoseOrientationZ = 21.f;
     payload.isHeadPoseReachable = true;
 
-    constexpr uint8_t EXPECT_DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // torsoOrientation
-        0x02, 0x00, // torsoServoSpeed
-        0x00, 0x00, 0x40, 0x40, // headServoAngle1
-        0x00, 0x00, 0x80, 0x40, // headServoAngle2
-        0x00, 0x00, 0xA0, 0x40, // headServoAngle3
-        0x00, 0x00, 0xC0, 0x40, // headServoAngle4
-        0x00, 0x00, 0xE0, 0x40, // headServoAngle5
-        0x00, 0x00, 0x00, 0x41, // headServoAngle6
-        0x09, 0x00, 0x0A, 0x00, // headServoSpeed1, headServoSpeed2
-        0x0B, 0x00, 0x0C, 0x00, // headServoSpeed3, headServoSpeed4
-        0x0D, 0x00, 0x0E, 0x00, // headServoSpeed5, headServoSpeed6
-        0x00, 0x00, 0x70, 0x41, // headPosePositionX
-        0x00, 0x00, 0x80, 0x41, // headPosePositionY
-        0x00, 0x00, 0x88, 0x41, // headPosePositionZ
-        0x00, 0x00, 0x90, 0x41, // headPoseOrientationW
-        0x00, 0x00, 0x98, 0x41, // headPoseOrientationX
-        0x00, 0x00, 0xA0, 0x41, // headPoseOrientationY
-        0x00, 0x00, 0xA8, 0x41, // headPoseOrientationZ
-        0x01 // isHeadPoseReachable
+    constexpr uint8_t EXPECT_DATA[] = {
+        0x00, 0x00, 0x80, 0x3F,  // torsoOrientation
+        0x02, 0x00,  // torsoServoSpeed
+        0x00, 0x00, 0x40, 0x40,  // headServoAngle1
+        0x00, 0x00, 0x80, 0x40,  // headServoAngle2
+        0x00, 0x00, 0xA0, 0x40,  // headServoAngle3
+        0x00, 0x00, 0xC0, 0x40,  // headServoAngle4
+        0x00, 0x00, 0xE0, 0x40,  // headServoAngle5
+        0x00, 0x00, 0x00, 0x41,  // headServoAngle6
+        0x09, 0x00, 0x0A, 0x00,  // headServoSpeed1, headServoSpeed2
+        0x0B, 0x00, 0x0C, 0x00,  // headServoSpeed3, headServoSpeed4
+        0x0D, 0x00, 0x0E, 0x00,  // headServoSpeed5, headServoSpeed6
+        0x00, 0x00, 0x70, 0x41,  // headPosePositionX
+        0x00, 0x00, 0x80, 0x41,  // headPosePositionY
+        0x00, 0x00, 0x88, 0x41,  // headPosePositionZ
+        0x00, 0x00, 0x90, 0x41,  // headPoseOrientationW
+        0x00, 0x00, 0x98, 0x41,  // headPoseOrientationX
+        0x00, 0x00, 0xA0, 0x41,  // headPoseOrientationY
+        0x00, 0x00, 0xA8, 0x41,  // headPoseOrientationZ
+        0x01  // isHeadPoseReachable
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -373,27 +352,26 @@ TEST(MotorStatusPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
 
 TEST(MotorStatusPayloadTests, readFrom_shouldReturnThePayload)
 {
-    constexpr uint8_t DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // torsoOrientation
-        0x02, 0x00, // torsoServoSpeed
-        0x00, 0x00, 0x40, 0x40, // headServoAngle1
-        0x00, 0x00, 0x80, 0x40, // headServoAngle2
-        0x00, 0x00, 0xA0, 0x40, // headServoAngle3
-        0x00, 0x00, 0xC0, 0x40, // headServoAngle4
-        0x00, 0x00, 0xE0, 0x40, // headServoAngle5
-        0x00, 0x00, 0x00, 0x41, // headServoAngle6
-        0x09, 0x00, 0x0A, 0x00, // headServoSpeed1, headServoSpeed2
-        0x0B, 0x00, 0x0C, 0x00, // headServoSpeed3, headServoSpeed4
-        0x0D, 0x00, 0x0E, 0x00, // headServoSpeed5, headServoSpeed6
-        0x00, 0x00, 0x70, 0x41, // headPosePositionX
-        0x00, 0x00, 0x80, 0x41, // headPosePositionY
-        0x00, 0x00, 0x88, 0x41, // headPosePositionZ
-        0x00, 0x00, 0x90, 0x41, // headPoseOrientationW
-        0x00, 0x00, 0x98, 0x41, // headPoseOrientationX
-        0x00, 0x00, 0xA0, 0x41, // headPoseOrientationY
-        0x00, 0x00, 0xA8, 0x41, // headPoseOrientationZ
-        0x01 // isHeadPoseReachable
+    constexpr uint8_t DATA[] = {
+        0x00, 0x00, 0x80, 0x3F,  // torsoOrientation
+        0x02, 0x00,  // torsoServoSpeed
+        0x00, 0x00, 0x40, 0x40,  // headServoAngle1
+        0x00, 0x00, 0x80, 0x40,  // headServoAngle2
+        0x00, 0x00, 0xA0, 0x40,  // headServoAngle3
+        0x00, 0x00, 0xC0, 0x40,  // headServoAngle4
+        0x00, 0x00, 0xE0, 0x40,  // headServoAngle5
+        0x00, 0x00, 0x00, 0x41,  // headServoAngle6
+        0x09, 0x00, 0x0A, 0x00,  // headServoSpeed1, headServoSpeed2
+        0x0B, 0x00, 0x0C, 0x00,  // headServoSpeed3, headServoSpeed4
+        0x0D, 0x00, 0x0E, 0x00,  // headServoSpeed5, headServoSpeed6
+        0x00, 0x00, 0x70, 0x41,  // headPosePositionX
+        0x00, 0x00, 0x80, 0x41,  // headPosePositionY
+        0x00, 0x00, 0x88, 0x41,  // headPosePositionZ
+        0x00, 0x00, 0x90, 0x41,  // headPoseOrientationW
+        0x00, 0x00, 0x98, 0x41,  // headPoseOrientationX
+        0x00, 0x00, 0xA0, 0x41,  // headPoseOrientationY
+        0x00, 0x00, 0xA8, 0x41,  // headPoseOrientationZ
+        0x01  // isHeadPoseReachable
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -444,14 +422,13 @@ TEST(ImuDataPayloadTests, writeTo_buffer_shouldWriteTheBytes)
     payload.angularRateY = 5.f;
     payload.angularRateZ = 6.f;
 
-    constexpr uint8_t EXPECT_DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // accelerationX
-        0x00, 0x00, 0x00, 0x40, // accelerationY
-        0x00, 0x00, 0x40, 0x40, // accelerationZ
-        0x00, 0x00, 0x80, 0x40, // angularRateX
-        0x00, 0x00, 0xA0, 0x40, // angularRateY
-        0x00, 0x00, 0xC0, 0x40, // angularRateZ
+    constexpr uint8_t EXPECT_DATA[] = {
+        0x00, 0x00, 0x80, 0x3F,  // accelerationX
+        0x00, 0x00, 0x00, 0x40,  // accelerationY
+        0x00, 0x00, 0x40, 0x40,  // accelerationZ
+        0x00, 0x00, 0x80, 0x40,  // angularRateX
+        0x00, 0x00, 0xA0, 0x40,  // angularRateY
+        0x00, 0x00, 0xC0, 0x40,  // angularRateZ
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -470,14 +447,13 @@ TEST(ImuDataPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
 
 TEST(ImuDataPayloadTests, readFrom_shouldReturnThePayload)
 {
-    constexpr uint8_t DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // accelerationX
-        0x00, 0x00, 0x00, 0x40, // accelerationY
-        0x00, 0x00, 0x40, 0x40, // accelerationZ
-        0x00, 0x00, 0x80, 0x40, // angularRateX
-        0x00, 0x00, 0xA0, 0x40, // angularRateY
-        0x00, 0x00, 0xC0, 0x40, // angularRateZ
+    constexpr uint8_t DATA[] = {
+        0x00, 0x00, 0x80, 0x3F,  // accelerationX
+        0x00, 0x00, 0x00, 0x40,  // accelerationY
+        0x00, 0x00, 0x40, 0x40,  // accelerationZ
+        0x00, 0x00, 0x80, 0x40,  // angularRateX
+        0x00, 0x00, 0xA0, 0x40,  // angularRateY
+        0x00, 0x00, 0xC0, 0x40,  // angularRateZ
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -507,9 +483,11 @@ TEST(SetTorsoOrientationPayloadTests, writeTo_buffer_shouldWriteTheBytes)
     SetTorsoOrientationPayload payload;
     payload.torsoOrientation = 1.f;
 
-    constexpr uint8_t EXPECT_DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // torsoOrientation
+    constexpr uint8_t EXPECT_DATA[] = {
+        0x00,
+        0x00,
+        0x80,
+        0x3F,  // torsoOrientation
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -528,9 +506,11 @@ TEST(SetTorsoOrientationPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOp
 
 TEST(SetTorsoOrientationPayloadTests, readFrom_shouldReturnThePayload)
 {
-    constexpr uint8_t DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // torsoOrientation
+    constexpr uint8_t DATA[] = {
+        0x00,
+        0x00,
+        0x80,
+        0x3F,  // torsoOrientation
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -561,15 +541,14 @@ TEST(SetHeadPosePayloadTests, writeTo_buffer_shouldWriteTheBytes)
     payload.headPoseOrientationY = 6.f;
     payload.headPoseOrientationZ = 7.f;
 
-    constexpr uint8_t EXPECT_DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // headPosePositionX
-        0x00, 0x00, 0x00, 0x40, // headPosePositionY
-        0x00, 0x00, 0x40, 0x40, // headPosePositionZ
-        0x00, 0x00, 0x80, 0x40, // headPoseOrientationW
-        0x00, 0x00, 0xA0, 0x40, // headPoseOrientationX
-        0x00, 0x00, 0xC0, 0x40, // headPoseOrientationY
-        0x00, 0x00, 0xE0, 0x40, // headPoseOrientationZ
+    constexpr uint8_t EXPECT_DATA[] = {
+        0x00, 0x00, 0x80, 0x3F,  // headPosePositionX
+        0x00, 0x00, 0x00, 0x40,  // headPosePositionY
+        0x00, 0x00, 0x40, 0x40,  // headPosePositionZ
+        0x00, 0x00, 0x80, 0x40,  // headPoseOrientationW
+        0x00, 0x00, 0xA0, 0x40,  // headPoseOrientationX
+        0x00, 0x00, 0xC0, 0x40,  // headPoseOrientationY
+        0x00, 0x00, 0xE0, 0x40,  // headPoseOrientationZ
     };
 
     SerialCommunicationBuffer<100> buffer;
@@ -588,15 +567,14 @@ TEST(SetHeadPosePayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
 
 TEST(SetHeadPosePayloadTests, readFrom_shouldReturnThePayload)
 {
-    constexpr uint8_t DATA[] =
-    {
-        0x00, 0x00, 0x80, 0x3F, // headPosePositionX
-        0x00, 0x00, 0x00, 0x40, // headPosePositionY
-        0x00, 0x00, 0x40, 0x40, // headPosePositionZ
-        0x00, 0x00, 0x80, 0x40, // headPoseOrientationW
-        0x00, 0x00, 0xA0, 0x40, // headPoseOrientationX
-        0x00, 0x00, 0xC0, 0x40, // headPoseOrientationY
-        0x00, 0x00, 0xE0, 0x40, // headPoseOrientationZ
+    constexpr uint8_t DATA[] = {
+        0x00, 0x00, 0x80, 0x3F,  // headPosePositionX
+        0x00, 0x00, 0x00, 0x40,  // headPosePositionY
+        0x00, 0x00, 0x40, 0x40,  // headPosePositionZ
+        0x00, 0x00, 0x80, 0x40,  // headPoseOrientationW
+        0x00, 0x00, 0xA0, 0x40,  // headPoseOrientationX
+        0x00, 0x00, 0xC0, 0x40,  // headPoseOrientationY
+        0x00, 0x00, 0xE0, 0x40,  // headPoseOrientationZ
     };
 
     SerialCommunicationBuffer<100> buffer;
