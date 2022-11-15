@@ -69,7 +69,7 @@ bool PushButton::read()
     {
         value = m_interruptDetected;
     }
-    else if (m_type == PushButtonType::SINGLE)
+    else if (m_type == PushButtonType::REPEATABLE)
     {
         value = m_interruptDetected || digitalRead(m_pin);
     }
