@@ -165,7 +165,7 @@
   (net 78 "Net-(J15-Pad4)")
   (net 79 "Net-(J15-Pad5)")
   (net 80 "Net-(R7-Pad2)")
-  (net 81 "Net-(U6-Pad4)")
+  (net 81 "Net-(R42-Pad1)")
 
   (footprint "Resistor_SMD:R_0805_2012Metric" (layer "F.Cu")
     (tedit 5F68FEEE) (tstamp 016a6498-907f-4d4b-a6eb-86a561e02fd4)
@@ -1275,7 +1275,7 @@
     (pad "3" smd roundrect (at -1.1375 0.95 90) (size 1.325 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 2 "GND") (pinfunction "GND") (pintype "power_in") (tstamp 01df16d4-47bc-4957-add0-02e82fb9fbee))
     (pad "4" smd roundrect (at 1.1375 0.95 90) (size 1.325 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
-      (net 81 "Net-(U6-Pad4)") (pinfunction "Y") (pintype "output") (tstamp 9e370e8c-8bf0-4cd8-b88e-26e7e92f6a38))
+      (net 81 "Net-(R42-Pad1)") (pinfunction "Y") (pintype "output") (tstamp 9e370e8c-8bf0-4cd8-b88e-26e7e92f6a38))
     (pad "5" smd roundrect (at 1.1375 -0.95 90) (size 1.325 0.6) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 7 "+5V") (pinfunction "VCC") (pintype "power_in") (tstamp b734ca47-6079-44ae-bac1-60045e3fc9f3))
     (model "${KICAD6_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.wrl"
@@ -3787,7 +3787,7 @@
     (fp_line (start -1 -0.625) (end 1 -0.625) (layer "F.Fab") (width 0.1) (tstamp 83563a4a-1e36-409b-8dbc-75e610c6a74b))
     (fp_line (start -1 0.625) (end -1 -0.625) (layer "F.Fab") (width 0.1) (tstamp a8634a72-612b-451c-a803-0309e2547def))
     (pad "1" smd roundrect (at -0.9125 0 270) (size 1.025 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.243902439)
-      (net 81 "Net-(U6-Pad4)") (pintype "passive") (tstamp f9667cab-00ad-4499-8bbc-29c2b22704c8))
+      (net 81 "Net-(R42-Pad1)") (pintype "passive") (tstamp f9667cab-00ad-4499-8bbc-29c2b22704c8))
     (pad "2" smd roundrect (at 0.9125 0 270) (size 1.025 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.243902439)
       (net 28 "Net-(J6-Pad2)") (pintype "passive") (tstamp f1dee401-a93e-4ad3-8010-63468350577c))
     (model "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
@@ -7043,7 +7043,6 @@
   (segment (start 33.5 44.8323) (end 33 44.3323) (width 0.254) (layer "F.Cu") (net 80) (tstamp f842b7f6-89cf-4f38-8604-7b4aa98475a8))
   (segment (start 105 37.175) (end 103.0375 37.175) (width 0.254) (layer "F.Cu") (net 81) (tstamp 25854d6f-8267-447e-a877-33cd11648dd4))
   (segment (start 103.0375 37.175) (end 102.85 37.3625) (width 0.254) (layer "F.Cu") (net 81) (tstamp a5c792f2-efc6-4ece-83cc-7a4dd4c19949))
-  (segment (start 105 37.0875) (end 105.0875 37) (width 0.254) (layer "F.Cu") (net 81) (tstamp f41badd0-597a-4989-b6f6-708a5e86bc5c))
 
   (zone (net 2) (net_name "GND") (layer "F.Cu") (tstamp 067be0c2-e158-45b2-8c03-df68a54e79db) (hatch edge 0.508)
     (connect_pads yes (clearance 0.508))
