@@ -1,5 +1,5 @@
-#ifndef COMMUNICATION_COMMUNICATION_SERIAL_BUFFER_H
-#define COMMUNICATION_COMMUNICATION_SERIAL_BUFFER_H
+#ifndef COMMUNICATION_SERIAL_COMMUNICATION_BUFFER_H
+#define COMMUNICATION_SERIAL_COMMUNICATION_BUFFER_H
 
 #include <tl/optional.hpp>
 
@@ -81,7 +81,7 @@ typename std::enable_if<!std::is_enum<T>::value && !std::is_same<T, bool>::value
         return tl::nullopt;
     }
 
-    T value;
+    typename std::remove_const<T>::type value;
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     std::memcpy(&value, data + readIndex, sizeof(T));
@@ -120,12 +120,12 @@ typename std::enable_if<std::is_enum<T>::value, tl::optional<T>>::type
     read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
 {
     auto value = read<typename std::underlying_type<T>::type>(data, writeIndex, readIndex, maxSize);
-    if (!value.has_value() || value.value() < enum_min<T>::value || value.value() > enum_max<T>::value)
+    if (!value.has_value() || *value < enum_min<T>::value || *value > enum_max<T>::value)
     {
         return tl::nullopt;
     }
 
-    return static_cast<T>(value.value());
+    return static_cast<T>(*value);
 }
 
 
@@ -148,11 +148,12 @@ public:
     SerialCommunicationBufferView(SerialCommunicationBuffer<N>& buffer);
 
     size_t maxSize() const;
-    size_t size() const;
+    size_t sizeToWrite() const;
     size_t sizeToRead() const;
 
     void clear();
-    uint8_t operator[](size_t i) const;
+    void moveToBeginning();
+    const uint8_t* dataToRead() const;
 
     template<class T>
     bool write(const T& value);
@@ -177,11 +178,12 @@ public:
     SerialCommunicationBuffer();
 
     size_t maxSize() const;
-    size_t size() const;
+    size_t sizeToWrite() const;
     size_t sizeToRead() const;
 
     void clear();
-    uint8_t operator[](size_t i) const;
+    void moveToBeginning();
+    const uint8_t* dataToRead() const;
 
     template<class T>
     bool write(const T& value);
@@ -206,9 +208,9 @@ inline size_t SerialCommunicationBuffer<N>::maxSize() const
 }
 
 template<size_t N>
-inline size_t SerialCommunicationBuffer<N>::size() const
+inline size_t SerialCommunicationBuffer<N>::sizeToWrite() const
 {
-    return m_writeIndex;
+    return N - m_writeIndex;
 }
 
 template<size_t N>
@@ -225,9 +227,17 @@ inline void SerialCommunicationBuffer<N>::clear()
 }
 
 template<size_t N>
-inline uint8_t SerialCommunicationBuffer<N>::operator[](size_t i) const
+inline void SerialCommunicationBuffer<N>::moveToBeginning()
 {
-    return m_data[i];
+    std::memmove(m_data, m_data + m_readIndex, sizeToRead());
+    m_writeIndex -= m_readIndex;
+    m_readIndex = 0;
+}
+
+template<size_t N>
+inline const uint8_t* SerialCommunicationBuffer<N>::dataToRead() const
+{
+    return m_data + m_readIndex;
 }
 
 template<size_t N>
@@ -265,9 +275,9 @@ inline size_t SerialCommunicationBufferView::maxSize() const
     return m_maxSize;
 }
 
-inline size_t SerialCommunicationBufferView::size() const
+inline size_t SerialCommunicationBufferView::sizeToWrite() const
 {
-    return m_writeIndex;
+    return m_maxSize - m_writeIndex;
 }
 
 inline size_t SerialCommunicationBufferView::sizeToRead() const
@@ -281,9 +291,16 @@ inline void SerialCommunicationBufferView::clear()
     m_readIndex = 0;
 }
 
-inline uint8_t SerialCommunicationBufferView::operator[](size_t i) const
+inline void SerialCommunicationBufferView::moveToBeginning()
 {
-    return m_data[i];
+    std::memmove(m_data, m_data + m_readIndex, sizeToRead());
+    m_writeIndex -= m_readIndex;
+    m_readIndex = 0;
+}
+
+inline const uint8_t* SerialCommunicationBufferView::dataToRead() const
+{
+    return m_data + m_readIndex;
 }
 
 template<class T>
@@ -298,7 +315,7 @@ inline bool SerialCommunicationBufferView::write(const uint8_t* data, size_t siz
 }
 
 template<class T>
-inline typename tl::optional<T> SerialCommunicationBufferView::read() const
+inline tl::optional<T> SerialCommunicationBufferView::read() const
 {
     return ::read<T>(m_data, m_writeIndex, m_readIndex, m_maxSize);
 }

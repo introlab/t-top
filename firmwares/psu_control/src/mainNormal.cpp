@@ -4,14 +4,22 @@
 
 #include "mainCommon.h"
 #include "ShutdownManager.h"
+#include "TeensySerialPort.h"
 
 #include <SerialCommunication.h>
 
 #include <Ticker.h>
 
-ShutdownManager shutdownManager(POWER_OFF_PIN, POWER_SWITCH_PIN);
+static ShutdownManager shutdownManager(POWER_OFF_PIN, POWER_SWITCH_PIN);
+static TeensySerialPort<decltype(COMMUNICATION_SERIAL)> serialCommunicationSerialPort(COMMUNICATION_SERIAL);
+static SerialCommunicationManager serialCommunicationManager(
+    Device::PSU_CONTROL,
+    COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS,
+    COMMUNICATION_MAXIMUM_TRIAL_COUNT,
+    serialCommunicationSerialPort);
 
 static void setupShutdownManager();
+static void setupSerialCommunicationManager();
 
 static void onStatusTicker();
 static void updateAudioPowerAmplifier(bool isPsuConnected);
@@ -27,8 +35,9 @@ static void updateLedStrip(
 
 static void onButtonTicker();
 
-static void onSetVolumeMessage(Device source, SetVolumePayload payload);
-static void onSetLedColorsMessage(Device source, SetLedColorsPayload payload);
+static void onSetVolumeMessage(Device source, const SetVolumePayload& payload, void* userData);
+static void onSetLedColorsMessage(Device source, const SetLedColorsPayload& payload, void* userData);
+static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType, void* userData);
 
 static bool isShutdownCompletedForComputerAndDynamixels();
 
@@ -58,8 +67,7 @@ void setup()
     setupPushButtons();
     setupThermistors();
 
-    // TODO Register onSetVolumeMessage
-    // TODO Register onSetLedCOMessage
+    setupSerialCommunicationManager();
 
     statusTicker.start();
     buttonTicker.start();
@@ -69,7 +77,8 @@ void loop()
 {
     if (shutdownManager.isShutdownRequested())
     {
-        // TODO send shutdown message to the computer and dynamixel control.
+        serialCommunicationManager.send(Device::COMPUTER, ShutdownPayload(), millis());
+        serialCommunicationManager.send(Device::DYNAMIXEL_CONTROL, ShutdownPayload(), millis());
         shutdownManager.setShutdownRequestHandled();
     }
     else if (shutdownManager.isShutdownPending())
@@ -85,7 +94,7 @@ void loop()
         buttonTicker.update();
     }
 
-    // TODO update serial communication
+    serialCommunicationManager.update(millis());
 }
 
 static void setupShutdownManager()
@@ -93,6 +102,14 @@ static void setupShutdownManager()
     DEBUG_SERIAL.println("Setup Shutdown Manager - Start");
     shutdownManager.begin();
     DEBUG_SERIAL.println("Setup Shutdown Manager - End");
+}
+
+static void setupSerialCommunicationManager()
+{
+    COMMUNICATION_SERIAL.begin(COMMUNICATION_SERIAL_BAUD_RATE);
+    serialCommunicationManager.setSetVolumeHandler(onSetVolumeMessage);
+    serialCommunicationManager.setSetLedColorsHandler(onSetLedColorsMessage);
+    serialCommunicationManager.setErrorCallback(onSerialCommunicationError);
 }
 
 static void onStatusTicker()
@@ -132,7 +149,7 @@ static void onStatusTicker()
         baseStatusPayload.leftLightSensor,
         baseStatusPayload.rightLightSensor);
 
-    // TODO send the status
+    serialCommunicationManager.send(Device::COMPUTER, baseStatusPayload, millis());
 }
 
 static void updateAudioPowerAmplifier(bool isPsuConnected)
@@ -185,16 +202,17 @@ static void onButtonTicker()
 {
     if (startButton.read())
     {
-        // TODO send message
+        serialCommunicationManager.send(Device::COMPUTER, ButtonPressedPayload{Button::START}, millis());
     }
     if (stopButton.read())
     {
-        // TODO send message
+        serialCommunicationManager.send(Device::COMPUTER, ButtonPressedPayload{Button::STOP}, millis());
     }
 
     bool volumeUpButtonPressed = volumeUpButton.read();
     bool volumeDownButtonPressed = volumeDownButton.read();
-    if (volumeUpButtonPressed && !volumeDownButtonPressed && audioPowerAmplifier.volume() < audioPowerAmplifier.maximumVolume())
+    if (volumeUpButtonPressed && !volumeDownButtonPressed &&
+        audioPowerAmplifier.volume() < audioPowerAmplifier.maximumVolume())
     {
         audioPowerAmplifier.setVolume(audioPowerAmplifier.volume() + 1);
     }
@@ -204,14 +222,27 @@ static void onButtonTicker()
     }
 }
 
-static void onSetVolumeMessage(Device source, SetVolumePayload payload)
+static void onSetVolumeMessage(Device source, const SetVolumePayload& payload, void* userData)
 {
     audioPowerAmplifier.setVolume(payload.volume);
 }
 
-static void onSetLedColorsMessage(Device source, SetLedColorsPayload payload)
+static void onSetLedColorsMessage(Device source, const SetLedColorsPayload& payload, void* userData)
 {
     ledStrip.setBaseLedColors(payload.colors, SetLedColorsPayload::LED_COUNT);
+}
+
+static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType, void* userData)
+{
+    DEBUG_SERIAL.print("Serial Communication Manager - ");
+    DEBUG_SERIAL.print(message);
+    if (messageType.has_value())
+    {
+        DEBUG_SERIAL.print(" (messageType=");
+        DEBUG_SERIAL.print(static_cast<int>(*messageType));
+        DEBUG_SERIAL.print(")");
+    }
+    DEBUG_SERIAL.println();
 }
 
 static bool isShutdownCompletedForComputerAndDynamixels()

@@ -87,6 +87,12 @@ constexpr uint8_t VOLUME_UP_BUTTON_PIN = 12;
 constexpr uint8_t VOLUME_DOWN_BUTTON_PIN = 11;
 constexpr uint32_t VOLUME_BUTTON_INTERVAL_MS = 250;
 
+// Communication configuration
+#define COMMUNICATION_SERIAL Serial3
+constexpr long COMMUNICATION_SERIAL_BAUD_RATE = 250000;
+constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 20;
+constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
+
 // Timing configuration
 constexpr uint32_t ERROR_DELAY_MS = 1000;
 constexpr uint32_t STATUS_TICKER_INTERVAL_MS = 250;

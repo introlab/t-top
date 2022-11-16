@@ -4,5 +4,6 @@
 #include "SerialCommunicationBuffer.h"
 #include "SerialMessages.h"
 #include "SerialMessagePayloads.h"
+#include "SerialCommunicationManager.h"
 
 #endif

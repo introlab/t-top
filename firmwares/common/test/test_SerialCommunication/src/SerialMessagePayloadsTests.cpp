@@ -2,10 +2,10 @@
 
 #include <gtest/gtest.h>
 
-#define EXPECT_BUFFER_EQ(bytes1, bytes2, size)                                                                         \
+#define EXPECT_BUFFER_EQ(buffer, bytes, size)                                                                          \
     for (size_t i = 0; i < (size); i++)                                                                                \
     {                                                                                                                  \
-        EXPECT_EQ((bytes1)[i], (bytes2)[i]) << "i=" << i;                                                              \
+        EXPECT_EQ((buffer).dataToRead()[i], (bytes)[i]) << "i=" << i;                                                  \
     }
 
 TEST(AcknowledgmentPayloadTests, writeTo_tooSmallBuffer_shouldReturnFalse)
@@ -24,9 +24,9 @@ TEST(AcknowledgmentPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<10> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), 2);
-    EXPECT_EQ(buffer[0], 0x02);
-    EXPECT_EQ(buffer[1], 0x01);
+    ASSERT_EQ(buffer.sizeToRead(), AcknowledgmentPayload::PAYLOAD_SIZE);
+    EXPECT_EQ(buffer.dataToRead()[0], 0x02);
+    EXPECT_EQ(buffer.dataToRead()[1], 0x01);
 }
 
 TEST(AcknowledgmentPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
@@ -94,7 +94,7 @@ TEST(BaseStatusPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), sizeof(EXPECT_DATA));
+    ASSERT_EQ(buffer.sizeToRead(), BaseStatusPayload::PAYLOAD_SIZE);
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
@@ -163,8 +163,8 @@ TEST(ButtonPressedPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<10> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), 1);
-    EXPECT_EQ(buffer[0], 0x01);
+    ASSERT_EQ(buffer.sizeToRead(), ButtonPressedPayload::PAYLOAD_SIZE);
+    EXPECT_EQ(buffer.dataToRead()[0], 0x01);
 }
 
 TEST(ButtonPressedPayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
@@ -200,8 +200,8 @@ TEST(SetVolumePayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<10> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), 1);
-    EXPECT_EQ(buffer[0], 0x56);
+    ASSERT_EQ(buffer.sizeToRead(), SetVolumePayload::PAYLOAD_SIZE);
+    EXPECT_EQ(buffer.dataToRead()[0], 0x56);
 }
 
 TEST(SetVolumePayloadTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)
@@ -247,7 +247,7 @@ TEST(SetLedColorsPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), sizeof(EXPECT_DATA));
+    ASSERT_EQ(buffer.sizeToRead(), SetLedColorsPayload::PAYLOAD_SIZE);
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
@@ -338,7 +338,7 @@ TEST(MotorStatusPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), sizeof(EXPECT_DATA));
+    ASSERT_EQ(buffer.sizeToRead(), MotorStatusPayload::PAYLOAD_SIZE);
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
@@ -433,7 +433,7 @@ TEST(ImuDataPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), sizeof(EXPECT_DATA));
+    ASSERT_EQ(buffer.sizeToRead(), ImuDataPayload::PAYLOAD_SIZE);
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
@@ -492,7 +492,7 @@ TEST(SetTorsoOrientationPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), sizeof(EXPECT_DATA));
+    ASSERT_EQ(buffer.sizeToRead(), SetTorsoOrientationPayload::PAYLOAD_SIZE);
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
@@ -553,7 +553,7 @@ TEST(SetHeadPosePayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<100> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), sizeof(EXPECT_DATA));
+    ASSERT_EQ(buffer.sizeToRead(), SetHeadPosePayload::PAYLOAD_SIZE);
     EXPECT_BUFFER_EQ(buffer, EXPECT_DATA, sizeof(EXPECT_DATA));
 }
 
@@ -598,7 +598,7 @@ TEST(ShutdownPayloadTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<1> buffer;
     EXPECT_TRUE(payload.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), 0);
+    ASSERT_EQ(buffer.sizeToRead(), ShutdownPayload::PAYLOAD_SIZE);
 }
 
 TEST(ShutdownPayloadTests, readFrom_shouldReturnThePayload)

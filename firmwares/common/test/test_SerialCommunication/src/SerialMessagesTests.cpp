@@ -37,14 +37,14 @@ TEST(MessageHeaderTests, writeTo_buffer_shouldWriteTheBytes)
 
     SerialCommunicationBuffer<10> buffer;
     EXPECT_TRUE(header.writeTo(buffer));
-    ASSERT_EQ(buffer.size(), 7);
-    EXPECT_EQ(buffer[0], 0x02);
-    EXPECT_EQ(buffer[1], 0x00);
-    EXPECT_EQ(buffer[2], 0x01);
-    EXPECT_EQ(buffer[3], 0x02);
-    EXPECT_EQ(buffer[4], 0x01);
-    EXPECT_EQ(buffer[5], 0x01);
-    EXPECT_EQ(buffer[6], 0x00);
+    ASSERT_EQ(buffer.sizeToRead(), MessageHeader::HEADER_SIZE);
+    EXPECT_EQ(buffer.dataToRead()[0], 0x02);
+    EXPECT_EQ(buffer.dataToRead()[1], 0x00);
+    EXPECT_EQ(buffer.dataToRead()[2], 0x01);
+    EXPECT_EQ(buffer.dataToRead()[3], 0x02);
+    EXPECT_EQ(buffer.dataToRead()[4], 0x01);
+    EXPECT_EQ(buffer.dataToRead()[5], 0x01);
+    EXPECT_EQ(buffer.dataToRead()[6], 0x00);
 }
 
 TEST(MessageHeaderTests, readFrom_tooSmallBuffer_shouldReturnNullOpt)

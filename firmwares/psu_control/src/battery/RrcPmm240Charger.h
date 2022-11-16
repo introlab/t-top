@@ -63,7 +63,6 @@ private:
 
     bool writeWord(uint8_t command, RrcPmm240ChargerMemoryLocation location, uint16_t value);
     bool writeWordTrials(uint8_t command, RrcPmm240ChargerMemoryLocation location, uint16_t value, size_t trialCount);
-    uint8_t crc8(uint8_t* data, size_t size);
 };
 
 #endif

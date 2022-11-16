@@ -1,5 +1,7 @@
 #include "SerialMessages.h"
 
+constexpr uint8_t MessageHeader::HEADER_SIZE;
+
 uint16_t MessageHeader::m_messageIdCounter(0);
 
 MessageHeader::MessageHeader(

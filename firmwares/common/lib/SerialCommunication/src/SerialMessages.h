@@ -62,7 +62,7 @@ struct enum_max<MessageType> : std::integral_constant<uint16_t, 10>
         auto tmp = (code);                                                                                             \
         if (tmp.has_value())                                                                                           \
         {                                                                                                              \
-            (result) = tmp.value();                                                                                    \
+            (result) = *tmp;                                                                                           \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -73,6 +73,10 @@ struct enum_max<MessageType> : std::integral_constant<uint16_t, 10>
 
 class MessageHeader
 {
+public:
+    static constexpr uint8_t HEADER_SIZE = 7;
+
+private:
     static uint16_t m_messageIdCounter;
 
     Device m_source;
@@ -98,7 +102,7 @@ public:
     MessageType messageType() const;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<MessageHeader> readFrom(Buffer& buffer);
@@ -143,7 +147,7 @@ inline void MessageHeader::setMessageIdCounter(uint16_t messageIdCounter)
 }
 
 template<class Buffer>
-bool MessageHeader::writeTo(Buffer& buffer)
+bool MessageHeader::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(m_source));
     CHECK_BUFFER_WRITE(buffer.write(m_destination));

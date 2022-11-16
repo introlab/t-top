@@ -35,14 +35,16 @@ TEST(SerialCommunicationBufferTests, write_shouldSetData)
     SerialCommunicationBuffer<3> buffer;
 
     EXPECT_TRUE(buffer.write(static_cast<uint16_t>(0x0102)));
-    EXPECT_EQ(buffer.size(), 2);
+    EXPECT_EQ(buffer.sizeToRead(), 2);
+    EXPECT_EQ(buffer.sizeToWrite(), 1);
 
     EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x03)));
-    EXPECT_EQ(buffer.size(), 3);
+    EXPECT_EQ(buffer.sizeToRead(), 3);
+    EXPECT_EQ(buffer.sizeToWrite(), 0);
 
-    EXPECT_EQ(buffer[0], 0x02);
-    EXPECT_EQ(buffer[1], 0x01);
-    EXPECT_EQ(buffer[2], 0x03);
+    EXPECT_EQ(buffer.dataToRead()[0], 0x02);
+    EXPECT_EQ(buffer.dataToRead()[1], 0x01);
+    EXPECT_EQ(buffer.dataToRead()[2], 0x03);
 }
 
 TEST(SerialCommunicationBufferTests, write_dataTooSmallBuffer_shouldReturnFalse)
@@ -59,12 +61,13 @@ TEST(SerialCommunicationBufferTests, write_data_shouldCopyTheData)
     SerialCommunicationBuffer<10> buffer;
 
     EXPECT_TRUE(buffer.write(DATA, sizeof(DATA)));
-    EXPECT_EQ(buffer.size(), 4);
+    EXPECT_EQ(buffer.sizeToRead(), 4);
+    EXPECT_EQ(buffer.sizeToWrite(), 6);
 
-    EXPECT_EQ(buffer[0], 0x01);
-    EXPECT_EQ(buffer[1], 0x02);
-    EXPECT_EQ(buffer[2], 0x03);
-    EXPECT_EQ(buffer[3], 0x04);
+    EXPECT_EQ(buffer.dataToRead()[0], 0x01);
+    EXPECT_EQ(buffer.dataToRead()[1], 0x02);
+    EXPECT_EQ(buffer.dataToRead()[2], 0x03);
+    EXPECT_EQ(buffer.dataToRead()[3], 0x04);
 }
 
 TEST(SerialCommunicationBufferTests, clear_shouldResetTheBuffer)
@@ -72,11 +75,41 @@ TEST(SerialCommunicationBufferTests, clear_shouldResetTheBuffer)
     SerialCommunicationBuffer<3> buffer;
 
     EXPECT_TRUE(buffer.write(static_cast<uint16_t>(0x0102)));
-    EXPECT_EQ(buffer.size(), 2);
+    EXPECT_EQ(buffer.sizeToRead(), 2);
+    EXPECT_EQ(buffer.sizeToWrite(), 1);
     EXPECT_EQ(buffer.read<uint16_t>(), 0x0102);
+    EXPECT_EQ(buffer.sizeToRead(), 0);
+    EXPECT_EQ(buffer.sizeToWrite(), 1);
 
     buffer.clear();
-    EXPECT_EQ(buffer.size(), 0);
+    EXPECT_EQ(buffer.sizeToRead(), 0);
+    EXPECT_EQ(buffer.sizeToWrite(), 3);
+}
+
+TEST(SerialCommunicationBufferTests, moveToBeginning_shouldMoveTheUnreadDataToTheBeginning)
+{
+    SerialCommunicationBuffer<7> buffer;
+
+    EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x01)));
+    EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x02)));
+    EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x03)));
+    EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x04)));
+    EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x05)));
+    EXPECT_EQ(buffer.sizeToRead(), 5);
+    EXPECT_EQ(buffer.sizeToWrite(), 2);
+
+    EXPECT_EQ(buffer.read<uint8_t>(), 0x01);
+    EXPECT_EQ(buffer.read<uint8_t>(), 0x02);
+    EXPECT_EQ(buffer.sizeToRead(), 3);
+    EXPECT_EQ(buffer.sizeToWrite(), 2);
+
+    buffer.moveToBeginning();
+    ASSERT_EQ(buffer.sizeToRead(), 3);
+    EXPECT_EQ(buffer.sizeToWrite(), 4);
+
+    EXPECT_EQ(buffer.dataToRead()[0], 0x03);
+    EXPECT_EQ(buffer.dataToRead()[1], 0x04);
+    EXPECT_EQ(buffer.dataToRead()[2], 0x05);
 }
 
 TEST(SerialCommunicationBufferTests, read_notEnoughSpace_shouldReturnNullopt)
@@ -91,28 +124,32 @@ TEST(SerialCommunicationBufferTests, read_notEnoughSpace_shouldReturnNullopt)
     EXPECT_EQ(buffer.read<uint16_t>(), tl::nullopt);
 
     buffer.clear();
-    EXPECT_EQ(buffer.size(), 0);
+    EXPECT_EQ(buffer.sizeToRead(), 0);
+    EXPECT_EQ(buffer.sizeToWrite(), 3);
 }
 
 TEST(SerialCommunicationBufferTests, read_shouldReadTheData)
 {
     SerialCommunicationBuffer<3> buffer;
 
+    EXPECT_EQ(buffer.sizeToWrite(), 3);
     EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x01)));
     EXPECT_EQ(buffer.sizeToRead(), 1);
+    EXPECT_EQ(buffer.sizeToWrite(), 2);
     EXPECT_TRUE(buffer.write(static_cast<uint16_t>(0x0203)));
     EXPECT_EQ(buffer.sizeToRead(), 3);
+    EXPECT_EQ(buffer.sizeToWrite(), 0);
 
     EXPECT_EQ(buffer.read<uint8_t>(), 0x01);
     EXPECT_EQ(buffer.sizeToRead(), 2);
 
     EXPECT_EQ(buffer.read<uint16_t>(), 0x0203);
     EXPECT_EQ(buffer.sizeToRead(), 0);
-    EXPECT_EQ(buffer.size(), 3);
+    EXPECT_EQ(buffer.sizeToWrite(), 0);
 
     buffer.clear();
-    EXPECT_EQ(buffer.size(), 0);
     EXPECT_EQ(buffer.sizeToRead(), 0);
+    EXPECT_EQ(buffer.sizeToWrite(), 3);
 }
 
 TEST(SerialCommunicationBufferTests, read_enum_shouldReadTheEnumValue)
@@ -152,27 +189,16 @@ TEST(SerialCommunicationBufferViewTests, write_shouldSetData)
     SerialCommunicationBufferView view(buffer);
 
     EXPECT_TRUE(view.write(static_cast<uint16_t>(0x0102)));
-    EXPECT_EQ(view.size(), 2);
+    EXPECT_EQ(view.sizeToRead(), 2);
+    EXPECT_EQ(view.sizeToWrite(), 1);
 
     EXPECT_TRUE(view.write(static_cast<uint8_t>(0x03)));
-    EXPECT_EQ(view.size(), 3);
+    EXPECT_EQ(view.sizeToRead(), 3);
+    EXPECT_EQ(view.sizeToWrite(), 0);
 
-    EXPECT_EQ(view[0], 0x02);
-    EXPECT_EQ(view[1], 0x01);
-    EXPECT_EQ(view[2], 0x03);
-}
-
-TEST(SerialCommunicationBufferViewTests, write_bool_shouldSet1Or0)
-{
-    SerialCommunicationBuffer<3> buffer;
-    SerialCommunicationBufferView view(buffer);
-
-    EXPECT_TRUE(view.write(true));
-    EXPECT_TRUE(view.write(false));
-    EXPECT_EQ(view.size(), 2);
-
-    EXPECT_EQ(view[0], 0x01);
-    EXPECT_EQ(view[1], 0x00);
+    EXPECT_EQ(view.dataToRead()[0], 0x02);
+    EXPECT_EQ(view.dataToRead()[1], 0x01);
+    EXPECT_EQ(view.dataToRead()[2], 0x03);
 }
 
 TEST(SerialCommunicationBufferViewTests, write_dataTooSmallBuffer_shouldReturnFalse)
@@ -191,12 +217,13 @@ TEST(SerialCommunicationBufferViewTests, write_data_shouldCopyTheData)
     SerialCommunicationBufferView view(buffer);
 
     EXPECT_TRUE(view.write(DATA, sizeof(DATA)));
-    EXPECT_EQ(view.size(), 4);
+    EXPECT_EQ(view.sizeToRead(), 4);
+    EXPECT_EQ(view.sizeToWrite(), 6);
 
-    EXPECT_EQ(view[0], 0x01);
-    EXPECT_EQ(view[1], 0x02);
-    EXPECT_EQ(view[2], 0x03);
-    EXPECT_EQ(view[3], 0x04);
+    EXPECT_EQ(view.dataToRead()[0], 0x01);
+    EXPECT_EQ(view.dataToRead()[1], 0x02);
+    EXPECT_EQ(view.dataToRead()[2], 0x03);
+    EXPECT_EQ(view.dataToRead()[3], 0x04);
 }
 
 TEST(SerialCommunicationBufferViewTests, clear_shouldResetTheBuffer)
@@ -205,11 +232,42 @@ TEST(SerialCommunicationBufferViewTests, clear_shouldResetTheBuffer)
     SerialCommunicationBufferView view(buffer);
 
     EXPECT_TRUE(view.write(static_cast<uint16_t>(0x0102)));
-    EXPECT_EQ(view.size(), 2);
+    EXPECT_EQ(view.sizeToRead(), 2);
+    EXPECT_EQ(view.sizeToWrite(), 1);
     EXPECT_EQ(view.read<uint16_t>(), 0x0102);
+    EXPECT_EQ(view.sizeToRead(), 0);
+    EXPECT_EQ(view.sizeToWrite(), 1);
 
-    view.clear();
-    EXPECT_EQ(view.size(), 0);
+    buffer.clear();
+    EXPECT_EQ(view.sizeToRead(), 0);
+    EXPECT_EQ(view.sizeToWrite(), 3);
+}
+
+TEST(SerialCommunicationBufferViewTests, moveToBeginning_shouldMoveTheUnreadDataToTheBeginning)
+{
+    SerialCommunicationBuffer<7> buffer;
+    SerialCommunicationBufferView view(buffer);
+
+    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x01)));
+    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x02)));
+    EXPECT_TRUE(buffer.write(static_cast<uint8_t>(0x03)));
+    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x04)));
+    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x05)));
+    EXPECT_EQ(view.sizeToRead(), 5);
+    EXPECT_EQ(view.sizeToWrite(), 2);
+
+    EXPECT_EQ(view.read<uint8_t>(), 0x01);
+    EXPECT_EQ(view.read<uint8_t>(), 0x02);
+    EXPECT_EQ(view.sizeToRead(), 3);
+    EXPECT_EQ(view.sizeToWrite(), 2);
+
+    view.moveToBeginning();
+    ASSERT_EQ(view.sizeToRead(), 3);
+    EXPECT_EQ(view.sizeToWrite(), 4);
+
+    EXPECT_EQ(view.dataToRead()[0], 0x03);
+    EXPECT_EQ(view.dataToRead()[1], 0x04);
+    EXPECT_EQ(view.dataToRead()[2], 0x05);
 }
 
 TEST(SerialCommunicationBufferViewTests, read_notEnoughSpace_shouldReturnNullopt)
@@ -225,7 +283,8 @@ TEST(SerialCommunicationBufferViewTests, read_notEnoughSpace_shouldReturnNullopt
     EXPECT_EQ(view.read<uint16_t>(), tl::nullopt);
 
     view.clear();
-    EXPECT_EQ(view.size(), 0);
+    EXPECT_EQ(view.sizeToRead(), 0);
+    EXPECT_EQ(view.sizeToWrite(), 3);
 }
 
 TEST(SerialCommunicationBufferViewTests, read_shouldReadTheData)
@@ -233,12 +292,17 @@ TEST(SerialCommunicationBufferViewTests, read_shouldReadTheData)
     SerialCommunicationBuffer<3> buffer;
     SerialCommunicationBufferView view(buffer);
 
+    EXPECT_EQ(view.sizeToWrite(), 3);
     EXPECT_TRUE(view.write(static_cast<uint8_t>(0x01)));
     EXPECT_EQ(buffer.sizeToRead(), 1);
+    EXPECT_EQ(buffer.sizeToWrite(), 2);
     EXPECT_EQ(view.sizeToRead(), 1);
+    EXPECT_EQ(view.sizeToWrite(), 2);
     EXPECT_TRUE(view.write(static_cast<uint16_t>(0x0203)));
     EXPECT_EQ(buffer.sizeToRead(), 3);
+    EXPECT_EQ(buffer.sizeToWrite(), 0);
     EXPECT_EQ(view.sizeToRead(), 3);
+    EXPECT_EQ(view.sizeToWrite(), 0);
 
     EXPECT_EQ(view.read<uint8_t>(), 0x01);
     EXPECT_EQ(buffer.sizeToRead(), 2);
@@ -246,25 +310,13 @@ TEST(SerialCommunicationBufferViewTests, read_shouldReadTheData)
 
     EXPECT_EQ(view.read<uint16_t>(), 0x0203);
     EXPECT_EQ(view.sizeToRead(), 0);
-    EXPECT_EQ(view.size(), 3);
+    EXPECT_EQ(view.sizeToWrite(), 0);
 
     view.clear();
-    EXPECT_EQ(view.size(), 0);
+    EXPECT_EQ(buffer.sizeToRead(), 0);
+    EXPECT_EQ(buffer.sizeToWrite(), 3);
     EXPECT_EQ(view.sizeToRead(), 0);
-}
-
-TEST(SerialCommunicationBufferViewTests, read_bool_shouldReturnTrueIfDifferentFrom0)
-{
-    SerialCommunicationBuffer<3> buffer;
-    SerialCommunicationBufferView view(buffer);
-
-    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x00)));
-    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x01)));
-    EXPECT_TRUE(view.write(static_cast<uint8_t>(0x02)));
-
-    EXPECT_EQ(view.read<bool>(), false);
-    EXPECT_EQ(view.read<bool>(), true);
-    EXPECT_EQ(view.read<bool>(), true);
+    EXPECT_EQ(view.sizeToWrite(), 3);
 }
 
 TEST(SerialCommunicationBufferViewTests, read_enum_shouldReadTheEnumValue)

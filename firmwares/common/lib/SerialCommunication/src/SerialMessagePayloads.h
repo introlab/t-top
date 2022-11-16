@@ -9,18 +9,19 @@ struct AcknowledgmentPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = false;
     static constexpr MessageType MESSAGE_TYPE = MessageType::ACKNOWLEDGMENT;
+    static constexpr uint8_t PAYLOAD_SIZE = 2;
 
     uint16_t receivedMessageId;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<AcknowledgmentPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool AcknowledgmentPayload::writeTo(Buffer& buffer)
+bool AcknowledgmentPayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(receivedMessageId));
 
@@ -41,6 +42,7 @@ struct BaseStatusPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = false;
     static constexpr MessageType MESSAGE_TYPE = MessageType::BASE_STATUS;
+    static constexpr uint8_t PAYLOAD_SIZE = 42;
 
     bool isPsuConnected;
     bool hasChargerError;
@@ -59,14 +61,14 @@ struct BaseStatusPayload
     uint8_t maximumVolume;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<BaseStatusPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool BaseStatusPayload::writeTo(Buffer& buffer)
+bool BaseStatusPayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(isPsuConnected));
     CHECK_BUFFER_WRITE(buffer.write(hasChargerError));
@@ -131,18 +133,19 @@ struct ButtonPressedPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::BUTTON_PRESSED;
+    static constexpr uint8_t PAYLOAD_SIZE = 1;
 
     Button button;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<ButtonPressedPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool ButtonPressedPayload::writeTo(Buffer& buffer)
+bool ButtonPressedPayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(button));
 
@@ -163,18 +166,19 @@ struct SetVolumePayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SET_VOLUME;
+    static constexpr uint8_t PAYLOAD_SIZE = 1;
 
     uint8_t volume;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<SetVolumePayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool SetVolumePayload::writeTo(Buffer& buffer)
+bool SetVolumePayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(volume));
 
@@ -202,19 +206,20 @@ struct SetLedColorsPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SET_LED_COLORS;
+    static constexpr uint8_t PAYLOAD_SIZE = 93;
 
     static constexpr size_t LED_COUNT = 31;
     Color colors[LED_COUNT];
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<SetLedColorsPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool SetLedColorsPayload::writeTo(Buffer& buffer)
+bool SetLedColorsPayload::writeTo(Buffer& buffer) const
 {
     for (size_t i = 0; i < LED_COUNT; i++)
     {
@@ -246,6 +251,7 @@ struct MotorStatusPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = false;
     static constexpr MessageType MESSAGE_TYPE = MessageType::MOTOR_STATUS;
+    static constexpr uint8_t PAYLOAD_SIZE = 71;
 
     float torsoOrientation;
     int16_t torsoServoSpeed;
@@ -271,14 +277,14 @@ struct MotorStatusPayload
     bool isHeadPoseReachable;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<MotorStatusPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool MotorStatusPayload::writeTo(Buffer& buffer)
+bool MotorStatusPayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(torsoOrientation));
     CHECK_BUFFER_WRITE(buffer.write(torsoServoSpeed));
@@ -341,6 +347,7 @@ struct ImuDataPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = false;
     static constexpr MessageType MESSAGE_TYPE = MessageType::IMU_DATA;
+    static constexpr uint8_t PAYLOAD_SIZE = 24;
 
     float accelerationX;
     float accelerationY;
@@ -350,14 +357,14 @@ struct ImuDataPayload
     float angularRateZ;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<ImuDataPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool ImuDataPayload::writeTo(Buffer& buffer)
+bool ImuDataPayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(accelerationX));
     CHECK_BUFFER_WRITE(buffer.write(accelerationY));
@@ -388,18 +395,19 @@ struct SetTorsoOrientationPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SET_TORSO_ORIENTATION;
+    static constexpr uint8_t PAYLOAD_SIZE = 4;
 
     float torsoOrientation;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<SetTorsoOrientationPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool SetTorsoOrientationPayload::writeTo(Buffer& buffer)
+bool SetTorsoOrientationPayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(torsoOrientation));
 
@@ -420,6 +428,7 @@ struct SetHeadPosePayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SET_HEAD_POSE;
+    static constexpr uint8_t PAYLOAD_SIZE = 28;
 
     float headPosePositionX;
     float headPosePositionY;
@@ -430,14 +439,14 @@ struct SetHeadPosePayload
     float headPoseOrientationZ;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<SetHeadPosePayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool SetHeadPosePayload::writeTo(Buffer& buffer)
+bool SetHeadPosePayload::writeTo(Buffer& buffer) const
 {
     CHECK_BUFFER_WRITE(buffer.write(headPosePositionX));
     CHECK_BUFFER_WRITE(buffer.write(headPosePositionY));
@@ -470,16 +479,17 @@ struct ShutdownPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SHUTDOWN;
+    static constexpr uint8_t PAYLOAD_SIZE = 0;
 
     template<class Buffer>
-    bool writeTo(Buffer& buffer);
+    bool writeTo(Buffer& buffer) const;
 
     template<class Buffer>
     static tl::optional<ShutdownPayload> readFrom(Buffer& buffer);
 };
 
 template<class Buffer>
-bool ShutdownPayload::writeTo(Buffer& buffer)
+bool ShutdownPayload::writeTo(Buffer& buffer) const
 {
     return true;
 }
