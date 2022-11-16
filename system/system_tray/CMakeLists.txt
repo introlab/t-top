@@ -10,13 +10,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ## Required Qt5 Modules
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets)
 
-## Build a static library with common serial communication files
+## Build a static library with common serial communication files and tools
 file(GLOB serial_communication_common_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.cpp)
 file(GLOB serial_communication_common_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.h)
-add_library(serial_communication_common STATIC ${serial_communication_common_srcs} ${serial_communication_common_headers})
+file(GLOB crc8_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/Crc8/src/*.cpp)
+file(GLOB crc8_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/Crc8/src/*.h)
+file(GLOB class_macros_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/ClassMacro/src/*.h)
+
+add_library(serial_communication_common STATIC
+    ${serial_communication_common_srcs}
+    ${serial_communication_common_headers}
+    ${crc8_srcs}
+    ${crc8_headers}
+    ${class_macros_headers}
+)
+
 target_include_directories(serial_communication_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/SerialCommunication/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../ros/utils/recorders/3rd_party/optional/include)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/Crc8/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/ClassMacro/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ros/utils/recorders/3rd_party/optional/include
+)
 
 
 set (system_tray_headers
@@ -44,7 +58,6 @@ qt5_wrap_cpp(system_tray_headers_moc ${system_tray_headers})
 
 qt5_add_resources(system_tray_qrc_src ${system_tray_qrcs})
 
-add_executable(ttop-system-tray ${system_tray_srcs} ${system_tray_headers} ${system_tray_headers_moc} ${serial_message_common_srcs}
-    ${serial_message_common_headers} ${system_tray_qrc_src} ${system_tray_qrcs} ${readme_file})
+add_executable(ttop-system-tray ${system_tray_srcs} ${system_tray_headers} ${system_tray_headers_moc} ${system_tray_qrc_src} ${system_tray_qrcs} ${readme_file})
 target_include_directories(ttop-system-tray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(ttop-system-tray Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebSockets serial_communication_common)
