@@ -2005,8 +2005,8 @@
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/b1807156-87b1-4cf7-a765-156405ce7621"
       (reference "U6") (unit 1) (value "SN74LV1T34") (footprint "Package_TO_SOT_SMD:SOT-23-5")
     )
-    (path "/5b98d348-acd8-4690-b761-a355bd4cff53/8fdb659b-a77d-41e2-8602-74927cebfd2c"
-      (reference "U7") (unit 1) (value "MAX3221E") (footprint "Package_SO:TSSOP-16_4.4x5mm_P0.65mm")
+    (path "/5b98d348-acd8-4690-b761-a355bd4cff53/2c9f8a9e-583a-4910-a5aa-defe4f5a7659"
+      (reference "U7") (unit 1) (value "SN65C3221E") (footprint "Package_SO:TSSOP-16_4.4x5mm_P0.65mm")
     )
     (path "/b36928e5-affa-478f-96f8-c66ff2db9108/58542465-12a9-467a-a491-642af66223f5"
       (reference "U8") (unit 1) (value "74LVC2G34") (footprint "Package_SO:TSOP-6_1.65x3.05mm_P0.95mm")
