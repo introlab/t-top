@@ -591,7 +591,7 @@
     (effects (font (size 2.54 2.54)) (justify left bottom))
     (uuid 1ba077d7-0eb9-48dc-be9a-b0acccea2256)
   )
-  (text "U8 is useful to prevent apply voltage to the Teensy when it is unpowered."
+  (text "U8 is useful to prevent applying voltage to the Teensy when it is unpowered."
     (at 93.98 66.04 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 5ba4c2fb-6b24-4bbf-a1b9-99b9f862d2fa)

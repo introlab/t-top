@@ -1,4 +1,4 @@
-20610374783465661
+20612044829770110
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -86449,6 +86449,13 @@ t-top
 0
 4
 4
+t-top
+DEANS
+
+
+0
+2
+2
 t-top
 ICM-40627
 
