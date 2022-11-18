@@ -1972,6 +1972,12 @@
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/8f0da9ec-0122-4a01-ac99-5770897f6aa5"
       (reference "R42") (unit 1) (value "47") (footprint "Resistor_SMD:R_0805_2012Metric")
     )
+    (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/6019f424-be8a-4ede-8229-c3b3f67f14cd"
+      (reference "R43") (unit 1) (value "0") (footprint "Resistor_SMD:R_1206_3216Metric")
+    )
+    (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/c7fae0f5-c07a-4aa8-89dd-dd8e9b2435b1"
+      (reference "R44") (unit 1) (value "0") (footprint "Resistor_SMD:R_1206_3216Metric")
+    )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/9d802dd5-efe7-4642-a481-34db9a1c2d84"
       (reference "SW1") (unit 1) (value "Non-Momentary DPST ") (footprint "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical")
     )
