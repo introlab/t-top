@@ -30,7 +30,7 @@ void DeamonApp::setupSerialManager()
 
     for (auto &&port : DaemonSerialManager::availablePorts())
     {
-        if (port.portName().contains("tty") && port.manufacturer().contains("Teensyduino"))
+        if (port.portName().contains("cu") && port.manufacturer().contains("Teensyduino"))
         {
             qDebug() << "Automatic discovery of port: " << port.portName() << " from manufacturer: " << port.manufacturer();
             m_serialManager = new DaemonSerialManager(port, this);

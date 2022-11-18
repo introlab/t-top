@@ -11,15 +11,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 REQUIRED COMPONENTS Core Network WebSockets SerialPort)
 
 ## Build a static library with common serial communication files and tools
-file(GLOB serial_communication_common_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.cpp)
-file(GLOB serial_communication_common_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.h)
+file(GLOB serial_communication_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.cpp)
+file(GLOB serial_communication_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.h)
 file(GLOB crc8_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/Crc8/src/*.cpp)
 file(GLOB crc8_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/Crc8/src/*.h)
 file(GLOB class_macros_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/ClassMacro/src/*.h)
 
 add_library(serial_communication_common STATIC
-    ${serial_communication_common_srcs}
-    ${serial_communication_common_headers}
+    ${serial_communication_srcs}
+    ${serial_communication_headers}
     ${crc8_srcs}
     ${crc8_headers}
     ${class_macros_headers}
@@ -35,12 +35,14 @@ target_include_directories(serial_communication_common PUBLIC
 set (deamon_headers
     src/DaemonApp.h
     src/DaemonWebSocketServer.h
+    src/DaemonSerialPortWrapper.h
     src/DaemonSerialManager.h
 )
 
 set (daemon_srcs
     src/DaemonApp.cpp
     src/DaemonWebSocketServer.cpp
+    src/DaemonSerialPortWrapper.cpp
     src/DaemonSerialManager.cpp
     src/main.cpp
 )
@@ -51,6 +53,6 @@ set (daemon_other_files
 
 qt5_wrap_cpp(daemon_headers_moc ${deamon_headers})
 
-add_executable(daemon ${daemon_srcs} ${deamon_headers} ${daemon_headers_moc} ${serial_message_common_srcs} ${serial_message_common_headers} ${daemon_other_files})
+add_executable(daemon ${daemon_srcs} ${deamon_headers} ${daemon_headers_moc} ${daemon_other_files})
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(daemon Qt5::Core Qt5::Network Qt5::WebSockets Qt5::SerialPort serial_communication_common)
