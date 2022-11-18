@@ -65,15 +65,7 @@ void DaemonSerialManager::onReadyRead()
 {
     // Update manager
     qDebug() << "void DaemonSerialManager::onReadyRead()";
-    while (m_serialPort->bytesAvailable() > 0)
-    {
-        size_t available_before = m_serialPort->bytesAvailable();
-        m_serialCommunicationManager->update(QDateTime::currentMSecsSinceEpoch());
-        size_t available_after = m_serialPort->bytesAvailable();
-
-        if (available_after >= available_before)
-            break;
-    }
+    m_serialCommunicationManager->update(QDateTime::currentMSecsSinceEpoch());
 }
 
 void DaemonSerialManager::setupSerialCommunicationManagerCallbacks()
