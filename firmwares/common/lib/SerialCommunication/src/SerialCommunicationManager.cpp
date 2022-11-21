@@ -20,14 +20,12 @@ SerialCommunicationManager::SerialCommunicationManager(
     Device device,
     uint32_t acknowledgmentTimeoutMs,
     size_t maximumTrialCount,
-    SerialPort& serialPort,
-    void* userData)
+    SerialPort& serialPort)
     : m_device(device),
       m_acknowledgmentTimeoutMs(acknowledgmentTimeoutMs),
       m_maximumTrialCount(maximumTrialCount),
       m_serialPort(serialPort),
       m_isWaitingRxPreamble(true),
-      m_userData(userData),
       m_baseStatusHandler(nullptr),
       m_buttonPressedHandler(nullptr),
       m_setVolumeHandler(nullptr),
@@ -157,7 +155,7 @@ void SerialCommunicationManager::updateCurrentRxMessageSize()
         }                                                                                                              \
         else if ((handler) != nullptr)                                                                                 \
         {                                                                                                              \
-            handler(header.source(), payload, m_userData);                                                             \
+            handler(header.source(), payload);                                                                         \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -276,7 +274,7 @@ void SerialCommunicationManager::route(Device destination, const uint8_t* data, 
 {
     if (m_routeCallback != nullptr)
     {
-        m_routeCallback(destination, data, size, m_userData);
+        m_routeCallback(destination, data, size);
     }
     else
     {
@@ -288,6 +286,6 @@ void SerialCommunicationManager::logError(const char* message, tl::optional<Mess
 {
     if (m_errorCallback != nullptr)
     {
-        m_errorCallback(message, messageType, m_userData);
+        m_errorCallback(message, messageType);
     }
 }

@@ -24,7 +24,7 @@ constexpr uint32_t ADC_RESOLUTION = 10;
 constexpr float ADC_MAX_VALUE = 1023;
 
 constexpr uint8_t POWER_OFF_PIN = 2;
-constexpr uint8_t POWER_SWITCH_PIN = 4;
+constexpr uint8_t POWER_SWITCH_PIN = 12;
 constexpr uint32_t SHUTDOWN_REQUEST_TIMEOUT_MS = 120000;
 constexpr float SHUTDOWN_COMPLETED_FOR_COMPUTER_AND_DYNAMIXELS_POWER_THRESHOLD_W = 5;
 
@@ -81,10 +81,10 @@ constexpr uint8_t RIGHT_LIGHT_SENSOR_PIN = 24;
 constexpr float LIGHT_SENSOR_MINIMUM_VALUE = 0;
 constexpr float LIGHT_SENSOR_MAXIMUM_VALUE = ADC_MAX_VALUE;
 
-constexpr uint8_t START_BUTTON_PIN = 9;
+constexpr uint8_t START_BUTTON_PIN = 11;
 constexpr uint8_t STOP_BUTTON_PIN = 10;
-constexpr uint8_t VOLUME_UP_BUTTON_PIN = 12;
-constexpr uint8_t VOLUME_DOWN_BUTTON_PIN = 11;
+constexpr uint8_t VOLUME_UP_BUTTON_PIN = 9;
+constexpr uint8_t VOLUME_DOWN_BUTTON_PIN = 4;
 constexpr uint32_t VOLUME_BUTTON_INTERVAL_MS = 250;
 
 // Communication configuration

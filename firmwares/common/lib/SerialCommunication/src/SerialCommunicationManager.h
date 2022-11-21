@@ -10,18 +10,38 @@
 #include <tuple>
 #include <limits>
 
-typedef void (*BaseStatusHandler)(Device source, const BaseStatusPayload& payload, void* userData);
-typedef void (*ButtonPressedHandler)(Device source, const ButtonPressedPayload& payload, void* userData);
-typedef void (*SetVolumeHandler)(Device source, const SetVolumePayload& payload, void* userData);
-typedef void (*SetLedColorsHandler)(Device source, const SetLedColorsPayload& payload, void* userData);
-typedef void (*MotorStatusHandler)(Device source, const MotorStatusPayload& payload, void* userData);
-typedef void (*ImuDataHandler)(Device source, const ImuDataPayload& payload, void* userData);
-typedef void (*SetTorsoOrientationHandler)(Device source, const SetTorsoOrientationPayload& payload, void* userData);
-typedef void (*SetHeadPoseHandler)(Device source, const SetHeadPosePayload& payload, void* userData);
-typedef void (*ShutdownHandler)(Device source, const ShutdownPayload& payload, void* userData);
+#ifdef SERIAL_COMMUNICATION_MANAGER_USE_STD_FUNCTION
 
-typedef void (*RouteCallback)(Device destination, const uint8_t* data, size_t size, void* userData);
-typedef void (*ErrorCallback)(const char* message, tl::optional<MessageType> messageType, void* userData);
+#include <functional>
+
+typedef std::function<void(Device, const BaseStatusPayload&)> BaseStatusHandler;
+typedef std::function<void(Device, const ButtonPressedPayload&)> ButtonPressedHandler;
+typedef std::function<void(Device, const SetVolumePayload&)> SetVolumeHandler;
+typedef std::function<void(Device, const SetLedColorsPayload&)> SetLedColorsHandler;
+typedef std::function<void(Device, const MotorStatusPayload&)> MotorStatusHandler;
+typedef std::function<void(Device, const ImuDataPayload&)> ImuDataHandler;
+typedef std::function<void(Device, const SetTorsoOrientationPayload&)> SetTorsoOrientationHandler;
+typedef std::function<void(Device, const SetHeadPosePayload&)> SetHeadPoseHandler;
+typedef std::function<void(Device, const ShutdownPayload&)> ShutdownHandler;
+typedef std::function<void(Device, const uint8_t*, size_t)> RouteCallback;
+typedef std::function<void(const char*, tl::optional<MessageType>)> ErrorCallback;
+
+#else
+
+typedef void (*BaseStatusHandler)(Device source, const BaseStatusPayload& payload);
+typedef void (*ButtonPressedHandler)(Device source, const ButtonPressedPayload& payload);
+typedef void (*SetVolumeHandler)(Device source, const SetVolumePayload& payload);
+typedef void (*SetLedColorsHandler)(Device source, const SetLedColorsPayload& payload);
+typedef void (*MotorStatusHandler)(Device source, const MotorStatusPayload& payload);
+typedef void (*ImuDataHandler)(Device source, const ImuDataPayload& payload);
+typedef void (*SetTorsoOrientationHandler)(Device source, const SetTorsoOrientationPayload& payload);
+typedef void (*SetHeadPoseHandler)(Device source, const SetHeadPosePayload& payload);
+typedef void (*ShutdownHandler)(Device source, const ShutdownPayload& payload);
+
+typedef void (*RouteCallback)(Device destination, const uint8_t* data, size_t size);
+typedef void (*ErrorCallback)(const char* message, tl::optional<MessageType> messageType);
+
+#endif
 
 
 template<class Payload>
@@ -108,7 +128,6 @@ class SerialCommunicationManager
     SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> m_rxBuffer;
     SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> m_txBuffer;
 
-    void* m_userData;
     BaseStatusHandler m_baseStatusHandler;
     ButtonPressedHandler m_buttonPressedHandler;
     SetVolumeHandler m_setVolumeHandler;
@@ -129,8 +148,7 @@ public:
         Device device,
         uint32_t acknowledgmentTimeoutMs,
         size_t maximumTrialCount,
-        SerialPort& serialPort,
-        void* userData = nullptr);
+        SerialPort& serialPort);
 
     DECLARE_NOT_COPYABLE(SerialCommunicationManager);
     DECLARE_NOT_MOVABLE(SerialCommunicationManager);

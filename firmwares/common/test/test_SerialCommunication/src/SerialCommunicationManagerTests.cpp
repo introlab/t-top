@@ -225,23 +225,34 @@ protected:
     tl::optional<const char*> expectedErrorMessage;
 
     SerialCommunicationManagerTests()
-        : testee(Device::PSU_CONTROL, ACKNOWLEDGMENT_TIMEOUT_MS, MAXIMUM_TRIAL_COUNT, serialPortMock, this)
+        : testee(Device::PSU_CONTROL, ACKNOWLEDGMENT_TIMEOUT_MS, MAXIMUM_TRIAL_COUNT, serialPortMock)
     {
     }
 
     void SetUp() override
     {
-        testee.setBaseStatusHandler(&SerialCommunicationManagerTests::baseStatusHandler);
-        testee.setButtonPressedHandler(&SerialCommunicationManagerTests::buttonPressedHandler);
-        testee.setSetVolumeHandler(&SerialCommunicationManagerTests::setVolumeHandler);
-        testee.setSetLedColorsHandler(&SerialCommunicationManagerTests::setLedColorsHandler);
-        testee.setMotorStatusHandler(&SerialCommunicationManagerTests::motorStatusHandler);
-        testee.setImuDataHandler(&SerialCommunicationManagerTests::imuDataHandler);
-        testee.setSetTorsoOrientationHandler(&SerialCommunicationManagerTests::setTorsoOrientationHandler);
-        testee.setSetHeadPoseHandler(&SerialCommunicationManagerTests::setHeadPoseHandler);
-        testee.setShutdownHandler(&SerialCommunicationManagerTests::shutdownHandler);
-        testee.setRouteCallback(&SerialCommunicationManagerTests::routeCallback);
-        testee.setErrorCallback(&SerialCommunicationManagerTests::errorCallback);
+        testee.setBaseStatusHandler([this](Device source, const BaseStatusPayload& payload)
+                                    { baseStatusHandler(source, payload); });
+        testee.setButtonPressedHandler([this](Device source, const ButtonPressedPayload& payload)
+                                       { buttonPressedHandler(source, payload); });
+        testee.setSetVolumeHandler([this](Device source, const SetVolumePayload& payload)
+                                   { setVolumeHandler(source, payload); });
+        testee.setSetLedColorsHandler([this](Device source, const SetLedColorsPayload& payload)
+                                      { setLedColorsHandler(source, payload); });
+        testee.setMotorStatusHandler([this](Device source, const MotorStatusPayload& payload)
+                                     { motorStatusHandler(source, payload); });
+        testee.setImuDataHandler([this](Device source, const ImuDataPayload& payload)
+                                 { imuDataHandler(source, payload); });
+        testee.setSetTorsoOrientationHandler([this](Device source, const SetTorsoOrientationPayload& payload)
+                                             { setTorsoOrientationHandler(source, payload); });
+        testee.setSetHeadPoseHandler([this](Device source, const SetHeadPosePayload& payload)
+                                     { setHeadPoseHandler(source, payload); });
+        testee.setShutdownHandler([this](Device source, const ShutdownPayload& payload)
+                                  { shutdownHandler(source, payload); });
+        testee.setRouteCallback([this](Device destination, const uint8_t* data, size_t size)
+                                { routeCallback(destination, data, size); });
+        testee.setErrorCallback([this](const char* message, tl::optional<MessageType> messageType)
+                                { errorCallback(message, messageType); });
     }
 
     void TearDown() override
@@ -250,61 +261,6 @@ protected:
         {
             ADD_FAILURE() << *expectedErrorMessage;
         }
-    }
-
-    static void baseStatusHandler(Device source, const BaseStatusPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->baseStatusHandler(source, payload);
-    }
-
-    static void buttonPressedHandler(Device source, const ButtonPressedPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->buttonPressedHandler(source, payload);
-    }
-
-    static void setVolumeHandler(Device source, const SetVolumePayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->setVolumeHandler(source, payload);
-    }
-
-    static void setLedColorsHandler(Device source, const SetLedColorsPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->setLedColorsHandler(source, payload);
-    }
-
-    static void motorStatusHandler(Device source, const MotorStatusPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->motorStatusHandler(source, payload);
-    }
-
-    static void imuDataHandler(Device source, const ImuDataPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->imuDataHandler(source, payload);
-    }
-
-    static void setTorsoOrientationHandler(Device source, const SetTorsoOrientationPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->setTorsoOrientationHandler(source, payload);
-    }
-
-    static void setHeadPoseHandler(Device source, const SetHeadPosePayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->setHeadPoseHandler(source, payload);
-    }
-
-    static void shutdownHandler(Device source, const ShutdownPayload& payload, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->shutdownHandler(source, payload);
-    }
-
-    static void routeCallback(Device destination, const uint8_t* data, size_t size, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->routeCallback(destination, data, size);
-    }
-
-    static void errorCallback(const char* message, tl::optional<MessageType> messageType, void* userData)
-    {
-        static_cast<SerialCommunicationManagerTests*>(userData)->errorCallback(message, messageType);
     }
 
     void baseStatusHandler(Device source, const BaseStatusPayload& payload)

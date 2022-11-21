@@ -35,9 +35,9 @@ static void updateLedStrip(
 
 static void onButtonTicker();
 
-static void onSetVolumeMessage(Device source, const SetVolumePayload& payload, void* userData);
-static void onSetLedColorsMessage(Device source, const SetLedColorsPayload& payload, void* userData);
-static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType, void* userData);
+static void onSetVolumeMessage(Device source, const SetVolumePayload& payload);
+static void onSetLedColorsMessage(Device source, const SetLedColorsPayload& payload);
+static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType);
 
 static bool isShutdownCompletedForComputerAndDynamixels();
 
@@ -222,17 +222,17 @@ static void onButtonTicker()
     }
 }
 
-static void onSetVolumeMessage(Device source, const SetVolumePayload& payload, void* userData)
+static void onSetVolumeMessage(Device source, const SetVolumePayload& payload)
 {
     audioPowerAmplifier.setVolume(payload.volume);
 }
 
-static void onSetLedColorsMessage(Device source, const SetLedColorsPayload& payload, void* userData)
+static void onSetLedColorsMessage(Device source, const SetLedColorsPayload& payload)
 {
     ledStrip.setBaseLedColors(payload.colors, SetLedColorsPayload::LED_COUNT);
 }
 
-static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType, void* userData)
+static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType)
 {
     DEBUG_SERIAL.print("Serial Communication Manager - ");
     DEBUG_SERIAL.print(message);
