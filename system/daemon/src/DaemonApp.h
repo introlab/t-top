@@ -10,11 +10,11 @@
 #include "DaemonSerialManager.h"
 
 
-class DeamonApp : public QCoreApplication {
+class DaemonApp : public QCoreApplication {
     Q_OBJECT
 
 public:
-    DeamonApp(int argc, char* argv[]);
+    DaemonApp(int argc, char* argv[]);
 
 private slots:
 

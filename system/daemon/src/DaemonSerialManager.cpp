@@ -13,17 +13,11 @@ DaemonSerialManager::DaemonSerialManager(const QSerialPortInfo &port, QObject *p
                                                                                                               COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS,
                                                                                                               COMMUNICATION_MAXIMUM_TRIAL_COUNT, *m_serialPort, this));
 
-    // TODO port setup, hardcoded for now
-    m_serialPort->setDataBits(QSerialPort::Data8);
-    m_serialPort->setStopBits(QSerialPort::OneStop);
-    m_serialPort->setBaudRate(QSerialPort::Baud115200, QSerialPort::AllDirections);
-    m_serialPort->setFlowControl(QSerialPort::NoFlowControl);
-
     if (m_serialPort->open(QIODevice::ReadWrite))
     {
         // Connect signals
-        connect(m_serialPort, &QSerialPort::errorOccurred, this, &DaemonSerialManager::onErrorOccurred);
-        connect(m_serialPort, &QSerialPort::readyRead, this, &DaemonSerialManager::onReadyRead);
+        connect(m_serialPort, &DaemonSerialPortWrapper::errorOccurred, this, &DaemonSerialManager::onErrorOccurred);
+        connect(m_serialPort, &DaemonSerialPortWrapper::readyRead, this, &DaemonSerialManager::onReadyRead);
 
         setupSerialCommunicationManagerCallbacks();
     }

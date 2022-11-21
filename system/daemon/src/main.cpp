@@ -3,6 +3,6 @@
 
 int main(int argc, char* argv[])
 {
-    DeamonApp app(argc, argv);
+    DaemonApp app(argc, argv);
     return app.exec();
 }
