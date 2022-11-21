@@ -28,4 +28,5 @@ TODO add an image
 - [Gerber](buck_boost/gerber)
 - [Bill of Materials](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb)
 
+TODO update the image
 ![Buck-Boost PCB](images/Buck-Boost%20PCB.jpg)

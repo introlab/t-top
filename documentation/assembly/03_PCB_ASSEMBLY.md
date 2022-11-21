@@ -21,6 +21,7 @@
 
 ## B. PSU Control PCB
 
+TODO update
 ### Required Parts
 
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
@@ -68,6 +69,7 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 
 ## C. 12V Buck-Boost PCB
 
+TODO update
 ### Required Parts
 
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).

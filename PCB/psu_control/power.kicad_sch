@@ -2110,8 +2110,7 @@
     (effects (font (size 2.54 2.54)) (justify left bottom))
     (uuid bc05a72d-1c3c-4038-80ab-4c52b13a4e30)
   )
-  (text "J2 : Screw Terminal\nJ3 : Screw Terminal\nJ4 : Screw Terminal\n"
-    (at 264.16 74.93 0)
+  (text "J2 : Screw Terminal\nJ4 : Screw Terminal\n" (at 264.16 74.93 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ecb5e576-9552-4b17-926a-5e8819f31350)
   )
