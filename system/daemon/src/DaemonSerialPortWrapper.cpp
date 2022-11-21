@@ -3,7 +3,7 @@
 #include <QByteArray>
 
 DaemonSerialPortWrapper::DaemonSerialPortWrapper(const QSerialPortInfo &info, QObject *parent)
-    : QObject(parent), m_serialPort(info, parent)
+    : QObject(parent), m_serialPort(info, this)
 {
 
     //Signal on signal...
