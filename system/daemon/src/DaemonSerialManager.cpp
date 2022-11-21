@@ -2,14 +2,16 @@
 #include <QDebug>
 #include <QDateTime>
 
+
 DaemonSerialManager::DaemonSerialManager(const QSerialPortInfo &port, QObject *parent)
     : QObject(parent), m_serialPort(nullptr)
 {
 
     m_serialPort = new DaemonSerialPortWrapper(port, this);
-    m_serialCommunicationManager = new SerialCommunicationManager(Device::COMPUTER,
-                                                                  COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS,
-                                                                  COMMUNICATION_MAXIMUM_TRIAL_COUNT, *m_serialPort, this);
+
+    m_serialCommunicationManager = std::unique_ptr<SerialCommunicationManager>(new SerialCommunicationManager(Device::COMPUTER,
+                                                                                                              COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS,
+                                                                                                              COMMUNICATION_MAXIMUM_TRIAL_COUNT, *m_serialPort, this));
 
     // TODO port setup, hardcoded for now
     m_serialPort->setDataBits(QSerialPort::Data8);
@@ -71,7 +73,6 @@ void DaemonSerialManager::onReadyRead()
 void DaemonSerialManager::setupSerialCommunicationManagerCallbacks()
 {
     qDebug() << "DaemonSerialManager::setupSerialCommunicationManagerCallbacks()";
-    //TODO use lambda ?
     m_serialCommunicationManager->setBaseStatusHandler(&DaemonSerialManagerBaseStatusHandler);
     m_serialCommunicationManager->setButtonPressedHandler(&DaemonSerialManagerButtonPressedHandler);
     m_serialCommunicationManager->setMotorStatusHandler(&DaemonSerialManagerMotorStatusHandler);
@@ -83,75 +84,94 @@ void DaemonSerialManager::setupSerialCommunicationManagerCallbacks()
     m_serialCommunicationManager->setRouteCallback(&DaemonSerialManagerRouteCallback);
     m_serialCommunicationManager->setSetVolumeHandler(&DaemonSerialManagerSetVolumeHandler);
     m_serialCommunicationManager->setErrorCallback(&DaemonSerialManagerErrorCallback);
-
 }
-
-
 
 void DaemonSerialManagerBaseStatusHandler(Device source, const BaseStatusPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerBaseStatusHandler" << manager;
+    if (manager) {
+        emit manager->newStatus(source, payload);
+    }
 }
 
 void DaemonSerialManagerButtonPressedHandler(Device source, const ButtonPressedPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerButtonPressedHandler" << manager;
+    if (manager) {
+        emit manager->newButtonPressed(source, payload);
+    }
 }
 
 void DaemonSerialManagerSetVolumeHandler(Device source, const SetVolumePayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerSetVolumeHandler" << manager;
+    if (manager) {
+        emit manager->newSetVolume(source, payload);
+    }
 }
 
 void DaemonSerialManagerSetLedColorsHandler(Device source, const SetLedColorsPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerSetLedColorsHandler" << manager;
+    if (manager) {
+        emit manager->newSetLedColors(source, payload);
+    }
 }
 
 void DaemonSerialManagerMotorStatusHandler(Device source, const MotorStatusPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerMotorStatusHandler" << manager;
+    if (manager) {
+        emit manager->newMotorStatus(source, payload);
+    }
 }
 
 void DaemonSerialManagerImuDataHandler(Device source, const ImuDataPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerImuDataHandler" << manager;
+    if (manager) {
+        emit manager->newImuData(source, payload);
+    }
 }
 
 void DaemonSerialManagerSetTorsoOrientationHandler(Device source, const SetTorsoOrientationPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerSetTorsoOrientationHandler" << manager;
+    if (manager) {
+        emit manager->newSetTorsoOrientation(source, payload);
+    }
 }
 
 void DaemonSerialManagerSetHeadPoseHandler(Device source, const SetHeadPosePayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerSetHeadPoseHandler" << manager;
+    if (manager) {
+        emit manager->newSetHeadPose(source, payload);
+    }
 }
 
 void DaemonSerialManagerShutdownHandler(Device source, const ShutdownPayload& payload, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerShutdownHandler" << manager;
+    if (manager) {
+        emit manager->newShutdown(source, payload);
+    }
 }
 
 void DaemonSerialManagerRouteCallback(Device destination, const uint8_t* data, size_t size, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerRouteCallback" << manager;
+    if (manager) {
+        emit manager->newRoute(destination, data, size);
+    }
 }
 
 void DaemonSerialManagerErrorCallback(const char* message, tl::optional<MessageType> messageType, void* userData)
 {
     DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    qDebug() << "DaemonSerialManagerErrorCallback" << manager << message;
+    if (manager) {
+        emit manager->newError(message, messageType);
+    }
 }
 
 
