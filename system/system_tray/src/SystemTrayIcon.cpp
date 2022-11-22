@@ -1,8 +1,9 @@
 #include "SystemTrayIcon.h"
 
 
-SystemTrayIcon::SystemTrayIcon(QObject *parent)
-    : QSystemTrayIcon(QIcon(":/icons/resources/robot-icon.png"), parent), m_menu(nullptr)
+SystemTrayIcon::SystemTrayIcon(QObject* parent)
+    : QSystemTrayIcon(QIcon(":/icons/resources/robot-icon.png"), parent),
+      m_menu(nullptr)
 {
     setToolTip("TTOP Configuration");
     setupMenu();
@@ -59,26 +60,32 @@ void SystemTrayIcon::setupSignals()
     connect(m_resetHeadAction, &QAction::triggered, this, &SystemTrayIcon::resetHeadClicked);
 }
 
-void SystemTrayIcon::onStateOfChargeAction() {
+void SystemTrayIcon::onStateOfChargeAction()
+{
     qDebug() << "onStateOfChargeAction";
 }
 
-void SystemTrayIcon::onVolumeUpAction() {
+void SystemTrayIcon::onVolumeUpAction()
+{
     qDebug() << "onVolumeUpAction";
 }
 
-void SystemTrayIcon::onVolumeDownAction() {
+void SystemTrayIcon::onVolumeDownAction()
+{
     qDebug() << "onVolumeDownAction";
 }
 
-void SystemTrayIcon::onCloseAllLedsAction() {
+void SystemTrayIcon::onCloseAllLedsAction()
+{
     qDebug() << "onCloseAllLedsAction";
 }
 
-void SystemTrayIcon::onResetTorsoAction(){
+void SystemTrayIcon::onResetTorsoAction()
+{
     qDebug() << "onResetTorsoAction";
 }
 
-void SystemTrayIcon::onResetHeadAction(){
+void SystemTrayIcon::onResetHeadAction()
+{
     qDebug() << "onResetHeadAction";
 }

@@ -2,11 +2,11 @@
 #include <QDebug>
 #include <QByteArray>
 
-DaemonSerialPortWrapper::DaemonSerialPortWrapper(const QSerialPortInfo &info, QObject *parent)
-    : QObject(parent), m_serialPort(info, this)
+DaemonSerialPortWrapper::DaemonSerialPortWrapper(const QSerialPortInfo& info, QObject* parent)
+    : QObject(parent),
+      m_serialPort(info, this)
 {
-
-    //Signal on signal...
+    // Signal on signal...
     connect(&m_serialPort, &QSerialPort::errorOccurred, this, &DaemonSerialPortWrapper::errorOccurred);
     connect(&m_serialPort, &QSerialPort::readyRead, this, &DaemonSerialPortWrapper::readyRead);
 
@@ -16,12 +16,11 @@ DaemonSerialPortWrapper::DaemonSerialPortWrapper(const QSerialPortInfo &info, QO
     m_serialPort.setStopBits(QSerialPort::OneStop);
     m_serialPort.setBaudRate(QSerialPort::Baud115200, QSerialPort::AllDirections);
     m_serialPort.setFlowControl(QSerialPort::NoFlowControl);
-
 }
 
-void DaemonSerialPortWrapper::read(SerialCommunicationBufferView &buffer)
+void DaemonSerialPortWrapper::read(SerialCommunicationBufferView& buffer)
 {
-    size_t read_size = std::min(buffer.sizeToWrite(), (size_t) m_serialPort.bytesAvailable());
+    size_t read_size = std::min(buffer.sizeToWrite(), (size_t)m_serialPort.bytesAvailable());
     QByteArray data = m_serialPort.read(read_size);
 
     if (data.size() == read_size)
@@ -30,16 +29,16 @@ void DaemonSerialPortWrapper::read(SerialCommunicationBufferView &buffer)
     }
     else
     {
-        qDebug() << "Reading buffer... error expected: " << read_size <<" got: "<<data.size();
+        qDebug() << "Reading buffer... error expected: " << read_size << " got: " << data.size();
     }
 }
 
-void DaemonSerialPortWrapper::write(const uint8_t *data, size_t size)
+void DaemonSerialPortWrapper::write(const uint8_t* data, size_t size)
 {
-    size_t write_size  = m_serialPort.write(reinterpret_cast<const char*>(data), size);
+    size_t write_size = m_serialPort.write(reinterpret_cast<const char*>(data), size);
     if (write_size != size)
     {
-        qDebug() << "Writing buffer... error expected: " << size <<" got: "<< write_size;
+        qDebug() << "Writing buffer... error expected: " << size << " got: " << write_size;
     }
 }
 

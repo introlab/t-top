@@ -8,16 +8,15 @@
 #include <memory>
 
 
-class DaemonSerialManager : public QObject {
-
+class DaemonSerialManager : public QObject
+{
     Q_OBJECT
 
 public:
-
-    DaemonSerialManager(const QSerialPortInfo &port, QObject *parent=nullptr);
+    DaemonSerialManager(const QSerialPortInfo& port, QObject* parent = nullptr);
 
     static QList<QSerialPortInfo> availablePorts();
-    static bool isValidPort(const QString &name);
+    static bool isValidPort(const QString& name);
     static void printAvailablePorts();
 
 signals:
@@ -38,15 +37,14 @@ private slots:
     void onReadyRead();
 
 private:
-    DaemonSerialPortWrapper *m_serialPort;
+    DaemonSerialPortWrapper* m_serialPort;
     std::unique_ptr<SerialCommunicationManager> m_serialCommunicationManager;
     void setupSerialCommunicationManagerCallbacks();
 
     static constexpr long COMMUNICATION_SERIAL_BAUD_RATE = 115200;
     static constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 20;
     static constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
-
 };
 
 
-#endif // _DAEMON_SERIAL_MANAGER_H_
+#endif  // _DAEMON_SERIAL_MANAGER_H_

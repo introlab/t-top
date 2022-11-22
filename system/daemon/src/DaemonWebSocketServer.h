@@ -10,7 +10,7 @@ class DaemonWebSocketServer : public QWebSocketServer
     Q_OBJECT
 
 public:
-    DaemonWebSocketServer(QString name, int port, int num_clients=1, QObject* parent=nullptr);
+    DaemonWebSocketServer(QString name, int port, int num_clients = 1, QObject* parent = nullptr);
 
 private slots:
 
@@ -23,9 +23,7 @@ private slots:
 private:
     int m_port;
     QList<QWebSocket*> m_clients;
-
 };
 
 
-
-#endif // _DAEMON_WEBSOCKET_SERVER_H_
+#endif  // _DAEMON_WEBSOCKET_SERVER_H_

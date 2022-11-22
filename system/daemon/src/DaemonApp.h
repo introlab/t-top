@@ -10,7 +10,8 @@
 #include "DaemonSerialManager.h"
 
 
-class DaemonApp : public QCoreApplication {
+class DaemonApp : public QCoreApplication
+{
     Q_OBJECT
 
 public:
@@ -31,13 +32,11 @@ private slots:
     void onNewError(const char* message, tl::optional<MessageType> messageType);
 
 private:
-
     void setupWebSocketServers();
     void setupSerialManager();
 
     QList<DaemonWebSocketServer*> m_webSocketServers;
     DaemonSerialManager* m_serialManager;
-
 };
 
-#endif //_DAEMON_APP_H_
+#endif  //_DAEMON_APP_H_
