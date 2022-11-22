@@ -13,9 +13,9 @@ DaemonApp::DaemonApp(int argc, char *argv[])
 
 }
 
-void DaemonApp::onNewStatus(Device source, const BaseStatusPayload &payload)
+void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)
 {
-    qDebug() << "********* " << "void DeamonApp::onNewStatus(Device source, const BaseStatusPayload &payload)";
+    qDebug() << "********* " << "void DeamonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
 }
 
 void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)
@@ -92,7 +92,7 @@ void DaemonApp::setupSerialManager()
 
             //Connect signals
             //TODO remove connect everything for tests...
-            connect(m_serialManager, &DaemonSerialManager::newStatus, this, &DaemonApp::onNewStatus);
+            connect(m_serialManager, &DaemonSerialManager::newBaseStatus, this, &DaemonApp::onNewBaseStatus);
             connect(m_serialManager, &DaemonSerialManager::newButtonPressed, this, &DaemonApp::onNewButtonPressed);
             connect(m_serialManager, &DaemonSerialManager::newSetVolume, this, &DaemonApp::onNewSetVolume);
             connect(m_serialManager, &DaemonSerialManager::newSetLedColors, this, &DaemonApp::onNewSetLedColors);

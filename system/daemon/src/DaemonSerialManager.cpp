@@ -11,7 +11,7 @@ DaemonSerialManager::DaemonSerialManager(const QSerialPortInfo &port, QObject *p
 
     m_serialCommunicationManager = std::unique_ptr<SerialCommunicationManager>(new SerialCommunicationManager(Device::COMPUTER,
                                                                                                               COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS,
-                                                                                                              COMMUNICATION_MAXIMUM_TRIAL_COUNT, *m_serialPort, this));
+                                                                                                              COMMUNICATION_MAXIMUM_TRIAL_COUNT, *m_serialPort));
 
     if (m_serialPort->open(QIODevice::ReadWrite))
     {
@@ -67,105 +67,37 @@ void DaemonSerialManager::onReadyRead()
 void DaemonSerialManager::setupSerialCommunicationManagerCallbacks()
 {
     qDebug() << "DaemonSerialManager::setupSerialCommunicationManagerCallbacks()";
-    m_serialCommunicationManager->setBaseStatusHandler(&DaemonSerialManagerBaseStatusHandler);
-    m_serialCommunicationManager->setButtonPressedHandler(&DaemonSerialManagerButtonPressedHandler);
-    m_serialCommunicationManager->setMotorStatusHandler(&DaemonSerialManagerMotorStatusHandler);
-    m_serialCommunicationManager->setImuDataHandler(&DaemonSerialManagerImuDataHandler);
-    m_serialCommunicationManager->setSetHeadPoseHandler(&DaemonSerialManagerSetHeadPoseHandler);
-    m_serialCommunicationManager->setSetLedColorsHandler(&DaemonSerialManagerSetLedColorsHandler);
-    m_serialCommunicationManager->setSetTorsoOrientationHandler(&DaemonSerialManagerSetTorsoOrientationHandler);
-    m_serialCommunicationManager->setShutdownHandler(&DaemonSerialManagerShutdownHandler);
-    m_serialCommunicationManager->setRouteCallback(&DaemonSerialManagerRouteCallback);
-    m_serialCommunicationManager->setSetVolumeHandler(&DaemonSerialManagerSetVolumeHandler);
-    m_serialCommunicationManager->setErrorCallback(&DaemonSerialManagerErrorCallback);
-}
+    m_serialCommunicationManager->setBaseStatusHandler(
+                [this](Device source, const BaseStatusPayload& payload) {emit this->newBaseStatus(source, payload);});
 
-void DaemonSerialManagerBaseStatusHandler(Device source, const BaseStatusPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newStatus(source, payload);
-    }
-}
+    m_serialCommunicationManager->setButtonPressedHandler(
+                [this](Device source, const ButtonPressedPayload& payload) {emit this->newButtonPressed(source, payload);});
 
-void DaemonSerialManagerButtonPressedHandler(Device source, const ButtonPressedPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newButtonPressed(source, payload);
-    }
-}
+    m_serialCommunicationManager->setMotorStatusHandler(
+                [this](Device source, const MotorStatusPayload& payload) {emit this->newMotorStatus(source, payload);});
 
-void DaemonSerialManagerSetVolumeHandler(Device source, const SetVolumePayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newSetVolume(source, payload);
-    }
-}
+    m_serialCommunicationManager->setImuDataHandler(
+                [this](Device source, const ImuDataPayload& payload) {emit this->newImuData(source, payload);});
 
-void DaemonSerialManagerSetLedColorsHandler(Device source, const SetLedColorsPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newSetLedColors(source, payload);
-    }
-}
+    m_serialCommunicationManager->setSetHeadPoseHandler(
+                [this](Device source, const SetHeadPosePayload& payload){emit this->newSetHeadPose(source, payload);});
 
-void DaemonSerialManagerMotorStatusHandler(Device source, const MotorStatusPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newMotorStatus(source, payload);
-    }
-}
+    m_serialCommunicationManager->setSetLedColorsHandler(
+                [this](Device source, const SetLedColorsPayload& payload){emit this->newSetLedColors(source, payload);});
 
-void DaemonSerialManagerImuDataHandler(Device source, const ImuDataPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newImuData(source, payload);
-    }
-}
+    m_serialCommunicationManager->setSetTorsoOrientationHandler(
+                [this](Device source, const SetTorsoOrientationPayload& payload){emit this->newSetTorsoOrientation(source, payload);});
 
-void DaemonSerialManagerSetTorsoOrientationHandler(Device source, const SetTorsoOrientationPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newSetTorsoOrientation(source, payload);
-    }
-}
+    m_serialCommunicationManager->setShutdownHandler(
+                [this](Device source, const ShutdownPayload& payload){emit this->newShutdown(source, payload);});
 
-void DaemonSerialManagerSetHeadPoseHandler(Device source, const SetHeadPosePayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newSetHeadPose(source, payload);
-    }
-}
+    m_serialCommunicationManager->setRouteCallback(
+                [this](Device destination, const uint8_t* data, size_t size){emit this->newRoute(destination, data, size);});
 
-void DaemonSerialManagerShutdownHandler(Device source, const ShutdownPayload& payload, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newShutdown(source, payload);
-    }
-}
+    m_serialCommunicationManager->setSetVolumeHandler(
+                [this](Device source, const SetVolumePayload& payload){emit this->newSetVolume(source, payload);});
 
-void DaemonSerialManagerRouteCallback(Device destination, const uint8_t* data, size_t size, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newRoute(destination, data, size);
-    }
+    m_serialCommunicationManager->setErrorCallback(
+                [this](const char* message, tl::optional<MessageType> messageType){emit this->newError(message, messageType);});
 }
-
-void DaemonSerialManagerErrorCallback(const char* message, tl::optional<MessageType> messageType, void* userData)
-{
-    DaemonSerialManager* manager = reinterpret_cast<DaemonSerialManager*>(userData);
-    if (manager) {
-        emit manager->newError(message, messageType);
-    }
-}
-
 

@@ -18,7 +18,7 @@ public:
 
 private slots:
 
-    void onNewStatus(Device source, const BaseStatusPayload& payload);
+    void onNewBaseStatus(Device source, const BaseStatusPayload& payload);
     void onNewButtonPressed(Device source, const ButtonPressedPayload& payload);
     void onNewSetVolume(Device source, const SetVolumePayload& payload);
     void onNewSetLedColors(Device source, const SetLedColorsPayload& payload);
