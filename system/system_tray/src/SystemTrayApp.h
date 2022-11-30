@@ -13,8 +13,8 @@ public:
     SystemTrayApp(int argc, char* argv[]);
 
 private:
-    SystemTrayIcon *m_trayIcon;
-    WebSocketDaemonClient *m_webSocketClient;
+    SystemTrayIcon* m_trayIcon;
+    WebSocketDaemonClient* m_webSocketClient;
 };
 
-#endif // _SYSTEM_TRAY_APP_H_
+#endif  // _SYSTEM_TRAY_APP_H_

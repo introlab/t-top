@@ -9,12 +9,12 @@ class WebSocketDaemonClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit WebSocketDaemonClient(QObject *parent = nullptr);
+    explicit WebSocketDaemonClient(QObject* parent = nullptr);
 
 public slots:
-    void connectTo(const QUrl &url);
+    void connectTo(const QUrl& url);
 
-    void connectTo(const QString &hostname, int port);
+    void connectTo(const QString& hostname, int port);
 
 signals:
 
@@ -24,8 +24,7 @@ private slots:
     void socketDisconnected();
 
 private:
-    QWebSocket *m_webSocket;
-
+    QWebSocket* m_webSocket;
 };
 
-#endif // _WEBSOCKET_DAEMON_CLIENT_H_
+#endif  // _WEBSOCKET_DAEMON_CLIENT_H_

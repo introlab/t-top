@@ -19,3 +19,7 @@ target_include_directories(serial_communication_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/ClassMacro/src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../ros/utils/recorders/3rd_party/optional/include
 )
+
+target_compile_definitions(serial_communication_common PUBLIC
+    -DSERIAL_COMMUNICATION_MANAGER_USE_STD_FUNCTION
+)
