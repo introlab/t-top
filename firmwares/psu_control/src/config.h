@@ -89,6 +89,7 @@ constexpr uint32_t VOLUME_BUTTON_INTERVAL_MS = 250;
 
 // Communication configuration
 #define COMMUNICATION_SERIAL Serial3
+constexpr uint8_t COMMUNICATION_RS232_INVALID = 5;
 constexpr long COMMUNICATION_SERIAL_BAUD_RATE = 250000;
 constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 20;
 constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;

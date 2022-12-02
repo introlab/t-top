@@ -3,7 +3,6 @@
 #if FIRMWARE_MODE == FIRMWARE_MODE_COMMUNICATION_TEST
 
 #include "mainCommon.h"
-#include "TeensySerialPort.h"
 
 #include <SerialCommunication.h>
 
@@ -30,6 +29,7 @@ void setup()
 
 static void setupSerialCommunicationManager()
 {
+    pinMode(COMMUNICATION_RS232_INVALID, INPUT);
     COMMUNICATION_SERIAL.begin(COMMUNICATION_SERIAL_BAUD_RATE);
     serialCommunicationManager.setSetVolumeHandler(onSetVolumeMessage);
     serialCommunicationManager.setSetLedColorsHandler(onSetLedColorsMessage);
@@ -48,21 +48,16 @@ static void sendMessage(const char* name, Device destination, Payload payload)
     DEBUG_SERIAL.print(": ");
     DEBUG_SERIAL.print(endTime - startTime);
     DEBUG_SERIAL.println(" us");
+
+    serialCommunicationManager.update(millis());
 }
 
 void loop()
 {
     sendMessage("shutdown", Device::COMPUTER, ShutdownPayload());
-    serialCommunicationManager.update(millis());
-
     sendMessage("shutdown", Device::DYNAMIXEL_CONTROL, ShutdownPayload());
-    serialCommunicationManager.update(millis());
-
     sendMessage("button pressed", Device::COMPUTER, ButtonPressedPayload{Button::START});
-    serialCommunicationManager.update(millis());
-
     sendMessage("button pressed", Device::COMPUTER, ButtonPressedPayload{Button::STOP});
-    serialCommunicationManager.update(millis());
 
     BaseStatusPayload baseStatusPayload;
     baseStatusPayload.isPsuConnected = true;
@@ -79,9 +74,7 @@ void loop()
     baseStatusPayload.leftLightSensor = 0.27;
     baseStatusPayload.rightLightSensor = 0.28;
     sendMessage("base status", Device::COMPUTER, baseStatusPayload);
-    serialCommunicationManager.update(millis());
 
-    // TODO delay
     uint32_t startTime = millis();
     while ((millis() - startTime) < 1000)
     {

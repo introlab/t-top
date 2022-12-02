@@ -5,5 +5,6 @@
 #include "SerialMessages.h"
 #include "SerialMessagePayloads.h"
 #include "SerialCommunicationManager.h"
+#include "TeensySerialPort.h"
 
 #endif

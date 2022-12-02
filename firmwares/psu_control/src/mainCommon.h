@@ -1,5 +1,5 @@
-#ifndef MAIN_COMMON_H
-#define MAIN_COMMON_H
+#ifndef PSU_CONTROL_MAIN_COMMON_H
+#define PSU_CONTROL_MAIN_COMMON_H
 
 #include "config.h"
 

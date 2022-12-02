@@ -4,7 +4,6 @@
 
 #include "mainCommon.h"
 #include "ShutdownManager.h"
-#include "TeensySerialPort.h"
 
 #include <SerialCommunication.h>
 
@@ -73,6 +72,26 @@ void setup()
     buttonTicker.start();
 }
 
+static void setupShutdownManager()
+{
+    DEBUG_SERIAL.println("Setup Shutdown Manager - Start");
+    shutdownManager.begin();
+    DEBUG_SERIAL.println("Setup Shutdown Manager - End");
+}
+
+static void setupSerialCommunicationManager()
+{
+    DEBUG_SERIAL.println("Setup Serial Communication Manager - Start");
+
+    pinMode(COMMUNICATION_RS232_INVALID, INPUT);
+    COMMUNICATION_SERIAL.begin(COMMUNICATION_SERIAL_BAUD_RATE);
+    serialCommunicationManager.setSetVolumeHandler(onSetVolumeMessage);
+    serialCommunicationManager.setSetLedColorsHandler(onSetLedColorsMessage);
+    serialCommunicationManager.setErrorCallback(onSerialCommunicationError);
+
+    DEBUG_SERIAL.println("Setup Serial Communication Manager - End");
+}
+
 void loop()
 {
     if (shutdownManager.isShutdownRequested())
@@ -95,21 +114,6 @@ void loop()
     }
 
     serialCommunicationManager.update(millis());
-}
-
-static void setupShutdownManager()
-{
-    DEBUG_SERIAL.println("Setup Shutdown Manager - Start");
-    shutdownManager.begin();
-    DEBUG_SERIAL.println("Setup Shutdown Manager - End");
-}
-
-static void setupSerialCommunicationManager()
-{
-    COMMUNICATION_SERIAL.begin(COMMUNICATION_SERIAL_BAUD_RATE);
-    serialCommunicationManager.setSetVolumeHandler(onSetVolumeMessage);
-    serialCommunicationManager.setSetLedColorsHandler(onSetLedColorsMessage);
-    serialCommunicationManager.setErrorCallback(onSerialCommunicationError);
 }
 
 static void onStatusTicker()

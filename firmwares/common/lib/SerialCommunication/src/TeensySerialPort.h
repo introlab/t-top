@@ -1,9 +1,7 @@
 #ifndef PSU_CONTROL_TEENSY_SERIAL_PORT_H
 #define PSU_CONTROL_TEENSY_SERIAL_PORT_H
 
-#include <SerialCommunication.h>
-
-#include <Arduino.h>
+#include "SerialCommunicationManager.h"
 
 template<class T>
 class TeensySerialPort : public SerialPort
