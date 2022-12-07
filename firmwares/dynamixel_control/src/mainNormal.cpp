@@ -24,10 +24,13 @@ static SerialCommunicationManager psuControlSerialCommunicationManager(
     COMMUNICATION_MAXIMUM_TRIAL_COUNT,
     psuControlSerialCommunicationSerialPort);
 
+static volatile bool imuDataReady = false;
+
 static void setupSerialCommunicationManagers();
 
 static void onMotorStatusTicker();
-static void onImuTicker();
+static void onImuDataReadyInterrupt();
+static void sendImuData();
 
 static void onSetHeadPoseMessage(Device source, const SetHeadPosePayload& payload);
 static void onSetTorsoOrientationMessage(Device source, const SetTorsoOrientationPayload& payload);
@@ -40,7 +43,6 @@ static void onPsuControlSerialCommunicationError(const char* message, tl::option
 static void onSerialCommunicationError(const char* message, tl::optional<MessageType> messageType);
 
 Ticker motorStatusTicker(onMotorStatusTicker, MOTOR_STATUS_TICKER_INTERVAL_MS, 0, MILLIS);
-Ticker imuTicker(onImuTicker, IMU_TICKER_INTERVAL_MS, 0, MILLIS);
 
 void setup()
 {
@@ -48,16 +50,23 @@ void setup()
     setupDebugSerial();
     setupWire();
 
+    imuDataReady = false;
+    setupImu(onImuDataReadyInterrupt);
+
     setupSerialCommunicationManagers();
 
     motorStatusTicker.start();
-    imuTicker.start();
 }
 
 void loop()
 {
+    if (imuDataReady)
+    {
+        imuDataReady = false;
+        sendImuData();
+    }
+
     motorStatusTicker.update();
-    imuTicker.update();
 
     computerSerialCommunicationManager.update(millis());
     psuControlSerialCommunicationManager.update(millis());
@@ -90,10 +99,25 @@ static void onMotorStatusTicker()
     computerSerialCommunicationManager.send(Device::COMPUTER, motorStatusPayload, millis());
 }
 
-static void onImuTicker()
+static void onImuDataReadyInterrupt()
 {
+    imuDataReady = true;
+}
+
+static void sendImuData()
+{
+    if (!imu.readData())
+    {
+        return;
+    }
+
     ImuDataPayload imuDataPayload;
-    // TODO set fields
+    imuDataPayload.accelerationX = imu.getAccelerationXInMPerSS();
+    imuDataPayload.accelerationY = imu.getAccelerationYInMPerSS();
+    imuDataPayload.accelerationZ = imu.getAccelerationZInMPerSS();
+    imuDataPayload.angularRateX = imu.getAngularRateXInRadPerS();
+    imuDataPayload.angularRateY = imu.getAngularRateYInRadPerS();
+    imuDataPayload.angularRateZ = imu.getAngularRateZInRadPerS();
 
     computerSerialCommunicationManager.send(Device::COMPUTER, imuDataPayload, millis());
 }

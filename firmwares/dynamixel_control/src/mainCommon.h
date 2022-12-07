@@ -13,7 +13,11 @@
         delay(ERROR_DELAY_MS);                                                                                         \
     }
 
+extern Icm40627 imu;
+
 void setupDebugSerial();
 void setupWire();
+void setupImu();
+void setupImu(void (*dataReadyInterrupt)());
 
 #endif
