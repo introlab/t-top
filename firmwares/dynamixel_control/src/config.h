@@ -11,7 +11,6 @@
 #define FIRMWARE_MODE_PCB_TEST           2
 #define FIRMWARE_MODE_COMMUNICATION_TEST 3
 #define FIRMWARE_MODE                    FIRMWARE_MODE_NORMAL
-// TODO add dynamixel setup mode
 
 // Device configuration
 #define DEBUG_SERIAL Serial1
@@ -31,8 +30,13 @@ constexpr Icm40627::AntiAliasFilterBandwidth IMU_ANTI_ALIAS_FILTER_BANDWIDTH = I
 #define DYNAMIXEL_SERIAL Serial2
 constexpr uint8_t DYNAMIXEL_ENABLE_PIN = 2;
 constexpr uint8_t DYNAMIXEL_DIR_PIN = 9;
+constexpr long DYNAMIXEL_BAUD_RATE = 1000000;
 
-constexpr uint8_t LIMIT_SWITCH_PIN = 22;
+constexpr size_t STEWART_SERVO_COUNT = 6;
+constexpr uint8_t STEWART_PLATFORM_DYNAMIXEL_IDS[STEWART_SERVO_COUNT] = {1, 2, 3, 4, 5, 6};
+
+constexpr uint8_t TORSO_DYNAMIXEL_ID = 7;
+constexpr int TORSO_LIMIT_SWITCH_PIN = 22;
 
 // Communication configuration
 #define COMPUTER_COMMUNICATION_SERIAL    Serial3

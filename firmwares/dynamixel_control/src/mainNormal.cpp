@@ -3,6 +3,8 @@
 #if FIRMWARE_MODE == FIRMWARE_MODE_NORMAL
 
 #include "mainCommon.h"
+#include "actuators/StewartPlatformController.h"
+#include "actuators/TorsoController.h"
 
 #include <SerialCommunication.h>
 
@@ -26,7 +28,11 @@ static SerialCommunicationManager psuControlSerialCommunicationManager(
 
 static volatile bool imuDataReady = false;
 
+static StewartPlatformController stewartPlatformController(dynamixel);
+static TorsoController torsoController(dynamixel);
+
 static void setupSerialCommunicationManagers();
+static void setupControllers();
 
 static void onMotorStatusTicker();
 static void onImuDataReadyInterrupt();
@@ -52,24 +58,10 @@ void setup()
 
     imuDataReady = false;
     setupImu(onImuDataReadyInterrupt);
-
     setupSerialCommunicationManagers();
+    setupControllers();
 
     motorStatusTicker.start();
-}
-
-void loop()
-{
-    if (imuDataReady)
-    {
-        imuDataReady = false;
-        sendImuData();
-    }
-
-    motorStatusTicker.update();
-
-    computerSerialCommunicationManager.update(millis());
-    psuControlSerialCommunicationManager.update(millis());
 }
 
 static void setupSerialCommunicationManagers()
@@ -91,10 +83,62 @@ static void setupSerialCommunicationManagers()
     DEBUG_SERIAL.println("Setup Serial Communication Manager - End");
 }
 
+static void setupControllers()
+{
+    DEBUG_SERIAL.println("Setup Controllers - Start");
+
+    stewartPlatformController.begin();
+    torsoController.begin();
+
+    DEBUG_SERIAL.println("Setup Controllers - End");
+}
+
+void loop()
+{
+    if (imuDataReady)
+    {
+        imuDataReady = false;
+        sendImuData();
+    }
+
+    motorStatusTicker.update();
+
+    computerSerialCommunicationManager.update(millis());
+    psuControlSerialCommunicationManager.update(millis());
+}
+
 static void onMotorStatusTicker()
 {
     MotorStatusPayload motorStatusPayload;
-    // TODO set fields
+    motorStatusPayload.torsoOrientation = torsoController.readOrientation();
+    motorStatusPayload.torsoServoSpeed = torsoController.readServoSpeed();
+
+    float headServoAngles[STEWART_SERVO_COUNT];
+    HeadPose headPose;
+    int16_t headServoSpeeds[STEWART_SERVO_COUNT];
+    stewartPlatformController.readCurrentPose(headServoAngles, headPose);
+    stewartPlatformController.readServoSpeeds(headServoSpeeds);
+
+    motorStatusPayload.headServoAngle1 = headServoAngles[0];
+    motorStatusPayload.headServoAngle2 = headServoAngles[1];
+    motorStatusPayload.headServoAngle3 = headServoAngles[2];
+    motorStatusPayload.headServoAngle4 = headServoAngles[3];
+    motorStatusPayload.headServoAngle5 = headServoAngles[4];
+    motorStatusPayload.headServoAngle6 = headServoAngles[5];
+    motorStatusPayload.headServoSpeed1 = headServoSpeeds[0];
+    motorStatusPayload.headServoSpeed2 = headServoSpeeds[1];
+    motorStatusPayload.headServoSpeed3 = headServoSpeeds[2];
+    motorStatusPayload.headServoSpeed4 = headServoSpeeds[3];
+    motorStatusPayload.headServoSpeed5 = headServoSpeeds[4];
+    motorStatusPayload.headServoSpeed6 = headServoSpeeds[5];
+    motorStatusPayload.headPosePositionX = headPose.positionX;
+    motorStatusPayload.headPosePositionY = headPose.positionY;
+    motorStatusPayload.headPosePositionZ = headPose.positionZ;
+    motorStatusPayload.headPoseOrientationW = headPose.orientationW;
+    motorStatusPayload.headPoseOrientationX = headPose.orientationX;
+    motorStatusPayload.headPoseOrientationY = headPose.orientationY;
+    motorStatusPayload.headPoseOrientationZ = headPose.orientationZ;
+    motorStatusPayload.isHeadPoseReachable = stewartPlatformController.isPoseReachable();
 
     computerSerialCommunicationManager.send(Device::COMPUTER, motorStatusPayload, millis());
 }
@@ -124,17 +168,26 @@ static void sendImuData()
 
 static void onSetHeadPoseMessage(Device source, const SetHeadPosePayload& payload)
 {
-    // TODO
+    HeadPose pose;
+    pose.positionX = payload.headPosePositionX;
+    pose.positionY = payload.headPosePositionY;
+    pose.positionZ = payload.headPosePositionZ;
+    pose.orientationW = payload.headPoseOrientationW;
+    pose.orientationX = payload.headPoseOrientationX;
+    pose.orientationY = payload.headPoseOrientationY;
+    pose.orientationZ = payload.headPoseOrientationZ;
+
+    stewartPlatformController.setPose(pose);
 }
 
 static void onSetTorsoOrientationMessage(Device source, const SetTorsoOrientationPayload& payload)
 {
-    // TODO
+    torsoController.setOrientation(payload.torsoOrientation);
 }
 
 static void onShutdownMessage(Device source, const ShutdownPayload& payload)
 {
-    // TODO
+    digitalWrite(DYNAMIXEL_ENABLE_PIN, false);
 }
 
 static void computerRouteCallback(Device destination, const uint8_t* data, size_t size)
