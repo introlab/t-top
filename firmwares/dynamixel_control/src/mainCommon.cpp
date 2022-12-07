@@ -1,6 +1,7 @@
 #include "mainCommon.h"
 
 Icm40627 imu(Wire, IMU_ADDRESS, IMU_INT1_PIN, IMU_INT2_PIN);
+Dynamixel2Arduino dynamixel(DYNAMIXEL_SERIAL, DYNAMIXEL_DIR_PIN);
 
 void setupDebugSerial()
 {
@@ -33,4 +34,16 @@ void setupImu(void (*dataReadyInterrupt)())
         CRITICAL_ERROR("Setup Imu - failure");
     }
     DEBUG_SERIAL.println("Setup Imu - End");
+}
+
+void setupDynamixel()
+{
+    DEBUG_SERIAL.println("Setup Dynamixel - Start");
+
+    pinMode(DYNAMIXEL_ENABLE_PIN, OUTPUT);
+    digitalWrite(DYNAMIXEL_ENABLE_PIN, true);
+
+    dynamixel.begin(DYNAMIXEL_BAUD_RATE);
+
+    DEBUG_SERIAL.println("Setup Dynamixel - End");
 }

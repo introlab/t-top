@@ -16,10 +16,11 @@ void setup()
     // put your setup code here, to run once:
     setupDebugSerial();
     setupWire();
-    setupImu();
 
-    // TODO setup a dynamixel
-    pinMode(LIMIT_SWITCH_PIN, INPUT);
+    setupImu();
+    setupDynamixel();
+
+    pinMode(TORSO_LIMIT_SWITCH_PIN, INPUT);
 }
 
 static void testLimitSwitch();
@@ -42,7 +43,7 @@ static void testLimitSwitch()
     for (size_t i = 0; i < READ_COUNT; i++)
     {
         DEBUG_SERIAL.print("Status: ");
-        DEBUG_SERIAL.print(static_cast<int>(digitalRead(LIMIT_SWITCH_PIN)));
+        DEBUG_SERIAL.print(static_cast<int>(digitalRead(TORSO_LIMIT_SWITCH_PIN)));
         delay(READ_DELAY_MS);
     }
 
@@ -97,7 +98,56 @@ static void testImu()
 
 static void testDynamixel()
 {
-    // TODO
+    constexpr uint8_t MOTOR_ID = 1;
+    constexpr size_t STEP_ANGLE_DEG = 20;
+    constexpr size_t STEP_COUNT = 10;
+    constexpr uint32_t ANGLE_STEP_DELAY_MS = 1000;
+
+    DEBUG_SERIAL.println("---------------------Test Dynamixel--------------------");
+
+    if (!dynamixel.ping(MOTOR_ID))
+    {
+        DEBUG_SERIAL.println("ping failed");
+        return;
+    }
+
+    uint16_t modelNumber = dynamixel.getModelNumber(MOTOR_ID);
+    if (modelNumber == 0xFFFF)
+    {
+        DEBUG_SERIAL.println("getModelNumber failed");
+        return;
+    }
+    DEBUG_SERIAL.print("Model Number: ");
+    DEBUG_SERIAL.println(modelNumber);
+
+    if (!dynamixel.torqueOff(MOTOR_ID))
+    {
+        DEBUG_SERIAL.println("torqueOff failed");
+        return;
+    }
+
+    if (!dynamixel.setOperatingMode(MOTOR_ID, OP_POSITION))
+    {
+        DEBUG_SERIAL.println("setOperatingMode failed");
+        return;
+    }
+
+    if (!dynamixel.torqueOn(MOTOR_ID))
+    {
+        DEBUG_SERIAL.println("torqueOn failed");
+        return;
+    }
+
+    for (size_t i = 0; i < STEP_COUNT; i++)
+    {
+        if (!dynamixel.setGoalPosition(MOTOR_ID, (i + 1) * STEP_ANGLE_DEG, UNIT_DEGREE))
+        {
+            DEBUG_SERIAL.println("setGoalPosition failed");
+            return;
+        }
+
+        delay(ANGLE_STEP_DELAY_MS);
+    }
 }
 
 #endif
