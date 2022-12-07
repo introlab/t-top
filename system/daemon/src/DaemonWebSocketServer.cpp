@@ -34,6 +34,7 @@ void DaemonWebSocketServer::processTextMessage(QString message)
 {
     QWebSocket* client = qobject_cast<QWebSocket*>(sender());
     qDebug() << serverName() << "processTextMessage: " << client;
+
 }
 
 void DaemonWebSocketServer::processBinaryMessage(QByteArray message)
@@ -46,4 +47,19 @@ void DaemonWebSocketServer::socketDisconnected()
 {
     QWebSocket* client = qobject_cast<QWebSocket*>(sender());
     qDebug() << serverName() << "socketDisconnected: " << client;
+    m_clients.removeAll(client);
+    client->deleteLater();
+}
+
+size_t DaemonWebSocketServer::clientCount()
+{
+    return m_clients.size();
+}
+
+void DaemonWebSocketServer::sendBinaryToAll(const QByteArray &data)
+{
+    foreach(auto client, m_clients )
+    {
+        client->sendBinaryMessage(data);
+    }
 }

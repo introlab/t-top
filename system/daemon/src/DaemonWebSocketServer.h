@@ -11,6 +11,8 @@ class DaemonWebSocketServer : public QWebSocketServer
 
 public:
     DaemonWebSocketServer(QString name, int port, int num_clients = 1, QObject* parent = nullptr);
+    void sendBinaryToAll(const QByteArray &data);
+    size_t clientCount();
 
 private slots:
 
@@ -18,7 +20,6 @@ private slots:
     void processTextMessage(QString message);
     void processBinaryMessage(QByteArray message);
     void socketDisconnected();
-
 
 private:
     int m_port;

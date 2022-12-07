@@ -1,6 +1,7 @@
 #include "DaemonApp.h"
 #include <QtDebug>
-
+#include "SerialCommunicationBuffer.h"
+#include "SerialMessages.h"
 
 DaemonApp::DaemonApp(int argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
 {
@@ -15,6 +16,32 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
+
+    // Send to all websockets
+    SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> buffer;
+    Message<BaseStatusPayload> message(source, Device::COMPUTER, payload);
+
+
+    static_assert(sizeof(BaseStatusPayload) <= SERIAL_COMMUNICATION_MAXIMUM_PAYLOAD_SIZE, "The payload is too big.");
+
+    uint8_t messageSize = SERIAL_COMMUNICATION_MESSAGE_SIZE_SIZE + MessageHeader::HEADER_SIZE + BaseStatusPayload::PAYLOAD_SIZE +
+                          SERIAL_COMMUNICATION_CRC8_SIZE;
+
+    buffer.clear();
+    buffer.write(messageSize);
+    message.header().writeTo(buffer);
+    message.payload().writeTo(buffer);
+    uint8_t crc8Value = crc8(buffer.dataToRead(), buffer.sizeToRead());
+    buffer.write(crc8Value);
+
+    foreach (DaemonWebSocketServer *server, m_webSocketServers) {
+        if (server->clientCount() > 0)
+        {
+            qDebug() << "DaemonApp::onNewBaseStatus - Writing message size: " <<  buffer.sizeToRead() + SERIAL_COMMUNICATION_PREAMBLE_SIZE;
+            server->sendBinaryToAll(QByteArray((char*) SERIAL_COMMUNICATION_PREAMBLE, SERIAL_COMMUNICATION_PREAMBLE_SIZE).append(
+                QByteArray((char*) buffer.dataToRead(), buffer.sizeToRead())));
+        }
+    }
 }
 
 void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& payload)
@@ -75,6 +102,7 @@ void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messag
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewError(const char *message, tl::optional<MessageType> messageType)";
+    qDebug() << message;
 }
 
 void DaemonApp::setupWebSocketServers()
