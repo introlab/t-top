@@ -10,31 +10,50 @@ SystemTrayApp::SystemTrayApp(int argc, char* argv[]) : QApplication(argc, argv)
 
     m_webSocketSerialManager = new WebSocketSerialManager(url, this);
 
-
-    // Connect signals
-    // TODO remove connect everything for tests...
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newBaseStatus, this, &SystemTrayApp::onNewBaseStatus);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newButtonPressed, this, &SystemTrayApp::onNewButtonPressed);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetVolume, this, &SystemTrayApp::onNewSetVolume);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetLedColors, this, &SystemTrayApp::onNewSetLedColors);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newMotorStatus, this, &SystemTrayApp::onNewMotorStatus);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newImuData, this, &SystemTrayApp::onNewImuData);
-    connect(
-        m_webSocketSerialManager,
-        &WebSocketSerialManager::newSetTorsoOrientation,
-        this,
-        &SystemTrayApp::onNewSetTorsoOrientation);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetHeadPose, this, &SystemTrayApp::onNewSetHeadPose);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newShutdown, this, &SystemTrayApp::onNewShutdown);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newError, this, &SystemTrayApp::onNewError);
-
-
+    connectWebSocketSerialManagerSignals();
+    connectSystemTraySignals();
 }
 
 void SystemTrayApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)
 {
     qDebug() << "********* "
              << "void SystemTrayApp::onNewBaseStatus(Device source, const ButtonPressedPayload &payload)";
+    /*
+    struct BaseStatusPayload
+    {
+        static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = false;
+        static constexpr MessageType MESSAGE_TYPE = MessageType::BASE_STATUS;
+        static constexpr uint8_t PAYLOAD_SIZE = 42;
+
+         bool isPsuConnected;
+         bool hasChargerError;
+         bool isBatteryCharging;
+         bool hasBatteryError;
+         float stateOfCharge;
+         float current;
+         float voltage;
+         float onboardTemperature;
+         float externalTemperature;
+         float frontLightSensor;
+         float backLightSensor;
+         float leftLightSensor;
+         float rightLightSensor;
+         uint8_t volume;
+         uint8_t maximumVolume;
+
+          template<class Buffer>
+          bool writeTo(Buffer& buffer) const;
+
+        template<class Buffer>
+        static tl::optional<BaseStatusPayload> readFrom(Buffer& buffer);
+
+    };
+    */
+    m_lastBaseStatusPayloadReceived = payload;
+    m_trayIcon->enableActions(true);
+    m_trayIcon->updateStateOfChargeText(payload.isPsuConnected, payload.hasChargerError, payload.isBatteryCharging,
+                                        payload.hasBatteryError, payload.stateOfCharge, payload.current, payload.voltage);
+
 }
 
 void SystemTrayApp::onNewButtonPressed(Device source, const ButtonPressedPayload& payload)
@@ -96,4 +115,65 @@ void SystemTrayApp::onNewError(const char* message, tl::optional<MessageType> me
     qDebug() << "********* "
              << "void SystemTrayApp::onNewError(const char *message, tl::optional<MessageType> messageType)";
     qDebug() << message;
+}
+
+void SystemTrayApp::onSystemTrayVolumeUp()
+{
+    SetVolumePayload payload;
+    m_webSocketSerialManager->send(Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+}
+
+void SystemTrayApp::onSystemTrayVolumeDown()
+{
+    SetVolumePayload payload;
+    m_webSocketSerialManager->send(Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+}
+
+void SystemTrayApp::onSystemTrayCloseAllLeds()
+{
+    SetLedColorsPayload payload;
+    m_webSocketSerialManager->send(Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+}
+
+void SystemTrayApp::onSystemTrayResetTorso()
+{
+    SetTorsoOrientationPayload payload;
+    m_webSocketSerialManager->send(Device::DYNAMIXEL_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+}
+
+void SystemTrayApp::onSystemTrayResetHead()
+{
+    SetHeadPosePayload payload;
+    m_webSocketSerialManager->send(Device::DYNAMIXEL_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+}
+
+void SystemTrayApp::connectWebSocketSerialManagerSignals()
+{
+    Q_ASSERT(m_webSocketSerialManager);
+    // Connect signals
+    // TODO remove connect everything for tests...
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newBaseStatus, this, &SystemTrayApp::onNewBaseStatus);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newButtonPressed, this, &SystemTrayApp::onNewButtonPressed);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetVolume, this, &SystemTrayApp::onNewSetVolume);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetLedColors, this, &SystemTrayApp::onNewSetLedColors);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newMotorStatus, this, &SystemTrayApp::onNewMotorStatus);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newImuData, this, &SystemTrayApp::onNewImuData);
+    connect(
+        m_webSocketSerialManager,
+        &WebSocketSerialManager::newSetTorsoOrientation,
+        this,
+        &SystemTrayApp::onNewSetTorsoOrientation);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetHeadPose, this, &SystemTrayApp::onNewSetHeadPose);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newShutdown, this, &SystemTrayApp::onNewShutdown);
+    connect(m_webSocketSerialManager, &WebSocketSerialManager::newError, this, &SystemTrayApp::onNewError);
+}
+
+void SystemTrayApp::connectSystemTraySignals()
+{
+    Q_ASSERT(m_trayIcon);
+    connect(m_trayIcon, &SystemTrayIcon::volumeUpClicked, this, &SystemTrayApp::onSystemTrayVolumeUp);
+    connect(m_trayIcon, &SystemTrayIcon::volumeDownClicked, this, &SystemTrayApp::onSystemTrayVolumeDown);
+    connect(m_trayIcon, &SystemTrayIcon::closeAllLedsClicked, this, &SystemTrayApp::onSystemTrayCloseAllLeds);
+    connect(m_trayIcon, &SystemTrayIcon::resetTorsoClicked, this, &SystemTrayApp::onSystemTrayResetTorso);
+    connect(m_trayIcon, &SystemTrayIcon::resetHeadClicked, this, &SystemTrayApp::onSystemTrayResetHead);
 }

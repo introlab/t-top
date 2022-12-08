@@ -15,11 +15,17 @@ void SystemTrayIcon::setupMenu()
 
 
     m_stateOfChargeAction = new QAction("State of charge: ", m_menu);
+    m_stateOfChargeAction->setDisabled(true);
     m_volumeUpAction = new QAction("Volume Up", m_menu);
+    m_volumeUpAction->setDisabled(true);
     m_volumeDownAction = new QAction("Volume Down", m_menu);
+    m_volumeDownAction->setDisabled(true);
     m_closeAllLedsAction = new QAction("Close All Leds", m_menu);
+    m_closeAllLedsAction->setDisabled(true);
     m_resetTorsoAction = new QAction("Reset Torso", m_menu);
+    m_resetTorsoAction->setDisabled(true);
     m_resetHeadAction = new QAction("Reset Head", m_menu);
+    m_resetHeadAction->setDisabled(true);
 
     m_menu->addAction(m_stateOfChargeAction);
     m_menu->addSeparator();
@@ -60,6 +66,15 @@ void SystemTrayIcon::setupSignals()
     connect(m_resetHeadAction, &QAction::triggered, this, &SystemTrayIcon::resetHeadClicked);
 }
 
+void SystemTrayIcon::enableActions(bool enabled)
+{
+    m_volumeUpAction->setEnabled(enabled);
+    m_volumeDownAction->setEnabled(enabled);
+    m_closeAllLedsAction->setEnabled(enabled);
+    m_resetTorsoAction->setEnabled(enabled);
+    m_resetHeadAction->setEnabled(enabled);
+}
+
 void SystemTrayIcon::onStateOfChargeAction()
 {
     qDebug() << "onStateOfChargeAction";
@@ -89,3 +104,21 @@ void SystemTrayIcon::onResetHeadAction()
 {
     qDebug() << "onResetHeadAction";
 }
+
+void SystemTrayIcon::updateStateOfChargeText(bool isPsuConnected,
+                                             bool hasChargerError,
+                                             bool isBatteryCharging,
+                                             bool hasBatteryError,
+                                             float stateOfCharge,
+                                             float current,
+                                             float voltage)
+{
+    m_stateOfChargeAction->setText(QString::number(stateOfCharge) + " %"
+                                   + " " +  QString::number(voltage) + " V"
+                                   + " " +  QString::number(current) + " A"
+                                   + " " +  QString(isPsuConnected ? " PSU" : "")
+                                   + " " +  QString(isBatteryCharging ? " Charging" : "")
+                                   + " " +  QString(hasChargerError ? " Charger Error" : "")
+                                   + " " +  QString(hasBatteryError ? " Battery Error" : ""));
+}
+

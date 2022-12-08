@@ -17,30 +17,9 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
     qDebug() << "********* "
              << "void DeamonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
 
-    // Send to all websockets
-    SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> buffer;
-    Message<BaseStatusPayload> message(source, Device::COMPUTER, payload);
-
-
-    static_assert(sizeof(BaseStatusPayload) <= SERIAL_COMMUNICATION_MAXIMUM_PAYLOAD_SIZE, "The payload is too big.");
-
-    uint8_t messageSize = SERIAL_COMMUNICATION_MESSAGE_SIZE_SIZE + MessageHeader::HEADER_SIZE + BaseStatusPayload::PAYLOAD_SIZE +
-                          SERIAL_COMMUNICATION_CRC8_SIZE;
-
-    buffer.clear();
-    buffer.write(messageSize);
-    message.header().writeTo(buffer);
-    message.payload().writeTo(buffer);
-    uint8_t crc8Value = crc8(buffer.dataToRead(), buffer.sizeToRead());
-    buffer.write(crc8Value);
-
-    foreach (DaemonWebSocketServer *server, m_webSocketServers) {
-        if (server->clientCount() > 0)
-        {
-            qDebug() << "DaemonApp::onNewBaseStatus - Writing message size: " <<  buffer.sizeToRead() + SERIAL_COMMUNICATION_PREAMBLE_SIZE;
-            server->sendBinaryToAll(QByteArray((char*) SERIAL_COMMUNICATION_PREAMBLE, SERIAL_COMMUNICATION_PREAMBLE_SIZE).append(
-                QByteArray((char*) buffer.dataToRead(), buffer.sizeToRead())));
-        }
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
     }
 }
 
@@ -48,48 +27,80 @@ void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& pa
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewSetVolume(Device source, const SetVolumePayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewSetLedColors(Device source, const SetLedColorsPayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewMotorStatus(Device source, const MotorStatusPayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewSetTorsoOrientation(Device source, const SetTorsoOrientationPayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewStatus(Device source, const BaseStatusPayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 {
     qDebug() << "********* "
              << "void DeamonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
+    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    {
+        server->send(source, payload);
+    }
 }
 
 void DaemonApp::onNewRoute(Device destination, const uint8_t* data, size_t size)

@@ -12,7 +12,8 @@ class WebSocketSerialManager : public QObject
 
 public:
     WebSocketSerialManager(const QUrl &url, QObject* parent = nullptr);
-
+    template<class Payload>
+    void send(Device destination, const Payload& payload, uint32_t timestampMs);
 
 signals:
     void newBaseStatus(Device source, const BaseStatusPayload& payload);
@@ -40,6 +41,15 @@ private:
     static constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 20;
     static constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
 };
+
+template<class Payload>
+void WebSocketSerialManager::send(Device destination, const Payload& payload, uint32_t timestampMs)
+{
+    if (m_serialCommunicationManager)
+    {
+        m_serialCommunicationManager->send(destination, payload, timestampMs);
+    }
+}
 
 
 #endif // _WEBSOCKET_SERIAL_MANAGER_H_

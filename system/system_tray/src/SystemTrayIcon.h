@@ -29,6 +29,17 @@ signals:
     void resetTorsoClicked();
     void resetHeadClicked();
 
+public slots:
+    void updateStateOfChargeText(bool isPsuConnected,
+                                 bool hasChargerError,
+                                 bool isBatteryCharging,
+                                 bool hasBatteryError,
+                                 float stateOfCharge,
+                                 float current,
+                                 float voltage);
+
+    void enableActions(bool enabled);
+
 private slots:
     void onStateOfChargeAction();
     void onVolumeUpAction();
@@ -36,6 +47,7 @@ private slots:
     void onCloseAllLedsAction();
     void onResetTorsoAction();
     void onResetHeadAction();
+
 
 private:
     QMenu* m_menu;
@@ -46,6 +58,5 @@ private:
     QAction* m_resetTorsoAction;
     QAction* m_resetHeadAction;
 };
-
 
 #endif  // _SYSTEM_TRAY_ICON_H_

@@ -4,7 +4,6 @@
 #include <QApplication>
 #include <QObject>
 #include "SystemTrayIcon.h"
-#include "WebSocketSerialWrapper.h"
 #include "WebSocketSerialManager.h"
 #include <memory>
 
@@ -16,6 +15,7 @@ public:
 
 private slots:
 
+    // From websocket serial manager
     void onNewBaseStatus(Device source, const BaseStatusPayload& payload);
     void onNewButtonPressed(Device source, const ButtonPressedPayload& payload);
     void onNewSetVolume(Device source, const SetVolumePayload& payload);
@@ -28,9 +28,22 @@ private slots:
     void onNewRoute(Device destination, const uint8_t* data, size_t size);
     void onNewError(const char* message, tl::optional<MessageType> messageType);
 
+    // From system tray menu
+    void onSystemTrayVolumeUp();
+    void onSystemTrayVolumeDown();
+    void onSystemTrayCloseAllLeds();
+    void onSystemTrayResetTorso();
+    void onSystemTrayResetHead();
+
 private:
+
+    void connectWebSocketSerialManagerSignals();
+    void connectSystemTraySignals();
+
+
     SystemTrayIcon* m_trayIcon;
     WebSocketSerialManager* m_webSocketSerialManager;
+    BaseStatusPayload m_lastBaseStatusPayloadReceived;
 };
 
 #endif  // _SYSTEM_TRAY_APP_H_

@@ -29,7 +29,9 @@ void WebSocketSerialWrapper::read(SerialCommunicationBufferView &buffer)
 
 void WebSocketSerialWrapper::write(const uint8_t *data, size_t size)
 {
+    qDebug() <<  "WebSocketSerialWrapper::write size = " << size;
     m_webSocketClient.write(data, size);
+
 }
 
 void WebSocketSerialWrapper::connectTo(const QUrl &url)

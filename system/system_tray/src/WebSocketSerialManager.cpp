@@ -1,5 +1,6 @@
 #include "WebSocketSerialManager.h"
 #include <QDateTime>
+#include "SerialMessages.h"
 
 WebSocketSerialManager::WebSocketSerialManager(const QUrl &url, QObject *parent)
 {
@@ -65,3 +66,4 @@ void WebSocketSerialManager::setupSerialCommunicationManagerCallbacks()
     m_serialCommunicationManager->setErrorCallback([this](const char* message, tl::optional<MessageType> messageType)
                                                    { emit this->newError(message, messageType); });
 }
+

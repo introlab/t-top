@@ -33,14 +33,14 @@ void DaemonWebSocketServer::onNewConnection()
 void DaemonWebSocketServer::processTextMessage(QString message)
 {
     QWebSocket* client = qobject_cast<QWebSocket*>(sender());
-    qDebug() << serverName() << "processTextMessage: " << client;
+    qDebug() << serverName() << "processTextMessage: " << client << message;
 
 }
 
 void DaemonWebSocketServer::processBinaryMessage(QByteArray message)
 {
     QWebSocket* client = qobject_cast<QWebSocket*>(sender());
-    qDebug() << serverName() << "processBinaryMessage: " << client;
+    qDebug() << serverName() << "processBinaryMessage: " << client << " size: "<< message.size();
 }
 
 void DaemonWebSocketServer::socketDisconnected()
