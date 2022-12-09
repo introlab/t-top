@@ -1,5 +1,6 @@
 #include "LedStrip.h"
 
+constexpr uint32_t BLACK_COLOR = 0x000000;
 constexpr uint32_t RED_COLOR = 0xFF0000;
 constexpr uint32_t ORANGE_COLOR = 0xE05800;
 constexpr uint32_t YELLOW_COLOR = 0xFFFF00;
@@ -53,7 +54,12 @@ void LedStrip::setLevel(size_t offset, float value, float maximumValue, size_t l
     const float yellowThreshold = orangeThreshold + step / 4;
     const float greenThreshold = yellowThreshold + step / 4;
 
-    for (size_t i = 0; i < STATE_OF_CHARGE_LED_COUNT; i++)
+    for (size_t i = 0; i < ledCount; i++)
+    {
+        m_leds.setPixel(offset + i, BLACK_COLOR);
+    }
+
+    for (size_t i = 0; i < ledCount; i++)
     {
         if (value > greenThreshold)
         {
