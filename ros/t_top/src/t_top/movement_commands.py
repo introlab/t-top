@@ -14,7 +14,7 @@ from geometry_msgs.msg import PoseStamped
 import hbba_lite
 
 
-HEAD_ZERO_Z = 0.16893650962222248
+HEAD_ZERO_Z = 0.17029453895440808
 
 HEAD_POSE_X_INDEX = 0
 HEAD_POSE_Y_INDEX = 1
