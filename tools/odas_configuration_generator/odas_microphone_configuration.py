@@ -13,12 +13,13 @@ MICROPHONE_1_YAW_ANGLE = 0.98174770425
 IS_MICROPHONE_1_BOTTOM = False
 
 WALL_ANGLE = 1.4137166941
-BOTTOM_RADIUS = 0.14
-BOTTOM_MICROPHONE_WALL_HEIGHT = 0.03087
-TOP_MICROPHONE_WALL_HEIGHT = 0.04987
+BOTTOM_RADIUS = 0.155
+BOTTOM_MICROPHONE_WALL_HEIGHT = 0.01862439578
+TOP_MICROPHONE_WALL_HEIGHT = 0.0599928907
+MIDDLE_HEIGHT = (BOTTOM_MICROPHONE_WALL_HEIGHT + TOP_MICROPHONE_WALL_HEIGHT) / 2
 
 # Allow to specify the height of the desired odas frame relative to the robot base, or use the default value (classic T-Top)
-Z_OFFSET = (0.061 - (float(argv[1]) if len(argv) >= 2 else 0.37968650962))
+Z_OFFSET = (MIDDLE_HEIGHT + float(argv[1])) if len(argv) >= 2 else -0.30753835046
 
 
 #Position and direction calculation
