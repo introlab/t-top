@@ -17,5 +17,5 @@ float AlsPt19LightSensor::read()
 {
     float adcValue = analogRead(m_pin);
     float clampedAdcValue = max(LIGHT_SENSOR_MINIMUM_VALUE, min(adcValue, LIGHT_SENSOR_MAXIMUM_VALUE));
-    return (clampedAdcValue - LIGHT_SENSOR_MINIMUM_VALUE) / LIGHT_SENSOR_MAXIMUM_VALUE;
+    return (clampedAdcValue - LIGHT_SENSOR_MINIMUM_VALUE) / (LIGHT_SENSOR_MAXIMUM_VALUE - LIGHT_SENSOR_MINIMUM_VALUE);
 }

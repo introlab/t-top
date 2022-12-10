@@ -20,8 +20,8 @@ constexpr uint32_t WIRE_CLOCK = 100000;
 constexpr uint32_t PWM_RESOLUTION = 12;
 constexpr float PWM_MAX_VALUE = 4095;
 
-constexpr uint32_t ADC_RESOLUTION = 10;
-constexpr float ADC_MAX_VALUE = 1023;
+constexpr uint32_t ADC_RESOLUTION = 12;
+constexpr float ADC_MAX_VALUE = 4095;
 
 constexpr uint8_t POWER_OFF_PIN = 2;
 constexpr uint8_t POWER_SWITCH_PIN = 12;
@@ -78,8 +78,8 @@ constexpr uint8_t FRONT_LIGHT_SENSOR_PIN = 16;
 constexpr uint8_t BACK_LIGHT_SENSOR_PIN = 25;
 constexpr uint8_t LEFT_LIGHT_SENSOR_PIN = 17;
 constexpr uint8_t RIGHT_LIGHT_SENSOR_PIN = 24;
-constexpr float LIGHT_SENSOR_MINIMUM_VALUE = 0;
-constexpr float LIGHT_SENSOR_MAXIMUM_VALUE = ADC_MAX_VALUE;
+constexpr float LIGHT_SENSOR_MINIMUM_VALUE = ADC_MAX_VALUE * 0.1;
+constexpr float LIGHT_SENSOR_MAXIMUM_VALUE = ADC_MAX_VALUE * 0.4;
 
 constexpr uint8_t START_BUTTON_PIN = 11;
 constexpr uint8_t STOP_BUTTON_PIN = 10;
