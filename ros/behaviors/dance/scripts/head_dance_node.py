@@ -3,12 +3,12 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 
 from t_top import HEAD_ZERO_Z
-from dance.lib_dance_node import DanceNode
+from dance.lib_pose_dance_node import PoseDanceNode
 
 
-class HeadDanceNode(DanceNode):
+class HeadDanceNode(PoseDanceNode):
     def __init__(self):
-        self._head_pose_pub = rospy.Publisher('deamon/set_head_pose', PoseStamped, queue_size=5)
+        self._head_pose_pub = rospy.Publisher('daemon/set_head_pose', PoseStamped, queue_size=5)
         super(HeadDanceNode, self).__init__()
 
     def _send_pose(self, pose):

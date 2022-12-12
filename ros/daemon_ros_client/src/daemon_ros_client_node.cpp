@@ -22,19 +22,19 @@ constexpr uint32_t PubQueueSize = 1;
 constexpr uint32_t SubQueueSize = 10;
 constexpr const char* HEAD_POSE_FRAME_ID = "stewart_base";
 
-struct DeamonRosClientNodeConfiguration
+struct DaemonRosClientNodeConfiguration
 {
     double baseLinkTorsoBaseDeltaZ;
 
-    DeamonRosClientNodeConfiguration() : baseLinkTorsoBaseDeltaZ(0.0)
+    DaemonRosClientNodeConfiguration() : baseLinkTorsoBaseDeltaZ(0.0)
     {
     }
 };
 
-class DeamonRosClientNode
+class DaemonRosClientNode
 {
     ros::NodeHandle& m_nodeHandle;
-    DeamonRosClientNodeConfiguration m_configuration;
+    DaemonRosClientNodeConfiguration m_configuration;
 
     ros::Publisher m_baseStatusPub;
     ros::Publisher m_startButtonPressedPub;
@@ -50,18 +50,18 @@ class DeamonRosClientNode
     tf2_ros::TransformBroadcaster m_tfBroadcaster;
 
 public:
-    DeamonRosClientNode(ros::NodeHandle& nodeHandle, DeamonRosClientNodeConfiguration configuration) : m_nodeHandle(nodeHandle), m_configuration(move(configuration))
+    DaemonRosClientNode(ros::NodeHandle& nodeHandle, DaemonRosClientNodeConfiguration configuration) : m_nodeHandle(nodeHandle), m_configuration(move(configuration))
     {
-        m_baseStatusPub = m_nodeHandle.advertise<daemon_ros_client::BaseStatus>("deamon/base_status", PubQueueSize);
-        m_startButtonPressedPub = m_nodeHandle.advertise<std_msgs::Empty>("deamon/start_button_pressed", PubQueueSize);
-        m_stopButtonPressedPub = m_nodeHandle.advertise<std_msgs::Empty>("deamon/stop_button_pressed", PubQueueSize);
-        m_imuPub = m_nodeHandle.advertise<sensor_msgs::Imu>("deamon/imu/data_raw", PubQueueSize);
-        m_motorStatusPub = m_nodeHandle.advertise<daemon_ros_client::MotorStatus>("deamon/motor_status", PubQueueSize);
+        m_baseStatusPub = m_nodeHandle.advertise<daemon_ros_client::BaseStatus>("daemon/base_status", PubQueueSize);
+        m_startButtonPressedPub = m_nodeHandle.advertise<std_msgs::Empty>("daemon/start_button_pressed", PubQueueSize);
+        m_stopButtonPressedPub = m_nodeHandle.advertise<std_msgs::Empty>("daemon/stop_button_pressed", PubQueueSize);
+        m_imuPub = m_nodeHandle.advertise<sensor_msgs::Imu>("daemon/imu/data_raw", PubQueueSize);
+        m_motorStatusPub = m_nodeHandle.advertise<daemon_ros_client::MotorStatus>("daemon/motor_status", PubQueueSize);
 
-        m_setVolumeSub = m_nodeHandle.subscribe("deamon/set_volume", SubQueueSize, &DeamonRosClientNode::setVolumeCallback, this);
-        m_setLedColorsSub = m_nodeHandle.subscribe("deamon/set_led_colors", SubQueueSize, &DeamonRosClientNode::setLedColorsCallback, this);
-        m_setTorsoOrientationSub = m_nodeHandle.subscribe("deamon/set_torso_orientation", SubQueueSize, &DeamonRosClientNode::setTorsoOrientationCallback, this);
-        m_setHeadPoseSub = m_nodeHandle.subscribe("deamon/set_head_pose", SubQueueSize, &DeamonRosClientNode::setHeadPoseCallback, this);
+        m_setVolumeSub = m_nodeHandle.subscribe("daemon/set_volume", SubQueueSize, &DaemonRosClientNode::setVolumeCallback, this);
+        m_setLedColorsSub = m_nodeHandle.subscribe("daemon/set_led_colors", SubQueueSize, &DaemonRosClientNode::setLedColorsCallback, this);
+        m_setTorsoOrientationSub = m_nodeHandle.subscribe("daemon/set_torso_orientation", SubQueueSize, &DaemonRosClientNode::setTorsoOrientationCallback, this);
+        m_setHeadPoseSub = m_nodeHandle.subscribe("daemon/set_head_pose", SubQueueSize, &DaemonRosClientNode::setHeadPoseCallback, this);
 
         // TODO connect payload handlers
     }
@@ -260,7 +260,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nodeHandle;
     ros::NodeHandle privateNodeHandle("~");
 
-    DeamonRosClientNodeConfiguration configuration;
+    DaemonRosClientNodeConfiguration configuration;
 
     if (!privateNodeHandle.getParam("base_link_torso_base_delta_z", configuration.baseLinkTorsoBaseDeltaZ))
     {
@@ -268,7 +268,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    DeamonRosClientNode node(nodeHandle, configuration);
+    DaemonRosClientNode node(nodeHandle, configuration);
     node.run();
 
     return 0;

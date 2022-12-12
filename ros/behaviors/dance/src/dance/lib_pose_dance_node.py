@@ -15,7 +15,7 @@ import hbba_lite
 P_CHANGE_MOVEMENT = 0.25
 
 
-class DanceNode(ABC):
+class PoseDanceNode(ABC):
     def __init__(self):
         self._lock = threading.Lock()
 

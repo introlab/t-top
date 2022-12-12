@@ -59,7 +59,7 @@ void startNode(
     strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
 
     auto solver = make_unique<GecodeSolver>();
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
+    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}, {"led", 1}}, move(solver));
 
     StateManager stateManager;
     type_index idleStateType(typeid(RssIdleState));

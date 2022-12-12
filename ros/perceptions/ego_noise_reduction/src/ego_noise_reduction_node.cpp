@@ -109,7 +109,7 @@ public:
         m_audioPub = m_nodeHandle.advertise<audio_utils::AudioFrame>("audio_out", AudioQueueSize);
         m_audioSub = m_nodeHandle.subscribe("audio_in", AudioQueueSize, &EgoNoiseReductionNode::audioCallback, this);
 
-        m_motorStatusSub = m_nodeHandle.subscribe("deamon/motor_status", StatusQueueSize, &EgoNoiseReductionNode::motorStatusCallback, this);
+        m_motorStatusSub = m_nodeHandle.subscribe("daemon/motor_status", StatusQueueSize, &EgoNoiseReductionNode::motorStatusCallback, this);
 
         m_audioFrameMsg.format = m_configuration.formatString;
         m_audioFrameMsg.channel_count = m_configuration.channelCount;

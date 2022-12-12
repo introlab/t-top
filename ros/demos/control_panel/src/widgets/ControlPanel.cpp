@@ -22,11 +22,11 @@ ControlPanel::ControlPanel(
       m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet))
 {
-    m_volumePublisher = nodeHandle.advertise<std_msgs::UInt8>("deamon/set_volume", 1);
+    m_volumePublisher = nodeHandle.advertise<std_msgs::UInt8>("daemon/set_volume", 1);
 
     createUi(camera2dWideEnabled);
 
-    m_baseStatusSubscriber = nodeHandle.subscribe("deamon/base_status", 1, &ControlPanel::baseStatusSubscriberCallback, this);
+    m_baseStatusSubscriber = nodeHandle.subscribe("daemon/base_status", 1, &ControlPanel::baseStatusSubscriberCallback, this);
 }
 
 void ControlPanel::onVolumeChanged(int volume)

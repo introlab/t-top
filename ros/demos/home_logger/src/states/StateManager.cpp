@@ -20,7 +20,7 @@ StateManager::StateManager(shared_ptr<DesireSet> desireSet, ros::NodeHandle& nod
     m_videoAnalysisSubscriber = nodeHandle.subscribe("video_analysis", 1, &StateManager::onVideoAnalysisReceived, this);
     m_audioAnalysisSubscriber = nodeHandle.subscribe("audio_analysis", 1, &StateManager::onAudioAnalysisReceived, this);
     m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1, &StateManager::onPersonNamesDetected, this);
-    m_baseStatusSubscriber = nodeHandle.subscribe("deamon/base_status", 1, &StateManager::onBaseStatusChanged, this);
+    m_baseStatusSubscriber = nodeHandle.subscribe("daemon/base_status", 1, &StateManager::onBaseStatusChanged, this);
 
     m_everyMinuteTimer =
         m_nodeHandle.createTimer(ros::Duration(ONE_MINUTE_S), &StateManager::onEveryMinuteTimeout, this);

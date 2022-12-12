@@ -8,8 +8,8 @@ constexpr float MAXIMUM_INT_VOLUME_VALUE = 63.f;
 
 VolumeManager::VolumeManager(ros::NodeHandle& nodeHandle) : m_currentVolumePercent(35), m_maximumVolumePercent(100.f)
 {
-    m_volumePublisher = nodeHandle.advertise<std_msgs::UInt8>("deamon/set_volume", 1);
-    m_baseStatusSubscriber = nodeHandle.subscribe("deamon/base_status", 1, &VolumeManager::baseStatusSubscriberCallback, this);
+    m_volumePublisher = nodeHandle.advertise<std_msgs::UInt8>("daemon/set_volume", 1);
+    m_baseStatusSubscriber = nodeHandle.subscribe("daemon/base_status", 1, &VolumeManager::baseStatusSubscriberCallback, this);
 
     setVolume(m_currentVolumePercent);
 }

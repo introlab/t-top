@@ -64,7 +64,7 @@ class RobotStatusPublisher():
         self.base_status = BaseStatus()
         self.base_status_lock = Lock()
         self.base_status_sub = rospy.Subscriber(
-            "deamon/base_status",
+            "daemon/base_status",
             BaseStatus, self._base_status_cb, queue_size=1)
 
     def get_ip_address(self, ifname: str) -> str:

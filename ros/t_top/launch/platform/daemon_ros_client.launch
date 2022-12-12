@@ -25,7 +25,7 @@
         <param name="world_frame" value="enu"/>
         <param name="publish_tf" value="false"/>
 
-        <remap from="imu/data_raw" to="deamon/imu/data_raw"/>
+        <remap from="imu/data_raw" to="daemon/imu/data_raw"/>
         <remap from="imu/data" to="imu/data"/>
     </node>
 

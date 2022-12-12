@@ -67,11 +67,11 @@ class MovementCommands:
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState(
             'pose/filter_state')
         self._torso_orientation_pub = rospy.Publisher(
-            'deamon/set_torso_orientation', Float32, queue_size=5)
+            'daemon/set_torso_orientation', Float32, queue_size=5)
         self._head_pose_pub = rospy.Publisher(
-            'deamon/set_head_pose', PoseStamped, queue_size=5)
+            'daemon/set_head_pose', PoseStamped, queue_size=5)
 
-        self._motor_status_sub = rospy.Subscriber('deamon/motor_status', MotorStatus, self._motor_status_cb, queue_size=1)
+        self._motor_status_sub = rospy.Subscriber('daemon/motor_status', MotorStatus, self._motor_status_cb, queue_size=1)
 
     @property
     def is_filtering_all_messages(self):

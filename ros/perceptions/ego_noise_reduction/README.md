@@ -47,7 +47,7 @@ This node performs ego noise reduction.
  - `log_mmse_min_a_priori_snr` (double): This parameter is useful when the type `log_mmse`. The default value is `0.9`.
 
 #### Subscribed Topics
- - `deamon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The current motor status.
+ - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The current motor status.
  - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic to process.
 
 #### Published Topics
