@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
         std_msgs
         hbba_lite
         t_top
+        daemon_ros_client
         )
 
 ## System dependencies are found with CMake's conventions

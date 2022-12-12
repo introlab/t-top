@@ -11,6 +11,8 @@
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int32MultiArray.h>
 
+#include <daemon_ros_client/MotorStatus.h>
+
 #include <hbba_lite/filters/FilterState.h>
 
 #include <audio_utils/AudioFrame.h>
@@ -81,9 +83,7 @@ class EgoNoiseReductionNode
     ros::Publisher m_audioPub;
     ros::Subscriber m_audioSub;
 
-    ros::Subscriber m_currentTorsoOrientationSub;
-    ros::Subscriber m_currentTorsoServoSpeedSub;
-    ros::Subscriber m_currentHeadServoSpeedsSub;
+    ros::Subscriber m_motorStatusSub;
 
     PcmAudioFrame m_inputPcmAudioFrame;
     size_t m_inputPcmAudioFrameIndex;
@@ -109,21 +109,7 @@ public:
         m_audioPub = m_nodeHandle.advertise<audio_utils::AudioFrame>("audio_out", AudioQueueSize);
         m_audioSub = m_nodeHandle.subscribe("audio_in", AudioQueueSize, &EgoNoiseReductionNode::audioCallback, this);
 
-        m_currentTorsoOrientationSub = m_nodeHandle.subscribe(
-            "opencr/current_torso_orientation",
-            StatusQueueSize,
-            &EgoNoiseReductionNode::currentTorsoOrientationCallback,
-            this);
-        m_currentTorsoServoSpeedSub = m_nodeHandle.subscribe(
-            "opencr/current_torso_servo_speed",
-            StatusQueueSize,
-            &EgoNoiseReductionNode::currentTorsoServoSpeedCallback,
-            this);
-        m_currentHeadServoSpeedsSub = m_nodeHandle.subscribe(
-            "opencr/current_head_servo_speeds",
-            StatusQueueSize,
-            &EgoNoiseReductionNode::currentHeadServoSpeedsCallback,
-            this);
+        m_motorStatusSub = m_nodeHandle.subscribe("deamon/motor_status", StatusQueueSize, &EgoNoiseReductionNode::motorStatusCallback, this);
 
         m_audioFrameMsg.format = m_configuration.formatString;
         m_audioFrameMsg.channel_count = m_configuration.channelCount;
@@ -146,7 +132,7 @@ public:
     void run() { ros::spin(); }
 
 private:
-    void audioCallback(const audio_utils::AudioFramePtr& msg)
+    void audioCallback(const audio_utils::AudioFrame::ConstPtr& msg)
     {
         if (msg->format != m_configuration.formatString || msg->channel_count != m_configuration.channelCount ||
             msg->sampling_frequency != m_configuration.samplingFrequency ||
@@ -198,44 +184,21 @@ private:
         }
     }
 
-    void currentTorsoOrientationCallback(const std_msgs::Float32Ptr& msg)
+    void motorStatusCallback(const daemon_ros_client::MotorStatus::ConstPtr& msg)
     {
         if (m_filterState.isFilteringAllMessages())
         {
             return;
         }
 
-        m_noiseEstimator->setOrientationRadians(msg->data);
-    }
-
-    void currentTorsoServoSpeedCallback(const std_msgs::Int32Ptr& msg)
-    {
-        if (m_filterState.isFilteringAllMessages())
-        {
-            return;
-        }
-
-        m_noiseEstimator->setTorsoSpeed(msg->data);
-    }
-
-    void currentHeadServoSpeedsCallback(const std_msgs::Int32MultiArrayPtr& msg)
-    {
-        if (m_filterState.isFilteringAllMessages())
-        {
-            return;
-        }
-        if (msg->data.size() != HeadServoCount)
-        {
-            ROS_ERROR("The head servo speeds does not have 6 values.");
-            return;
-        }
-
-        m_noiseEstimator->setHeadSpeedId1(msg->data[0]);
-        m_noiseEstimator->setHeadSpeedId2(msg->data[1]);
-        m_noiseEstimator->setHeadSpeedId3(msg->data[2]);
-        m_noiseEstimator->setHeadSpeedId4(msg->data[3]);
-        m_noiseEstimator->setHeadSpeedId5(msg->data[4]);
-        m_noiseEstimator->setHeadSpeedId5(msg->data[5]);
+        m_noiseEstimator->setOrientationRadians(msg->torso_orientation);
+        m_noiseEstimator->setTorsoSpeed(msg->torso_servo_speed);
+        m_noiseEstimator->setHeadSpeedId1(msg->head_servo_speeds[0]);
+        m_noiseEstimator->setHeadSpeedId2(msg->head_servo_speeds[1]);
+        m_noiseEstimator->setHeadSpeedId3(msg->head_servo_speeds[2]);
+        m_noiseEstimator->setHeadSpeedId4(msg->head_servo_speeds[3]);
+        m_noiseEstimator->setHeadSpeedId5(msg->head_servo_speeds[4]);
+        m_noiseEstimator->setHeadSpeedId5(msg->head_servo_speeds[5]);
     }
 
     unique_ptr<StftNoiseRemover> createNoiseRemover()

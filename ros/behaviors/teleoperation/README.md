@@ -14,13 +14,14 @@ This node allows T-Top to be teleoperated using twist commands.
 
 #### Subscribed Topics
 
+- `deamon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
 - `teleoperation/cmd_vel` ([geometry_msgs/Twist]): The twist commands.
 
 #### Published Topics
 
-- `opencr/head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `deamon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
   The head pose.
-- `opencr/torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `deamon/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
   torso orientation.
 
 #### Services

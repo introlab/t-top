@@ -20,7 +20,7 @@ StateManager::StateManager(shared_ptr<DesireSet> desireSet, ros::NodeHandle& nod
     m_videoAnalysisSubscriber = nodeHandle.subscribe("video_analysis", 1, &StateManager::onVideoAnalysisReceived, this);
     m_audioAnalysisSubscriber = nodeHandle.subscribe("audio_analysis", 1, &StateManager::onAudioAnalysisReceived, this);
     m_personNamesSubscriber = nodeHandle.subscribe("person_names", 1, &StateManager::onPersonNamesDetected, this);
-    m_baseStatusSubscriber = nodeHandle.subscribe("opencr/base_status", 1, &StateManager::onBaseStatusChanged, this);
+    m_baseStatusSubscriber = nodeHandle.subscribe("deamon/base_status", 1, &StateManager::onBaseStatusChanged, this);
 
     m_everyMinuteTimer =
         m_nodeHandle.createTimer(ros::Duration(ONE_MINUTE_S), &StateManager::onEveryMinuteTimeout, this);
@@ -112,17 +112,11 @@ void StateManager::onPersonNamesDetected(const person_identification::PersonName
     }
 }
 
-void StateManager::onBaseStatusChanged(const std_msgs::Float32MultiArray::ConstPtr& msg)
+void StateManager::onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg)
 {
-    if (msg->data.size() != 5)
-    {
-        ROS_ERROR("Wrong base status format");
-        return;
-    }
-
     if (m_currentState != nullptr)
     {
-        m_currentState->onBaseStatusChanged(msg->data[0], msg->data[1], msg->data[2], msg->data[3], msg->data[4]);
+        m_currentState->onBaseStatusChanged(msg);
     }
 }
 

@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   hbba_lite
   t_top_hbba_lite
   speech_to_text
+  daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions

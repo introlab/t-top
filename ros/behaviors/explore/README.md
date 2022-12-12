@@ -15,11 +15,15 @@ This node makes T-Top explore its surrounding.
 - `torso_speed_rad_sec` (double): The torso speed in rad/s.
 - `head_speed_rad_sec` (double): The head speed in rad/s.
 
+#### Subscribed Topics
+
+- `deamon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
+
 #### Published Topics
 
-- `opencr/head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `deamon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
   The head pose.
-- `opencr/torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `deamon/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
   torso orientation.
 - `explore/done` ([std_msgs/Empty](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Empty.html)): Indicates that the
   explore moves are finished.

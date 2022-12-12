@@ -1,12 +1,6 @@
 <launch>
-    <!-- OpenCR serial comm launch -->
-    <node pkg="rosserial_python" type="serial_node.py" name="rosserial" >
-        <param name="port" value="/dev/OPENCR"/>
-        <param name="baud" value="1000000"/>
-    </node>
-
-
     <!--Static tf broadcast launch-->
+    <!-- TODO Update TFs -->
     <node pkg="tf" type="static_transform_publisher" name="stewart_base_tf_publisher" args="0 0 0.05975 0 0 0 torso_base stewart_base 100"/>
 
     <node pkg="tf" type="static_transform_publisher" name="opencr_tf_publisher" args="-0.028881 0 0.005936 0 0 0 stewart_base opencr 100"/>
@@ -31,13 +25,12 @@
         <param name="world_frame" value="enu"/>
         <param name="publish_tf" value="false"/>
 
-        <remap from="imu/data_raw" to="opencr_imu/data_raw"/>
-        <remap from="imu/mag" to="opencr_imu/mag"/>
-        <remap from="imu/data" to="opencr_imu/data"/>
+        <remap from="imu/data_raw" to="deamon/imu/data_raw"/>
+        <remap from="imu/data" to="imu/data"/>
     </node>
 
     <!--Dynamic tf broadcast and odom launch -->
-    <node pkg="t_top" type="opencr_raw_data_interpreter.py" name="opencr_raw_data_interpreter">
-        <param name="base_link_torso_base_delta_z" value="0.151"/>
+    <node pkg="daemon_ros_client" type="ego_noise_reduction_node.py" name="ego_noise_reduction_node">
+        <param name="base_link_torso_base_delta_z" value="0.151"/>  <!-- TODO Update -->
     </node>
 </launch>

@@ -48,12 +48,7 @@ protected:
 
     void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg) override;
     void onRobotNameDetected() override;
-    void onBaseStatusChanged(
-        float stateOfCharge,
-        float voltage,
-        float current,
-        bool isPsuConnected,
-        bool isBatteryCharging) override;
+    void onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg) override;
     void onEveryMinuteTimeout() override;
     void onEveryTenMinutesTimeout() override;
 

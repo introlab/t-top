@@ -10,6 +10,7 @@ import numpy as np
 
 from std_msgs.msg import Float32
 from geometry_msgs.msg import PoseStamped
+from daemon_ros_client.msg import MotorStatus
 
 import hbba_lite
 
@@ -66,14 +67,11 @@ class MovementCommands:
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState(
             'pose/filter_state')
         self._torso_orientation_pub = rospy.Publisher(
-            'opencr/torso_orientation', Float32, queue_size=5)
+            'deamon/set_torso_orientation', Float32, queue_size=5)
         self._head_pose_pub = rospy.Publisher(
-            'opencr/head_pose', PoseStamped, queue_size=5)
+            'deamon/set_head_pose', PoseStamped, queue_size=5)
 
-        self._torso_orientation_sub = rospy.Subscriber(
-            'opencr/current_torso_orientation', Float32, self._read_torso_cb, queue_size=5)
-        self._head_pose_sub = rospy.Subscriber(
-            'opencr/current_head_pose', PoseStamped, self._read_head_cb, queue_size=5)
+        self._motor_status_sub = rospy.Subscriber('deamon/motor_status', MotorStatus, self._motor_status_cb, queue_size=1)
 
     @property
     def is_filtering_all_messages(self):
@@ -97,23 +95,22 @@ class MovementCommands:
     def sleep_time(self):
         return self._minTime
 
-    def _read_torso_cb(self, msg):
+    def _motor_status_cb(self, msg):
         with self._read_torso_lock:
-            self._read_torso = fmod_radian(msg.data)
+            self._read_torso = fmod_radian(msg.torso_orientation)
 
-    def _read_head_cb(self, msg):
-        angles = euler_from_quaternion([msg.pose.orientation.x,
-                                        msg.pose.orientation.y,
-                                        msg.pose.orientation.z,
-                                        msg.pose.orientation.w])
+        head_angles = euler_from_quaternion([msg.head_pose.orientation.x,
+                                        msg.head_pose.orientation.y,
+                                        msg.head_pose.orientation.z,
+                                        msg.head_pose.orientation.w])
 
         with self._read_head_lock:
-            self._read_head[0] = msg.pose.position.x
-            self._read_head[1] = msg.pose.position.y
-            self._read_head[2] = msg.pose.position.z
-            self._read_head[3] = angles[0]
-            self._read_head[4] = angles[1]
-            self._read_head[5] = angles[2]
+            self._read_head[0] = msg.head_pose.position.x
+            self._read_head[1] = msg.head_pose.position.y
+            self._read_head[2] = msg.head_pose.position.z
+            self._read_head[3] = head_angles[0]
+            self._read_head[4] = head_angles[1]
+            self._read_head[5] = head_angles[2]
 
     # Should be called in a loop
     def move_torso_speed(self, speed_rad_sec_torso, should_sleep=True):

@@ -3,8 +3,6 @@
 
 #include "State.h"
 
-#include <std_msgs/Float32MultiArray.h>
-
 #include <unordered_map>
 
 class StateManager : private DesireSetObserver
@@ -47,7 +45,7 @@ private:
     void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg);
     void onAudioAnalysisReceived(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
     void onPersonNamesDetected(const person_identification::PersonNames::ConstPtr& msg);
-    void onBaseStatusChanged(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg);
 
     void onStateTimeout(const ros::TimerEvent& event);
     void onEveryMinuteTimeout(const ros::TimerEvent& event);

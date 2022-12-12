@@ -6,7 +6,8 @@ import os
 import re
 import json
 from opentera_webrtc_ros_msgs.msg import RobotStatus
-from std_msgs.msg import String, Float32MultiArray, Float32, Bool
+from std_msgs.msg import String, Float32, Bool
+from daemon_ros_client.msg import BaseStatus
 from subprocess import Popen, PIPE
 from typing import List, Optional, Union
 from threading import Lock
@@ -63,8 +64,8 @@ class RobotStatusPublisher():
         self.base_status = BaseStatus()
         self.base_status_lock = Lock()
         self.base_status_sub = rospy.Subscriber(
-            "/opencr/base_status",
-            Float32MultiArray, self._base_status_cb, queue_size=1)
+            "deamon/base_status",
+            BaseStatus, self._base_status_cb, queue_size=1)
 
     def get_ip_address(self, ifname: str) -> str:
         try:
@@ -92,7 +93,13 @@ class RobotStatusPublisher():
 
     def _base_status_cb(self, msg):
         with self.base_status_lock:
-            self.base_status = BaseStatus(*msg.data)
+            self.base_status = BaseStatus(
+                msg.state_of_charge,
+                msg.voltage,
+                msg.current,
+                msg.is_psu_connected,
+                msg.is_battery_charging
+            )
 
     def run(self):
         rate = rospy.Rate(self.pub_rate)
