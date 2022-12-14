@@ -1,6 +1,6 @@
 #include "mainCommon.h"
 
-Icm40627 imu(Wire, IMU_ADDRESS, IMU_INT1_PIN, IMU_INT2_PIN);
+Icm40627 imu(Wire, IMU_INT1_PIN, IMU_INT2_PIN, IMU_ADDRESS);
 Dynamixel2Arduino dynamixel(DYNAMIXEL_SERIAL, DYNAMIXEL_DIR_PIN);
 
 void setupDebugSerial()

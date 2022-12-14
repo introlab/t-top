@@ -37,8 +37,7 @@ Icm40627::Icm40627(TwoWire& wire, uint8_t int1Pin, uint8_t int2Pin, uint8_t addr
     m_accelerationZ(0),
     m_angularRateX(0),
     m_angularRateY(0),
-    m_angularRateZ(0),
-    m_temperature(0)
+    m_angularRateZ(0)
 {
 
 }
@@ -77,7 +76,7 @@ bool Icm40627::begin(AccelerometerRange accelerometerRange,
 bool Icm40627::readData()
 {
     constexpr uint8_t BLOCK_SIZE = 14;
-    constexpr uint8_t BLOCK_ADDRESS = 0x1D;
+    constexpr uint8_t BLOCK_ADDRESS = 0x1F;
 
     if (m_currentRegisterBank != RegisterBank::BANK_0)
     {
@@ -97,7 +96,6 @@ bool Icm40627::readData()
         return false;
     }
 
-    m_temperature = getInt16(m_wire.read(), m_wire.read());
     m_accelerationX = getInt16(m_wire.read(), m_wire.read());
     m_accelerationY = getInt16(m_wire.read(), m_wire.read());
     m_accelerationZ = getInt16(m_wire.read(), m_wire.read());

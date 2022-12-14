@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#include <limits>
+
 class Icm40627
 {
 public:
@@ -133,7 +135,6 @@ private:
     int16_t m_angularRateX;
     int16_t m_angularRateY;
     int16_t m_angularRateZ;
-    int16_t m_temperature;
 
 public:
     Icm40627(TwoWire& m_wire, uint8_t m_int1Pin, uint8_t m_int2Pin, uint8_t address);
@@ -159,8 +160,6 @@ public:
     float getAngularRateYInRadPerS();
     float getAngularRateZInRadPerS();
 
-    float getTemperatureInCelcius();
-
 private:
     void setAccelerometerRangeInG(AccelerometerRange accelerometerRange);
     void setGyroscopeRangeInDegPerS(GyroscopeRange gyroscopeRange);
@@ -175,8 +174,8 @@ private:
 
     int16_t getInt16(uint8_t upperByte, uint8_t lowerByte);
 
-    float convertAccelerationToMPerSS(uint16_t v);
-    float convertAngularRateToRadPerS(uint16_t v);
+    float convertAccelerationToMPerSS(int16_t v);
+    float convertAngularRateToRadPerS(int16_t v);
 };
 
 inline float Icm40627::getAccelerationXInMPerSS()
@@ -209,19 +208,14 @@ inline float Icm40627::getAngularRateZInRadPerS()
     return convertAngularRateToRadPerS(m_angularRateZ);
 }
 
-inline float Icm40627::getTemperatureInCelcius()
+inline float Icm40627::convertAccelerationToMPerSS(int16_t v)
 {
-    return (static_cast<float>(m_temperature) / 132.48f) + 25.f;
+    return static_cast<float>(v) / static_cast<float>(std::numeric_limits<int16_t>::max()) * m_accelerometerRangeInG * 9.80665f;
 }
 
-inline float Icm40627::convertAccelerationToMPerSS(uint16_t v)
+inline float Icm40627::convertAngularRateToRadPerS(int16_t v)
 {
-    return static_cast<float>(v) / m_accelerometerRangeInG * 9.80665f;
-}
-
-inline float Icm40627::convertAngularRateToRadPerS(uint16_t v)
-{
-    return static_cast<float>(v) / m_gyroscopeRangeInDegPerS * 0.0174532925f;
+    return static_cast<float>(v) / static_cast<float>(std::numeric_limits<int16_t>::max()) * m_gyroscopeRangeInDegPerS * 0.0174532925f;
 }
 
 #endif

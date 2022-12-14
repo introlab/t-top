@@ -44,6 +44,7 @@ static void testLimitSwitch()
     {
         DEBUG_SERIAL.print("Status: ");
         DEBUG_SERIAL.print(static_cast<int>(digitalRead(TORSO_LIMIT_SWITCH_PIN)));
+        DEBUG_SERIAL.println();
         delay(READ_DELAY_MS);
     }
 
@@ -86,10 +87,6 @@ static void testImu()
         DEBUG_SERIAL.print("Angular Rate Z: ");
         DEBUG_SERIAL.print(imu.getAngularRateZInRadPerS());
         DEBUG_SERIAL.println(" rad/s");
-
-        DEBUG_SERIAL.print("Temperature: ");
-        DEBUG_SERIAL.print(imu.getTemperatureInCelcius());
-        DEBUG_SERIAL.println(" C");
 
         delay(READ_DELAY_MS);
     }
