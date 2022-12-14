@@ -16,6 +16,7 @@ interacting with people.
 - Alexandre Filion (@alexfilion)
 - Dominic Létourneau (@doumdi)
 - Philippe Warren (@philippewarren)
+- Ian-Mathieu Joly (@joli-1801)
 
 ## Licensing
 
