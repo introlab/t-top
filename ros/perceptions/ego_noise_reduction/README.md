@@ -47,9 +47,7 @@ This node performs ego noise reduction.
  - `log_mmse_min_a_priori_snr` (double): This parameter is useful when the type `log_mmse`. The default value is `0.9`.
 
 #### Subscribed Topics
- - `opencr/current_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The current torso orientation.
- - `opencr/current_torso_servo_speed` ([std_msgs/Int32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Int32.html)): The current torso servo speed.
- - `opencr/current_head_servo_speeds` ([std_msgs/Int32MultiArray](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Int32MultiArray.html)): The current head servo speeds.
+ - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The current motor status.
  - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic to process.
 
 #### Published Topics

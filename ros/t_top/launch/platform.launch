@@ -3,7 +3,7 @@
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="pulse_audio_sink" default="alsa_output.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.analog-surround-40" />
 
-    <include file="$(find t_top)/launch/platform/opencr.launch"/>
+    <include file="$(find t_top)/launch/platform/daemon_ros_client.launch"/>
 
     <include file="$(find t_top)/launch/platform/actuators.launch">
         <arg name="pulse_audio_sink" value="$(arg pulse_audio_sink)"/>

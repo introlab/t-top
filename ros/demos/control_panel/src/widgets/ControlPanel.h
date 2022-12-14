@@ -13,6 +13,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <daemon_ros_client/BaseStatus.h>
 
 #include <hbba_lite/core/DesireSet.h>
 
@@ -25,7 +26,7 @@ class ControlPanel : public QWidget
 
     ros::NodeHandle& m_nodeHandle;
     ros::Publisher m_volumePublisher;
-    ros::Subscriber m_batterySubscriber;
+    ros::Subscriber m_baseStatusSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
 
@@ -40,7 +41,7 @@ private slots:
     void onVolumeChanged(int volume);
 
 private:
-    void batterySubscriberCallback(const std_msgs::Float32MultiArray::ConstPtr& msg);
+    void baseStatusSubscriberCallback(const daemon_ros_client::BaseStatus::ConstPtr& msg);
 
     void createUi(bool camera2dWideEnabled);
 

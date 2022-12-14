@@ -5,7 +5,7 @@
 
 DaemonApp::DaemonApp(int argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
 {
-    qDebug() << "DeamonApp running...";
+    qDebug() << "DaemonApp running...";
 
     // TODO read configuration in a file ? Command line arguments ?
     setupWebSocketServers();
@@ -15,7 +15,7 @@ DaemonApp::DaemonApp(int argc, char* argv[]) : QCoreApplication(argc, argv), m_s
 void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
+             << "void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
 
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
@@ -26,7 +26,7 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)";
+             << "void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -36,7 +36,7 @@ void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& pa
 void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewSetVolume(Device source, const SetVolumePayload &payload)";
+             << "void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -46,7 +46,7 @@ void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload& payload)
 void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewSetLedColors(Device source, const SetLedColorsPayload &payload)";
+             << "void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -56,7 +56,7 @@ void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload& payl
 void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewMotorStatus(Device source, const MotorStatusPayload &payload)";
+             << "void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -66,7 +66,7 @@ void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payloa
 void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
+             << "void DaemonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -76,7 +76,7 @@ void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 void DaemonApp::onNewSetTorsoOrientation(Device source, const SetTorsoOrientationPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewStatus(Device source, const BaseStatusPayload &payload)";
+             << "void DaemonApp::onNewStatus(Device source, const BaseStatusPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -86,7 +86,7 @@ void DaemonApp::onNewSetTorsoOrientation(Device source, const SetTorsoOrientatio
 void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload &payload)";
+             << "void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -96,7 +96,7 @@ void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload& payloa
 void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
+             << "void DaemonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->send(source, payload);
@@ -106,23 +106,23 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 void DaemonApp::onNewRoute(Device destination, const uint8_t* data, size_t size)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewRoute(Device destination, const uint8_t *data, size_t size)";
+             << "void DaemonApp::onNewRoute(Device destination, const uint8_t *data, size_t size)";
 }
 
 void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messageType)
 {
     qDebug() << "********* "
-             << "void DeamonApp::onNewError(const char *message, tl::optional<MessageType> messageType)";
+             << "void DaemonApp::onNewError(const char *message, tl::optional<MessageType> messageType)";
     qDebug() << message;
 }
 
 void DaemonApp::setupWebSocketServers()
 {
     // Create websocket server for ROS, CLI & TaskBar
-    DaemonWebSocketServer* rosServer = new DaemonWebSocketServer("DeamonApp-ROSWebSocketServer", 8080, 1, this);
-    DaemonWebSocketServer* cliServer = new DaemonWebSocketServer("DeamonApp-CLIWebSocketServer", 8081, 1, this);
+    DaemonWebSocketServer* rosServer = new DaemonWebSocketServer("DaemonApp-ROSWebSocketServer", 8080, 1, this);
+    DaemonWebSocketServer* cliServer = new DaemonWebSocketServer("DaemonApp-CLIWebSocketServer", 8081, 1, this);
     DaemonWebSocketServer* systemTrayServer =
-        new DaemonWebSocketServer("DeamonApp-SystemTrayWebSocketServer", 8082, 1, this);
+        new DaemonWebSocketServer("DaemonApp-SystemTrayWebSocketServer", 8082, 1, this);
 
     // Add all servers to the list
     m_webSocketServers << rosServer << cliServer << systemTrayServer;

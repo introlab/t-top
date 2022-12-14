@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
         std_msgs
         hbba_lite
         t_top
+        daemon_ros_client
         )
 
 ## System dependencies are found with CMake's conventions
@@ -167,6 +168,7 @@ include_directories(
 catkin_install_python(PROGRAMS
         scripts/head_dance_node.py
         scripts/torso_dance_node.py
+        scripts/led_dance_node.py
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

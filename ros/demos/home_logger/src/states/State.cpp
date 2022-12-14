@@ -55,12 +55,7 @@ void State::onAudioAnalysisReceived(const audio_analyzer::AudioAnalysis::ConstPt
 
 void State::onPersonNamesDetected(const person_identification::PersonNames::ConstPtr& msg) {}
 
-void State::onBaseStatusChanged(
-    float stateOfCharge,
-    float voltage,
-    float current,
-    bool isPsuConnected,
-    bool isBatteryCharging)
+void State::onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg)
 {
 }
 

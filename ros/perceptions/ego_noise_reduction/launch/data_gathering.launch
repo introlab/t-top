@@ -1,5 +1,9 @@
 <launch>
-    <include file="$(find t_top)/launch/platform/opencr.launch"/>
+    <!-- OpenCR serial comm launch -->
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserial" >
+        <param name="port" value="/dev/OPENCR"/>
+        <param name="baud" value="1000000"/>
+    </node>
 
     <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen">
         <param name="backend" value="pulse_audio"/>

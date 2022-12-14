@@ -5,7 +5,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-#include <std_msgs/Int8.h>
+#include <std_msgs/UInt8.h>
 
 using namespace std;
 
@@ -22,27 +22,34 @@ ControlPanel::ControlPanel(
       m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet))
 {
-    m_volumePublisher = nodeHandle.advertise<std_msgs::Int8>("opencr/audio_power_amplifier_volume", 1);
+    m_volumePublisher = nodeHandle.advertise<std_msgs::UInt8>("daemon/set_volume", 1);
 
     createUi(camera2dWideEnabled);
 
-    m_batterySubscriber = nodeHandle.subscribe("opencr/base_status", 1, &ControlPanel::batterySubscriberCallback, this);
+    m_baseStatusSubscriber = nodeHandle.subscribe("daemon/base_status", 1, &ControlPanel::baseStatusSubscriberCallback, this);
 }
 
 void ControlPanel::onVolumeChanged(int volume)
 {
-    std_msgs::Int8 msg;
+    std_msgs::UInt8 msg;
     msg.data = volume;
     m_volumePublisher.publish(msg);
 }
 
-void ControlPanel::batterySubscriberCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
+void ControlPanel::baseStatusSubscriberCallback(const daemon_ros_client::BaseStatus::ConstPtr& msg)
 {
-    if (msg->data.size() == 5)
+    int stateOfCharge = static_cast<int>(msg->state_of_charge);
+    int volume = msg->volume;
+    int maximumVolume = msg->maximum_volume;
+
+    invokeLater([=]()
     {
-        int battery = static_cast<int>(msg->data[0]);
-        invokeLater([this, battery]() { m_batteryLevel->display(QString::number(battery)); });
-    }
+        m_batteryLevel->display(QString::number(stateOfCharge));
+
+        QSignalBlocker volumeSliderSignalBlocker(m_volumeSlider);
+        m_volumeSlider->setMaximum(maximumVolume);
+        m_volumeSlider->setValue(volume);
+    });
 }
 
 void ControlPanel::createUi(bool camera2dWideEnabled)

@@ -1,0 +1,16 @@
+Header header
+bool is_psu_connected
+bool has_charger_error
+bool is_battery_charging
+bool has_battery_error
+float32 state_of_charge
+float32 current
+float32 voltage
+float32 onboard_temperature
+float32 external_temperature
+float32 front_light_sensor
+float32 back_light_sensor
+float32 left_light_sensor
+float32 right_light_sensor
+uint8 volume
+uint8 maximum_volume
