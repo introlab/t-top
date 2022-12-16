@@ -75,7 +75,7 @@ bool Icm40627::begin(AccelerometerRange accelerometerRange,
 
 bool Icm40627::readData()
 {
-    constexpr uint8_t BLOCK_SIZE = 14;
+    constexpr uint8_t BLOCK_SIZE = 12;
     constexpr uint8_t BLOCK_ADDRESS = 0x1F;
 
     if (m_currentRegisterBank != RegisterBank::BANK_0)
