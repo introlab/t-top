@@ -5,6 +5,7 @@
 #include <QWebSocket>
 #include "SerialMessages.h"
 #include "SerialCommunication.h"
+#include "WebSocketProtocolWrapper.h"
 
 class DaemonWebSocketServer : public QWebSocketServer
 {

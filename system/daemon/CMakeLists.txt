@@ -14,13 +14,11 @@ find_package(Qt5 REQUIRED COMPONENTS Core Network WebSockets SerialPort)
 include(../common/common.cmake)
 
 
-
 set (daemon_headers
     src/DaemonApp.h
     src/DaemonWebSocketServer.h
     src/DaemonSerialPortWrapper.h
     src/DaemonSerialManager.h
-    src/WebSocketProtocolWrapper.h
 )
 
 set (daemon_srcs
@@ -28,7 +26,6 @@ set (daemon_srcs
     src/DaemonWebSocketServer.cpp
     src/DaemonSerialPortWrapper.cpp
     src/DaemonSerialManager.cpp
-    src/WebSocketProtocolWrapper.cpp
     src/main.cpp
 )
 
