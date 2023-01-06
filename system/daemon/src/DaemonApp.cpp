@@ -134,7 +134,12 @@ void DaemonApp::setupSerialManager()
 
     for (auto&& port : DaemonSerialManager::availablePorts())
     {
-        if (port.portName().contains("cu") && port.manufacturer().contains("Teensyduino"))
+        //Will accept Teensy board or test ESP32 board at the moment
+#if __APPLE__
+        if (port.portName().contains("cu") && (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
+#else
+    if (port.portName().contains("tty") && (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
+#endif
         {
             qDebug() << "Automatic discovery of port: " << port.portName()
                      << " from manufacturer: " << port.manufacturer();

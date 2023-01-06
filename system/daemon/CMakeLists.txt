@@ -20,6 +20,7 @@ set (daemon_headers
     src/DaemonWebSocketServer.h
     src/DaemonSerialPortWrapper.h
     src/DaemonSerialManager.h
+    src/WebSocketProtocolWrapper.h
 )
 
 set (daemon_srcs
@@ -27,6 +28,7 @@ set (daemon_srcs
     src/DaemonWebSocketServer.cpp
     src/DaemonSerialPortWrapper.cpp
     src/DaemonSerialManager.cpp
+    src/WebSocketProtocolWrapper.cpp
     src/main.cpp
 )
 

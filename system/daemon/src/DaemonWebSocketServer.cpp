@@ -41,6 +41,11 @@ void DaemonWebSocketServer::processBinaryMessage(QByteArray message)
 {
     QWebSocket* client = qobject_cast<QWebSocket*>(sender());
     qDebug() << serverName() << "processBinaryMessage: " << client << " size: "<< message.size();
+
+
+
+
+
 }
 
 void DaemonWebSocketServer::socketDisconnected()
