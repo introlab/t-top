@@ -19,6 +19,7 @@ public:
 
 private slots:
 
+    // Serial port events
     void onNewBaseStatus(Device source, const BaseStatusPayload& payload);
     void onNewButtonPressed(Device source, const ButtonPressedPayload& payload);
     void onNewSetVolume(Device source, const SetVolumePayload& payload);
@@ -28,8 +29,10 @@ private slots:
     void onNewSetTorsoOrientation(Device source, const SetTorsoOrientationPayload& payload);
     void onNewSetHeadPose(Device source, const SetHeadPosePayload& payload);
     void onNewShutdown(Device source, const ShutdownPayload& payload);
-    void onNewRoute(Device destination, const uint8_t* data, size_t size);
     void onNewError(const char* message, tl::optional<MessageType> messageType);
+
+    // Websocket events
+    void onNewRouteFromWebSocket(Device destination, const uint8_t* data, size_t size);
 
 private:
     void setupWebSocketServers();

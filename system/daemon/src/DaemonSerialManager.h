@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#include <QDateTime>
 #include "DaemonSerialPortWrapper.h"
 #include <memory>
 
@@ -14,6 +15,10 @@ class DaemonSerialManager : public QObject
 
 public:
     DaemonSerialManager(const QSerialPortInfo& port, QObject* parent = nullptr);
+
+    template<class Payload>
+    void send(Device destination, const Payload& payload, qint64 timestamp_ms=QDateTime::currentMSecsSinceEpoch());
+
 
     static QList<QSerialPortInfo> availablePorts();
     static bool isValidPort(const QString& name);
@@ -46,5 +51,13 @@ private:
     static constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
 };
 
+
+template<class Payload>
+void DaemonSerialManager::send(Device destination, const Payload& payload, qint64 timestamp_ms)
+{
+    Q_ASSERT(m_serialCommunicationManager);
+    //void SerialCommunicationManager::send(Device destination, const Payload& payload, uint32_t timestampMs)
+    m_serialCommunicationManager->send(destination, payload, timestamp_ms);
+}
 
 #endif  // _DAEMON_SERIAL_MANAGER_H_

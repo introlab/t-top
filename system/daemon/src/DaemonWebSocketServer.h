@@ -17,6 +17,9 @@ public:
     template<class Payload>
     void sendToClients(Device destination, const Payload& payload);
 
+signals:
+    void newRoute(Device destination, const uint8_t* data, size_t size);
+
 private slots:
 
     void onNewConnection();

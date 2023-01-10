@@ -55,7 +55,7 @@ void WebSocketProtocolWrapper::binaryMessageReceived(const QByteArray &message)
         {
             auto payload = *AcknowledgmentPayload::readFrom(m_rxBuffer);
             emit newError("Acknowledgment payload not supported by websocket", header.messageType());
-            return;
+            break;
         }
 
         case MessageType::BASE_STATUS:

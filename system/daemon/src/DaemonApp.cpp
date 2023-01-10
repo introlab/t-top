@@ -103,10 +103,104 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
     }
 }
 
-void DaemonApp::onNewRoute(Device destination, const uint8_t* data, size_t size)
+void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data, size_t size)
 {
+
     qDebug() << "********* "
-             << "void DaemonApp::onNewRoute(Device destination, const uint8_t *data, size_t size)";
+             << "void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t *data, size_t size)";
+
+    // Send to serial...
+    SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> buffer;
+    buffer.write(data, size);
+    auto header = *MessageHeader::readFrom(buffer);
+
+    // TODO verify if we are allowed to send some payloads ???
+    switch (header.messageType())
+    {
+
+        case MessageType::ACKNOWLEDGMENT:
+        {
+            auto payload = *AcknowledgmentPayload::readFrom(buffer);
+            //m_serialManager->send(destination, payload);
+            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            break;
+        }
+
+        case MessageType::BASE_STATUS:
+        {
+            auto payload = *BaseStatusPayload::readFrom(buffer);
+            //m_serialManager->send(destination, payload);
+            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            break;
+        }
+
+        case MessageType::BUTTON_PRESSED:
+        {
+            auto payload = *ButtonPressedPayload::readFrom(buffer);
+            //m_serialManager->send(destination, payload);
+            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            break;
+        }
+
+
+        case MessageType::SET_VOLUME:
+        {
+            auto payload = *SetVolumePayload::readFrom(buffer);
+            m_serialManager->send(destination, payload);
+            break;
+        }
+
+        case MessageType::SET_LED_COLORS:
+        {
+            auto payload = *SetLedColorsPayload::readFrom(buffer);
+            m_serialManager->send(destination, payload);
+            break;
+        }
+
+
+        case MessageType::MOTOR_STATUS:
+        {
+            auto payload = *MotorStatusPayload::readFrom(buffer);
+            //m_serialManager->send(destination, payload);
+            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            break;
+        }
+
+        case MessageType::IMU_DATA:
+        {
+            auto payload =  *ImuDataPayload::readFrom(buffer);
+            //m_serialManager->send(destination, payload);
+            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            break;
+        }
+
+
+        case MessageType::SET_TORSO_ORIENTATION:
+        {
+            auto payload = *SetTorsoOrientationPayload::readFrom(buffer);
+            m_serialManager->send(destination, payload);
+            break;
+        }
+
+        case MessageType::SET_HEAD_POSE:
+        {
+            auto payload = *SetHeadPosePayload::readFrom(buffer);
+            m_serialManager->send(destination, payload);
+            break;
+        }
+
+        // TODO can we do that ?
+        case MessageType::SHUTDOWN:
+        {
+            auto payload = *ShutdownPayload::readFrom(buffer);
+            m_serialManager->send(destination, payload);
+            break;
+        }
+        default:
+            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+    }
+
+
 }
 
 void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messageType)
@@ -126,6 +220,12 @@ void DaemonApp::setupWebSocketServers()
 
     // Add all servers to the list
     m_webSocketServers << rosServer << cliServer << systemTrayServer;
+
+    // Connect signals handling messages from websockets to serial port
+    foreach(auto server, m_webSocketServers )
+    {
+        connect(server, &DaemonWebSocketServer::newRoute, this, &DaemonApp::onNewRouteFromWebSocket);
+    }
 }
 
 void DaemonApp::setupSerialManager()

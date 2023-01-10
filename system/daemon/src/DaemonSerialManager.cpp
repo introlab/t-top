@@ -95,6 +95,7 @@ void DaemonSerialManager::setupSerialCommunicationManagerCallbacks()
     m_serialCommunicationManager->setShutdownHandler([this](Device source, const ShutdownPayload& payload)
                                                      { emit this->newShutdown(source, payload); });
 
+    // TODO newRoute should not happen on computer device ?
     m_serialCommunicationManager->setRouteCallback([this](Device destination, const uint8_t* data, size_t size)
                                                    { emit this->newRoute(destination, data, size); });
 

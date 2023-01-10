@@ -25,6 +25,7 @@ void DaemonWebSocketServer::onNewConnection()
         qDebug() << serverName() << "onNewConnection: " << websocket;
         WebSocketProtocolWrapper *wrapper = new WebSocketProtocolWrapper(websocket, this);
         connect(wrapper, &WebSocketProtocolWrapper::disconnected, this, &DaemonWebSocketServer::socketDisconnected);
+        connect(wrapper, &WebSocketProtocolWrapper::newRoute, this, &DaemonWebSocketServer::newRoute);
         m_clients.append(wrapper);
     }
 }
