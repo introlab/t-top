@@ -2,12 +2,31 @@
 
 
 
-WebSocketProtocolWrapper::WebSocketProtocolWrapper(QWebSocket *websocket)
-    : m_websocket(websocket)
+WebSocketProtocolWrapper::WebSocketProtocolWrapper(QWebSocket *websocket, QObject *parent)
+    : QObject(parent), m_websocket(websocket)
 {
     Q_ASSERT(m_websocket);
     // Connect signals
     connect(m_websocket, &QWebSocket::binaryMessageReceived, this, &WebSocketProtocolWrapper::binaryMessageReceived);
+    connect(m_websocket, &QWebSocket::connected, this, &WebSocketProtocolWrapper::websocketConnected);
+    connect(m_websocket, &QWebSocket::disconnected, this, &WebSocketProtocolWrapper::disconnected);
+}
+
+WebSocketProtocolWrapper::WebSocketProtocolWrapper(const QUrl url, QObject *parent)
+{
+    m_websocket = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, parent);
+    // Connect signals
+    connect(m_websocket, &QWebSocket::binaryMessageReceived, this, &WebSocketProtocolWrapper::binaryMessageReceived);
+    connect(m_websocket, &QWebSocket::connected, this, &WebSocketProtocolWrapper::websocketConnected);
+    connect(m_websocket, &QWebSocket::disconnected, this, &WebSocketProtocolWrapper::disconnected);
+
+    qDebug() <<"WebSocketProtocolWrapper::WebSocketProtocolWrapper connecting to :" << url;
+    m_websocket->open(url);
+}
+
+QWebSocket *WebSocketProtocolWrapper::getWebSocket()
+{
+    return m_websocket;
 }
 
 void WebSocketProtocolWrapper::binaryMessageReceived(const QByteArray &message)
@@ -102,4 +121,9 @@ void WebSocketProtocolWrapper::binaryMessageReceived(const QByteArray &message)
             break;
         }
     }
+}
+
+void WebSocketProtocolWrapper::websocketConnected()
+{
+    qDebug() << "WebSocketProtocolWrapper::websocketConnected() " << m_websocket;
 }

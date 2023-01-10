@@ -19,7 +19,7 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -29,7 +29,7 @@ void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& pa
              << "void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -39,7 +39,7 @@ void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload& payload)
              << "void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -49,7 +49,7 @@ void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload& payl
              << "void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -59,7 +59,7 @@ void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payloa
              << "void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -69,7 +69,7 @@ void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
              << "void DaemonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -79,7 +79,7 @@ void DaemonApp::onNewSetTorsoOrientation(Device source, const SetTorsoOrientatio
              << "void DaemonApp::onNewStatus(Device source, const BaseStatusPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -89,7 +89,7 @@ void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload& payloa
              << "void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 
@@ -99,7 +99,7 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
              << "void DaemonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
-        server->send(source, payload);
+        server->sendToClients(source, payload);
     }
 }
 

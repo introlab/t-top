@@ -8,9 +8,9 @@ SystemTrayApp::SystemTrayApp(int argc, char* argv[]) : QApplication(argc, argv)
     // TODO Should get URL from command line args
     QUrl url("ws://localhost:8082");
 
-    m_webSocketSerialManager = new WebSocketSerialManager(url, this);
+    m_webSocketProtocolWrapper = new WebSocketProtocolWrapper(url, this);
 
-    connectWebSocketSerialManagerSignals();
+    connectWebSocketProtocolWrapperSignals();
     connectSystemTraySignals();
 }
 
@@ -120,53 +120,57 @@ void SystemTrayApp::onNewError(const char* message, tl::optional<MessageType> me
 void SystemTrayApp::onSystemTrayVolumeUp()
 {
     SetVolumePayload payload;
-    m_webSocketSerialManager->send(Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+    m_webSocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
 }
 
 void SystemTrayApp::onSystemTrayVolumeDown()
 {
     SetVolumePayload payload;
-    m_webSocketSerialManager->send(Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+    m_webSocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
 }
 
 void SystemTrayApp::onSystemTrayCloseAllLeds()
 {
     SetLedColorsPayload payload;
-    m_webSocketSerialManager->send(Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+    m_webSocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
 }
 
 void SystemTrayApp::onSystemTrayResetTorso()
 {
     SetTorsoOrientationPayload payload;
-    m_webSocketSerialManager->send(Device::DYNAMIXEL_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+    m_webSocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
 }
 
 void SystemTrayApp::onSystemTrayResetHead()
 {
     SetHeadPosePayload payload;
-    m_webSocketSerialManager->send(Device::DYNAMIXEL_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
+    m_webSocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload, QDateTime::currentMSecsSinceEpoch());
 }
 
-void SystemTrayApp::connectWebSocketSerialManagerSignals()
+
+void SystemTrayApp::connectWebSocketProtocolWrapperSignals()
 {
-    Q_ASSERT(m_webSocketSerialManager);
+    Q_ASSERT(m_webSocketProtocolWrapper);
     // Connect signals
     // TODO remove connect everything for tests...
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newBaseStatus, this, &SystemTrayApp::onNewBaseStatus);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newButtonPressed, this, &SystemTrayApp::onNewButtonPressed);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetVolume, this, &SystemTrayApp::onNewSetVolume);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetLedColors, this, &SystemTrayApp::onNewSetLedColors);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newMotorStatus, this, &SystemTrayApp::onNewMotorStatus);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newImuData, this, &SystemTrayApp::onNewImuData);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newBaseStatus, this, &SystemTrayApp::onNewBaseStatus);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newButtonPressed, this, &SystemTrayApp::onNewButtonPressed);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newSetVolume, this, &SystemTrayApp::onNewSetVolume);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newSetLedColors, this, &SystemTrayApp::onNewSetLedColors);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newMotorStatus, this, &SystemTrayApp::onNewMotorStatus);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newImuData, this, &SystemTrayApp::onNewImuData);
     connect(
-        m_webSocketSerialManager,
-        &WebSocketSerialManager::newSetTorsoOrientation,
+        m_webSocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newSetTorsoOrientation,
         this,
         &SystemTrayApp::onNewSetTorsoOrientation);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newSetHeadPose, this, &SystemTrayApp::onNewSetHeadPose);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newShutdown, this, &SystemTrayApp::onNewShutdown);
-    connect(m_webSocketSerialManager, &WebSocketSerialManager::newError, this, &SystemTrayApp::onNewError);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newSetHeadPose, this, &SystemTrayApp::onNewSetHeadPose);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newShutdown, this, &SystemTrayApp::onNewShutdown);
+    connect(m_webSocketProtocolWrapper, &WebSocketProtocolWrapper::newError, this, &SystemTrayApp::onNewError);
 }
+
+
+
 
 void SystemTrayApp::connectSystemTraySignals()
 {

@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QObject>
 #include "SystemTrayIcon.h"
-#include "WebSocketSerialManager.h"
+#include "WebSocketProtocolWrapper.h"
 #include <memory>
 
 class SystemTrayApp : public QApplication
@@ -37,12 +37,13 @@ private slots:
 
 private:
 
-    void connectWebSocketSerialManagerSignals();
+    void connectWebSocketProtocolWrapperSignals();
     void connectSystemTraySignals();
 
 
     SystemTrayIcon* m_trayIcon;
-    WebSocketSerialManager* m_webSocketSerialManager;
+    WebSocketProtocolWrapper* m_webSocketProtocolWrapper;
+
     BaseStatusPayload m_lastBaseStatusPayloadReceived;
 };
 

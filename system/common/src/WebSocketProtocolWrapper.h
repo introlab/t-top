@@ -14,10 +14,14 @@ class WebSocketProtocolWrapper : public QObject
 {
     Q_OBJECT
 public:
-    WebSocketProtocolWrapper(QWebSocket* websocket);
+    WebSocketProtocolWrapper(QWebSocket* websocket, QObject *parent=nullptr);
+    WebSocketProtocolWrapper(const QUrl url, QObject *parent=nullptr);
+
+    QWebSocket* getWebSocket();
 
     template<class Payload>
-    void send(Device destination, const Payload& payload);
+    void send(Device source, Device destination, const Payload& payload, qint64 timestamp_ms=QDateTime::currentMSecsSinceEpoch());
+
 
 signals:
     void newBaseStatus(Device source, const BaseStatusPayload& payload);
@@ -31,20 +35,23 @@ signals:
     void newShutdown(Device source, const ShutdownPayload& payload);
     void newRoute(Device destination, const uint8_t* data, size_t size);
     void newError(const char* message, tl::optional<MessageType> messageType);
+    void disconnected();
+    void connected();
 
 protected slots:
     void binaryMessageReceived(const QByteArray &message);
+    void websocketConnected();
 
 private:
     QWebSocket *m_websocket;
 };
 
 template<class Payload>
-void WebSocketProtocolWrapper::send(Device source, const Payload& payload)
+void WebSocketProtocolWrapper::send(Device source, Device destination, const Payload& payload, qint64 timestamp_ms)
 {
     Q_ASSERT(m_websocket);
     SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> buffer;
-    Message<Payload> message(source, Device::COMPUTER, payload);
+    Message<Payload> message(source, destination, payload);
 
     static_assert(sizeof(Payload) <= SERIAL_COMMUNICATION_MAXIMUM_PAYLOAD_SIZE, "The payload is too big.");
 
