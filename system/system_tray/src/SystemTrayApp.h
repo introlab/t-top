@@ -11,7 +11,7 @@ class SystemTrayApp : public QApplication
 {
     Q_OBJECT
 public:
-    SystemTrayApp(int argc, char* argv[]);
+    SystemTrayApp(int &argc, char* argv[]);
 
 private slots:
 
