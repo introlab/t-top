@@ -118,6 +118,7 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
     switch (header.messageType())
     {
 
+/*
         case MessageType::ACKNOWLEDGMENT:
         {
             auto payload = *AcknowledgmentPayload::readFrom(buffer);
@@ -141,7 +142,7 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
             qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
             break;
         }
-
+*/
 
         case MessageType::SET_VOLUME:
         {
@@ -157,7 +158,7 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
             break;
         }
 
-
+/*
         case MessageType::MOTOR_STATUS:
         {
             auto payload = *MotorStatusPayload::readFrom(buffer);
@@ -173,7 +174,7 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
             qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
             break;
         }
-
+*/
 
         case MessageType::SET_TORSO_ORIENTATION:
         {
@@ -196,8 +197,10 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
             m_serialManager->send(destination, payload);
             break;
         }
+
         default:
-            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            qWarning() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            break;
     }
 
 
