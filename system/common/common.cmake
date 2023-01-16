@@ -2,13 +2,13 @@
 find_package(Qt5 REQUIRED COMPONENTS Core WebSockets)
 
 
-file(GLOB serial_communication_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.cpp)
-file(GLOB serial_communication_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/SerialCommunication/src/*.h)
-file(GLOB crc8_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/Crc8/src/*.cpp)
-file(GLOB crc8_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/Crc8/src/*.h)
-file(GLOB class_macros_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../../firmwares/common/lib/ClassMacro/src/*.h)
-file(GLOB qt_common_files_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../common/src/*.cpp)
-file(GLOB qt_common_files_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ../common/src/*.h)
+file(GLOB serial_communication_srcs  ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/SerialCommunication/src/*.cpp)
+file(GLOB serial_communication_headers  ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/SerialCommunication/src/*.h)
+file(GLOB crc8_srcs ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/Crc8/src/*.cpp)
+file(GLOB crc8_headers ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/Crc8/src/*.h)
+file(GLOB class_macros_headers  ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/ClassMacro/src/*.h)
+file(GLOB qt_common_files_srcs  ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
+file(GLOB qt_common_files_headers  ${CMAKE_CURRENT_LIST_DIR}/src/*.h)
 
 qt5_wrap_cpp(qt_common_files_headers_moc ${qt_common_files_headers})
 
@@ -27,11 +27,11 @@ add_library(serial_communication_common STATIC
 target_link_libraries(serial_communication_common Qt5::Core Qt5::Network Qt5::WebSockets)
 
 target_include_directories(serial_communication_common PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/SerialCommunication/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/Crc8/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../firmwares/common/lib/ClassMacro/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../ros/utils/recorders/3rd_party/optional/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/src
+    ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/SerialCommunication/src
+    ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/Crc8/src
+    ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/ClassMacro/src
+    ${CMAKE_CURRENT_LIST_DIR}/../../ros/utils/recorders/3rd_party/optional/include
+    ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
 target_compile_definitions(serial_communication_common PUBLIC

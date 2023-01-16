@@ -143,7 +143,19 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/daemon_ros_client_node.cpp)
+
+set(app_headers
+  src/DaemonRosClientNode.h
+)
+
+set (app_sources
+  src/daemon_ros_client_node.cpp
+  src/DaemonRosClientNode.cpp
+)
+
+qt5_wrap_cpp(app_headers_moc_srcs ${app_headers})
+
+add_executable(${PROJECT_NAME}_node ${app_headers} ${app_sources} ${app_headers_moc_srcs})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

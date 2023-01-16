@@ -21,6 +21,7 @@ WebSocketProtocolWrapper::WebSocketProtocolWrapper(const QUrl url, QObject *pare
     connect(m_websocket, &QWebSocket::disconnected, this, &WebSocketProtocolWrapper::disconnected);
 
     qDebug() <<"WebSocketProtocolWrapper::WebSocketProtocolWrapper connecting to :" << url;
+
     m_websocket->open(url);
 }
 

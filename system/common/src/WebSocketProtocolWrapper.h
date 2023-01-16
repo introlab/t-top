@@ -14,6 +14,10 @@ class WebSocketProtocolWrapper : public QObject
 {
     Q_OBJECT
 public:
+    static constexpr const char* ROS_DEFAULT_CLIENT_URL = "ws://localhost:8080";
+    static constexpr const char* CLI_DEFAULT_CLIENT_URL = "ws://localhost:8081";
+    static constexpr const char* TRAY_DEFAULT_CLIENT_URL = "ws://localhost:8082";
+
     WebSocketProtocolWrapper(QWebSocket* websocket, QObject *parent=nullptr);
     WebSocketProtocolWrapper(const QUrl url, QObject *parent=nullptr);
 
