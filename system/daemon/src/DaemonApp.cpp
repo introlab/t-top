@@ -3,7 +3,7 @@
 #include "SerialCommunicationBuffer.h"
 #include "SerialMessages.h"
 
-DaemonApp::DaemonApp(int argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
+DaemonApp::DaemonApp(int &argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
 {
     qDebug() << "DaemonApp running...";
 

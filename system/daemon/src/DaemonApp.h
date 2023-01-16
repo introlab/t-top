@@ -15,7 +15,7 @@ class DaemonApp : public QCoreApplication
     Q_OBJECT
 
 public:
-    DaemonApp(int argc, char* argv[]);
+    DaemonApp(int &argc, char* argv[]);
 
 private slots:
 
