@@ -41,7 +41,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-
+    // Run ROS in background
     ros::AsyncSpinner spinner(1);
     catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
 
