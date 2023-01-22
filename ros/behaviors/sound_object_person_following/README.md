@@ -30,6 +30,7 @@ This node makes T-Top follow the loudest sound, the biggest (nearest) person and
 - `head_control_p_gain` (double): The controller proportional gain for the head pose.
 - `min_head_pitch_rad` (double): The minimum pitch angle in radian of the head.
 - `max_head_pitch_rad` (double): The maximum pitch angle in radian of the head.
+- `object_person_follower_type` (string): The object person follower type (bounding_box or semantic_segmentation).
 
 - `min_sst_activity` (double): The minimum activity level to consider the sound source valid.
 - `min_valid_sst_pitch` (double): The minimum pitch angle in radian to consider the sound source valid.
