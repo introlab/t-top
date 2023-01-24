@@ -5,9 +5,13 @@
 ### Required Parts
 
 | Part                                       | Quantity | Image                                                                                                              |
-| ------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| `Base Audio 1`                             | 1        | ![Base Audio 1](images/3d%20printed%20parts/base%20audio%201.jpg)                                                  |
-| `Base Audio 2`                             | 1        | ![Base Audio 2](images/3d%20printed%20parts/base%20audio%202.jpg)                                                  |
+|--------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------|
+| `Base Audio Front Left`                    | 1        | ![Base Audio 1](images/3d%20printed%20parts/base%20audio%201.jpg)  **TODO CHANGE IMAGE**                           |
+| `Base Audio Front Right`                   | 1        | ![Base Audio 2](images/3d%20printed%20parts/base%20audio%202.jpg)  **TODO CHANGE IMAGE**                           |
+| `Base Audio Back Left`                     | 1        | ![Base Audio 1](images/3d%20printed%20parts/base%20audio%201.jpg)  **TODO CHANGE IMAGE**                           |
+| `Base Audio Back Right`                    | 1        | ![Base Audio 2](images/3d%20printed%20parts/base%20audio%202.jpg)  **TODO CHANGE IMAGE**                           |
+| `Dowel pins`                               | 2        | ![Base Audio 2](images/pins.jpg)  **TODO CHANGE IMAGE**                                                            |
+| `Magnets`                                  | 16       | ![Base Audio 2](images/magnets.jpg)  **TODO CHANGE IMAGE**                                                         |
 | `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled%20speaker.jpg)                                                   |
 | `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled%20fan.jpg)                                                           |
 | `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro%20usb%20connector.jpg)                                             |
@@ -15,20 +19,26 @@
 | `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet%20connector.jpg)                                                 |
 | `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled%20robot%20power%20connector%20female.jpg) |
 | `Assembled LED`                            | 6        | ![Assembled LED](images/electronics/assembled%20LEDs.jpg)                                                          |
-| `M3x12mm Plastic Screw`                    | 4        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                                                    |
-| `M3x8mm Plastic Screw`                     | 16       | ![M3x8mm Plastic Screw](images/hardware/M3x8mm%20plastic.jpg)                                                      |
+| `M3x8mm Plastic Screw`                     | 22       | ![M3x8mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                                                     |
 | `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan%20screw.jpg)                                                                      |
 
 ### Steps
+1. Glue four `magnets` into the dedicated holes on each of the `Base Audio Front Left`, `Base Audio Front Right`, `Base Audio Back Left`, `Base Audio Back Right` parts.
+>TODO ADD PHOTO
+![Base Audio Parts Magnets](images/assemblies/magnets.jpg)
 
-1. Insert the `base audio 1` part into the `base audio 2` part, as shown in the following picture.
+2. Install dowel pins on `Base Audio Back Left` part.
+>TODO ADD PHOTO
+![Base Audio Parts Dowel Pins](images/assembles/dowel_pins.jpg)
 
+3. Insert the `base audio front left` part into the `base audio front right`, then insert `base audio back left` part into the `base audio back right` to form the full circular base, as shown in the following picture.
+>TODO CHANGE PHOTO
 ![Base Audio Parts](images/assemblies/06A%20base%20audio.jpg)
 
-2. Put 4 `M3x12 plastic screws` to fix the parts together, as shown in the following pictures.
-
+4. Put 6 `M3x8 plastic screws` to fix the parts together, as shown in the following pictures.
+>The whole 
+>TODO CHANGE PHOTOS
 ![Base Audio Screw 1](images/assemblies/06A%20base%20audio%20screw%201.jpg)
-
 ![Base Audio Screw 1](images/assemblies/06A%20base%20audio%20screw%202.jpg)
 
 3. Install the `assembled speakers` with `M3x8 plastic screws`, as shown in the following pictures. The wire lengths are

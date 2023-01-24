@@ -1,5 +1,5 @@
 # 4. Cable Assembly
-
+> DL Jan 24 2023 - UPDATE with new design
 ## A. 16SoundsUSB Cables
 
 ### Required Parts
@@ -19,35 +19,34 @@
 ## B. LEDs
 
 ### Required Parts
-
+> TODO PHOTOS
+> 
 | Part                                 | Quantity | Image                                                                                        |
-| ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
+|--------------------------------------| -------- |----------------------------------------------------------------------------------------------|
 | `White LED`                          | 2        | ![White LED](images/electronics/LED%20white.jpg)                                             |
-| `Green LED`                          | 1        | ![Green LED](images/electronics/LED%20green.jpg)                                             |
-| `Orange LED`                         | 1        | ![Orange LED](images/electronics/LED%20orange.jpg)                                           |
-| `Yellow LED`                         | 1        | ![Yellow LED](images/electronics/LED%20yellow.jpg)                                           |
-| `Red LED`                            | 1        | ![Red LED](images/electronics/LED%20red.jpg)                                                 |
-| `2-Position Female JST XH Connector` | 6        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
-| `JST XH Crimp Contact`               | 12       | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
+| `RGB LED`                            | 1        | ![Red LED](images/electronics/LED%20rgb.jpg)                                                 |
+| `2-Position Female JST PH Connector` | 6        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
+| `JST PH Crimp Contact`               | 12       | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
 | `22 AWG Red Wire Spool`              | 1        | ![22 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
 | `22 AWG Black Wire Spool`            | 1        | ![22 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
 | `Heat Shrink Tube`                   | 6        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
+> PHOTOS
 
-1. Cut 6 `22 AWG red wire` of 12 cm long.
-2. Cut 6 `22 AWG black wire` of 12 cm long.
+1. Cut 2 `22 AWG red wire` of 10 cm long.
+2. Cut 2 `22 AWG black wire` of 10 cm long.
 3. For each LED, solder a `22 AWG red wire` to the base of the longest LED pin.
 4. For each LED, solder a `22 AWG black wire` to the base of the other LED pin.
 5. Cut each LED pin at the base.
 
 ![Soldered LEDs](images/assemblies/04B%20soldered%20LEDs.jpg)
 
-6. Crimp a `JST XH crimp contact` onto each wire.
+6. Crimp a `JST PH crimp contact` onto each wire.
 
 ![LED Crimp Contacts](images/assemblies/04B%20LED%20crimp%20tins.jpg)
 
-7. For each LED, twist the wires.
+7. For each white LED, twist the wires.
 
 ![LED Twisted Wire](images/assemblies/04B%20LED%20twisted%20wire.jpg)
 
@@ -55,21 +54,26 @@
 
 ![LED Heat Shrink Tube](images/assemblies/04B%20LED%20heat%20shrink%20tube.jpg)
 
-9. For each LED, insert the crimp contacts into a `2-position female JST XH connector`, as shown in the following
+9. For each LED, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
    picture.
 
 ![LED JST XH](images/assemblies/04B%20LED%20JST%20XH.jpg)
+
+10. TODO Install RGB LEDS and Wires
+
 
 ## C. Fans
 
 ### Required Parts
 
-| Part                                 | Quantity | Image                                                                                        |
-| ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `Fan`                                | 2        | ![Fan](images/electronics/fan.jpg)                                                           |
-| `2-Position Female JST XH Connector` | 2        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
-| `JST XH Crimp`                       | 4        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+>TODO PHOTOS
+
+| Part                                  | Quantity | Image                                                                                        |
+|---------------------------------------| -------- | -------------------------------------------------------------------------------------------- |
+| `Fan`                                 | 2        | ![Fan](images/electronics/fan.jpg)                                                           |
+| `2-Position Female JST 2PH Connector` | 2        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
+| `JST PH Crimp`                        | 4        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
+| `Heat Shrink Tube`                    | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
 
@@ -77,8 +81,8 @@
 
 ![Fan Without Sleeve](images/assemblies/04C%20fan%20without%20sleeve.jpg)
 
-2. For the first fan, cut the wires to 10 cm long.
-3. For the first fan, cut the wires to 20 cm long.
+2. For the first fan, cut the wires to 15 cm long.
+3. For the first fan, cut the wires to 15 cm long.
 4. For each fan, cut the yellow wire 3 cm shorter.
 
 ![Fan Yellow Wire](images/assemblies/04C%20fan%20yellow%20wire.jpg)
@@ -113,7 +117,7 @@
 1. Cut a `20 AWG red wire` of 15 cm long and a `20 AWG black wire` of 15 cm long.
 2. Cut a `20 AWG red wire` of 20 cm long and a `20 AWG black wire` of 20 cm long.
 3. Cut a `20 AWG red wire` of 35 cm long and a `20 AWG black wire` of 35 cm long.
-4. Cut a `20 AWG red wire` of 52 cm long and a `20 AWG black wire` of 52 cm long.
+4. Cut a `20 AWG red wire` of 52 cm long and a `20 AWG black wire` of 42 cm long.
 5. For each pair, solder the black wire to the biggest tab of a speaker.
 6. For each pair, solder the red wire to the other tab of a speaker.
 
@@ -138,33 +142,36 @@
 ## E. Power Switch
 
 ### Required Parts
+>TODO CHANGE IMAGES
 
-| Part                                 | Quantity | Image                                                                                        |
-| ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `Power Switch`                       | 4        | ![Power Switch](images/electronics/power%20switch.jpg)                                       |
-| `22 AWG White Wire Spool`            | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg)                             |
-| `2-Position Female JST XH Connector` | 1        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
-| `JST XH Crimp Contact`               | 2        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `Heat Shrink Tube`                   | 4        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| Part                                  | Quantity | Image                                                                                        |
+|---------------------------------------|----------|----------------------------------------------------------------------------------------------|
+| `Power Switch`                        | 1        | ![Power Switch](images/electronics/power%20switch.jpg)                                       |
+| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg)                             |
+| `22 AWG Brown Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/brown%20wire.jpg)                             |
+| `2-Position Female JST 4PH Connector` | 1        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
+| `JST 4PH Crimp Contact`               | 2        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
+| `Heat Shrink Tube`                    | 4        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
 
 ### Steps
 
-1. Cut 2 `22 AWG red wire` of 38 cm long.
+1. Cut 2 `22 AWG white wire` of 38 cm long.
+2. Cut 2 `22 AWG brown wire` of 38 cm long.
 2. Solder the wires to the `power switch`.
-
+> TODO CHANGE IMAGE
 ![Power Switch Wires](images/assemblies/04E%20power%20switch%20wires.jpg)
 
 3. Add a `heat shrink tube` to protect each tab.
-
+> TODO CHANGE IMAGE
 ![Power Switch Heat Shrink Tube](images/assemblies/04E%20power%20switch%20heat%20shrink%20tube.jpg)
 
 4. Twist the wires.
 7. Crimp a `JST XH crimp contact` onto the wires.
-
+> TODO CHANGE IMAGE
 ![Power Switch Crimp](images/assemblies/04E%20power%20switch%20crimp.jpg)
 
-8. Insert the crimp contacts into a `2-position female JST XH connector`, as shown in the following picture.
-
+8. Insert the crimp contacts into a `2-position female JST 4PH connector`, as shown in the following picture.
+> TODO CHANGE IMAGE
 ![Power Switch JST XH](images/assemblies/04E%20power%20switch%20JST%20XH.jpg)
 
 ## F. Limit Switch
@@ -225,9 +232,9 @@
 
 ### Steps
 
-1. Cut 2 `22 AWG brown wires` of 40 cm long.
-2. Cut 2 `22 AWG green wires` of 40 cm long.
-3. Cut 2 `22 AWG black wires` of 40 cm long.
+1. Cut 2 `22 AWG brown wires` of 55 cm long.
+2. Cut 2 `22 AWG green wires` of 55 cm long.
+3. Cut 2 `22 AWG black wires` of 55 cm long.
 4. For each `Adafruit MAX9744`, solder a brown wire to the SDA pad.
 5. For each `Adafruit MAX9744`, solder a green wire to the SCL pad.
 6. For each `Adafruit MAX9744`, solder a black wire to the GND pad.
@@ -251,8 +258,8 @@
 
 ![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20JST%20XH.jpg)
 
-11. Cut 2 `20 AWG red wires` of 24 cm long.
-12. Cut 2 `20 AWG black wires` of 24 cm long.
+11. Cut 2 `20 AWG red wires` of 25 cm long.
+12. Cut 2 `20 AWG black wires` of 25 cm long.
 13. For each wire, crimp a `20 AWG ferrule` on both ends.
 
 ![Power Wires](images/assemblies/04G%20power%20wires.jpg)
@@ -306,8 +313,8 @@
 
 ![JST VHR-2N Connector](images/assemblies/04I%20JST%20VHR-2N%20Connector.jpg)
 
-6. Cut a `16 AWG red wire` of 24.5 cm long.
-7. Cut a `16 AWG black wire` of 24.5 cm long.
+6. Cut a `16 AWG red wire` of 31 cm long.
+7. Cut a `16 AWG black wire` of 31 cm long.
 8. Solder the wires onto the `robot power connector`, as shown in the following picture.
 
 ![Robot Power Connector - Female](images/assemblies/03I%20Robot%20Power%20Connector%20-%20Female.jpg)
@@ -476,8 +483,50 @@
 
 ### Steps
 
-1. Cut a `16 AWG red wire` of 6 cm long.
-2. Cut a `16 AWG black wire` of 6 cm long.
-3. Cut a `16 AWG red wire` of 8 cm long.
-4. Cut a `16 AWG black wire` of 8 cm long.
+1. Cut a `16 AWG red wire` of 14 cm long.
+2. Cut a `16 AWG black wire` of 14 cm long.
+3. Cut a `16 AWG red wire` of 16 cm long.
+4. Cut a `16 AWG black wire` of 16 cm long.
 5. For each wire, crimp a `16 AWG ferrule` on both ends.
+
+## M. Light Sensor
+
+### Required Parts
+>TODO PHOTOS
+> 
+| Part                      | Quantity | Image                                                            |
+|---------------------------|----------|------------------------------------------------------------------|
+| `22 AWG Red Wire Spool`   | 1        | ![22 Red Cable Spool](images/electronics/red%20wire.jpg)         |
+| `22 AWG Black Wire Spool` | 1        | ![22 AWG Black Cable Spool](images/electronics/black%20wire.jpg) |
+| `22 AWG White Wire Spool` | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg) |
+| `JST PH Connectors`       | 4        | ![4 JST PH Connectors](images/electronics/16%20AWG%20jstph.jpg)  | 
+
+### Steps
+1. Cut 3 `22 AWG Red/Black/White Wire` of 29 cm long for first sensor.
+2. Cut 3 `22 AWG Red/Black/White Wire` of 41 cm long for second sensor.
+3. Cut 3 `22 AWG Red/Black/White Wire` of 30 cm long for third sensor.
+4. Cut 3 `22 AWG Red/Black/White Wire` of 54 cm long for fourth sensor.
+5. Solder the 3 wires of the same dimensions (x4) on each of the light sensor.
+6. Install JST PH crimps on the other end of each cable
+7. Install JST PH connector
+
+![LightSensors](images/assemblies/light_sensor_jst_cable.jpg)
+
+## N. Push Buttons
+
+### Required Parts
+>TODO PHOTOS
+
+| Part                      | Quantity | Image                                                            |
+|---------------------------|----------|------------------------------------------------------------------|
+| `22 AWG White Wire Spool` | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg) |
+| `JST 2PH Connectors`      | 4        | ![4 JST PH Connectors](images/electronics/16%20AWG%20jstph.jpg)  | 
+
+### Steps
+1. Cut 8 `22 AWG White Wire` of 9 cm long for first sensor.
+2. Solder the 2 wires of the same dimensions (x4) on each of the push button.
+3. Install JST 2PH crimps on the other end of each cable
+4. Install JST 2PH connectors
+
+>TODO PHOTOS
+![PushButtons](images/assemblies/push_button_jst_cable.jpg)
