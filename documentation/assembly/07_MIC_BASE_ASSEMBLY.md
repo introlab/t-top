@@ -7,8 +7,8 @@
 | Part                     | Quantity | Image                                                            |
 | ------------------------ | -------- | ---------------------------------------------------------------- |
 | `16SoundsUSB`            | 1        | ![16SoundsUSB](images/electronics/16SoundsUSB.jpg)               |
-| `xSoundsMicrophones`     | 16       | ![xSoundsMicrophones](images/electronics/8SoundsUSB%20Mic.jpg)   |
-| `16SoundsUSB Cable`      | 16       | ![16SoundsUSB Cable](images/electronics/16SoundsUSB%20Cable.jpg) |
+| `xSoundsMicrophones`     | 16       | ![xSoundsMicrophones](images/electronics/8SoundsUSB-mic.jpg)     |
+| `16SoundsUSB Cable`      | 16       | ![16SoundsUSB Cable](images/electronics/16SoundsUSB-cable.jpg)   |
 | `Mini USB Cable`         | 1        |                                                                  |
 | `Computer`               | 1        |                                                                  |
 
@@ -30,9 +30,9 @@
 
 | Part                     | Quantity | Image                                                          |
 | ------------------------ | -------- | -------------------------------------------------------------- |
-| `Base Mic`               | 4        | ![16SoundsUSB](images/3d%20printed%20parts/base%20mic.jpg)     |
-| `xSoundsMicrophones`     | 8        | ![xSoundsMicrophones](images/electronics/8SoundsUSB%20Mic.jpg) |
-| `M3x5mm Plastic Screw`   | 32       | ![M3x5mm Plastic Screw](images/hardware/M3x5mm%20plastic.jpg)  |
+| `Base Mic`               | 4        | ![Base Mic](images/3d-printed-parts/base-mic.jpg)              |
+| `xSoundsMicrophones`     | 8        | ![xSoundsMicrophones](images/electronics/8SoundsUSB-mic.jpg)   |
+| `M3x5mm Plastic Screw`   | 32       | ![M3x5mm Plastic Screw](images/hardware/M3x5mm-plastic.jpg)    |
 
 ### Steps
 
@@ -49,9 +49,9 @@
 | ------------------------ | -------- | --------------------------------------------------------------- |
 | `Audio Base Assembly`    | 1        |                                                                 |
 | `Mic Base Pre-Assembly`  | 4        |                                                                 |
-| `M3x12mm Plastic Screw`  | 8        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg) |
-| `xSoundsMicrophones`     | 8        | ![xSoundsMicrophones](images/electronics/8SoundsUSB%20Mic.jpg)  |
-| `M3x5mm Plastic Screw`   | 32       | ![M3x5mm Plastic Screw](images/hardware/M3x5mm%20plastic.jpg)   |
+| `M3x12mm Plastic Screw`  | 8        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)   |
+| `xSoundsMicrophones`     | 8        | ![xSoundsMicrophones](images/electronics/8SoundsUSB-mic.jpg)    |
+| `M3x5mm Plastic Screw`   | 32       | ![M3x5mm Plastic Screw](images/hardware/M3x5mm-plastic.jpg)     |
 
 ### Steps
 

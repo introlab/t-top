@@ -8,7 +8,7 @@
 | ------------------------------------------------ | -------- | ---------------------------------------------------------------|
 | `Dynamixel XL430-W250-T (ID 1, 2 3, 4, 5 and 6)` | 6        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T.jpg) |
 | `OpenCR`                                         | 1        | ![OpenCR](images/electronics/OpenCR.jpg)                       |
-| `Dynamixel Cable`                                | 1        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)   |
+| `Dynamixel Cable`                                | 1        | ![Dynamixel Cable](images/electronics/dynamixel-cable.jpg)     |
 | `Micro USB Cable`                                | 1        |                                                                |
 | `12V Power Supply`                               | 1        |                                                                |
 | `Computer`                                       | 1        |                                                                |
@@ -41,10 +41,9 @@
 
 | Part                                     | Quantity | Image                                                                             |
 | ---------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| `Dynamixel XL430-W250-T (ID 1, 3 and 5)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID1.jpg)              |
-| `Dynamixel XL430-W250-T Screw`           | 1        | ![Dynamixel XL430-W250-T Screw](images/hardware/Dynamixel%20screw.jpg)            |
-| `Stewart Horn (Right)`                   | 3        | ![Stewart Horn (Right)](images/3d%20printed%20parts/stewart%20horn%20(right).jpg) |
-| `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                     |
+| `Dynamixel XL430-W250-T (ID 1, 3 and 5)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T-id1.jpg)                |
+| `Stewart Horn (Right)`                   | 3        | ![Stewart Horn (Right)](images/3d-printed-parts/stewart%20horn%20(right).jpg)     |
+| `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm-socket.jpg)                       |
 
 ### Steps
 
@@ -63,10 +62,9 @@
 
 | Part                                     | Quantity | Image                                                                             |
 | ---------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| `Dynamixel XL430-W250-T (ID 2, 4 and 6)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID2.jpg)              |
-| `Dynamixel XL430-W250-T Screw`           | 1        | ![Dynamixel XL430-W250-T Screw](images/hardware/Dynamixel%20screw.jpg)            |
-| `Stewart Horn (Left)`                    | 3        | ![Stewart Horn (Right)](images/3d%20printed%20parts/stewart%20horn%20(left).jpg)  |
-| `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                     |
+| `Dynamixel XL430-W250-T (ID 2, 4 and 6)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T-id2.jpg)                |
+| `Stewart Horn (Left)`                    | 3        | ![Stewart Horn (Right)](images/3d-printed-parts/stewart%20horn%20(left).jpg)      |
+| `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm-socket.jpg)                       |
 
 ### Steps
 
@@ -85,8 +83,8 @@
 
 | Part                           | Quantity | Image                                                              |
 | ------------------------------ | -------- | ------------------------------------------------------------------ |
-| `Ball Joint - M3xL26mm Silver` | 12       | ![Ball joint - M3xL26mm Silver](images/hardware/ball%20joint.jpg)  |
-| `Threaded Rod - M3x170mm`      | 6        | ![Threaded Rod - M3x170mm](images/hardware/stewart%20rod.jpg)      |
+| `Ball Joint - M3xL26mm Silver` | 12       | ![Ball joint - M3xL26mm Silver](images/hardware/ball-joint.jpg)    |
+| `Threaded Rod - M3x170mm`      | 6        | ![Threaded Rod - M3x170mm](images/hardware/stewart-rod.jpg)        |
 
 ### Steps
 
@@ -105,9 +103,9 @@
 | -------------------- | -------- | ------------------------------------------------------------------------- |
 | `OpenCR`             | 1        | ![OpenCR](images/electronics/OpenCR.jpg)                                  |
 | `Grove Base Shield`  | 1        | ![Grove Base Shield](images/electronics/Grove%20base%20shield.jpg)        |
-| `OpenCR support 1`   | 1        | ![OpenCR support 1](images/3d%20printed%20parts/OpenCR%20support%201.jpg) |
-| `OpenCR support 2`   | 1        | ![OpenCR support 2](images/3d%20printed%20parts/OpenCR%20support%202.jpg) |
-| `M3x8 Plastic Screw` | 4        | ![M3x8 Plastic Screw](images/hardware/M3x8mm%20plastic.jpg)              |
+| `OpenCR support 1`   | 1        | ![OpenCR support 1](images/3d-printed-parts/OpenCR%20support%201.jpg)     |
+| `OpenCR support 2`   | 1        | ![OpenCR support 2](images/3d-printed-parts/OpenCR%20support%202.jpg)     |
+| `M3x8 Plastic Screw` | 4        | ![M3x8 Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                 |
 
 ### Steps
 
@@ -125,18 +123,18 @@
 
 | Part                                                       | Quantity | Image                                                                                      |
 | ---------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------ |
-| `Stewart Bottom`                                           | 1        | ![Stewart Bottom](images/3d%20printed%20parts/stewart%20bottom.jpg)                        |
-| `Stewart Top`                                              | 1        | ![Stewart Top](images/3d%20printed%20parts/stewart%20top.jpg)                              |
-| `USB Hub Support`                                          | 4        | ![USB Hub Support](images/3d%20printed%20parts/USB%20hub%20support.jpg)                    |
+| `Stewart Bottom`                                           | 1        | ![Stewart Bottom](images/3d-printed-parts/stewart%20bottom.jpg)                            |
+| `Stewart Top`                                              | 1        | ![Stewart Top](images/3d-printed-parts/stewart%20top.jpg)                                  |
+| `USB Hub Support`                                          | 4        | ![USB Hub Support](images/3d-printed-parts/USB%20hub%20support.jpg)                        |
 | `Assembled Dynamixel XL430-W250-T (ID 1, 2 3, 4, 5 and 6)` | 6        | ![Dynamixel XL430-W250-T](images/assemblies/09B%20dynamixel%201%203%205.jpg) ![Dynamixel ID 2, 4 and 6](images/assemblies/09C%20dynamixel%202%204%206.jpg) |
-| `Dynamixel Cable`                                          | 6        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)                               |
-| `Dynamixel XL430-W250-T Cable Cover`                       | 6        | ![Dynamixel XL430-W250-T Cable Cover](images/electronics/XL430-W250-T%20cable%20cover.jpg) |
+| `Dynamixel Cable`                                          | 6        | ![Dynamixel Cable](images/electronics/dynamixel-cable.jpg)                                 |
+| `Dynamixel XL430-W250-T Cable Cover`                       | 6        | ![Dynamixel XL430-W250-T Cable Cover](images/electronics/XL430-W250-T-cable-cover.jpg)     |
 | `Assembled OpenCR`                                         | 1        | ![OpenCR](images/assemblies/09E%20OpenCR%20supports.jpg)                                   |
 | `Assembled Stewart Platform Rod`                           | 6        | ![Threaded Rod](images/assemblies/09D%20stewart%20rod.jpg)                                 |
-| `USB Hub`                                                  | 2        | ![USB Hub](images/electronics/USB%20hub.jpg)                                               |
-| `Micro-USB Cable Included with the Touchscreen`            | 1        | ![Micro-USB Cable](images/electronics/Micro-USB%20cable%20screen.jpg)                      |
-| `M2.5x8 Plastic Screw`                                     | 36       | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm%20plastic.jpg)                            |
-| `M3x12 Plastic Screw`                                      | 24       | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                              |
+| `USB Hub`                                                  | 2        | ![USB Hub](images/electronics/usb-hub.jpg)                                                 |
+| `Micro-USB Cable Included with the Touchscreen`            | 1        | ![Micro-USB Cable](images/electronics/micro-usb-cable-screen.jpg)                          |
+| `M2.5x8 Plastic Screw`                                     | 36       | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm-plastic.jpg)                              |
+| `M3x12 Plastic Screw`                                      | 24       | ![M3x12 Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                |
 
 ### Steps
 

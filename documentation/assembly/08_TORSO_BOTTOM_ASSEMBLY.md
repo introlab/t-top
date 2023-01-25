@@ -6,12 +6,12 @@
 
 | Part                                 | Quantity | Image                                                                                      |
 | ------------------------------------ | -------- | ------------------------------------------------------------------------------------------ |
-| `Dynamixel XL430-W250-T (ID7)`       | 1        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID7.jpg)                       |
-| `Dynamixel Cable`                    | 1        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)                               |
-| `Dynamixel XL430-W250-T Cable Cover` | 1        | ![Dynamixel XL430-W250-T Cable Cover](images/electronics/XL430-W250-T%20cable%20cover.jpg) |
-| `Dynamixel XL430-W250-T Screw`       | 1        | ![Dynamixel XL430-W250-T Screw](images/hardware/Dynamixel%20screw.jpg)                     |
-| `Torso Bottom Gear`                  | 1        | ![Torso Bottom Gear](images/3d%20printed%20parts/torso%20bottom%20gear%201.jpg)            |
-| `M2x12mm Socket Screw`               | 4        | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                              |
+| `Dynamixel XL430-W250-T (ID7)`       | 1        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T-id7.jpg)                         |
+| `Dynamixel Cable`                    | 1        | ![Dynamixel Cable](images/electronics/dynamixel-cable.jpg)                                 |
+| `Dynamixel XL430-W250-T Cable Cover` | 1        | ![Dynamixel XL430-W250-T Cable Cover](images/electronics/XL430-W250-T-cable-cover.jpg)     |
+| `Dynamixel XL430-W250-T Screw`       | 1        | ![Dynamixel XL430-W250-T Screw](images/hardware/dynamixel-screw.jpg)                       |
+| `Torso Bottom Gear`                  | 1        | ![Torso Bottom Gear](images/3d-printed-parts/torso%20bottom%20gear%201.jpg)                |
+| `M2x12mm Socket Screw`               | 4        | ![M2x12mm Socket Screw](images/hardware/M2x12mm-socket.jpg)                                |
 
 ### Steps
 
@@ -35,10 +35,10 @@
 
 | Part                  | Quantity | Image                                                                           |
 | --------------------- | -------- | ------------------------------------------------------------------------------- |
-| `Torso Bottom Holder` | 3        | ![Torso Bottom Holder](images/3d%20printed%20parts/torso%20bottom%20holder.jpg) |
+| `Torso Bottom Holder` | 3        | ![Torso Bottom Holder](images/3d-printed-parts/torso%20bottom%20holder.jpg)     |
 | `605zz`               | 3        | ![605zz](images/hardware/605zz.jpg)                                             |
-| `M5x16 Socket Screw`  | 3        | ![M5x16 Socket Screw](images/hardware/M5x16mm%20socket.jpg)                     |
-| `M5 Washer`           | 6        | ![M5 Washer](images/hardware/M5%20washer.jpg)                                   |
+| `M5x16 Socket Screw`  | 3        | ![M5x16 Socket Screw](images/hardware/M5x16mm-socket.jpg)                       |
+| `M5 Washer`           | 6        | ![M5 Washer](images/hardware/M5-washer.jpg)                                     |
 
 ### Steps
 
@@ -56,17 +56,17 @@
 
 | Part                                  | Quantity | Image                                                                                   |
 | ------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `Torso Bottom (External)`             | 1        | ![Torso Bottom (External)](images/3d%20printed%20parts/torso%20bottom%20(external).jpg) |
-| `Torso Bottom (Internal)`             | 1        | ![Torso Bottom (Internal)](images/3d%20printed%20parts/torso%20bottom%20(internal).jpg) |
-| `Base Gear`                           | 1        | ![Base Gear](images/3d%20printed%20parts/base%20gear.jpg)                               |
+| `Torso Bottom (External)`             | 1        | ![Torso Bottom (External)](images/3d-printed-parts/torso%20bottom%20(external).jpg)     |
+| `Torso Bottom (Internal)`             | 1        | ![Torso Bottom (Internal)](images/3d-printed-parts/torso%20bottom%20(internal).jpg)     |
+| `Base Gear`                           | 1        | ![Base Gear](images/3d-printed-parts/base%20gear.jpg)                                   |
 | `Assembled Torso Bottom Holder`       | 1        | ![Assembled Torso Bottom Holder](images/assemblies/08B%20torso%20bottom%20holder.jpg)   |
-| `Limit Switch Support`                | 1        | ![Limit Switch Support](images/3d%20printed%20parts/limit%20switch%20support.jpg)       |
-| `Gear Servo Support`                  | 1        | ![Gear Servo Support](images/3d%20printed%20parts/gear%20servo%20support.jpg)           |
+| `Limit Switch Support`                | 1        | ![Limit Switch Support](images/3d-printed-parts/limit%20switch%20support.jpg)           |
+| `Gear Servo Support`                  | 1        | ![Gear Servo Support](images/3d-printed-parts/gear%20servo%20support.jpg)               |
 | `605zz`                               | 6        | ![605zz](images/hardware/605zz.jpg)                                                     |
-| `M5x16 Socket Screw`                  | 3        | ![M5x16 Socket Screw](images/hardware/M5x16mm%20socket.jpg)                             |
-| `M5x30 Socket Screw`                  | 3        | ![M5x30 Socket Screw](images/hardware/M5x30mm%20socket.jpg)                             |
-| `M5x16 Washer`                        | 15       | ![M5x16 Washer](images/hardware/M5%20washer.jpg)                                        |
-| `M3x12 Plastic Screw`                 | 12       | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                           |
+| `M5x16 Socket Screw`                  | 3        | ![M5x16 Socket Screw](images/hardware/M5x16mm-socket.jpg)                               |
+| `M5x30 Socket Screw`                  | 3        | ![M5x30 Socket Screw](images/hardware/M5x30mm-socket.jpg)                               |
+| `M5x16 Washer`                        | 15       | ![M5x16 Washer](images/hardware/M5-washer.jpg)                                          |
+| `M3x12 Plastic Screw`                 | 12       | ![M3x12 Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                             |
 
 ### Steps
 
@@ -130,8 +130,8 @@
 
 | Part                                  | Quantity | Image                                                                                   |
 | ------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `Stewart Support`                     | 2        | ![Stewart Support](images/3d%20printed%20parts/stewart%20support.jpg)                   |
-| `WiFi Antenna`                        | 2        | ![WiFi Antenna](images/electronics/wifi%20antenna.jpg)                                  |
+| `Stewart Support`                     | 2        | ![Stewart Support](images/3d-printed-parts/stewart%20support.jpg)                       |
+| `WiFi Antenna`                        | 2        | ![WiFi Antenna](images/electronics/wifi-antenna.jpg)                                    |
 
 ### Steps
 
@@ -149,15 +149,15 @@
 
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson%20agx%20xavier.jpg)                    |
+| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson-agx-xavier.jpg)                        |
 | `Stewart Support With An Antenna`     | 2        | ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)                                        |
-| `Stewart Support`                     | 1        | ![Stewart Support](images/3d%20printed%20parts/stewart%20support.jpg)                        |
+| `Stewart Support`                     | 1        | ![Stewart Support](images/3d-printed-parts/stewart%20support.jpg)                            |
 | `Assembled Torso Bottom Dynamixel`    | 1        | ![Assembled Torso Bottom Dynamixel](images/assemblies/08A%20dynamixel%20gear.jpg)            |
 | `Assembled Limit Switch`              | 1        | ![Assembled Limit Switch](images/assemblies/04F%20limit%20switch%20heat%20shrink%20tube.jpg) |
-| `M3x55 Socket Screw`                  | 4        | ![M3x55 Socket Screw](images/hardware/M3x55mm%20socket.jpg)                                  |
-| `M3x12 Plastic Screw`                 | 6        | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                                |
-| `M2.5x8 Plastic Screw`                | 6        | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm%20plastic.jpg)                              |
-| `M2.5x12 Plastic Screw`               | 2        | ![M2.5x12 Plastic Screw](images/hardware/M2.5x12mm%20plastic.jpg)                            |
+| `M3x55 Socket Screw`                  | 4        | ![M3x55 Socket Screw](images/hardware/M3x55mm-socket.jpg)                                    |
+| `M3x12 Plastic Screw`                 | 6        | ![M3x12 Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                  |
+| `M2.5x8 Plastic Screw`                | 6        | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm-plastic.jpg)                                |
+| `M2.5x12 Plastic Screw`               | 2        | ![M2.5x12 Plastic Screw](images/hardware/M2.5x12mm-plastic.jpg)                              |
 
 ### Steps
 
@@ -176,7 +176,7 @@
 
 4. Install the `stewart support` onto the assembly.
 
-![Stewart Support](images/3d%20printed%20parts/stewart%20support.jpg)
+![Stewart Support](images/3d-printed-parts/stewart%20support.jpg)
 ![Stewart Support](images/assemblies/08E%20stewart%20support%201.jpg)
 
 5. Install the first `stewart support with an antenna` onto the assembly.

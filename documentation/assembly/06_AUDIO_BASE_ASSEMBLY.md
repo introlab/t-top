@@ -6,40 +6,43 @@
 
 | Part                                       | Quantity | Image                                                                                                              |
 |--------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------|
-| `Base Audio Front Left`                    | 1        | ![Base Audio 1](images/3d%20printed%20parts/base%20audio%201.jpg)  **TODO CHANGE IMAGE**                           |
-| `Base Audio Front Right`                   | 1        | ![Base Audio 2](images/3d%20printed%20parts/base%20audio%202.jpg)  **TODO CHANGE IMAGE**                           |
-| `Base Audio Back Left`                     | 1        | ![Base Audio 1](images/3d%20printed%20parts/base%20audio%201.jpg)  **TODO CHANGE IMAGE**                           |
-| `Base Audio Back Right`                    | 1        | ![Base Audio 2](images/3d%20printed%20parts/base%20audio%202.jpg)  **TODO CHANGE IMAGE**                           |
-| `Dowel pins`                               | 2        | ![Base Audio 2](images/pins.jpg)  **TODO CHANGE IMAGE**                                                            |
-| `Magnets`                                  | 16       | ![Base Audio 2](images/magnets.jpg)  **TODO CHANGE IMAGE**                                                         |
-| `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled%20speaker.jpg)                                                   |
-| `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled%20fan.jpg)                                                           |
-| `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro%20usb%20connector.jpg)                                             |
-| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled%20power%20switch.jpg)                                       |
-| `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet%20connector.jpg)                                                 |
-| `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled%20robot%20power%20connector%20female.jpg) |
-| `Assembled LED`                            | 6        | ![Assembled LED](images/electronics/assembled%20LEDs.jpg)                                                          |
-| `M3x8mm Plastic Screw`                     | 22       | ![M3x8mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                                                     |
-| `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan%20screw.jpg)                                                                      |
+| `Base Audio Front Left`                    | 1        | ![Base Audio Front Left](images/3d-printed-parts/base-audio-front-left.jpg)                                        |
+| `Base Audio Front Right`                   | 1        | ![Base Audio Front Right](images/3d-printed-parts/base-audio-front-right.jpg)                                      |
+| `Base Audio Back Left`                     | 1        | ![Base Audio Back Left](images/3d-printed-parts/base-audio-back-left.jpg)                                          |
+| `Base Audio Back Right`                    | 1        | ![Base Audio Back Right](images/3d-printed-parts/base-audio-back-right.jpg)                                        |
+| `Dowel Pin`                                | 2        | ![Dowel Pin](images/hardware/dewel-pin.jpg)                                                                        |
+| `Magnet`                                   | 16       | ![Magnet](images/hardware/magnet.jpg)                                                                              |
+| `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled-speaker.jpg)                                                   |
+| `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled-fan.jpg)                                                           |
+| `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro-usb-connector.jpg)                                             |
+| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled-power-switch.jpg)                                       |
+| `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet-connector.jpg)                                                 |
+| `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled-robot-power-connector-female.jpg) |
+| `Assembled LED`                            | 6        | ![Assembled LED](images/electronics/assembled-LEDs.jpg)                                                          |
+| `M3x8mm Plastic Screw`                     | 22       | ![M3x8mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                                     |
+| `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan-screw.jpg)                                                                      |
 
 ### Steps
-1. Glue four `magnets` into the dedicated holes on each of the `Base Audio Front Left`, `Base Audio Front Right`, `Base Audio Back Left`, `Base Audio Back Right` parts.
->TODO ADD PHOTO
-![Base Audio Parts Magnets](images/assemblies/magnets.jpg)
+1. Install four `magnets` with super glue into the dedicated holes on each of the `base audio front left`, `base audio front right`, `base audio back left`, `base audio back right` parts, as shown in the following pictures.
 
-2. Install dowel pins on `Base Audio Back Left` part.
->TODO ADD PHOTO
-![Base Audio Parts Dowel Pins](images/assembles/dowel_pins.jpg)
+![Base Audio Parts Magnets](images/assemblies/06/magnet-1.jpg)
+![Base Audio Parts Magnets](images/assemblies/06/magnet-2.jpg)
+![Base Audio Parts Magnets](images/assemblies/06/magnet-3.jpg)
+![Base Audio Parts Magnets](images/assemblies/06/magnet-4.jpg)
+
+2. Install dowel pins on `base audio back left` part, as shown in the following picture.
+
+![Base Audio Parts Dowel Pins](images/assemblies/06/dowel-pins.jpg)
 
 3. Insert the `base audio front left` part into the `base audio front right`, then insert `base audio back left` part into the `base audio back right` to form the full circular base, as shown in the following picture.
->TODO CHANGE PHOTO
-![Base Audio Parts](images/assemblies/06A%20base%20audio.jpg)
+
+![Base Audio Parts](images/assemblies/06/base-audio.jpg)
 
 4. Put 6 `M3x8 plastic screws` to fix the parts together, as shown in the following pictures.
->The whole 
->TODO CHANGE PHOTOS
-![Base Audio Screw 1](images/assemblies/06A%20base%20audio%20screw%201.jpg)
-![Base Audio Screw 1](images/assemblies/06A%20base%20audio%20screw%202.jpg)
+
+![Base Audio Screw 1](images/assemblies/06/base-audio-screws-1.jpg)
+![Base Audio Screw 2](images/assemblies/06/base-audio-screws-2.jpg)
+![Base Audio Screw 3](images/assemblies/06/base-audio-screws-3.jpg)
 
 3. Install the `assembled speakers` with `M3x8 plastic screws`, as shown in the following pictures. The wire lengths are
    shown in the picture.
@@ -82,18 +85,18 @@
 | ------------------------------------------ | -------- | ------------------------------------------------------------------------------- |
 | `Audio Base Pre-Assembly`                  | 1        |                                                                                 |
 | `Base Disk Pre-Assembly`                   | 1        |                                                                                 |
-| `M3x5mm Plastic Screw`                     | 4        | ![M3x5mm Plastic Screw](images/hardware/M3x5mm%20plastic.jpg)                   |
-| `M3x8mm Plastic Screw`                     | 8        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm%20plastic.jpg)                   |
-| `24-cm-Long 20 AWG Adafruit MAX9744 Wires` | 4        | ![M3x8mm Plastic Screw](images/assemblies/04G%20power%20wires.jpg)              |
+| `M3x5mm Plastic Screw`                     | 4        | ![M3x5mm Plastic Screw](images/hardware/M3x5mm-plastic.jpg)                     |
+| `M3x8mm Plastic Screw`                     | 8        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                     |
+| `25-cm-Long 20 AWG Adafruit MAX9744 Wires` | 4        | ![25-cm-Long 20 AWG Adafruit MAX9744 Wires](images/assemblies/04G%20power%20wires.jpg)              |
 | `Adafruit MAX9744`                         | 1        | ![Adafruit MAX9744](images/assemblies/04G%20heat%20shrink%20tube.jpg)           |
-| `M2 Nuts`                                  | 4        | ![M3 Nuts](images/hardware/M2%20nut.jpg)                                        |
+| `M2 Nuts`                                  | 4        | ![M3 Nuts](images/hardware/M2-nut.jpg)                                          |
 | `Assembled JST PHR-6 Cable`                | 1        |                                                                                 |
-| `Female Power Connector with Ferrules`     | 1        | ![Power Connector - Female](images/electronics/Power%20Connector%20Female.jpg)  |
+| `Female Power Connector with Ferrules`     | 1        | ![Power Connector - Female](images/electronics/power-connector-female.jpg)      |
 | `19V Buck-Boost PCB`                       | 1        | ![19V Buck-Boost PCB](images/assemblies/03D%20all.jpg)                          |
-| `M3 Nuts`                                  | 3        | ![M3 Nuts](images/hardware/M2%20nut.jpg)                                        |
-| `8-cm-Long 16 AWG Red Wire`                | 1        | ![`8-cm-long 16 AWG Red Wire](images/electronics/16%20AWG%20red%20wire.jpg)     |
-| `8-cm-Long 16 AWG Black Wire`              | 1        | ![`8-cm-long 16 AWG Black Wire](images/electronics/16%20AWG%20black%20wire.jpg) |
-| `Male Power Connector with Ferrules`       | 1        | ![Power Connector - Male](images/electronics/Power%20Connector%20Male.jpg)      |
+| `M3 Nuts`                                  | 3        | ![M3 Nuts](images/hardware/M2-nut.jpg)                                          |
+| `8-cm-Long 16 AWG Red Wire`                | 1        | ![`8-cm-long 16 AWG Red Wire](images/electronics/16-AWG-red-wire.jpg)           |
+| `8-cm-Long 16 AWG Black Wire`              | 1        | ![`8-cm-long 16 AWG Black Wire](images/electronics/16-AWG-black-wire.jpg)       |
+| `Male Power Connector with Ferrules`       | 1        | ![Power Connector - Male](images/electronics/power-connector-male.jpg)          |
 
 ### Steps
 
@@ -199,7 +202,7 @@
 | Part                         | Quantity | Image                                                                                  |
 | ---------------------------- | -------- | -------------------------------------------------------------------------------------- |
 | `Battery - RRC2054-2`        | 1        | ![Battery - RRC2054-2](images/electronics/RRC2054-2.jpg)                               |
-| `Ground Loop Noise Isolator` | 2        | ![Ground Loop Noise Isolator](images/electronics/ground%20loop%20noise%20isolator.jpg) |
+| `Ground Loop Noise Isolator` | 2        | ![Ground Loop Noise Isolator](images/electronics/ground-loop-noise-isolator.jpg)       |
 
 ### Steps
 

@@ -10,11 +10,11 @@
 | `Assembled Slip Ring`        | 1        |                                                                                   |
 | `1/8-Inch Stereo Jack Cable` | 2        |                                                                                   |
 | `16SoundsUSB`                | 1        | ![16SoundsUSB](images/electronics/16SoundsUSB.jpg)                                |
-| `M3x8mm Plastic Screw`       | 4        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm%20plastic.jpg)                     |
+| `M3x8mm Plastic Screw`       | 4        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                       |
 | `16SoundsUSB Cable`          | 16       | ![16SoundsUSB Cable](images/assemblies/04A%20crossover%20RJ12%20flat%20cable.jpg) |
 | `Torso Bottom Assembly`      | 1        |                                                                                   |
-| `M5x10mm Plastic Screw`      | 3        | ![M5x10mm Plastic Screw](images/hardware/M5x10mm%20plastic.jpg)                   |
-| `M3x12mm Plastic Screw`      | 16       | ![M3x12mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                   |
+| `M5x10mm Plastic Screw`      | 3        | ![M5x10mm Plastic Screw](images/hardware/M5x10mm-plastic.jpg)                     |
+| `M3x12mm Plastic Screw`      | 16       | ![M3x12mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                     |
 | `Computer Power Connector`   | 1        | ![Computer Power Connector](images/assemblies/04J%20computer.jpg)                 |
 | `OpenCR Power Connector`     | 1        | ![OpenCR Power Connector](images/assemblies/04J%20opencr.jpg)                     |
 
@@ -67,7 +67,7 @@
 | ---------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `Torso Bottom Assembly`      | 1        |                                                                                   |
 | `Stewart Platform Assembly`  | 1        |                                                                                   |
-| `M3x12mm Plastic Screw`      | 6        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                   |
+| `M3x12mm Plastic Screw`      | 6        | ![M3x12mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                     |
 
 ### Steps
 

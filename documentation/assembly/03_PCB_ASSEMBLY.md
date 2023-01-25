@@ -6,7 +6,7 @@
 
 | Part                   | Quantity | Image                                                                          |
 | ---------------------- | -------- | -------------------------------------------------------------------------------|
-| `Adafruit MAX9744 kit` | 2        | ![Adafruit MAX9744 Kit](images/electronics/Adafruit%20MAX9744.jpg)             |
+| `Adafruit MAX9744 kit` | 2        | ![Adafruit MAX9744 Kit](images/electronics/adafruit-MAX9744.jpg)               |
 
 ### Steps
 
@@ -150,7 +150,7 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 | Part                           | Quantity | Image                                                              |
 | ------------------------------ | -------- | ------------------------------------------------------------------ |
 | `Battery Charger - RRC-PMM240` | 1        | ![Battery Charger - RRC-PMM240](images/electronics/RRC-PMM240.jpg) |
-| `JST B2P-VH Connector`         | 2        | ![JST B2P-VH Connector](images/electronics/JST%20B2P-VH.jpg)       |
+| `JST B2P-VH Connector`         | 2        | ![JST B2P-VH Connector](images/electronics/JST-B2P-VH.jpg)         |
 
 ### Steps
 

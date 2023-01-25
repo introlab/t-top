@@ -6,12 +6,12 @@
 
 | Part                                         | Quantity | Image                                                                      |
 | -------------------------------------------- | -------- | -------------------------------------------------------------------------- |
-| `HDMI Cable (1.5 ft)`                        | 1        | ![HDMI Cable 1.5 ft](images/electronics/HDMI%20cable.jpg)                  |
-| `270-Degree HDMI Adapter`                    | 2        | ![270-Degree HDMI Adapter](images/electronics/HDMI%20adapter.jpg)          |
+| `HDMI Cable (1.5 ft)`                        | 1        | ![HDMI Cable 1.5 ft](images/electronics/HDMI-cable.jpg)                    |
+| `270-Degree HDMI Adapter`                    | 2        | ![270-Degree HDMI Adapter](images/electronics/HDMI-adapter.jpg)            |
 | `Touchscreen`                                | 1        | ![Touchscreen](images/electronics/screen.jpg)                              |
-| `M3x5mm Screw Included with the Touchscreen` | 4        | ![M3x5mm Screw](images/hardware/M3x5mm%20screen.jpg)                       |
-| `Spacer Included with the Touchscreen`       | 4        | ![Spacer](images/hardware/spacer%20screen.jpg)                             |
-| `Intel RealSense D435i`                      | 1        | ![Intel RealSense D435i](images/electronics/Intel%20RealSense%20D435i.jpg) |
+| `M3x5mm Screw Included with the Touchscreen` | 4        | ![M3x5mm Screw](images/hardware/M3x5mm-screen.jpg)                         |
+| `Spacer Included with the Touchscreen`       | 4        | ![Spacer](images/hardware/spacer-screen.jpg)                               |
+| `Intel RealSense D435i`                      | 1        | ![Intel RealSense D435i](images/electronics/intel-realsense-D435i.jpg)     |
 
 ### Steps
 
@@ -34,16 +34,16 @@
 
 | Part                                                  | Quantity | Image                                                                              |
 | ----------------------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
-| `Head`                                                | 1        | ![Head](images/3d%20printed%20parts/head.jpg)                                      |
-| `Head Cable Protector`                                | 1        | ![Head Cable Protector](images/3d%20printed%20parts/head%20cable%20protector.jpg)  |
+| `Head`                                                | 1        | ![Head](images/3d-printed-parts/head.jpg)                                          |
+| `Head Cable Protector`                                | 1        | ![Head Cable Protector](images/3d-printed-parts/head%20cable%20protector.jpg)      |
 | `Assembled Touchscreen`                               | 1        | ![Touchscreen](images/assemblies/10A%20screen%202.jpg)                             |
 | `Intel RealSense D435i`                               | 1        | ![Intel RealSense D435i](images/assemblies/10A%20Intel%20RealSense%20D435i.jpg)    |
 | `HDMI Cable (1.5 ft)`                                 | 1        | ![HDMI Cable](images/assemblies/10A%20HDMI.jpg)                                    |
-| `Micro-USB Cable - Right Angle`                       | 1        | ![Micro-USB Cable - Right Angle](images/electronics/Micro-USB%20right%20angle.jpg) |
-| `USB-C Cable Included with the Intel RealSense D435i` | 1        | ![USB-C Cable](images/electronics/USB-C.jpg)                                       |
-| `90-Degree USB-C Adapter`                             | 1        | ![90-Degree USB-C Adapter](images/electronics/USB-C%20adapter.jpg)                 |
-| `M3x12 Plastic Screw`                                 | 6        | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                      |
-| `M3x10mm Socket Screw`                                | 6        | ![M3x10mm Socket Screw](images/hardware/M3x10mm%20socket.jpg)                      |
+| `Micro-USB Cable - Right Angle`                       | 1        | ![Micro-USB Cable - Right Angle](images/electronics/micro-usb-right-angle.jpg)     |
+| `USB-C Cable Included with the Intel RealSense D435i` | 1        | ![USB-C Cable](images/electronics/usb-c.jpg)                                       |
+| `90-Degree USB-C Adapter`                             | 1        | ![90-Degree USB-C Adapter](images/electronics/usb-c-adapter.jpg)                   |
+| `M3x12 Plastic Screw`                                 | 6        | ![M3x12 Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                        |
+| `M3x10mm Socket Screw`                                | 6        | ![M3x10mm Socket Screw](images/hardware/M3x10mm-socket.jpg)                        |
 
 ### Steps
 

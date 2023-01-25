@@ -5,6 +5,7 @@
 - Screwdrivers
 - Pliers
 - Epoxy Glue
+- Super Glue
 - Tie Wraps
 - Soldering Iron
 - Solder

@@ -7,7 +7,7 @@
 | Part                    | Quantity | Image                                                               |
 | ----------------------- | -------- | --------------------------------------------------------------------|
 | `RJ12 Connector`        | 32       | ![RJ12 Connector](images/electronics/RJ12.jpg)                      |
-| `RJ12 Flat Cable Spool` | 1        | ![`RJ12 Flat Cable](images/electronics/RJ12%20flat%20cable.jpg)     |
+| `RJ12 Flat Cable Spool` | 1        | ![`RJ12 Flat Cable](images/electronics/RJ12-flat-cable.jpg)         |
 
 ### Steps
 
@@ -19,20 +19,22 @@
 ## B. LEDs
 
 ### Required Parts
-> TODO PHOTOS
-> 
+
 | Part                                 | Quantity | Image                                                                                        |
 |--------------------------------------| -------- |----------------------------------------------------------------------------------------------|
-| `White LED`                          | 2        | ![White LED](images/electronics/LED%20white.jpg)                                             |
-| `RGB LED`                            | 1        | ![Red LED](images/electronics/LED%20rgb.jpg)                                                 |
-| `2-Position Female JST PH Connector` | 6        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
-| `JST PH Crimp Contact`               | 12       | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `22 AWG Red Wire Spool`              | 1        | ![22 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
-| `Heat Shrink Tube`                   | 6        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| `White LED`                          | 2        | ![White LED](images/electronics/LED-white.jpg)                                               |
+| `LED Strip 30 per m`                 | 1        | ![LED Strip 30 per m](images/electronics/LED-strip-30-per-m.jpg)                             |
+| `LED Strip 144 per m`                | 1        | ![LED Strip 144 per m](images/electronics/LED-strip-144-per-m.jpg)                           |
+| `3 Position Female JST XH Cable`     | 3        | ![3 Position Female JST XH Cable](images/electronics/3-position-female-JST-XH-cable.jpg)     |
+| `3 Position Male JST XH Cable`       | 2        | ![3 Position Male JST XH Cable](images/electronics/3-position-male-JST-XH-cable.jpg)         |
+| `2-Position Female JST PH Connector` | 6        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `JST PH Crimp Contact`               | 12       | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
+| `22 AWG Red Wire Spool`              | 1        | ![22 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
+| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Red Cable Spool](images/electronics/black-wire.jpg)                                 |
+| `Heat Shrink Tube`                   | 6        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
 ### Steps
-> PHOTOS
+> TODO Update Steps and update PHOTOS
 
 1. Cut 2 `22 AWG red wire` of 10 cm long.
 2. Cut 2 `22 AWG black wire` of 10 cm long.
@@ -66,14 +68,12 @@
 
 ### Required Parts
 
->TODO PHOTOS
-
 | Part                                  | Quantity | Image                                                                                        |
 |---------------------------------------| -------- | -------------------------------------------------------------------------------------------- |
 | `Fan`                                 | 2        | ![Fan](images/electronics/fan.jpg)                                                           |
-| `2-Position Female JST 2PH Connector` | 2        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
-| `JST PH Crimp`                        | 4        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `Heat Shrink Tube`                    | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| `2-Position Female JST PH Connector`  | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `JST PH Crimp Contact`                | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
+| `Heat Shrink Tube`                    | 2        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
 ### Steps
 
@@ -92,25 +92,28 @@
 
 ![Fan Heat Shrink Tube](images/assemblies/04C%20fan%20heat%20shrink%20tube.jpg)
 
-7. For each fan, crimp a `JST XH crimp contact` onto the red and black wires.
+7. For each fan, crimp a `JST PH crimp contact` onto the red and black wires.
 
+**TODO CHANGE IMAGE**
 ![Fan Crimp](images/assemblies/04C%20fan%20crimp.jpg)
 
-8. For each fan, insert the crimp contacts into a `2-position female JST XH connector`, as shown in the following
+8. For each fan, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
    picture.
 
+**TODO CHANGE IMAGE**
 ![Fan Crimp](images/assemblies/04C%20fan%20JST%20XH.jpg)
 
 ## D. Speakers
 
 ### Required Parts
+> Crimp instead of solder
 
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `Speaker (Dayton Audio DMA45-8 1)`   | 4        | ![Fan](images/electronics/Dayton%20Audio%20DMA45-8%201.jpg)                                  |
-| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
-| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20%20AWG%20ferrule.jpg)                                 |
+| `Speaker (Dayton Audio DMA45-8 1)`   | 4        | ![Fan](images/electronics/dayton-audio-DMA45-8-1.jpg)                                        |
+| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
+| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black-wire.jpg)                                 |
+| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20-AWG-ferrule.jpg)                                     |
 
 ### Steps
 
@@ -142,16 +145,15 @@
 ## E. Power Switch
 
 ### Required Parts
->TODO CHANGE IMAGES
 
 | Part                                  | Quantity | Image                                                                                        |
 |---------------------------------------|----------|----------------------------------------------------------------------------------------------|
-| `Power Switch`                        | 1        | ![Power Switch](images/electronics/power%20switch.jpg)                                       |
-| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg)                             |
-| `22 AWG Brown Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/brown%20wire.jpg)                             |
-| `2-Position Female JST 4PH Connector` | 1        | ![2-Position Female JST XH Connector](images/electronics/2-position%20female%20JST%20XH.jpg) |
-| `JST 4PH Crimp Contact`               | 2        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `Heat Shrink Tube`                    | 4        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| `Power Switch`                        | 1        | ![Power Switch](images/electronics/power-switch.jpg)                                         |
+| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                               |
+| `22 AWG Brown Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/brown-wire.jpg)                               |
+| `4-Position Female JST PH Connector`  | 1        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `JST PH Crimp Contact`                | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
+| `Heat Shrink Tube`                    | 4        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
 ### Steps
 
@@ -180,13 +182,14 @@
 
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `Limit Switch`                       | 1        | ![Power Switch](images/electronics/limit%20switch.jpg)                                       |
-| `22 AWG White Wire Spool`            | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg)                             |
-| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
-| `Grove Cable`                        | 1        | ![Grove Cable](images/electronics/grove%20cable.jpg)                                         |
-| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| `Limit Switch`                       | 1        | ![Power Switch](images/electronics/limit-switch.jpg)                                         |
+| `22 AWG White Wire Spool`            | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                               |
+| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
+| `2-Position Female JST PH Connector` | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `JST PH Crimp Contact`               | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 
 ### Steps
+> TODO Update steps
 
 1. Cut the `grove cable` in half.
 2. Keep one half.
@@ -219,16 +222,16 @@
 
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `Adafruit MAX9744`                   | 2        | ![Adafruit MAX9744](images/electronics/Adafruit%20MAX9744.jpg)                               |
-| `22 AWG Brown Wire Spool`            | 1        | ![22 AWG Brown Cable Spool](images/electronics/brown%20wire.jpg)                             |
-| `22 AWG Green Wire Spool`            | 1        | ![22 AWG Green Cable Spool](images/electronics/green%20wire.jpg)                             |
-| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
-| `3-Position Female JST XH Connector` | 2        | ![3-Position Female JST XH Connector](images/electronics/3-position%20female%20JST%20XH.jpg) |
-| `JST XH Crimp Contact`               | 6        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black%20wire.jpg)                               |
-| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20%20AWG%20ferrule.jpg)                                 |
-| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| `Adafruit MAX9744`                   | 2        | ![Adafruit MAX9744](images/electronics/adafruit-MAX9744.jpg)                                 |
+| `22 AWG Brown Wire Spool`            | 1        | ![22 AWG Brown Cable Spool](images/electronics/brown-wire.jpg)                               |
+| `22 AWG Green Wire Spool`            | 1        | ![22 AWG Green Cable Spool](images/electronics/green-wire.jpg)                               |
+| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
+| `3-Position Female JST PH Connector` | 2        | ![3-Position Female JST PH Connector](images/electronics/3-position-female-JST-PH.jpg)       |
+| `JST PH Crimp Contact`               | 6        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
+| `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
+| `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black-wire.jpg)                                 |
+| `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20-AWG-ferrule.jpg)                                     |
+| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
 ### Steps
 
@@ -249,13 +252,15 @@
 
 ![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04G%20heat%20shrink%20tube.jpg)
 
-9. For each `Adafruit MAX9744`, crimp a `JST XH crimp contact` onto each wire.
+9. For each `Adafruit MAX9744`, crimp a `JST PH crimp contact` onto each wire.
 
+**TODO CHANGE IMAGE**
 ![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20crimp.jpg)
 
-10. For each `Adafruit MAX9744`, insert the crimp contacts into a `3-position female JST XH connector`, as shown in the
+10. For each `Adafruit MAX9744`, insert the crimp contacts into a `3-position female JST PH connector`, as shown in the
     following picture.
 
+**TODO CHANGE IMAGE**
 ![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20JST%20XH.jpg)
 
 11. Cut 2 `20 AWG red wires` of 25 cm long.
@@ -270,7 +275,7 @@
 
 | Part                           | Quantity | Image                                                                                    |
 | ------------------------------ | -------- | ---------------------------------------------------------------------------------------- |
-| `Robot Power Connector - Male` | 1        | ![Robot Power Connector - Male](images/electronics/Robot%20Power%20Connector%20Male.jpg) |
+| `Robot Power Connector - Male` | 1        | ![Robot Power Connector - Male](images/electronics/robot-power-connector-male.jpg)       |
 | `19V Power Adapter`            | 1        |                                                                                          |
 
 ### Steps
@@ -286,16 +291,16 @@
 
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `Robot Power Connector - Female`     | 1        | ![Robot Power Connector - Female](images/electronics/Robot%20Power%20Connector%20Female.jpg) |
-| `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
-| `16 AWG Ferrule`                     | 4        | ![16 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
-| `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST%20VHR-2N.jpg)                                 |
-| `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST%20SVH-21T-1.1.jpg)                   |
-| `JST PHR-6 Cable`                    | 1        | ![JST PHR-6 Cable](images/electronics/JST%20PHR-6%20Cable.jpg)                               |
-| `6-Position Female JST XH Connector` | 1        | ![6-Position Female JST XH Connector](images/electronics/6-position%20female%20JST%20XH.jpg) |
-| `JST XH Crimp Contact`               | 5        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                             |
-| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                      |
+| `Robot Power Connector - Female`     | 1        | ![Robot Power Connector - Female](images/electronics/robot-power-connector-female.jpg)       |
+| `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
+| `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
+| `16 AWG Ferrule`                     | 4        | ![16 AWG Ferrule](images/electronics/16-AWG-ferrule.jpg)                                     |
+| `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST-VHR-2N.jpg)                                   |
+| `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST-SVH-21T-1.1.jpg)                     |
+| `JST PHR-6 Cable`                    | 1        | ![JST PHR-6 Cable](images/electronics/JST-PHR-6-Cable.jpg)                                   |
+| `5-Position Female JST PH Connector` | 1        | ![5-Position Female JST PH Connector](images/electronics/6-position-female-JST-PH.jpg) **TODO CHANGE IMAGE** |
+| `JST PH Crimp Contact`               | 5        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
+| `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
 ### Steps
 
@@ -336,12 +341,14 @@
 ![JST PHR-6 Cable](images/assemblies/04I%20JST%20PHR-6%20Cable.jpg)
 
 13. Cut the `JST PHR-6 cable` wires to 11 cm.
-14. For each wire of the `JST PHR-6 cable`, crimp a `JST XH crimp contact`.
+14. For each wire of the `JST PHR-6 cable`, crimp a `JST PH crimp contact`.
 
+**TODO CHANGE IMAGE**
 ![JST PHR-6 Cable Crimp](images/assemblies/04I%20JST%20PHR-6%20Cable%20Crimp.jpg)
 
-15. Insert the wires into a `6-Position female JST XH connector`, as shown in the following pictures.
+15. Insert the wires into a `5-Position female JST XH connector`, as shown in the following pictures.
 
+**TODO CHANGE IMAGE**
 ![JST PHR-6 Connector 1](images/assemblies/04I%20JST%20PHR-6%20Connector%201.jpg)
 ![JST PHR-6 Connector 2](images/assemblies/04I%20JST%20PHR-6%20Connector%202.jpg)
 
@@ -351,12 +358,12 @@
 
 | Part                              | Quantity | Image                                                                                          |
 | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| `Computer Power Connector`        | 1        | ![Computer Power Connector - Male](images/electronics/Computer%20Power%20Connector%20Male.jpg) |
-| `T-Connector`                     | 1        | ![T-Connector](images/electronics/T-Connector.jpg)                                             |
-| `Male Power Connector`            | 2        | ![Power Connector - Male](images/electronics/Power%20Connector%20Male.jpg)                     |
-| `Female Power Connector`          | 2        | ![Power Connector - Female](images/electronics/Power%20Connector%20Female.jpg)                 |
-| `Heat Shrink Tube`                | 4        | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                        |
-| `18 AWG Ferrule`                  | 4        | ![18 AWG Ferrule](images/electronics/18%20AWG%20ferrule.jpg)                                   |
+| `Computer Power Connector`        | 1        | ![Computer Power Connector - Male](images/electronics/computer-power-connector-male.jpg)       |
+| `T-Connector`                     | 1        | ![T-Connector](images/electronics/t-connector.jpg)                                             |
+| `Male Power Connector`            | 2        | ![Power Connector - Male](images/electronics/power-connector-male.jpg)                         |
+| `Female Power Connector`          | 2        | ![Power Connector - Female](images/electronics/power-connector-female.jpg)                     |
+| `Heat Shrink Tube`                | 4        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                              |
+| `18 AWG Ferrule`                  | 4        | ![18 AWG Ferrule](images/electronics/18-AWG-ferrule.jpg)                                       |
 
 ### Steps
 
@@ -384,16 +391,15 @@
 
 | Part                                     | Quantity | Image                                                                                          |
 | ---------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| `Slip Ring - M220-24 36wire 2A flange A` | 1        | ![Slip ring](images/electronics/slip%20ring.jpg)                                               |
-| `Male Power Connector`                   | 2        | ![Power Connector - Male](images/electronics/Power%20Connector%20Male.jpg)                     |
-| `Female Power Connector`                 | 2        | ![Power Connector - Female](images/electronics/Power%20Connector%20Female.jpg)                 |
-| `4-Position Female JST XH Connector`     | 1        | ![4-Position Female JST XH Connector](images/electronics/4-position%20female%20JST%20XH.jpg)   |
-| `JST XH Crimp Contact`                   | 4        | ![JST XH Crimp Contact](images/electronics/JST%20XH%20crimp.jpg)                               |
-| `Grove Cable`                            | 1        | ![Grove Cable](images/electronics/grove%20cable.jpg)                                           |
-| `Mini-USB Cable`                         | 1        | ![Mini-USB Cable](images/electronics/Mini-USB%20cable.jpg)                                     |
-| `Ethernet Cable`                         | 1        | ![Ethernet Cable](images/electronics/Ethernet%20cable.jpg)                                     |
-| `Big Heat Shrink Tube`                   | 14       | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20blue.jpg)                        |
-| `Small Heat Shrink Tube`                 | 24       | ![Heat Shrink Tube](images/electronics/heat%20skrink%20tube%20yellow.jpg)                      |
+| `Slip Ring - M220-24 36wire 2A flange A` | 1        | ![Slip ring](images/electronics/slip-ring.jpg)                                                 |
+| `Male Power Connector`                   | 2        | ![Power Connector - Male](images/electronics/power-connector-male.jpg)                         |
+| `Female Power Connector`                 | 2        | ![Power Connector - Female](images/electronics/power-connector-female.jpg)                     |
+| `3-Position Female JST PH Connector`     | 2        | ![3-Position Female JST PH Connector](images/electronics/3-position-female-JST-PH.jpg)         |
+| `JST PH Crimp Contact`                   | 6        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                   |
+| `Mini-USB Cable`                         | 1        | ![Mini-USB Cable](images/electronics/mini-usb-cable.jpg)                                       |
+| `Ethernet Cable`                         | 1        | ![Ethernet Cable](images/electronics/ethernet-cable.jpg)                                       |
+| `Big Heat Shrink Tube`                   | 14       | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                              |
+| `Small Heat Shrink Tube`                 | 24       | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-yellow.jpg)                            |
 
 ### Steps
 
@@ -419,13 +425,16 @@
 11. Crimp `JST XH crimp contacts` onto 4 wires of the bottom side of the `slip ring`.
 12. Insert a `small heat shrink tube` onto each matching wire of the top side of the `slip ring`.
 13. Insert a `big heat shrink tube` onto each the matching wires of the top side of the `slip ring`.
+
+**TODO Update 14 15 16 17 18 19**
+
 14. Cut the `grove cable` in half.
 15. Keep one half.
 16. Solder each wire of the `grove cable` to a matching wire of the top side of the `slip ring`.
 17. Install the `small heat shrink tubes`.
 18. Install the `big heat shrink tube`.
-19. Insert the crimp contacts into a `4-position female JST XH connector`, as shown in the following pictures and table.
-
+19. Insert the crimp contacts into a `3-position female JST XH connector`, as shown in the following pictures and table.
+**TODO Update**
 | `JST XH Connector` | `Grove Cable` |
 | ------------------ | ------------- |
 | Red                | Red           |
@@ -477,9 +486,9 @@
 
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
-| `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red%20wire.jpg)                                 |
-| `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black%20wire.jpg)                             |
-| `16 AWG Ferrule`                     | 8        | ![16 AWG Ferrule](images/electronics/16%20AWG%20ferrule.jpg)                                 |
+| `16 AWG Red Wire Spool`              | 1        | ![16 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
+| `16 AWG Black Wire Spool`            | 1        | ![16 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
+| `16 AWG Ferrule`                     | 8        | ![16 AWG Ferrule](images/electronics/16-AWG-ferrule.jpg)                                     |
 
 ### Steps
 
@@ -492,41 +501,57 @@
 ## M. Light Sensor
 
 ### Required Parts
->TODO PHOTOS
-> 
-| Part                      | Quantity | Image                                                            |
-|---------------------------|----------|------------------------------------------------------------------|
-| `22 AWG Red Wire Spool`   | 1        | ![22 Red Cable Spool](images/electronics/red%20wire.jpg)         |
-| `22 AWG Black Wire Spool` | 1        | ![22 AWG Black Cable Spool](images/electronics/black%20wire.jpg) |
-| `22 AWG White Wire Spool` | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg) |
-| `JST PH Connectors`       | 4        | ![4 JST PH Connectors](images/electronics/16%20AWG%20jstph.jpg)  | 
+| Part                                  | Quantity | Image                                                                                        |
+|---------------------------------------|----------|----------------------------------------------------------------------------------------------|
+| `Light Sensor`                        | 4        | ![Push Button](images/electronics/light-sensor.jpg)                                          |
+| `22 AWG Red Wire Spool`               | 1        | ![22 Red Cable Spool](images/electronics/red-wire.jpg)                                       |
+| `22 AWG Black Wire Spool`             | 1        | ![22 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
+| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                               |
+| `3-Position Female JST PH Connector`  | 4        | ![3-Position Female JST PH Connector](images/electronics/3-position-female-JST-PH.jpg)       |
+| `JST PH Crimp Contact`                | 12       | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 
 ### Steps
-1. Cut 3 `22 AWG Red/Black/White Wire` of 29 cm long for first sensor.
-2. Cut 3 `22 AWG Red/Black/White Wire` of 41 cm long for second sensor.
-3. Cut 3 `22 AWG Red/Black/White Wire` of 30 cm long for third sensor.
-4. Cut 3 `22 AWG Red/Black/White Wire` of 54 cm long for fourth sensor.
-5. Solder the 3 wires of the same dimensions (x4) on each of the light sensor.
-6. Install JST PH crimps on the other end of each cable
-7. Install JST PH connector
+1. Cut a `22 AWG red wire` of 29 cm long.
+2. Cut a `22 AWG black wire` of 29 cm long.
+3. Cut a `22 AWG white wire` of 29 cm long.
+4. Cut a `22 AWG red wire` of 30 cm long.
+5. Cut a `22 AWG black wire` of 30 cm long.
+6. Cut a `22 AWG white wire` of 30 cm long.
+7. Cut a `22 AWG red wire` of 41 cm long.
+8. Cut a `22 AWG black wire` of 41 cm long.
+9. Cut a `22 AWG white wire` of 41 cm long.
+10. Cut a `22 AWG red wire` of 54 cm long.
+11. Cut a `22 AWG black wire` of 54 cm long.
+12. Cut a `22 AWG white wire` of 54 cm long.
+13. Solder the 3 wires of the same dimensions (x4) on each of the `light sensor`.
+14. For each `light sensor`, crimp a `JST PH crimp contact` onto each wire.
+15. For each `light sensor`, insert the crimp contacts into a `3-position female JST PH connector`, as shown in the following
+   picture.
 
 ![LightSensors](images/assemblies/light_sensor_jst_cable.jpg)
 
 ## N. Push Buttons
 
 ### Required Parts
->TODO PHOTOS
-
-| Part                      | Quantity | Image                                                            |
-|---------------------------|----------|------------------------------------------------------------------|
-| `22 AWG White Wire Spool` | 1        | ![22 AWG White Cable Spool](images/electronics/white%20wire.jpg) |
-| `JST 2PH Connectors`      | 4        | ![4 JST PH Connectors](images/electronics/16%20AWG%20jstph.jpg)  | 
+| Part                                  | Quantity | Image                                                                     |
+|---------------------------------------|----------|---------------------------------------------------------------------------|
+| `Push Button`                         | 4        | ![Push Button](images/electronics/push-button.jpg)                        |
+| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)            |
+| `Heat Shrink Tube`                    | 8        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-yellow.jpg)       |
+| `2-Position Female JST PH Connector`  | 4        | ![2-Position Female JST PH Connector](images/electronics/16-AWG-jstph.jpg) **TODO CHANGE IMAGE**  |
+| `JST PH Crimp Contact`                | 12       | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)              |
 
 ### Steps
-1. Cut 8 `22 AWG White Wire` of 9 cm long for first sensor.
-2. Solder the 2 wires of the same dimensions (x4) on each of the push button.
-3. Install JST 2PH crimps on the other end of each cable
-4. Install JST 2PH connectors
+1. Cut 8 `22 AWG white wire` of 9 cm long.
+2. For each `push button`, solder 2 wires.
+3. Insert a `heat shrink tube` onto each wire.
+4. Install the `heat shrink tubes`, as shown in the following picture.
+
+**TODO IMAGE**
+
+5. For each `push button`, crimp a `JST PH crimp contact` onto each wire.
+6. For each `push button`, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
+   picture.
 
 >TODO PHOTOS
 ![PushButtons](images/assemblies/push_button_jst_cable.jpg)
