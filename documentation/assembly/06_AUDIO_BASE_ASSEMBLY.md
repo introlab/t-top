@@ -12,15 +12,18 @@
 | `Base Audio Back Right`                    | 1        | ![Base Audio Back Right](images/3d-printed-parts/base-audio-back-right.jpg)                                        |
 | `Dowel Pin`                                | 2        | ![Dowel Pin](images/hardware/dewel-pin.jpg)                                                                        |
 | `Magnet`                                   | 16       | ![Magnet](images/hardware/magnet.jpg)                                                                              |
-| `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled-speaker.jpg)                                                   |
-| `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled-fan.jpg)                                                           |
-| `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro-usb-connector.jpg)                                             |
-| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled-power-switch.jpg)                                       |
-| `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet-connector.jpg)                                                 |
-| `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled-robot-power-connector-female.jpg) |
-| `Assembled LED`                            | 6        | ![Assembled LED](images/electronics/assembled-LEDs.jpg)                                                          |
-| `M3x8mm Plastic Screw`                     | 22       | ![M3x8mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                                     |
-| `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan-screw.jpg)                                                                      |
+| `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled-speaker.jpg)                                                     |
+| `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled-fan.jpg)                                                             |
+| `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro-usb-connector.jpg)                                                 |
+| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled-power-switch.jpg)                                           |
+| `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet-connector.jpg)                                                   |
+| `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled-robot-power-connector-female.jpg)         |
+| `Assembled LED`                            | 6        | ![Assembled LED](images/electronics/assembled-LEDs.jpg)                                                            |
+| `M3x8mm Plastic Screw`                     | 22       | ![M3x8mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                                       |
+| `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan-screw.jpg)                                                                        |
+| `Push button assembly`                     | 4        | ![Push button](images/hardware/push_button.jpg)                                                                    |
+| `Light sensor assembly`                    | 4        | ![Light sensor](images/hardware/light_sensor.jpg)                                                                  |
+| `M2x5mm Plastic Screw`                     | 4        | ![M2x5mm Plastic Screw](images/hardware/M2x5mm-plastic.jpg)                                                        |
 
 ### Steps
 1. Install four `magnets` with super glue into the dedicated holes on each of the `base audio front left`, `base audio front right`, `base audio back left`, `base audio back right` parts, as shown in the following pictures.
@@ -65,17 +68,16 @@
 
 ![Base Audio Power Switch](images/assemblies/06A%20power%20switch.jpg)
 
-7. Install the `Ethernet connector` as shown in the following picture.
-
-![Base Audio Ethernet](images/assemblies/06A%20ethernet%20connector.jpg)
-
-8. Install the `assembled robot power connector` with epoxy glue, as shown in the following picture.
+7. Install the `assembled robot power connector` with epoxy glue, as shown in the following picture.
 
 ![Base Audio Power Connector](images/assemblies/06A%20power%20connector.jpg)
 
-9. Install the `assembled LEDs` with epoxy glue, as shown in the following picture.
+8. Install the `push buttons` as shown in the following picture.
+> TODO Photo push buttons
 
-![Base Audio LEDs](images/assemblies/06A%20LEDs.jpg)
+9. Install the `light sensors` `with M2x5 plastic screws` as shown in the following picture.
+> TODO photo light sensors
+
 
 ## B. Audio Base Assembly
 
@@ -85,8 +87,7 @@
 | ------------------------------------------ | -------- | ------------------------------------------------------------------------------- |
 | `Audio Base Pre-Assembly`                  | 1        |                                                                                 |
 | `Base Disk Pre-Assembly`                   | 1        |                                                                                 |
-| `M3x5mm Plastic Screw`                     | 4        | ![M3x5mm Plastic Screw](images/hardware/M3x5mm-plastic.jpg)                     |
-| `M3x8mm Plastic Screw`                     | 8        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                     |
+| `M3x8mm Plastic Screw`                     | 12       | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                     |
 | `25-cm-Long 20 AWG Adafruit MAX9744 Wires` | 4        | ![25-cm-Long 20 AWG Adafruit MAX9744 Wires](images/assemblies/04G%20power%20wires.jpg)              |
 | `Adafruit MAX9744`                         | 1        | ![Adafruit MAX9744](images/assemblies/04G%20heat%20shrink%20tube.jpg)           |
 | `M2 Nuts`                                  | 4        | ![M3 Nuts](images/hardware/M2-nut.jpg)                                          |
@@ -100,24 +101,48 @@
 
 ### Steps
 
-1. Install the `base disk pre-assembly` onto the `audio base pre-assembly` with `M3x5mm plastic screws` (orange circles)
-   and `M3x8mm plastic screws` (red circles), as shown in the following picture.
+1. Install the `base disk pre-assembly` onto the `audio base pre-assembly` with `M3x8mm plastic screws` (red circles), as shown in the following picture.
 
+> TODO CHANGE IMAGE
 ![Base Disk](images/assemblies/06B%20base%20disk.jpg)
 
-2. Connect the `LEDs` as shown in the following picture.
+9. Install the `assembled white LEDs` with epoxy glue, as shown in the following picture.
+> TODO CHANGE PHOTO
+![Base Audio LEDs](images/assemblies/06A%20LEDs.jpg)
 
+
+
+2. Glue white the `LEDs` as shown in the following picture.
+> TODO PHOTO white leds
 ![LEsD](images/assemblies/06B%20leds.jpg)
+
+
+10. Install the  `RGB strips` and use the underneath adhesive to stick with the base as shown in the following picture:
+
+> TODO PHOTO LED RGB
+>
+
+7. Install the `Ethernet connector` as shown in the following picture.
+> TODO PHOTO ethernet connector
+![Base Audio Ethernet](images/assemblies/06A%20ethernet%20connector.jpg)
+
 
 3. Connect the `fans` as shown in the following picture.
 
 ![Fans](images/assemblies/06B%20fans.jpg)
 
-4. Connect the `power switch` as shown in the following picture.
+4. Connect the bush buttons as show in the following picture. Make sure each button is connected to the right place.
+![Fans](images/assemblies/push_buttons.jpg)
 
+5. Connect the `power switch` as shown in the following picture.
+> TODO PHOTO
 ![Power Switch](images/assemblies/06B%20power%20switch.jpg)
 
-5. Connect the `assembled robot power connector` as shown in the following picture.
+6. Connect the `light sensors`as shown in the following picture. Make sure you connect the front, left, back, right sensor at the right place.
+> TODO PHOTO
+![Light sensors](images/assemblies/light_sensorsjpg)
+
+1. Connect the `assembled robot power connector` as shown in the following picture.
 
 ![Power Connector](images/assemblies/06B%20power%20connector.jpg)
 
