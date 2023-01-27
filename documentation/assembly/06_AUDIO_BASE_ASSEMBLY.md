@@ -110,8 +110,6 @@
 > TODO CHANGE PHOTO
 ![Base Audio LEDs](images/assemblies/06A%20LEDs.jpg)
 
-
-
 2. Glue white the `LEDs` as shown in the following picture.
 > TODO PHOTO white leds
 ![LEsD](images/assemblies/06B%20leds.jpg)
@@ -121,6 +119,9 @@
 
 > TODO PHOTO LED RGB
 >
+
+
+
 
 7. Install the `Ethernet connector` as shown in the following picture.
 > TODO PHOTO ethernet connector
