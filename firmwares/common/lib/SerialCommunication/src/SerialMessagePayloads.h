@@ -206,9 +206,9 @@ struct SetLedColorsPayload
 {
     static constexpr bool DEFAULT_ACKNOWLEDGMENT_NEEDED = true;
     static constexpr MessageType MESSAGE_TYPE = MessageType::SET_LED_COLORS;
-    static constexpr uint8_t PAYLOAD_SIZE = 93;
+    static constexpr uint8_t PAYLOAD_SIZE = 84;
 
-    static constexpr size_t LED_COUNT = 31;
+    static constexpr size_t LED_COUNT = 28;
     Color colors[LED_COUNT];
 
     template<class Buffer>

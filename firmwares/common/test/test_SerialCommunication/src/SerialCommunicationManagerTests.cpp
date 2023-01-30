@@ -571,7 +571,7 @@ TEST_F(SerialCommunicationManagerTests, read_setLedColors_shouldCallTheSpecificC
         0xAA,
         0xAA,
         0xAA,  // Preamble
-        0x66,
+        0x5D,
         static_cast<uint8_t>(Device::COMPUTER),
         static_cast<uint8_t>(Device::PSU_CONTROL),  // Header
         0x00,
@@ -664,16 +664,7 @@ TEST_F(SerialCommunicationManagerTests, read_setLedColors_shouldCallTheSpecificC
         28,
         29,
         30,
-        29,
-        30,
-        31,
-        30,
-        31,
-        32,
-        31,
-        32,
-        33,
-        0x86  // CRC8
+        0x8C  // CRC8
     };
 
     serialPortMock.writeRxData(DATA, sizeof(DATA));

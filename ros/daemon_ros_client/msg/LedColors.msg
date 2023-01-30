@@ -1,1 +1,1 @@
-daemon_ros_client/LedColor[31] colors
+daemon_ros_client/LedColor[28] colors
