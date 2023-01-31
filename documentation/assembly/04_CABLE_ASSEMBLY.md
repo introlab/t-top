@@ -1,5 +1,5 @@
 # 4. Cable Assembly
-> DL Jan 24 2023 - UPDATE with new design
+
 ## A. 16SoundsUSB Cables
 
 ### Required Parts
@@ -11,10 +11,10 @@
 
 ### Steps
 
-1. Cut 16 `RJ12 flat cables` of 6 cm long.
+1. Cut 16 `RJ12 flat cables` of 10 cm long.
 2. For each cable, crimp 2 `RJ12 connectors` to create a crossover cable.
 
-![Crossover RJ12 Flat Cable](images/assemblies/04A%20crossover%20RJ12%20flat%20cable.jpg)
+![Crossover RJ12 Flat Cable](images/assemblies/04/crossover-RJ12-flat-cable.jpg)
 
 ## B.1 LEDs
 
@@ -23,14 +23,13 @@
 | Part                                 | Quantity | Image                                                                                        |
 |--------------------------------------| -------- |----------------------------------------------------------------------------------------------|
 | `White LED`                          | 2        | ![White LED](images/electronics/LED-white.jpg)                                               |
-| `2-Position Female JST PH Connector` | 6        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `2-Position Female JST PH Connector` | 6        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`               | 12       | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 | `22 AWG Red Wire Spool`              | 1        | ![22 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
 | `22 AWG Black Wire Spool`            | 1        | ![22 AWG Red Cable Spool](images/electronics/black-wire.jpg)                                 |
 | `Heat Shrink Tube`                   | 6        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
 ### Steps
-> TODO Update Steps and update PHOTOS
 
 1. Cut 2 `22 AWG red wire` of 10 cm long.
 2. Cut 2 `22 AWG black wire` of 10 cm long.
@@ -38,24 +37,24 @@
 4. For each LED, solder a `22 AWG black wire` to the base of the other LED pin.
 5. Cut each LED pin at the base.
 
-![Soldered LEDs](images/assemblies/04B%20soldered%20LEDs.jpg)
+![Soldered LEDs](images/assemblies/04/soldered-LEDs.jpg)
 
 6. Crimp a `JST PH crimp contact` onto each wire.
 
-![LED Crimp Contacts](images/assemblies/04B%20LED%20crimp%20tins.jpg)
+![LED Crimp Contacts](images/assemblies/04/LED-crimp-tins.jpg)
 
 7. For each white LED, twist the wires.
 
-![LED Twisted Wire](images/assemblies/04B%20LED%20twisted%20wire.jpg)
+![LED Twisted Wire](images/assemblies/04/LED-twisted-wire.jpg)
 
 8. Add a `heat shrink tube` onto the pins of each LED.
 
-![LED Heat Shrink Tube](images/assemblies/04B%20LED%20heat%20shrink%20tube.jpg)
+![LED Heat Shrink Tube](images/assemblies/04/LED-heat-shrink-tube.jpg)
 
 9. For each LED, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
    picture.
 
-![LED JST XH](images/assemblies/04B%20LED%20JST%20XH.jpg)
+![LED JST XH](images/assemblies/04/LED-JST-PH.jpg)
 
 
 ## B.2 RGB LEDS
@@ -74,22 +73,22 @@
 1. Cut 2 stripes of 5 leds each using `LED Strip 144 per m`
 2. Cut 1 stripe of 28 leds using `LED Strip 30 per m`
 3. Cut 1 17cm `3 Position Female JST XH Cable`
-4. Cut 1 6cm `3 Position Female JST XH Cable` 
+4. Cut 1 6cm `3 Position Female JST XH Cable`
 5. Cut 1 3cm `3 Position Female JST XH Cable`
 6. Cut 1 6cm `3 Position Male JST XH Cable`
 7. Cut 1 3cm `3 Position Male JST XH Cable`
 
 8. Solder first 5 leds stripe with 17cm `3 Position Female JST XH Cable` and 6cm `3 Position Male JST XH Cable` as shown in the following picture.
-   
-![LED STRIPE LONG 5leds](images/assemblies/led_stripe_long_5.jpg)
+
+![LED Strip Long - 5 LEDs](images/assemblies/04/led-strip-long-5.jpg)
 
 9. Solder second 5 leds stripe with 6cm `3 Position Female JST XH Cable` and 3cm `3 Position Male JST XH Cable` as shown in the following picture.
-   
-![LED STRIPE SHORT 5leds](images/assemblies/led_stripe_short_5.jpg)
+
+![LED Strip Short - 5 LEDs](images/assemblies/04/led-strip-short-5.jpg)
 
 10. Solder long 28 leds stripe `LED Strip 30 per m` with 3cn `3 Position Female JST XH Cable` as shown in the following picture.
 
-![LED STRIPE 28leds](images/assemblies/led_stripe_long_28.jpg)
+![LED Strip - 28 LEDs](images/assemblies/04/led-strip-28.jpg)
 
 
 ## C. Fans
@@ -99,7 +98,7 @@
 | Part                                  | Quantity | Image                                                                                        |
 |---------------------------------------| -------- | -------------------------------------------------------------------------------------------- |
 | `Fan`                                 | 2        | ![Fan](images/electronics/fan.jpg)                                                           |
-| `2-Position Female JST PH Connector`  | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `2-Position Female JST PH Connector`  | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`                | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 | `Heat Shrink Tube`                    | 2        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
@@ -107,34 +106,30 @@
 
 1. Remove the cable sleeve from each fan.
 
-![Fan Without Sleeve](images/assemblies/04C%20fan%20without%20sleeve.jpg)
+![Fan Without Sleeve](images/assemblies/04/fan-without-sleeve.jpg)
 
-2. For the first fan, cut the wires to 15 cm long.
-3. For the first fan, cut the wires to 15 cm long.
-4. For each fan, cut the yellow wire 3 cm shorter.
+2. For each fan, cut the wires to 15 cm long.
+3. For each fan, cut the yellow wire 3 cm shorter.
 
-![Fan Yellow Wire](images/assemblies/04C%20fan%20yellow%20wire.jpg)
+![Fan Yellow Wire](images/assemblies/04/fan-yellow-wire.jpg)
 
-5. For each fan, twist the wires.
-6. For each fan, add a `heat shrink tube` to hold the yellow wire, as shown in the following picture.
+4. For each fan, twist the wires.
+5. For each fan, add a `heat shrink tube` to hold the yellow wire, as shown in the following picture.
 
-![Fan Heat Shrink Tube](images/assemblies/04C%20fan%20heat%20shrink%20tube.jpg)
+![Fan Heat Shrink Tube](images/assemblies/04/fan-heat-shrink-tube.jpg)
 
-7. For each fan, crimp a `JST PH crimp contact` onto the red and black wires.
+6. For each fan, crimp a `JST PH crimp contact` onto the red and black wires.
 
-**TODO CHANGE IMAGE**
-![Fan Crimp](images/assemblies/04C%20fan%20crimp.jpg)
+![Fan Crimp](images/assemblies/04/fan-crimp.jpg)
 
-8. For each fan, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
+7. For each fan, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
    picture.
 
-**TODO CHANGE IMAGE**
-![Fan Crimp](images/assemblies/04C%20fan%20JST%20XH.jpg)
+![Fan Crimp](images/assemblies/04/fan-JST-PH.jpg)
 
 ## D. Speakers
 
 ### Required Parts
-> Crimp instead of solder
 
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
@@ -142,6 +137,8 @@
 | `20 AWG Red Wire Spool`              | 1        | ![20 AWG Red Cable Spool](images/electronics/red-wire.jpg)                                   |
 | `20 AWG Black Wire Spool`            | 1        | ![20 AWG Red Cable Spool](images/electronics/black-wire.jpg)                                 |
 | `20 AWG Ferrule`                     | 8        | ![20 AWG Ferrule](images/electronics/20-AWG-ferrule.jpg)                                     |
+| `20 AWG 0.110" Blade Connector`      | 4        | ![20 AWG 0.110" Blade Connector](images/electronics/small-blade-connector.jpg)               |
+| `20 AWG 0.250" Blade Connector`      | 4        | ![20 AWG 0.250" Blade Connector](images/electronics/big-blade-connector.jpg)                 |
 
 ### Steps
 
@@ -149,41 +146,25 @@
 2. Cut a `20 AWG red wire` of 20 cm long and a `20 AWG black wire` of 20 cm long.
 3. Cut a `20 AWG red wire` of 35 cm long and a `20 AWG black wire` of 35 cm long.
 4. Cut a `20 AWG red wire` of 42 cm long and a `20 AWG black wire` of 42 cm long.
-5. For each pair, solder the black wire to the biggest tab of a speaker.
-6. For each pair, solder the red wire to the other tab of a speaker.
+5. For each pair, crimp a `20 AWG 0.250" blade connector` on one end of the black wire.
+6. For each pair, crimp a `20 AWG 0.110" blade connector` on one end of the red wire.
 
-TODO use "lame" connector to connect to the speaker tabs.
+7. For each wire, crimp a `20 AWG ferrule` on the other end.
 
-![Speaker Wire Tab](images/assemblies/04D%20speaker%20wire%20tab.jpg)
+![Speaker Twist Heat Shrink Tube](images/assemblies/04/speaker.jpg)
 
-7. For each speaker, add a `heat shrink tube` to protect each tab.
-
-![Speaker Tab Heat Shrink Tube](images/assemblies/04D%20speaker%20tab%20heat%20shrink%20tube.jpg)
-
-8. For each speaker, twist the wires, as shown in the following picture.
-
-![Speaker Wire Twist](images/assemblies/04D%20speaker%20twist.jpg)
-
-9. For each speaker, add a `heat shrink tube` to hold the twisted wires, as shown in the following picture.
-
-![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20speaker%20twist%20heat%20shrink%20tube.jpg)
-
-10. For each wire, crimp a `20 AWG ferrule`.
-
-![Speaker Twist Heat Shrink Tube](images/assemblies/04D%20ferrule.jpg)
+8. Install the wires onto the speakers.
 
 ## E. Power Switch
 
 ### Required Parts
 
-> TODO change image of power switch
-
 | Part                                  | Quantity | Image                                                                                        |
 |---------------------------------------|----------|----------------------------------------------------------------------------------------------|
 | `Power Switch`                        | 1        | ![Power Switch](images/electronics/power-switch.jpg)                                         |
 | `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                               |
-| `22 AWG Yellow Wire Spool`             | 1        | ![22 AWG Yellow Cable Spool](images/electronics/yellow-wire.jpg)                               |
-| `4-Position Female JST PH Connector`  | 1        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `22 AWG Yellow Wire Spool`            | 1        | ![22 AWG Yellow Cable Spool](images/electronics/yellow-wire.jpg)                             |
+| `4-Position Female JST PH Connector`  | 1        | ![4-Position Female JST PH Connector](images/electronics/4-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`                | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 | `Heat Shrink Tube`                    | 4        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
@@ -191,22 +172,19 @@ TODO use "lame" connector to connect to the speaker tabs.
 
 1. Cut 2 `22 AWG white wire` of 38 cm long.
 2. Cut 2 `22 AWG yellow wire` of 38 cm long.
-2. Solder the wires to the `power switch`.
-> TODO CHANGE IMAGE
-![Power Switch Wires](images/assemblies/04E%20power%20switch%20wires.jpg)
+2. Solder the wires to the `power switch`, as shown in the following picture.
+
+![Power Switch Wires](images/assemblies/04/power-switch-wires.jpg)
 
 3. Add a `heat shrink tube` to protect each tab.
-> TODO CHANGE IMAGE
-![Power Switch Heat Shrink Tube](images/assemblies/04E%20power%20switch%20heat%20shrink%20tube.jpg)
-
 4. Twist the wires.
-7. Crimp a `JST XH crimp contact` onto the wires.
-> TODO CHANGE IMAGE
-![Power Switch Crimp](images/assemblies/04E%20power%20switch%20crimp.jpg)
+7. Crimp a `JST PH crimp contact` onto the wires.
+
+![Power Switch Crimp](images/assemblies/04/power-switch-crimps.jpg)
 
 8. Insert the crimp contacts into a `4-position female JST 4PH connector`, as shown in the following picture.
-> TODO CHANGE IMAGE
-![Power Switch JST XH](images/assemblies/04E%20power%20switch%20JST%20XH.jpg)
+
+![Power Switch JST PH](images/assemblies/04/power-switch-JST-PH.jpg)
 
 ## F. Limit Switch
 
@@ -217,7 +195,7 @@ TODO use "lame" connector to connect to the speaker tabs.
 | `Limit Switch`                       | 1        | ![Power Switch](images/electronics/limit-switch.jpg)                                         |
 | `22 AWG White Wire Spool`            | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                               |
 | `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
-| `2-Position Female JST PH Connector` | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)  **TODO CHANGE IMAGE** |
+| `2-Position Female JST PH Connector` | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`               | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 
 ### Steps
@@ -255,7 +233,7 @@ TODO use "lame" connector to connect to the speaker tabs.
 | Part                                 | Quantity | Image                                                                                        |
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
 | `Adafruit MAX9744`                   | 2        | ![Adafruit MAX9744](images/electronics/adafruit-MAX9744.jpg)                                 |
-| `22 AWG Brown Wire Spool`            | 1        | ![22 AWG Brown Cable Spool](images/electronics/brown-wire.jpg)                               |
+| `22 AWG Yellow Wire Spool`           | 1        | ![22 AWG Brown Cable Spool](images/electronics/yellow-wire.jpg)                              |
 | `22 AWG Green Wire Spool`            | 1        | ![22 AWG Green Cable Spool](images/electronics/green-wire.jpg)                               |
 | `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
 | `3-Position Female JST PH Connector` | 2        | ![3-Position Female JST PH Connector](images/electronics/3-position-female-JST-PH.jpg)       |
@@ -274,34 +252,30 @@ TODO use "lame" connector to connect to the speaker tabs.
 5. For each `Adafruit MAX9744`, solder a green wire to the SCL pad.
 6. For each `Adafruit MAX9744`, solder a black wire to the GND pad.
 
->TODO CHANGE IMAGE
-
-![Adafruit MAX9744 Wires](images/assemblies/04G%20wires.jpg)
+![Adafruit MAX9744 Wires](images/assemblies/04/amplifier-wires.jpg)
 
 7. For each `Adafruit MAX9744`, twist the soldered wires.
 
-![Adafruit MAX9744 Twisted Wires](images/assemblies/04G%20twist.jpg)
+![Adafruit MAX9744 Twisted Wires](images/assemblies/04/amplifier-twist.jpg)
 
 8. For each `Adafruit MAX9744`, add a `heat shrink tube` to hold the twisted wires, as shown in the following picture.
 
-![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04G%20heat%20shrink%20tube.jpg)
+![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04/amplifier-heat-shrink-tube.jpg)
 
 9. For each `Adafruit MAX9744`, crimp a `JST PH crimp contact` onto each wire.
 
-**TODO CHANGE IMAGE**
-![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20crimp.jpg)
+![Adafruit MAX9744 Crimp Contacts](images/assemblies/04/amplifier-crimp.jpg)
 
 10. For each `Adafruit MAX9744`, insert the crimp contacts into a `3-position female JST PH connector`, as shown in the
     following picture.
 
-**TODO CHANGE IMAGE**
-![Adafruit MAX9744 Crimp Contacts](images/assemblies/04G%20JST%20XH.jpg)
+![Adafruit MAX9744 JST PH](images/assemblies/04/amplifier-JST-PH.jpg)
 
 11. Cut 2 `20 AWG red wires` of 25 cm long.
 12. Cut 2 `20 AWG black wires` of 25 cm long.
 13. For each wire, crimp a `20 AWG ferrule` on both ends.
 
-![Power Wires](images/assemblies/04G%20power%20wires.jpg)
+![Power Wires](images/assemblies/04/amplifier-power-wires.jpg)
 
 ## H. 19V Power Adapter
 
@@ -316,7 +290,7 @@ TODO use "lame" connector to connect to the speaker tabs.
 
 1. Cut the `19V power adapter` cable as shown in the following picture.
 
-![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04H%20psu.jpg)
+![Adafruit MAX9744 Heat Shrink Tube](images/assemblies/04/psu.jpg)
 
 2. Solder the `Robot Power Connector - Male` to the `19V power adapter` cable.
     - Make sure the ground is outside.
@@ -332,7 +306,7 @@ TODO use "lame" connector to connect to the speaker tabs.
 | `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST-VHR-2N.jpg)                                   |
 | `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST-SVH-21T-1.1.jpg)                     |
 | `JST PHR-6 Cable`                    | 1        | ![JST PHR-6 Cable](images/electronics/JST-PHR-6-Cable.jpg)                                   |
-| `5-Position Female JST PH Connector` | 1        | ![5-Position Female JST PH Connector](images/electronics/6-position-female-JST-PH.jpg) **TODO CHANGE IMAGE** |
+| `5-Position Female JST PH Connector` | 1        | ![5-Position Female JST PH Connector](images/electronics/5-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`               | 5        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 | `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
 
@@ -342,49 +316,46 @@ TODO use "lame" connector to connect to the speaker tabs.
 2. Cut a `16 AWG black wire` of 8 cm long.
 3. For each wire, crimp a `16 AWG ferrule` on one end.
 
-![Ferrules](images/assemblies/04I%20ferrule.jpg)
+![Ferrules](images/assemblies/04/battery-charger-ferrule.jpg)
 
 4. For each wire, crimp a `JST SVH-21T-1.1 crimp contact` on the other end.
 
-![JST SVH-21T-1.1 crimp contact](images/assemblies/04I%20crimp.jpg)
+![JST SVH-21T-1.1 crimp contact](images/assemblies/04/battery-charger-crimp.jpg)
 
 5. Insert the wires into a `JST VHR-2N connector`, as shown in the following picture.
 
-![JST VHR-2N Connector](images/assemblies/04I%20JST%20VHR-2N%20Connector.jpg)
+![JST VHR-2N Connector](images/assemblies/04/battery-charger-JST-VHR-2N-connector.jpg)
 
 6. Cut a `16 AWG red wire` of 30 cm long.
 7. Cut a `16 AWG black wire` of 30 cm long.
 8. Solder the wires onto the `robot power connector`, as shown in the following picture.
 
-![Robot Power Connector - Female](images/assemblies/03I%20Robot%20Power%20Connector%20-%20Female.jpg)
+![Robot Power Connector - Female](images/assemblies/04/robot-power-connector-female.jpg)
 
 9. Install a `heat shrink tube` onto each wire, as shown in the following picture.
 
-![Robot Power Connector - Female - Heat Shrink Tube](images/assemblies/03I%20heat%20shrink%20tube.jpg)
+![Robot Power Connector - Female - Heat Shrink Tube](images/assemblies/04/robot-power-connector-female-heat-shrink-tube.jpg)
 
 10. For each wire, crimp a `JST SVH-21T-1.1 crimp contact` on the other end.
 
-![JST SVH-21T-1.1 crimp contact](images/assemblies/04I%20crimp.jpg)
+![JST SVH-21T-1.1 crimp contact](images/assemblies/04/battery-charger-crimp.jpg)
 
 11. Insert the wires into a `JST VHR-2N connector`, as shown in the following picture.
 
-![JST VHR-2N Connector](images/assemblies/04I%20JST%20VHR-2N%20Connector.jpg)
+![JST VHR-2N Connector](images/assemblies/04/battery-charger-JST-VHR-2N-connector.jpg)
 
 12. Remove the following wire from the `JST PHR-6 cable`.
 
-![JST PHR-6 Cable](images/assemblies/04I%20JST%20PHR-6%20Cable.jpg)
+![JST PHR-6 Cable](images/assemblies/04/battery-charger-JST-PHR-6-cable.jpg)
 
-13. Cut the `JST PHR-6 cable` wires to 11 cm.
+13. Cut the `JST PHR-6 cable` wires to 16 cm.
 14. For each wire of the `JST PHR-6 cable`, crimp a `JST PH crimp contact`.
 
-**TODO CHANGE IMAGE**
-![JST PHR-6 Cable Crimp](images/assemblies/04I%20JST%20PHR-6%20Cable%20Crimp.jpg)
+![JST PHR-6 Cable Crimp](images/assemblies/04/battery-charger-JST-PHR-6-cable-crimp.jpg)
 
-15. Insert the wires into a `5-Position female JST XH connector`, as shown in the following pictures.
+15. Insert the wires into a `5-Position female JST PH connector`, as shown in the following pictures.
 
-**TODO CHANGE IMAGE**
-![JST PHR-6 Connector 1](images/assemblies/04I%20JST%20PHR-6%20Connector%201.jpg)
-![JST PHR-6 Connector 2](images/assemblies/04I%20JST%20PHR-6%20Connector%202.jpg)
+![JST PHR-6 Connector](images/assemblies/04/battery-charger-JST-PHR-6-cable-order.jpg)
 
 ## J. Slip Ring Cables
 
@@ -403,7 +374,7 @@ TODO use "lame" connector to connect to the speaker tabs.
 
 1. Crimp a `18 AWG ferrule` onto each wire of the first `male power connector` and the first `female power connector`.
 
-![Computer Power Connector](images/assemblies/04J%20ferrule.jpg)
+![Computer Power Connector](images/assemblies/04/slip-ring-cable-ferrule.jpg)
 
 2. Insert a `heat shrink tube` onto each remaining `power connector` wire.
 2. Solder the black wire of the second `female power connector` to the wire connected to the outside of
@@ -411,13 +382,13 @@ TODO use "lame" connector to connect to the speaker tabs.
 3. Solder the red wire of the second `female power connector` to the other wire of the `computer power connector`.
 4. Install the `heat shrink tubes`.
 
-![Computer Power Connector](images/assemblies/04J%20computer.jpg)
+![Computer Power Connector](images/assemblies/04/slip-ring-cable-computer.jpg)
 
 5. Solder the black wire of the second `male power connector` to the black wire of the `T-connector`.
 6. Solder the red wire of the second `male power connector` to the red wire of the `T-connector`.
 7. Install the `heat shrink tubes`.
 
-![OpenCR Power Connector](images/assemblies/04J%20opencr.jpg)
+![Dynamixel Control Power Connector](images/assemblies/04/slip-ring-cable-dynamixel-control.jpg)
 
 ## K. Slip Ring
 
@@ -557,36 +528,47 @@ TODO use "lame" connector to connect to the speaker tabs.
 10. Cut a `22 AWG red wire` of 54 cm long.
 11. Cut a `22 AWG black wire` of 54 cm long.
 12. Cut a `22 AWG white wire` of 54 cm long.
-13. Solder the 3 wires of the same dimensions (x4) on each of the `light sensor`.
+13. Solder the 3 wires of the same dimensions on each of the `light sensor`.
+
+![Light Sensors Wires](images/assemblies/04/light-sensor-wires.jpg)
+
 14. For each `light sensor`, crimp a `JST PH crimp contact` onto each wire.
+
+![Light Sensors Wires](images/assemblies/04/light-sensor-crimps.jpg)
+
 15. For each `light sensor`, insert the crimp contacts into a `3-position female JST PH connector`, as shown in the following
    picture.
 
-![LightSensors](images/assemblies/light_sensor_jst_cable.jpg)
+![Light Sensors JST PH connector](images/assemblies/04/light-sensor-connector.jpg)
 
 ## N. Push Buttons
 
 ### Required Parts
-| Part                                  | Quantity | Image                                                                     |
-|---------------------------------------|----------|---------------------------------------------------------------------------|
-| `Push Button`                         | 4        | ![Push Button](images/electronics/push-button.jpg)                        |
-| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)            |
-| `Heat Shrink Tube`                    | 8        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-yellow.jpg)       |
-| `2-Position Female JST PH Connector`  | 4        | ![2-Position Female JST PH Connector](images/electronics/16-AWG-jstph.jpg) **TODO CHANGE IMAGE**  |
-| `JST PH Crimp Contact`                | 12       | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)              |
+| Part                                  | Quantity | Image                                                                                  |
+|---------------------------------------|----------|----------------------------------------------------------------------------------------|
+| `Push Button`                         | 4        | ![Push Button](images/electronics/push-button.jpg)                                     |
+| `22 AWG White Wire Spool`             | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                         |
+| `Heat Shrink Tube`                    | 8        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-yellow.jpg)                    |
+| `2-Position Female JST PH Connector`  | 4        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg) |
+| `JST PH Crimp Contact`                | 12       | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                           |
 
 ### Steps
 1. Cut 8 `22 AWG white wire` of 9 cm long.
 2. For each `push button`, solder 2 wires.
+
+![Push Buttons Wires](images/assemblies/04/push-button-wires.jpg)
+
 3. Insert a `heat shrink tube` onto each wire.
 4. Install the `heat shrink tubes`, as shown in the following picture.
 
-**TODO IMAGE**
+![Push Buttons Heat Shrink Tubes](images/assemblies/04/push-button-heat-shrink-tubes.jpg)
 
 5. For each `push button`, crimp a `JST PH crimp contact` onto each wire.
+
+![Push Buttons Crimps](images/assemblies/04/push-button-crimps.jpg)
+
 6. For each `push button`, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
    picture.
 7. Twist wire together.
 
->TODO PHOTOS
-![PushButtons](images/assemblies/push_button_jst_cable.jpg)
+![Push Buttons](images/assemblies/04/push-button-connector.jpg)
