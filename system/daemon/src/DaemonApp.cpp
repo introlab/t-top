@@ -118,32 +118,6 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
     switch (header.messageType())
     {
 
-/*
-        case MessageType::ACKNOWLEDGMENT:
-        {
-            auto payload = *AcknowledgmentPayload::readFrom(buffer);
-            //m_serialManager->send(destination, payload);
-            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
-            break;
-        }
-
-        case MessageType::BASE_STATUS:
-        {
-            auto payload = *BaseStatusPayload::readFrom(buffer);
-            //m_serialManager->send(destination, payload);
-            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
-            break;
-        }
-
-        case MessageType::BUTTON_PRESSED:
-        {
-            auto payload = *ButtonPressedPayload::readFrom(buffer);
-            //m_serialManager->send(destination, payload);
-            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
-            break;
-        }
-*/
-
         case MessageType::SET_VOLUME:
         {
             auto payload = *SetVolumePayload::readFrom(buffer);
@@ -157,24 +131,6 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
             m_serialManager->send(destination, payload);
             break;
         }
-
-/*
-        case MessageType::MOTOR_STATUS:
-        {
-            auto payload = *MotorStatusPayload::readFrom(buffer);
-            //m_serialManager->send(destination, payload);
-            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
-            break;
-        }
-
-        case MessageType::IMU_DATA:
-        {
-            auto payload =  *ImuDataPayload::readFrom(buffer);
-            //m_serialManager->send(destination, payload);
-            qDebug() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
-            break;
-        }
-*/
 
         case MessageType::SET_TORSO_ORIENTATION:
         {
@@ -190,20 +146,10 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
             break;
         }
 
-        // TODO can we do that ?
-        case MessageType::SHUTDOWN:
-        {
-            auto payload = *ShutdownPayload::readFrom(buffer);
-            m_serialManager->send(destination, payload);
-            break;
-        }
-
         default:
             qWarning() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
             break;
     }
-
-
 }
 
 void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messageType)
@@ -233,43 +179,14 @@ void DaemonApp::setupWebSocketServers()
 
 void DaemonApp::setupSerialManager()
 {
-    DaemonSerialManager::printAvailablePorts();
 
-    for (auto&& port : DaemonSerialManager::availablePorts())
-    {
-        //Will accept Teensy board or test ESP32 board at the moment
-#if __APPLE__
-        if (port.portName().contains("cu") && (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
-#else
-    if (port.portName().contains("tty") && (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
-#endif
-        {
-            qDebug() << "Automatic discovery of port: " << port.portName()
-                     << " from manufacturer: " << port.manufacturer();
-            m_serialManager = new DaemonSerialManager(port, this);
+    m_serialManager = new DaemonSerialManager(this);
 
-            // Connect signals
-            // TODO remove connect everything for tests...
-            connect(m_serialManager, &DaemonSerialManager::newBaseStatus, this, &DaemonApp::onNewBaseStatus);
-            connect(m_serialManager, &DaemonSerialManager::newButtonPressed, this, &DaemonApp::onNewButtonPressed);
-            connect(m_serialManager, &DaemonSerialManager::newSetVolume, this, &DaemonApp::onNewSetVolume);
-            connect(m_serialManager, &DaemonSerialManager::newSetLedColors, this, &DaemonApp::onNewSetLedColors);
-            connect(m_serialManager, &DaemonSerialManager::newMotorStatus, this, &DaemonApp::onNewMotorStatus);
-            connect(m_serialManager, &DaemonSerialManager::newImuData, this, &DaemonApp::onNewImuData);
-            connect(
-                m_serialManager,
-                &DaemonSerialManager::newSetTorsoOrientation,
-                this,
-                &DaemonApp::onNewSetTorsoOrientation);
-            connect(m_serialManager, &DaemonSerialManager::newSetHeadPose, this, &DaemonApp::onNewSetHeadPose);
-            connect(m_serialManager, &DaemonSerialManager::newShutdown, this, &DaemonApp::onNewShutdown);
-            connect(m_serialManager, &DaemonSerialManager::newError, this, &DaemonApp::onNewError);
-            break;
-        }
-    }
-
-    if (!m_serialManager)
-    {
-        qDebug() << "Automatic discovery of serial port failed.";
-    }
+    // Connect useful signals
+    connect(m_serialManager, &DaemonSerialManager::newBaseStatus, this, &DaemonApp::onNewBaseStatus);
+    connect(m_serialManager, &DaemonSerialManager::newButtonPressed, this, &DaemonApp::onNewButtonPressed);
+    connect(m_serialManager, &DaemonSerialManager::newMotorStatus, this, &DaemonApp::onNewMotorStatus);
+    connect(m_serialManager, &DaemonSerialManager::newImuData, this, &DaemonApp::onNewImuData);
+    connect(m_serialManager, &DaemonSerialManager::newShutdown, this, &DaemonApp::onNewShutdown);
+    connect(m_serialManager, &DaemonSerialManager::newError, this, &DaemonApp::onNewError);
 }
