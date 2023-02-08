@@ -8,15 +8,31 @@
 #include "SerialMessagePayloads.h"
 #include "SerialCommunicationManager.h"
 
+#ifndef WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT
+#define WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT 48080
+#endif
 
+#ifndef WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT
+#define WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT 48081
+#endif
+
+#ifndef WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT
+#define WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT 48082
+#endif
+
+#define STR_IMPL_(x) #x
+#define STR(x) STR_IMPL_(x)
 
 class WebSocketProtocolWrapper : public QObject
 {
     Q_OBJECT
 public:
-    static constexpr const char* ROS_DEFAULT_CLIENT_URL = "ws://localhost:8080";
-    static constexpr const char* CLI_DEFAULT_CLIENT_URL = "ws://localhost:8081";
-    static constexpr const char* TRAY_DEFAULT_CLIENT_URL = "ws://localhost:8082";
+    static constexpr const int ROS_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT;
+    static constexpr const int CLI_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT;
+    static constexpr const int TRAY_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT;
+    static constexpr const char* ROS_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT);
+    static constexpr const char* CLI_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT);
+    static constexpr const char* TRAY_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT);
 
     WebSocketProtocolWrapper(QWebSocket* websocket, QObject *parent=nullptr);
     WebSocketProtocolWrapper(const QUrl url, QObject *parent=nullptr);

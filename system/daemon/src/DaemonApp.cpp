@@ -2,6 +2,7 @@
 #include <QtDebug>
 #include "SerialCommunicationBuffer.h"
 #include "SerialMessages.h"
+#include "WebSocketProtocolWrapper.h"
 
 DaemonApp::DaemonApp(int &argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
 {
@@ -162,10 +163,10 @@ void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messag
 void DaemonApp::setupWebSocketServers()
 {
     // Create websocket server for ROS, CLI & TaskBar
-    DaemonWebSocketServer* rosServer = new DaemonWebSocketServer("DaemonApp-ROSWebSocketServer", 8080, 1, this);
-    DaemonWebSocketServer* cliServer = new DaemonWebSocketServer("DaemonApp-CLIWebSocketServer", 8081, 1, this);
+    DaemonWebSocketServer* rosServer = new DaemonWebSocketServer("DaemonApp-ROSWebSocketServer", WebSocketProtocolWrapper::ROS_DEFAULT_CLIENT_PORT, 1, this);
+    DaemonWebSocketServer* cliServer = new DaemonWebSocketServer("DaemonApp-CLIWebSocketServer", WebSocketProtocolWrapper::CLI_DEFAULT_CLIENT_PORT, 1, this);
     DaemonWebSocketServer* systemTrayServer =
-        new DaemonWebSocketServer("DaemonApp-SystemTrayWebSocketServer", 8082, 1, this);
+        new DaemonWebSocketServer("DaemonApp-SystemTrayWebSocketServer", WebSocketProtocolWrapper::TRAY_DEFAULT_CLIENT_PORT, 1, this);
 
     // Add all servers to the list
     m_webSocketServers << rosServer << cliServer << systemTrayServer;
