@@ -13,7 +13,7 @@
 #define FIRMWARE_MODE                    FIRMWARE_MODE_NORMAL
 
 // Device configuration
-#define DEBUG_SERIAL Serial1
+#define DEBUG_SERIAL SerialUSB1
 constexpr long DEBUG_SERIAL_BAUD_RATE = 250000;
 
 constexpr uint32_t WIRE_CLOCK = 1000000;
@@ -39,7 +39,7 @@ constexpr uint8_t TORSO_DYNAMIXEL_ID = 7;
 constexpr int TORSO_LIMIT_SWITCH_PIN = 22;
 
 // Communication configuration
-#define COMPUTER_COMMUNICATION_SERIAL    Serial3
+#define COMPUTER_COMMUNICATION_SERIAL    Serial
 #define PSU_CONTROL_COMMUNICATION_SERIAL Serial5
 constexpr uint8_t PSU_CONTROL_COMMUNICATION_RS232_INVALID = 23;
 constexpr long COMMUNICATION_SERIAL_BAUD_RATE = 250000;
