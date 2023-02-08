@@ -3,6 +3,7 @@
 #include "SerialCommunicationBuffer.h"
 #include "SerialMessages.h"
 #include "WebSocketProtocolWrapper.h"
+#include <QProcess>
 
 DaemonApp::DaemonApp(int &argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
 {
@@ -17,6 +18,9 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 {
     qDebug() << "********* "
              << "void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
+
+    setPowerMode(payload.isPsuConnected);
+    setScreenBrightness(payload.frontLightSensor, payload.backLightSensor, payload.leftLightSensor, payload.rightLightSensor);
 
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
@@ -98,10 +102,13 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 {
     qDebug() << "********* "
              << "void DaemonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
+
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
     }
+
+    terminateAllROSProcessesAndShutdown();
 }
 
 void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data, size_t size)
@@ -190,4 +197,32 @@ void DaemonApp::setupSerialManager()
     connect(m_serialManager, &DaemonSerialManager::newImuData, this, &DaemonApp::onNewImuData);
     connect(m_serialManager, &DaemonSerialManager::newShutdown, this, &DaemonApp::onNewShutdown);
     connect(m_serialManager, &DaemonSerialManager::newError, this, &DaemonApp::onNewError);
+}
+
+void DaemonApp::setPowerMode(bool isPsuConnected)
+{
+#ifdef __linux__
+    // TODO use nVidia command to set power mode
+    // Change power mode
+    // Power-supply to battery = lower power
+    // Battery to power-supply = maximum power
+
+#endif
+}
+
+void DaemonApp::setScreenBrightness(float front, float back, float left, float right)
+{
+#ifdef __linux__
+   // TODO change brighness with X.org cmd line
+   // xrandr -q | grep " connected" to get connected screen
+   // xrandr --output screen --brightness 0.5
+#endif
+}
+
+void DaemonApp::terminateAllROSProcessesAndShutdown()
+{
+#ifdef __linux__
+    // TODO SEARCH FOR ROSLAUNCH CMDLINE IN /PROC/<PID>/cmdline
+    // https://github.com/baldurk/qprocessinfos
+#endif
 }

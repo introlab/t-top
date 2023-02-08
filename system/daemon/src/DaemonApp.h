@@ -37,6 +37,9 @@ private slots:
 private:
     void setupWebSocketServers();
     void setupSerialManager();
+    void setPowerMode(bool isPsuConnected);
+    void setScreenBrightness(float front, float back, float left, float right);
+    void terminateAllROSProcessesAndShutdown();
 
     QList<DaemonWebSocketServer*> m_webSocketServers;
     DaemonSerialManager* m_serialManager;
