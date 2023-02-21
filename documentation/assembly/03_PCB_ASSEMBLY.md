@@ -246,6 +246,7 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#dynamixel-control-pc
 
 31. Solder the female headers (U4) to the PCB.
 32. Solder J1.
+33. Clip the Teensy 4.0 onto the PCB.
 
 ![PSU Control PCB - 7](images/assemblies/03/dynamixel-control-7.jpg)
 
