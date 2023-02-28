@@ -21,10 +21,10 @@ from train_audio_descriptor_extractor import create_model as create_voice_model
 
 
 class LfwVoxCelebEvaluation(RocDistancesThresholdsEvaluation):
-    def __init__(self, lfw_dataset_root, vox_celeb_dataset_root, pairs_file, output_path,
+    def __init__(self, device, lfw_dataset_root, vox_celeb_dataset_root, pairs_file, output_path,
                  face_model, face_transforms, voice_model, voice_transforms):
-        super().__init__(output_path, thresholds=np.arange(0, 10, 0.0001))
-
+        super().__init__(output_path, thresholds=np.arange(0, 10, 0.00001))
+        self._device = device
         self._lfw_dataset_root = lfw_dataset_root
         self._vox_celeb_dataset_root = vox_celeb_dataset_root
         self._pairs_file = pairs_file
@@ -76,25 +76,58 @@ class LfwVoxCelebEvaluation(RocDistancesThresholdsEvaluation):
 
         return pairs
 
+    def evaluate(self):
+        print('Calculate distances')
+        face_distances, voice_distances, face_voice_distances = self._calculate_distances()
+        is_same_person_target = self._get_is_same_person_target()
+
+        self._evaluate(face_distances, is_same_person_target, 'face_')
+        self._evaluate(voice_distances, is_same_person_target, 'voice_')
+        self._evaluate(face_voice_distances, is_same_person_target, 'face_voice_')
+
+    def _evaluate(self, distances, is_same_person_target, prefix):
+        best_accuracy, best_threshold, true_positive_rate_curve, false_positive_rate_curve, thresholds = \
+            self._calculate_accuracy_true_positive_rate_false_positive_rate(distances, is_same_person_target)
+        auc = self._calculate_auc(true_positive_rate_curve, false_positive_rate_curve)
+        eer = self._calculate_eer(true_positive_rate_curve, false_positive_rate_curve)
+
+        print(prefix)
+        print('Best accuracy: {}, threshold: {}, AUC: {}, EER: {}'.format(best_accuracy, best_threshold, auc, eer))
+        print()
+
+        self._save_roc_curve(true_positive_rate_curve, false_positive_rate_curve, prefix=prefix)
+        self._save_roc_curve_data(true_positive_rate_curve, false_positive_rate_curve, thresholds, prefix=prefix)
+        self._save_performances({
+            'best_accuracy': best_accuracy,
+            'best_threshold': best_threshold,
+            'auc': auc,
+            'eer': eer
+        }, prefix=prefix)
+
     def _calculate_distances(self):
-        distances = []
+        face_distances = []
+        voice_distances = []
+        face_voice_distances = []
 
         for voice_path_0, voice_path_1, face_path_0, face_path_1, _ in tqdm(self._pairs):
-            voice_sound_0 = self._load_voice_sound(voice_path_0)
-            voice_sound_1 = self._load_voice_sound(voice_path_1)
-            face_image_0 = self._load_face_image(face_path_0)
-            face_image_1 = self._load_face_image(face_path_1)
+            voice_sound_0 = self._load_voice_sound(voice_path_0).to(self._device)
+            voice_sound_1 = self._load_voice_sound(voice_path_1).to(self._device)
+            face_image_0 = self._load_face_image(face_path_0).to(self._device)
+            face_image_1 = self._load_face_image(face_path_1).to(self._device)
 
             voice_descriptor_0 = self._voice_model(voice_sound_0)
             voice_descriptor_1 = self._voice_model(voice_sound_1)
             face_descriptors = self._face_model(torch.stack((face_image_0, face_image_1)))
 
-            descriptor_0 = torch.cat((voice_descriptor_0[0], face_descriptors[0]))
-            descriptor_1 = torch.cat((voice_descriptor_1[0], face_descriptors[1]))
-            distance = torch.dist(descriptor_0, descriptor_1, p=2).item()
-            distances.append(distance)
+            face_distance = torch.dist(face_descriptors[0], face_descriptors[1], p=2).item()
+            voice_distance = torch.dist(voice_descriptor_0[0], voice_descriptor_1[0], p=2).item()
+            face_voice_distance = torch.dist(torch.cat((voice_descriptor_0[0], face_descriptors[0])),
+                                             torch.cat((voice_descriptor_1[0], face_descriptors[1])), p=2).item()
+            face_distances.append(face_distance)
+            voice_distances.append(voice_distance)
+            face_voice_distances.append(face_voice_distance)
 
-        return torch.tensor(distances)
+        return torch.tensor(face_distances), torch.tensor(voice_distances), torch.tensor(face_voice_distances)
 
     def _load_voice_sound(self, path):
         waveform, sample_rate = torchaudio.load(path)
@@ -122,6 +155,7 @@ class LfwVoxCelebEvaluation(RocDistancesThresholdsEvaluation):
 
 def main():
     parser = argparse.ArgumentParser(description='Test exported face descriptor extractor')
+    parser.add_argument('--use_gpu', action='store_true')
 
     parser.add_argument('--lfw_dataset_root', type=str, help='Choose the lfw dataset root path', required=True)
     parser.add_argument('--vox_celeb_dataset_root', type=str, help='Choose the vox celeb dataset root path',
@@ -152,13 +186,15 @@ def main():
 
     args = parser.parse_args()
 
-    face_model = create_face_model(args.face_embedding_size)
+    device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
+
+    face_model = create_face_model(args.face_embedding_size).to(device)
     load_checkpoint(face_model, args.face_model_checkpoint, keys_to_remove=['_classifier._weight'])
     face_model.eval()
     face_transforms = create_validation_image_transform()
 
     voice_model = create_voice_model(args.voice_backbone_type, args.voice_n_features, args.voice_embedding_size,
-                                     pooling_layer=args.voice_pooling_layer)
+                                     pooling_layer=args.voice_pooling_layer).to(device)
     load_checkpoint(voice_model, args.voice_model_checkpoint, keys_to_remove=['_classifier._weight'])
     voice_model.eval()
     voice_transforms = AudioDescriptorTestTransforms(waveform_size=args.voice_waveform_size,
@@ -166,7 +202,8 @@ def main():
                                                      n_fft=args.voice_n_fft,
                                                      audio_transform_type=args.voice_audio_transform_type)
 
-    evaluation = LfwVoxCelebEvaluation(args.lfw_dataset_root,
+    evaluation = LfwVoxCelebEvaluation(device,
+                                       args.lfw_dataset_root,
                                        args.vox_celeb_dataset_root,
                                        args.pairs_file,
                                        args.output_path,
