@@ -15,7 +15,7 @@ sys.path.append(os.path.join(PACKAGE_PATH, '..', '..', '..', 'tools', 'dnn_train
 from face_recognition.datasets.align_faces import get_landmarks_from_pose, cv2_transform_to_theta
 
 
-IMAGE_SIZE = (128, 96)
+IMAGE_SIZE = (160, 160)
 
 
 class FaceDescriptorExtractorBest(DnnModel):
