@@ -13,7 +13,7 @@ from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
 
-from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
+from dnn_utils import DescriptorYoloV4, YoloV4Best, PoseEstimatorBest, FaceDescriptorExtractorBest, SemanticSegmentationNetwork
 import hbba_lite
 
 
@@ -71,7 +71,6 @@ class FaceAnalysis:
         self.descriptor = descriptor
         self.face_image = face_image
 
-
 class VideoAnalyzerNode:
     def __init__(self):
         self._use_descriptor_yolo_v4 = rospy.get_param('~use_descriptor_yolo_v4')
@@ -94,15 +93,15 @@ class VideoAnalyzerNode:
             self._object_detector = DescriptorYoloV4(confidence_threshold=self._confidence_threshold,
                                                      nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         else:
-            self._object_detector = YoloV4(confidence_threshold=self._confidence_threshold,
-                                           nms_threshold=self._nms_threshold, inference_type=self._inference_type)
+            self._object_detector = YoloV4Best(confidence_threshold=self._confidence_threshold,
+                                               nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         self._object_class_names = self._object_detector.get_class_names()
 
         if self._pose_enabled:
-            self._pose_estimator = PoseEstimator(inference_type=self._inference_type)
+            self._pose_estimator = PoseEstimatorBest(inference_type=self._inference_type)
             self._skeleton_pairs = self._pose_estimator.get_skeleton_pairs()
         if self._face_descriptor_enabled:
-            self._face_descriptor_extractor = FaceDescriptorExtractor(inference_type=self._inference_type)
+            self._face_descriptor_extractor = FaceDescriptorExtractorBest(inference_type=self._inference_type)
         if self._semantic_segmentation_enabled:
             self._semantic_segmentation_network = SemanticSegmentationNetwork(inference_type=self._inference_type,
                                                                               dataset=self._semantic_segmentation_dataset)
@@ -156,6 +155,8 @@ class VideoAnalyzerNode:
         face_analysis = None
         if self._face_descriptor_enabled:
             try:
+                pose_coordinates = torch.tensor([[141.5, 96.75], [153.29167, 64.5], [117.91667, 64.5], [170.97917, 64.5], [88.4375, 53.75], [206.35417, 172.], [47.166668, 161.25], [235.83334, 290.25], [23.583334, 290.25], [229.9375, 376.25], [0., 397.75], [182.77084, 408.5], [82.54167,  430.], [182.77084, 602.], [82.54167, 612.75], [182.77084  580.5], [ 88.4375, 677.25]])
+                pose_confidence = torch.tensor([0.97265625, 0.98046875, 0.9814453, 0.96875, 0.9716797, 0.9707031, 0.9633789, 0.9711914, 1.0009766, 0.9550781, 1.0029297, 0.9296875, 0.93652344, 0.9658203, 0.9633789, 0.01248932, 0.0189209])
                 face_descriptor, face_image = self._face_descriptor_extractor(color_image_tensor,
                                                                               pose_coordinates, pose_confidence)
             except ValueError:
