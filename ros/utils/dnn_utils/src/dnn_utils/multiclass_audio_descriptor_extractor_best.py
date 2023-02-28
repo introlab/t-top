@@ -17,7 +17,7 @@ class MulticlassAudioDescriptorExtractorBest(DnnModel):
         tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'multiclass_audio_descriptor_extractor_best.trt.pth')
         sample_input = torch.ones((1, 1, N_MELS, int(2 * DURATION / N_FFT) + 1))
 
-        super(MulticlassAudioDescriptorExtractor, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
+        super(MulticlassAudioDescriptorExtractorBest, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                        inference_type=inference_type)
         self._transform = MelSpectrogram(SAMPLING_FREQUENCY, N_FFT, N_MELS)
 

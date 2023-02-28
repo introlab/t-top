@@ -18,7 +18,7 @@ class VoiceDescriptorExtractorBest(DnnModel):
         tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'voice_descriptor_extractor_best.trt.pth')
         sample_input = torch.ones((1, 1, N_MFCC, int(2 * DURATION / N_FFT) + 1))
 
-        super(VoiceDescriptorExtractor, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
+        super(VoiceDescriptorExtractorBest, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                        inference_type=inference_type)
         self._transform = MFCC(SAMPLING_FREQUENCY, N_FFT, N_MFCC)
 
