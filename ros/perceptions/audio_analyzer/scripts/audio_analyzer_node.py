@@ -13,7 +13,7 @@ from audio_utils.msg import AudioFrame
 from audio_analyzer.msg import AudioAnalysis
 from odas_ros.msg import OdasSstArrayStamped
 
-from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor
+from dnn_utils import MulticlassAudioDescriptorExtractorBest, VoiceDescriptorExtractorBest
 import hbba_lite
 
 
@@ -25,8 +25,8 @@ class AudioAnalyzerNode:
     def __init__(self):
         self._inference_type = rospy.get_param('~inference_type', None)
 
-        self._audio_descriptor_extractor = MulticlassAudioDescriptorExtractor(inference_type=self._inference_type)
-        self._voice_descriptor_extractor = VoiceDescriptorExtractor(inference_type=self._inference_type)
+        self._audio_descriptor_extractor = MulticlassAudioDescriptorExtractorBest(inference_type=self._inference_type)
+        self._voice_descriptor_extractor = VoiceDescriptorExtractorBest(inference_type=self._inference_type)
 
         if self._audio_descriptor_extractor.get_supported_sampling_frequency() != self._voice_descriptor_extractor.get_supported_sampling_frequency():
             raise ValueError('Not compatible models (sampling frequency)')
