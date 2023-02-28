@@ -38,7 +38,7 @@ class RocEvaluation:
 
         return (false_negative_rate_curve[index] + false_positive_rate_curve[index]) / 2
 
-    def _save_roc_curve(self, true_positive_rate_curve, false_positive_rate_curve):
+    def _save_roc_curve(self, true_positive_rate_curve, false_positive_rate_curve, prefix=''):
         fig = plt.figure(figsize=(5, 5), dpi=300)
         ax1 = fig.add_subplot(111)
 
@@ -48,11 +48,11 @@ class RocEvaluation:
         ax1.set_xlabel(u'False positive rate')
         ax1.set_ylabel(u'True positive rate')
 
-        fig.savefig(os.path.join(self._output_path, 'roc_curve.png'))
+        fig.savefig(os.path.join(self._output_path, prefix + 'roc_curve.png'))
         plt.close(fig)
 
-    def _save_roc_curve_data(self, true_positive_rate_curve, false_positive_rate_curve, thresholds):
-        with open(os.path.join(self._output_path, 'roc_curve.json'), 'w') as file:
+    def _save_roc_curve_data(self, true_positive_rate_curve, false_positive_rate_curve, thresholds, prefix=''):
+        with open(os.path.join(self._output_path, prefix + 'roc_curve.json'), 'w') as file:
             data = {
                 'true_positive_rate_curve': true_positive_rate_curve.tolist(),
                 'false_positive_rate_curve': false_positive_rate_curve.tolist(),
@@ -60,8 +60,8 @@ class RocEvaluation:
             }
             json.dump(data, file, indent=4, sort_keys=True)
 
-    def _save_performances(self, values_by_name):
-        with open(os.path.join(self._output_path, 'performance.json'), 'w') as file:
+    def _save_performances(self, values_by_name, prefix=''):
+        with open(os.path.join(self._output_path, prefix + 'performance.json'), 'w') as file:
             json.dump(values_by_name, file, indent=4, sort_keys=True)
 
 
