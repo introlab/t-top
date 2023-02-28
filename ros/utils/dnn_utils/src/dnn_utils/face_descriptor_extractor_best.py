@@ -46,4 +46,4 @@ class FaceDescriptorExtractorBest(DnnModel):
             cv2_aligned_image = (255 * aligned_image.permute(1, 2, 0)).to(torch.uint8).cpu().numpy()
 
             normalized_aligned_image = self._normalization(aligned_image)
-            return super(FaceDescriptorExtractor, self).__call__(normalized_aligned_image.unsqueeze(0))[0].cpu(), cv2_aligned_image
+            return super(FaceDescriptorExtractorBest, self).__call__(normalized_aligned_image.unsqueeze(0))[0].cpu(), cv2_aligned_image

@@ -74,7 +74,7 @@ class PoseEstimatorBest(DnnModel):
             image_tensor = F.interpolate(image_tensor.to(self._device).unsqueeze(0), size=IMAGE_SIZE, mode='bilinear')
             image_tensor = self._normalization(image_tensor.squeeze(0))
 
-            pose_heatmaps = super(PoseEstimator, self).__call__(image_tensor.unsqueeze(0))
+            pose_heatmaps = super(PoseEstimatorBest, self).__call__(image_tensor.unsqueeze(0))
             heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
 
             scaled_coordinates = torch.zeros(heatmap_coordinates.size()[1], 2, device=self._device)

@@ -69,7 +69,7 @@ class MulticlassAudioDescriptorExtractorBest(DnnModel):
             x = normalize(x)
             spectrogram = self._transform(x).unsqueeze(0)
             # spectrogram = standardize_every_frame(spectrogram) TODO use standardize_every_frame
-            descriptor, class_scores = super(MulticlassAudioDescriptorExtractor, self).__call__(spectrogram.unsqueeze(0))
+            descriptor, class_scores = super(MulticlassAudioDescriptorExtractorBest, self).__call__(spectrogram.unsqueeze(0))
             probabilities = torch.sigmoid(class_scores[0])
 
             return descriptor[0].cpu(), probabilities.cpu()

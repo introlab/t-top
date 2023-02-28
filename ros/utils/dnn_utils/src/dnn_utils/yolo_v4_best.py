@@ -57,7 +57,7 @@ class YoloV4Best(DnnModel):
 
     def forward_raw(self, image_tensor):
         scale = self._set_image(image_tensor.to(self._device).unsqueeze(0))
-        predictions = super(YoloV4, self).__call__(self._padded_image)
+        predictions = super(YoloV4Best, self).__call__(self._padded_image)
         return scale, predictions
 
     def _set_image(self, image_tensor):

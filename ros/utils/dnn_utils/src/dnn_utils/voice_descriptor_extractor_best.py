@@ -36,4 +36,4 @@ class VoiceDescriptorExtractorBest(DnnModel):
             x = normalize(x)
             spectrogram = self._transform(x).unsqueeze(0)
             spectrogram = standardize_every_frame(spectrogram)
-            return super(VoiceDescriptorExtractor, self).__call__(spectrogram.unsqueeze(0))[0].cpu()
+            return super(VoiceDescriptorExtractorBest, self).__call__(spectrogram.unsqueeze(0))[0].cpu()
