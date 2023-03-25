@@ -9,6 +9,15 @@
 #include "DaemonWebSocketServer.h"
 #include "DaemonSerialManager.h"
 
+constexpr const char* LOW_POWER_MODE_MODEL_INDEX = "0";
+constexpr const char* HIGH_POWER_MODE_MODEL_INDEX = "1";
+constexpr qint64 SHUTDOWN_TIMEOUT_SEC = 90;
+
+enum class JetsonModel
+{
+    XAVIER,
+    ORIN
+};
 
 class DaemonApp : public QCoreApplication
 {
@@ -22,12 +31,8 @@ private slots:
     // Serial port events
     void onNewBaseStatus(Device source, const BaseStatusPayload& payload);
     void onNewButtonPressed(Device source, const ButtonPressedPayload& payload);
-    void onNewSetVolume(Device source, const SetVolumePayload& payload);
-    void onNewSetLedColors(Device source, const SetLedColorsPayload& payload);
     void onNewMotorStatus(Device source, const MotorStatusPayload& payload);
     void onNewImuData(Device source, const ImuDataPayload& payload);
-    void onNewSetTorsoOrientation(Device source, const SetTorsoOrientationPayload& payload);
-    void onNewSetHeadPose(Device source, const SetHeadPosePayload& payload);
     void onNewShutdown(Device source, const ShutdownPayload& payload);
     void onNewError(const char* message, tl::optional<MessageType> messageType);
 
@@ -35,11 +40,16 @@ private slots:
     void onNewRouteFromWebSocket(Device destination, const uint8_t* data, size_t size);
 
 private:
+    void parseJetsonModel();
+
     void setupWebSocketServers();
     void setupSerialManager();
     void setPowerMode(bool isPsuConnected);
     void setScreenBrightness(float front, float back, float left, float right);
     void terminateAllROSProcessesAndShutdown();
+
+    JetsonModel m_jetsonModel;
+    tl::optional<bool> m_lastIsPsuConnected;
 
     QList<DaemonWebSocketServer*> m_webSocketServers;
     DaemonSerialManager* m_serialManager;

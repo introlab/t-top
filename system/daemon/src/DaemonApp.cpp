@@ -4,12 +4,14 @@
 #include "SerialMessages.h"
 #include "WebSocketProtocolWrapper.h"
 #include <QProcess>
+#include <QCommandLineParser>
+#include "ProcessUtils.h"
 
 DaemonApp::DaemonApp(int &argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
 {
     qDebug() << "DaemonApp running...";
 
-    // TODO read configuration in a file ? Command line arguments ?
+    parseJetsonModel();
     setupWebSocketServers();
     setupSerialManager();
 }
@@ -38,26 +40,6 @@ void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& pa
     }
 }
 
-void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload& payload)
-{
-    qDebug() << "********* "
-             << "void DaemonApp::onNewSetVolume(Device source, const SetVolumePayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
-    {
-        server->sendToClients(source, payload);
-    }
-}
-
-void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload& payload)
-{
-    qDebug() << "********* "
-             << "void DaemonApp::onNewSetLedColors(Device source, const SetLedColorsPayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
-    {
-        server->sendToClients(source, payload);
-    }
-}
-
 void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payload)
 {
     qDebug() << "********* "
@@ -72,26 +54,6 @@ void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 {
     qDebug() << "********* "
              << "void DaemonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
-    {
-        server->sendToClients(source, payload);
-    }
-}
-
-void DaemonApp::onNewSetTorsoOrientation(Device source, const SetTorsoOrientationPayload& payload)
-{
-    qDebug() << "********* "
-             << "void DaemonApp::onNewStatus(Device source, const BaseStatusPayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
-    {
-        server->sendToClients(source, payload);
-    }
-}
-
-void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload& payload)
-{
-    qDebug() << "********* "
-             << "void DaemonApp::onNewSetHeadPose(Device source, const SetHeadPosePayload &payload)";
     foreach (DaemonWebSocketServer *server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
@@ -122,7 +84,6 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
     buffer.write(data, size);
     auto header = *MessageHeader::readFrom(buffer);
 
-    // TODO verify if we are allowed to send some payloads ???
     switch (header.messageType())
     {
 
@@ -167,6 +128,32 @@ void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messag
     qDebug() << message;
 }
 
+void DaemonApp::parseJetsonModel()
+{
+    QCommandLineParser parser;
+    parser.addPositionalArgument("jetson_model", "Select the jetson model (xavier or orin)");
+    parser.process(*this);
+
+    if (parser.positionalArguments().size() != 1)
+    {
+        parser.showHelp(-1);
+    }
+
+    const QString& jetsonModel = parser.positionalArguments()[0];
+    if (jetsonModel == "xavier")
+    {
+        m_jetsonModel = JetsonModel::XAVIER;
+    }
+    else if (jetsonModel == "orin")
+    {
+        m_jetsonModel = JetsonModel::ORIN;
+    }
+    else
+    {
+        parser.showHelp(-1);
+    }
+}
+
 void DaemonApp::setupWebSocketServers()
 {
     // Create websocket server for ROS, CLI & TaskBar
@@ -202,11 +189,23 @@ void DaemonApp::setupSerialManager()
 void DaemonApp::setPowerMode(bool isPsuConnected)
 {
 #ifdef __linux__
-    // TODO use nVidia command to set power mode
-    // Change power mode
-    // Power-supply to battery = lower power
-    // Battery to power-supply = maximum power
+    if (m_jetsonModel != JetsonModel::ORIN)
+    {
+        return;
+    }
 
+    if (m_lastIsPsuConnected && !isPsuConnected)
+    {
+        // Set low power mode
+        QProcess::startDetached("sudo", {"nvpmodel", "-m", LOW_POWER_MODE_MODEL_INDEX});
+    }
+    else if (!m_lastIsPsuConnected && isPsuConnected)
+    {
+        // Set high power mode
+        QProcess::startDetached("sudo", {"nvpmodel", "-m", HIGH_POWER_MODE_MODEL_INDEX});
+    }
+
+    m_lastIsPsuConnected = isPsuConnected;
 #endif
 }
 
@@ -222,7 +221,8 @@ void DaemonApp::setScreenBrightness(float front, float back, float left, float r
 void DaemonApp::terminateAllROSProcessesAndShutdown()
 {
 #ifdef __linux__
-    // TODO SEARCH FOR ROSLAUNCH CMDLINE IN /PROC/<PID>/cmdline
-    // https://github.com/baldurk/qprocessinfos
+    auto pids = listPidsMatchingTheCriteria("roslaunch");
+    shutdownProcessesAndWait(pids, SHUTDOWN_TIMEOUT_SEC);
+    QProcess::startDetached("sudo", {"shutdown", "now"});
 #endif
 }
