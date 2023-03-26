@@ -44,7 +44,7 @@ void DaemonSerialManager::onErrorOccurred(QSerialPort::SerialPortError error)
     qDebug() << "DaemonSerialManager::onErrorOccurred" << error;
     m_serialCommunicationManager.reset();
     m_serialPort->deleteLater();
-    m_serialPort=nullptr;
+    m_serialPort = nullptr;
 }
 
 void DaemonSerialManager::onReadyRead()
@@ -56,7 +56,7 @@ void DaemonSerialManager::onReadyRead()
 
 void DaemonSerialManager::onTimerCheckSerialPort()
 {
-    if(m_serialPort)
+    if (m_serialPort)
     {
         return;
     }
@@ -88,29 +88,30 @@ void DaemonSerialManager::onTimerCheckSerialPort()
         qDebug() << "Cannot open port: " << port.portName();
         m_serialCommunicationManager.release();
         m_serialPort->deleteLater();
-        m_serialPort=nullptr;
+        m_serialPort = nullptr;
     }
-
 }
 
 QSerialPortInfo DaemonSerialManager::getAvailableSerialPort()
 {
-    //DaemonSerialManager::printAvailablePorts();
+    // DaemonSerialManager::printAvailablePorts();
 
     for (auto&& port : QSerialPortInfo::availablePorts())
     {
-       //Will accept Teensy board or test ESP32 board at the moment
+        // Will accept Teensy board or test ESP32 board at the moment
 #if __APPLE__
-        if (port.portName().contains("cu") && (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
+        if (port.portName().contains("cu") &&
+            (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
 #else
-        if (port.portName().contains("tty") && (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
+        if (port.portName().contains("tty") &&
+            (port.manufacturer().contains("Teensyduino") || port.manufacturer().contains("Silicon Labs")))
 #endif
         {
             return port;
         }
     }
 
-    //Need to test isNull.
+    // Need to test isNull.
     return QSerialPortInfo();
 }
 
@@ -142,10 +143,9 @@ void DaemonSerialManager::setupSerialCommunicationManagerCallbacks()
     m_serialCommunicationManager->setShutdownHandler([this](Device source, const ShutdownPayload& payload)
                                                      { emit this->newShutdown(source, payload); });
 
-    m_serialCommunicationManager->setRouteCallback([this](Device destination, const uint8_t* data, size_t size)
-                                                   {
-                                                       qWarning() << "DaemonSerialManager::setRouteCallback should not be called!";
-                                                   });
+    m_serialCommunicationManager->setRouteCallback(
+        [this](Device destination, const uint8_t* data, size_t size)
+        { qWarning() << "DaemonSerialManager::setRouteCallback should not be called!"; });
 
     m_serialCommunicationManager->setSetVolumeHandler([this](Device source, const SetVolumePayload& payload)
                                                       { emit this->newSetVolume(source, payload); });

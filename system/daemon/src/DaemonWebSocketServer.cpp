@@ -23,7 +23,7 @@ void DaemonWebSocketServer::onNewConnection()
     if (websocket)
     {
         qDebug() << serverName() << "onNewConnection: " << websocket;
-        WebSocketProtocolWrapper *wrapper = new WebSocketProtocolWrapper(websocket, this);
+        WebSocketProtocolWrapper* wrapper = new WebSocketProtocolWrapper(websocket, this);
         connect(wrapper, &WebSocketProtocolWrapper::disconnected, this, &DaemonWebSocketServer::socketDisconnected);
         connect(wrapper, &WebSocketProtocolWrapper::newRoute, this, &DaemonWebSocketServer::newRoute);
         m_clients.append(wrapper);
@@ -43,4 +43,3 @@ size_t DaemonWebSocketServer::clientCount()
 {
     return m_clients.size();
 }
-

@@ -65,7 +65,7 @@ void shutdownProcessesAndWait(const QList<uint32_t>& pids, qint64 timeoutSec)
             break;
         }
 
-        QThread::sleep(1); // Sleep one sec
+        QThread::sleep(1);  // Sleep one sec
     }
 }
 

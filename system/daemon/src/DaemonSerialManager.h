@@ -16,7 +16,7 @@ class DaemonSerialManager : public QObject
 
     DaemonSerialPortWrapper* m_serialPort;
     std::unique_ptr<SerialCommunicationManager> m_serialCommunicationManager;
-    QTimer *m_checkSerialPortTimer;
+    QTimer* m_checkSerialPortTimer;
 
     static constexpr long COMMUNICATION_SERIAL_BAUD_RATE = 115200;
     static constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 20;
@@ -27,7 +27,7 @@ public:
     DaemonSerialManager(QObject* parent = nullptr);
 
     template<class Payload>
-    void send(Device destination, const Payload& payload, qint64 timestamp_ms=QDateTime::currentMSecsSinceEpoch());
+    void send(Device destination, const Payload& payload, qint64 timestamp_ms = QDateTime::currentMSecsSinceEpoch());
 
 
     static QList<QSerialPortInfo> availablePorts();
@@ -54,8 +54,6 @@ private slots:
 private:
     QSerialPortInfo getAvailableSerialPort();
     void setupSerialCommunicationManagerCallbacks();
-
-
 };
 
 

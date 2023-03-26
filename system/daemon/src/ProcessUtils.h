@@ -12,4 +12,4 @@ void shutdownProcessesAndWait(const QList<uint32_t>& pids, qint64 timeoutSec);
 
 #endif
 
-#endif //_PROCESS_UTILS_H_
+#endif  //_PROCESS_UTILS_H_

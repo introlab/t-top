@@ -6,8 +6,14 @@
 #include <QProcess>
 #include <QCommandLineParser>
 #include "ProcessUtils.h"
+#include <cmath>
 
-DaemonApp::DaemonApp(int &argc, char* argv[]) : QCoreApplication(argc, argv), m_serialManager(nullptr)
+using namespace std;
+
+DaemonApp::DaemonApp(int& argc, char* argv[])
+    : QCoreApplication(argc, argv),
+      m_serialManager(nullptr),
+      m_lastLightLevel(0.f)
 {
     qDebug() << "DaemonApp running...";
 
@@ -22,9 +28,13 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
              << "void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
 
     setPowerMode(payload.isPsuConnected);
-    setScreenBrightness(payload.frontLightSensor, payload.backLightSensor, payload.leftLightSensor, payload.rightLightSensor);
+    setScreenBrightness(
+        payload.frontLightSensor,
+        payload.backLightSensor,
+        payload.leftLightSensor,
+        payload.rightLightSensor);
 
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
     }
@@ -34,7 +44,7 @@ void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& pa
 {
     qDebug() << "********* "
              << "void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
     }
@@ -44,7 +54,7 @@ void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payloa
 {
     qDebug() << "********* "
              << "void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
     }
@@ -54,7 +64,7 @@ void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 {
     qDebug() << "********* "
              << "void DaemonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
     }
@@ -65,7 +75,7 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
     qDebug() << "********* "
              << "void DaemonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
 
-    foreach (DaemonWebSocketServer *server, m_webSocketServers)
+    foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
     }
@@ -75,7 +85,6 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 
 void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data, size_t size)
 {
-
     qDebug() << "********* "
              << "void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t *data, size_t size)";
 
@@ -86,7 +95,6 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
 
     switch (header.messageType())
     {
-
         case MessageType::SET_VOLUME:
         {
             auto payload = *SetVolumePayload::readFrom(buffer);
@@ -116,7 +124,7 @@ void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data,
         }
 
         default:
-            qWarning() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int) header.messageType();
+            qWarning() << "DaemonApp::onNewRouteFromWebSocket Message discarded type: " << (int)header.messageType();
             break;
     }
 }
@@ -157,16 +165,27 @@ void DaemonApp::parseJetsonModel()
 void DaemonApp::setupWebSocketServers()
 {
     // Create websocket server for ROS, CLI & TaskBar
-    DaemonWebSocketServer* rosServer = new DaemonWebSocketServer("DaemonApp-ROSWebSocketServer", WebSocketProtocolWrapper::ROS_DEFAULT_CLIENT_PORT, 1, this);
-    DaemonWebSocketServer* cliServer = new DaemonWebSocketServer("DaemonApp-CLIWebSocketServer", WebSocketProtocolWrapper::CLI_DEFAULT_CLIENT_PORT, 1, this);
-    DaemonWebSocketServer* systemTrayServer =
-        new DaemonWebSocketServer("DaemonApp-SystemTrayWebSocketServer", WebSocketProtocolWrapper::TRAY_DEFAULT_CLIENT_PORT, 1, this);
+    DaemonWebSocketServer* rosServer = new DaemonWebSocketServer(
+        "DaemonApp-ROSWebSocketServer",
+        WebSocketProtocolWrapper::ROS_DEFAULT_CLIENT_PORT,
+        1,
+        this);
+    DaemonWebSocketServer* cliServer = new DaemonWebSocketServer(
+        "DaemonApp-CLIWebSocketServer",
+        WebSocketProtocolWrapper::CLI_DEFAULT_CLIENT_PORT,
+        1,
+        this);
+    DaemonWebSocketServer* systemTrayServer = new DaemonWebSocketServer(
+        "DaemonApp-SystemTrayWebSocketServer",
+        WebSocketProtocolWrapper::TRAY_DEFAULT_CLIENT_PORT,
+        1,
+        this);
 
     // Add all servers to the list
     m_webSocketServers << rosServer << cliServer << systemTrayServer;
 
     // Connect signals handling messages from websockets to serial port
-    foreach(auto server, m_webSocketServers )
+    foreach (auto server, m_webSocketServers)
     {
         connect(server, &DaemonWebSocketServer::newRoute, this, &DaemonApp::onNewRouteFromWebSocket);
     }
@@ -174,7 +193,6 @@ void DaemonApp::setupWebSocketServers()
 
 void DaemonApp::setupSerialManager()
 {
-
     m_serialManager = new DaemonSerialManager(this);
 
     // Connect useful signals
@@ -212,9 +230,13 @@ void DaemonApp::setPowerMode(bool isPsuConnected)
 void DaemonApp::setScreenBrightness(float front, float back, float left, float right)
 {
 #ifdef __linux__
-   // TODO change brighness with X.org cmd line
-   // xrandr -q | grep " connected" to get connected screen
-   // xrandr --output screen --brightness 0.5
+    float lightLevel = min(min(front, back), min(left, right));
+    m_lastLightLevel = (1.f - LIGHT_LEVEL_ALPHA) * m_lastLightLevel + LIGHT_LEVEL_ALPHA * lightLevel;
+    float brightness = MIN_SCREEN_BRIGHTNESS + (MAX_SCREEN_BRIGHTNESS - MIN_SCREEN_BRIGHTNESS) * m_lastLightLevel;
+
+    // TODO change the screen arg
+    // xrandr -q | grep " connected" to get connected screen
+    QProcess::startDetached("xrandr", {"--output", "TODO_set_screen", "--brightness", QString::number(brightness)});
 #endif
 }
 

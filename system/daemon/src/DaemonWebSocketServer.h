@@ -32,12 +32,11 @@ private:
 template<class Payload>
 void DaemonWebSocketServer::sendToClients(Device source, const Payload& payload)
 {
-    foreach(auto client, m_clients )
+    foreach (auto client, m_clients)
     {
         client->send(source, Device::COMPUTER, payload);
     }
 }
-
 
 
 #endif  // _DAEMON_WEBSOCKET_SERVER_H_

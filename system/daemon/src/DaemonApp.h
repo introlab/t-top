@@ -11,6 +11,11 @@
 
 constexpr const char* LOW_POWER_MODE_MODEL_INDEX = "0";
 constexpr const char* HIGH_POWER_MODE_MODEL_INDEX = "1";
+
+constexpr float MIN_SCREEN_BRIGHTNESS = 0.5f;
+constexpr float MAX_SCREEN_BRIGHTNESS = 1.f;
+constexpr float LIGHT_LEVEL_ALPHA = 0.3;
+
 constexpr qint64 SHUTDOWN_TIMEOUT_SEC = 90;
 
 enum class JetsonModel
@@ -24,7 +29,7 @@ class DaemonApp : public QCoreApplication
     Q_OBJECT
 
 public:
-    DaemonApp(int &argc, char* argv[]);
+    DaemonApp(int& argc, char* argv[]);
 
 private slots:
 
@@ -50,6 +55,8 @@ private:
 
     JetsonModel m_jetsonModel;
     tl::optional<bool> m_lastIsPsuConnected;
+
+    float m_lastLightLevel;
 
     QList<DaemonWebSocketServer*> m_webSocketServers;
     DaemonSerialManager* m_serialManager;
