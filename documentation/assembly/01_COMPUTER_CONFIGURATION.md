@@ -1,8 +1,8 @@
 # Computer Configuration
 
-## Onboard Computer
+## Onboard Computer - Jetson AGX Xavier
 
-### A. Install the SSD (Jetson AGX Xavier)
+### A. Install the SSD
 
 #### Required Parts
 
@@ -342,6 +342,9 @@ Section "InputClass"
         Driver "libinput"
 EndSection
 ```
+
+## Onboard Computer - Jetson AGX Orin
+**TODO**
 
 ## Development Computer (Ubuntu 20.04)
 
