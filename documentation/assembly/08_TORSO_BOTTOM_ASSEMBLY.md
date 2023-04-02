@@ -165,17 +165,17 @@
 
 | Part                                  | Quantity | Image                                                            |
 | ------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `Stewart Bracket`                     | 2        | ![Stewart Support](images/3d-printed-parts/stewart-bracket.jpg)  |
+| `Stewart Stand`                       | 2        | ![Stewart Stand](images/3d-printed-parts/stewart-stand.jpg)      |
 | `WiFi Antenna`                        | 2        | ![WiFi Antenna](images/electronics/wifi-antenna.jpg)             |
 
 ### Steps
 
-1. Install a `WiFi antenna` to a `Stewart bracket`, as shown in the following picture.
+1. Install a `WiFi antenna` to a `Stewart stand`, as shown in the following picture.
 
 **TODO update image**
 ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)
 
-2. Install the other `WiFi antenna` to the other `Stewart support`, as shown in the following picture.
+2. Install the other `WiFi antenna` to the other `Stewart stand`, as shown in the following picture.
 
 **TODO update image**
 ![Antenna 2](images/assemblies/08D%20antenna%202.jpg)
@@ -189,8 +189,8 @@
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
 | `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson-agx-xavier.jpg)                        |
-| `Stewart Support With An Antenna`     | 2        | ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)                                        |
-| `Stewart Support`                     | 1        | ![Stewart Support](images/3d-printed-parts/stewart%20support.jpg)                            |
+| `Stewart Stand With An Antenna`       | 2        | ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)                                        |
+| `Stewart Stand`                       | 1        | ![Stewart Stand](images/3d-printed-parts/stewart-stand.jpg)                                  |
 | `Assembled Torso Bottom Dynamixel`    | 1        | ![Assembled Torso Bottom Dynamixel](images/assemblies/08A%20dynamixel%20gear.jpg)            |
 | `Assembled Limit Switch`              | 1        | ![Assembled Limit Switch](images/assemblies/04F%20limit%20switch%20heat%20shrink%20tube.jpg) |
 | `M3x55 Socket Screw`                  | 4        | ![M3x55 Socket Screw](images/hardware/M3x55mm-socket.jpg)                                    |
@@ -213,20 +213,20 @@
 ![Dynamixel](images/assemblies/08E%20dynamixel%201.jpg)
 ![Dynamixel](images/assemblies/08E%20dynamixel%202.jpg)
 
-4. Install the `stewart support` onto the assembly.
+4. Install the `stewart stand` onto the assembly.
 
-![Stewart Support](images/3d-printed-parts/stewart%20support.jpg)
-![Stewart Support](images/assemblies/08E%20stewart%20support%201.jpg)
+![Stewart Stand](images/3d-printed-parts/stewart%20support.jpg)
+![Stewart Stand](images/assemblies/08E%20stewart%20support%201.jpg)
 
-5. Install the first `stewart support with an antenna` onto the assembly.
+5. Install the first `stewart stand with an antenna` onto the assembly.
 
 ![Antenna 1](images/assemblies/08D%20antenna%201.jpg)
-![Stewart Support](images/assemblies/08E%20stewart%20support%202.jpg)
+![Stewart Stand](images/assemblies/08E%20stewart%20support%202.jpg)
 
-6. Install the second `stewart support with an antenna` onto the assembly.
+6. Install the second `stewart stand with an antenna` onto the assembly.
 
 ![Antenna 1](images/assemblies/08D%20antenna%202.jpg)
-![Stewart Support](images/assemblies/08E%20stewart%20support%203.jpg)
+![Stewart Stand](images/assemblies/08E%20stewart%20support%203.jpg)
 
 7. Install the `assembled limit switch` onto the assembly with `M2.5x12 plastic screws`.
 
@@ -246,19 +246,19 @@
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
 | `Nvidia Jetson AGX Orin`              | 1        | **TODO image**                                                                               |
-| `Stewart Bracket`                     | 3        | ![Stewart Support](images/3d-printed-parts/stewart-bracket.jpg)                              |
+| `Stewart Stand`                       | 3        | ![Stewart Stand](images/3d-printed-parts/stewart-stand.jpg)                                  |
 | `Assembled Torso Bottom Dynamixel`    | 1        | ![Assembled Torso Bottom Dynamixel](images/assemblies/08/dynamixel-gear.jpg)                 |
 | `Assembled Limit Switch`              | 1        | ![Assembled Limit Switch](images/assemblies/04F%20limit%20switch%20heat%20shrink%20tube.jpg) |
 | `M3x12 Plastic Screw`                 | 6        | ![M3x12 Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                  |
 | `M2.5x8 Plastic Screw`                | 6        | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm-plastic.jpg)                                |
 | `M2.5x12 Plastic Screw`               | 2        | ![M2.5x12 Plastic Screw](images/hardware/M2.5x12mm-plastic.jpg)                              |
-| `Magnet`                              | 3        | ![Magnet](images/hardware/magnet.jpg)                                                   |
+| `Magnet`                              | 3        | ![Magnet](images/hardware/magnet.jpg)                                                        |
 
 ### Steps
 
-1. Install a `magnet` with super glue into the dedicated hole of each `Stewart bracket`, as shown in the following picture.
+1. Install a `magnet` with super glue into the dedicated hole of each `Stewart stand`, as shown in the following picture.
 
-![Stewart Bracket Magnet](images/assemblies/08/stewart-bracket-magnet.jpg)
+![Stewart Stand Magnet](images/assemblies/08/stewart-bracket-magnet.jpg)
 
 2. Remove the following screws.
 
@@ -276,11 +276,11 @@
 ![Dynamixel](images/assemblies/08E%20dynamixel%201.jpg)
 ![Dynamixel](images/assemblies/08E%20dynamixel%202.jpg)
 
-6. Install the `stewart supports` onto the assembly.
+6. Install the `stewart stands` onto the assembly.
 
 **TODO update images**
-![Stewart Support](images/3d-printed-parts/stewart%20support.jpg)
-![Stewart Support](images/assemblies/08E%20stewart%20support%201.jpg)
+![Stewart Stand](images/3d-printed-parts/stewart%20support.jpg)
+![Stewart Stand](images/assemblies/08E%20stewart%20support%201.jpg)
 
 7. Install the `assembled limit switch` onto the assembly with `M2.5x12 plastic screws`.
 
