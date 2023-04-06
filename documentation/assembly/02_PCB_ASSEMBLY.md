@@ -195,58 +195,59 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#dynamixel-control-pc
 3. Solder C13.
 4. Solder C6.
 5. Solder R10.
+6. Solder R7 and R8.
 
 ![PSU Control PCB - 1](images/assemblies/02/dynamixel-control-1.jpg)
 
-6. Solder U5.
-7. Solder C7, C8, C9, C10 and C11.
+7. Solder U5.
+8. Solder C7, C8, C9, C10 and C11.
 
 ![PSU Control PCB - 2](images/assemblies/02/dynamixel-control-2.jpg)
 
-8. Solder U7.
-9. Solder U8.
-10. Solder R2 and R12.
-11. SOlder R14.
-12. Solder C15 and C18.
+9. Solder U7.
+10. Solder U8.
+11. Solder R2 and R12.
+12. SOlder R14.
+13. Solder C15 and C18.
 
 ![PSU Control PCB - 3](images/assemblies/02/dynamixel-control-3.jpg)
 
-13. Solder Q2.
-14. Solder Q3.
-15. Solder C25.
-16. Solder R15, R16 and R18.
-17. Sodler R17.
+14. Solder Q2.
+15. Solder Q3.
+16. Solder C25.
+17. Solder R15, R16 and R18.
+18. Sodler R17.
 
 ![PSU Control PCB - 4](images/assemblies/02/dynamixel-control-4.jpg)
 
-18. Solder U2.
-19. Solder R1 and R3.
-20. Solder C4 and C5.
+19. Solder U2.
+20. Solder R1 and R3.
+21. Solder C4 and C5.
 
 ![PSU Control PCB - 5](images/assemblies/02/dynamixel-control-5.jpg)
 
-21. Solder L1 and L2.
-22. Solder C1, C3 and C14.
-23. Solder C2.
-24. Solder R4 and R11.
+22. Solder L1 and L2.
+23. Solder C1, C3 and C14.
+24. Solder C2.
+25. Solder R4 and R11.
 
 ![PSU Control PCB - 6](images/assemblies/02/dynamixel-control-6.jpg)
 
-25. Solder J2.
-26. Solder Solder J8, J11 and J12.
-27. Solder SW1.
-28. Solder U1.
-29. Cut the trace between the pads to separate VIN from VUSB.
+26. Solder J2.
+27. Solder Solder J8, J11 and J12.
+28. Solder SW1.
+29. Solder U1.
+30. Cut the trace between the pads to separate VIN from VUSB.
 
 ![Teensy](images/assemblies/02/cut-teensy-4.jpg)
 
-30. Solder the male headers to the Teensy 4.0.
+31. Solder the male headers to the Teensy 4.0.
 
 ![Teensy](images/assemblies/02/teensy-4.jpg)
 
-31. Solder the female headers (U4) to the PCB.
-32. Solder J1.
-33. Clip the Teensy 4.0 onto the PCB.
+32. Solder the female headers (U4) to the PCB.
+33. Solder J1.
+34. Clip the Teensy 4.0 onto the PCB.
 
 ![PSU Control PCB - 7](images/assemblies/02/dynamixel-control-7.jpg)
 
