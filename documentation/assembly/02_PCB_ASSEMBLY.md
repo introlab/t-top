@@ -226,18 +226,19 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#dynamixel-control-pc
 
 ![PSU Control PCB - 5](images/assemblies/02/dynamixel-control-5.jpg)
 
-22. Solder L1 and L2.
-23. Solder C1, C3 and C14.
-24. Solder C2.
-25. Solder R4 and R11.
+22. Solder C19, C22 and C23.
+23. Solder L1 and L2.
+24. Solder C1, C3 and C14.
+25. Solder C2.
+26. Solder R4 and R11.
 
 ![PSU Control PCB - 6](images/assemblies/02/dynamixel-control-6.jpg)
 
-26. Solder J2.
-27. Solder Solder J8, J11 and J12.
-28. Solder SW1.
-29. Solder U1.
-30. Cut the trace between the pads to separate VIN from VUSB.
+27. Solder J2.
+28. Solder Solder J8, J11 and J12.
+29. Solder SW1.
+30. Solder U1.
+31. Cut the trace between the pads to separate VIN from VUSB.
 
 ![Teensy](images/assemblies/02/cut-teensy-4.jpg)
 
