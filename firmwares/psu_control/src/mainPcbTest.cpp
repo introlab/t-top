@@ -46,6 +46,8 @@ static void testCurrentVoltageSensor();
 static void testPushButtons();
 static void testThermistors();
 
+static void testShutdown();
+
 void loop()
 {
     TEST(testAudioPowerAmplifier);
@@ -60,6 +62,8 @@ void loop()
     TEST(testCurrentVoltageSensor);
     TEST(testPushButtons);
     TEST(testThermistors);
+
+    TEST(testShutdown);
 }
 
 static void testAudioPowerAmplifier()
@@ -364,7 +368,7 @@ static void testCharger()
 
 static void testLightSensor(const char* name, AlsPt19LightSensor& lightSensor)
 {
-    constexpr size_t READ_COUNT = 10;
+    constexpr size_t READ_COUNT = 100;
     constexpr uint32_t TEST_STEP_DELAY_MS = 1000;
 
     DEBUG_SERIAL.print(name);
@@ -384,7 +388,7 @@ static void testLightSensors()
     testLightSensor("Front", frontLightSensor);
     testLightSensor("Back", backLightSensor);
     testLightSensor("Left", leftLightSensor);
-    testLightSensor("Right", rightLightSensor);
+    /testLightSensor("Right", rightLightSensor);
 }
 
 static void testCurrentVoltageSensor()
@@ -435,6 +439,31 @@ static void testThermistors()
     DEBUG_SERIAL.print("External Thermistors: ");
     DEBUG_SERIAL.print(externalThermistor.readCelsius());
     DEBUG_SERIAL.println(" C");
+}
+
+static void testShutdown()
+{
+    constexpr size_t READ_COUNT = 20;
+    constexpr uint32_t TEST_STEP_DELAY_MS = 1000;
+    constexpr uint32_t SHUTDOWN_DELAY_MS = 1000;
+
+    DEBUG_SERIAL.println("---------------------Test Shutdown---------------------");
+
+    pinMode(POWER_OFF_PIN, OUTPUT);
+    digitalWrite(POWER_OFF_PIN, true);
+    pinMode(POWER_SWITCH_PIN, INPUT);
+
+    DEBUG_SERIAL.println("Power switch pin :");
+    for (size_t i = 0; i < READ_COUNT; i++)
+    {
+        DEBUG_SERIAL.println(static_cast<int>(digitalRead(POWER_SWITCH_PIN)));
+        delay(TEST_STEP_DELAY_MS);
+    }
+    DEBUG_SERIAL.println();
+
+    DEBUG_SERIAL.println("Shutdown");
+    digitalWrite(POWER_OFF_PIN, false);
+    delay(SHUTDOWN_DELAY_MS);
 }
 
 #endif
