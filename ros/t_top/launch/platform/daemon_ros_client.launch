@@ -20,7 +20,7 @@
 
 
     <!-- IMU filter launch -->
-    <node pkg="imu_filter_madgwick" type="imu_filter_node" name="opencr_imu_filter_node">
+    <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_node">
         <param name="use_mag" value="false"/>
         <param name="world_frame" value="enu"/>
         <param name="publish_tf" value="false"/>
@@ -30,7 +30,7 @@
     </node>
 
     <!--Dynamic tf broadcast and odom launch -->
-    <node pkg="daemon_ros_client" type="ego_noise_reduction_node.py" name="ego_noise_reduction_node">
+    <node pkg="daemon_ros_client" type="daemon_ros_client_node" name="daemon_ros_client_node">
         <param name="base_link_torso_base_delta_z" value="0.151"/>  <!-- TODO Update -->
     </node>
 </launch>
