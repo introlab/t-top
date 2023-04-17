@@ -21,7 +21,7 @@
 | `Battery Charger`              | 1        | ![Battery Charger](images/electronics/RRC-PMM240-vertical.jpg)                    |
 | `Adafruit MAX9744`             | 1        | ![Adafruit MAX9744](images/assemblies/04G%20heat%20shrink%20tube.jpg)             |
 | `PSU Control PCB`              | 1        | ![PSU Control PCB](images/electronics/psu-control-pcb.jpg)                        |
-| `12V Buck-Boost PCB`           | 1        | ![12V Buck-Boost PCB](images/assemblies/03C%20all.jpg) **TODO CHANGE IMAGE**      |
+| `12V Buck-Boost PCB`           | 1        | ![12V Buck-Boost PCB](images/assemblies/02/buck-boost-12v-all.jpg)                |
 | `14-cm-Long 16 AWG Red Wire`   | 1        | ![`14-cm-long 16 AWG Red Wire](images/electronics/16-AWG-red-wire.jpg)            |
 | `14-cm-Long 16 AWG Black Wire` | 1        | ![`14-cm-long 16 AWG Black Wire](images/electronics/16-AWG-black-wire.jpg)        |
 | `8-cm-Long JST VHR-2N Cable`   | 1        | ![`8-cm-long JST VHR-2N Cable`](images/electronics/battery-charger-cable.jpg)     |

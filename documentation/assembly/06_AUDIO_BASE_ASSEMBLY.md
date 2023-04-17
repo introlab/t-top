@@ -94,7 +94,7 @@
 | `M2 Nuts`                                  | 4        | ![M3 Nuts](images/hardware/M2-nut.jpg)                                          |
 | `Assembled JST PHR-6 Cable`                | 1        |                                                                                 |
 | `Female Power Connector with Ferrules`     | 1        | ![Power Connector - Female](images/electronics/power-connector-female.jpg)      |
-| `19V Buck-Boost PCB`                       | 1        | ![19V Buck-Boost PCB](images/assemblies/03D%20all.jpg)                          |
+| `19V Buck-Boost PCB`                       | 1        | ![19V Buck-Boost PCB](images/assemblies/02/buck-boost-19v-all.jpg)              |
 | `M3 Nuts`                                  | 3        | ![M3 Nuts](images/hardware/M2-nut.jpg)                                          |
 | `8-cm-Long 16 AWG Red Wire`                | 1        | ![`8-cm-long 16 AWG Red Wire](images/electronics/16-AWG-red-wire.jpg)           |
 | `8-cm-Long 16 AWG Black Wire`              | 1        | ![`8-cm-long 16 AWG Black Wire](images/electronics/16-AWG-black-wire.jpg)       |

@@ -108,7 +108,6 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 
 ## C. 12V Buck-Boost PCB
 
-TODO update
 ### Required Parts
 
 See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
@@ -132,17 +131,19 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 15. Solder C4.
 16. Solder Q1.
 
-![12V Buck-Boost PCB - SMT](images/assemblies/03C%20SMT.jpg)
+![12V Buck-Boost PCB - SMT](images/assemblies/02/buck-boost-12v-smd.jpg)
 
 17. Solder R12.
-18. Solder J1, J2, J3, J4 and J5.
-19. Solder RV2.
+18. Solder L2.
+19. Solder J1, J2, J3, J4 and J5.
 20. Solder L1.
-21. Solder C1, C2, C3, C11 and C25.
-22. Solder C19.
+21. Solder RV2.
+22. Solder C1, C2, C3, C11 and C25.
 23. Solder RV1.
+24. Solder C19.
 
-![12V Buck-Boost PCB - All](images/assemblies/03C%20all.jpg)
+
+![12V Buck-Boost PCB - All](images/assemblies/02/buck-boost-12v-all.jpg)
 
 24. Adjust the output voltage to 11.5 V with RV2.
 
@@ -169,16 +170,17 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb).
 13. Solder R7 and R9.
 14. Solder JP1.
 
-![19V Buck-Boost PCB - SMT](images/assemblies/03D%20SMT.jpg)
+![19V Buck-Boost PCB - SMT](images/assemblies/02/buck-boost-19v-smd.jpg)
 
 15. Solder R12.
-16. Solder J1, J2, J3, J4 and J5.
-17. Solder RV2.
+16. Solder L2.
+17. Solder J1, J2, J3, J4 and J5.
 18. Solder L1.
-19. Solder C1, C2, C3, C11 and C25.
-20. Solder C19.
+19. Solder RV2.
+20. Solder C1, C2, C3, C11 and C25.
+21. Solder C19.
 
-![19V Buck-Boost PCB - All](images/assemblies/03D%20all.jpg)
+![19V Buck-Boost PCB - All](images/assemblies/02/buck-boost-19v-all.jpg)
 
 21. Adjust the output voltage to 19 V with RV2.
 

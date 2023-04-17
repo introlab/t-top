@@ -13,20 +13,18 @@ To build T-Top, two cutom PCBs must be made.
 - [Gerber](psu_control/gerber)
 - [Bill of Materials](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb)
 
-TODO update the image
-![PSU Control PCB](images/PSU%20Control%20PCB.jpg)
+![PSU Control PCB](images/psu-control.jpg)
 
 ## Dynamixel Control PCB
 - [Schematic](dynamixel_control/schematic.pdf)
 - [Gerber](dynamixel_control/gerber)
 - [Bill of Materials](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#dynamixel-control-pcb)
 
-TODO add an image
+![Dynamixel Control PCB](images/dynamixel-control.jpg)
 
 ## Buck-Boost PCB
 - [Schematic](buck_boost/schematic.pdf)
 - [Gerber](buck_boost/gerber)
 - [Bill of Materials](../documentation/assembly/00_ORDER_PRINT_LASER_CUTTING.md#buck-boost-pcb)
 
-TODO update the image
-![Buck-Boost PCB](images/Buck-Boost%20PCB.jpg)
+![Buck-Boost PCB](images/buck-boost.jpg)
