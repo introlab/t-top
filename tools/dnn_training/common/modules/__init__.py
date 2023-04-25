@@ -1,4 +1,4 @@
-from common.modules.am_softmax_linear import AmSoftmaxLinear
+from common.modules.normalized_linear import NormalizedLinear
 from common.modules.depth_wise_separable_conv2d import DepthWiseSeparableConv2d
 from common.modules.global_avg_pool_1d import global_avg_pool_1d, GlobalAvgPool1d
 from common.modules.global_avg_pool_2d import global_avg_pool_2d, GlobalAvgPool2d, GlobalHeightAvgPool2d

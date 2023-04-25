@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class AmSoftmaxLoss(nn.Module):
-    def __init__(self, s=10.0, m=0.2, start_annealing_epoch=0, end_annealing_epoch=0):
-        super(AmSoftmaxLoss, self).__init__()
+class ArcFaceLoss(nn.Module):
+    def __init__(self, s=64.0, m=0.5, start_annealing_epoch=0, end_annealing_epoch=0):
+        super(ArcFaceLoss, self).__init__()
         self._s = s
         self._m = 0.0
         self._target_m = m
@@ -17,7 +17,10 @@ class AmSoftmaxLoss(nn.Module):
     def forward(self, scores, target):
         scores = scores.clone()
 
-        numerator = self._s * (scores[range(scores.size(0)), target] - self._m)
+        angles = torch.arccos(scores)
+
+        numerator = self._s * torch.cos(angles[range(scores.size(0)), target] + self._m)
+
         scores[range(scores.size(0)), target] = -float('inf')
         denominator = torch.exp(numerator) + torch.sum(torch.exp(self._s * scores), dim=1)
         loss = numerator - torch.log(denominator)

@@ -1,45 +1,135 @@
 import torch
 import torch.nn as nn
 
+import torchvision.models as models
 
-class PoseEstimator(nn.Module):
-    def __init__(self, backbone, keypoint_count=17, upsampling_count=3):
-        super(PoseEstimator, self).__init__()
-        self._backbone = backbone
-        self._heatmap_layers = self._create_heatmap_layers(self._backbone.last_channel_count(),
-                                                           keypoint_count,
-                                                           upsampling_count)
 
-    def forward(self, x):
-        features = self._backbone(x)
-        heatmaps = self._heatmap_layers(features)
+class EfficientNetPoseEstimator(nn.Module):
+    SUPPORTED_BACKBONE_TYPES = ['efficientnet_b0', 'efficientnet_b1', 'efficientnet_b2', 'efficientnet_b3',
+                                'efficientnet_b4', 'efficientnet_b5', 'efficientnet_b6', 'efficientnet_b7']
+    HEATMAP_LAYER_CHANNELS_BY_BACKBONE_TYPE = {'efficientnet_b0': [320, 80, 40, 24],
+                                               'efficientnet_b1': [320, 80, 40, 24],
+                                               'efficientnet_b2': [352, 88, 48, 24],
+                                               'efficientnet_b3': [384, 96, 48, 32],
+                                               'efficientnet_b4': [448, 112, 56, 32],
+                                               'efficientnet_b5': [512, 128, 64, 40],
+                                               'efficientnet_b6': [576, 144, 72, 40],
+                                               'efficientnet_b7': [640, 160, 80, 48]}
 
-        return heatmaps
+    def __init__(self, backbone_type, keypoint_count=17, pretrained_backbone=True):
+        super(EfficientNetPoseEstimator, self).__init__()
 
-    def _create_heatmap_layers(self, last_channel_count, keypoint_count, upsampling_count):
-        layers = []
-        in_channels = last_channel_count
-        for _ in range(upsampling_count):
-            layers.append(nn.ConvTranspose2d(
-                in_channels=in_channels,
-                out_channels=256,
-                kernel_size=4,
-                stride=2,
-                padding=1,
-                output_padding=0,
-                bias=False))
-            layers.append(nn.BatchNorm2d(256))
-            layers.append(nn.ReLU(inplace=True))
-            in_channels = 256
+        if pretrained_backbone:
+            backbone_weights = 'DEFAULT'
+        else:
+            backbone_weights = None
 
-        layers.append(nn.Conv2d(
-            in_channels=256,
-            out_channels=keypoint_count,
-            kernel_size=1,
-            stride=1,
-            padding=0))
+        if (backbone_type not in self.SUPPORTED_BACKBONE_TYPES or
+                backbone_type not in self.HEATMAP_LAYER_CHANNELS_BY_BACKBONE_TYPE):
+            raise ValueError('Invalid backbone type')
 
-        return nn.Sequential(*layers)
+        backbone_layers = list(models.__dict__[backbone_type](weights=backbone_weights).features)
+        self._features_layers = nn.ModuleList(backbone_layers[:-1])
+        self._heatmap_layers = self._create_heatmap_layers(self.HEATMAP_LAYER_CHANNELS_BY_BACKBONE_TYPE[backbone_type], keypoint_count)
+
+    def _create_heatmap_layers(self, channels, keypoint_count):
+        heatmap_layers = nn.ModuleList()
+        for i in range(len(channels)):
+            if i < len(channels) - 1:
+                output_channels = channels[i + 1]
+            else:
+                output_channels = channels[i]
+
+            heatmap_layers.append(
+                nn.Sequential(
+                    nn.ConvTranspose2d(
+                        in_channels=channels[i],
+                        out_channels=channels[i],
+                        kernel_size=2,
+                        stride=2,
+                        padding=0,
+                        output_padding=0,
+                        bias=False),
+                    nn.BatchNorm2d(channels[i]),
+                    nn.SiLU(inplace=True),
+
+                    nn.Conv2d(in_channels=channels[i],
+                              out_channels=output_channels,
+                              kernel_size=3,
+                              padding=1,
+                              bias=False),
+                    nn.BatchNorm2d(output_channels),
+                    nn.SiLU(inplace=True),
+
+                    nn.Conv2d(in_channels=output_channels,
+                              out_channels=output_channels,
+                              kernel_size=3,
+                              padding=1,
+                              bias=False),
+                    nn.BatchNorm2d(output_channels),
+                    nn.SiLU(inplace=True),
+                )
+            )
+
+        heatmap_layers.append(
+            nn.Sequential(
+                nn.ConvTranspose2d(
+                    in_channels=channels[-1],
+                    out_channels=channels[-1],
+                    kernel_size=2,
+                    stride=2,
+                    padding=0,
+                    output_padding=0,
+                    bias=False),
+                nn.BatchNorm2d(channels[-1]),
+                nn.SiLU(inplace=True),
+
+                nn.Conv2d(
+                    in_channels=channels[-1],
+                    out_channels=channels[-1],
+                    kernel_size=3,
+                    padding=1,
+                    bias=False),
+                nn.BatchNorm2d(channels[-1]),
+                nn.SiLU(inplace=True),
+
+                nn.Conv2d(in_channels=channels[-1],
+                          out_channels=keypoint_count,
+                          kernel_size=1,
+                          padding=0,
+                          bias=True),
+                nn.Sigmoid()
+            )
+        )
+
+        return heatmap_layers
+
+    def forward(self, x0):
+        x3, x4, x5, x8 = self._forward_features(x0)
+        y4 = self._forward_heatmap(x3, x4, x5, x8)
+        return y4
+
+    def _forward_features(self, x0):
+        assert len(self._features_layers) == 8
+        x1 = self._features_layers[0](x0)
+        x2 = self._features_layers[1](x1)
+        x3 = self._features_layers[2](x2)
+        x4 = self._features_layers[3](x3)
+        x5 = self._features_layers[4](x4)
+        x6 = self._features_layers[5](x5)
+        x7 = self._features_layers[6](x6)
+        x8 = self._features_layers[7](x7)
+
+        return x3, x4, x5, x8
+
+    def _forward_heatmap(self, x3, x4, x5, x8):
+        y0 = self._heatmap_layers[0](x8)
+        y1 = self._heatmap_layers[1](y0 + x5)
+        y2 = self._heatmap_layers[2](y1 + x4)
+        y3 = self._heatmap_layers[3](y2 + x3)
+        y4 = self._heatmap_layers[4](y3)
+        return y4
+
 
 
 def get_coordinates(heatmaps):

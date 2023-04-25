@@ -26,7 +26,7 @@ class PoseAccuracyMetric:
         self._false_negative_count = 0
 
     def add(self, heatmap_prediction, heatmap_target, presence_target, oks_scale):
-        heatmap_target = F.interpolate(heatmap_target, (heatmap_prediction.size()[2], heatmap_prediction.size()[3]))
+        heatmap_prediction = F.interpolate(heatmap_prediction, (heatmap_target.size()[2], heatmap_target.size()[3]))
 
         predicted_coordinates, presence_prediction = get_coordinates(heatmap_prediction)
         target_coordinates, _ = get_coordinates(heatmap_target)

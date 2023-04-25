@@ -59,7 +59,7 @@ def main():
                              pooling_layer=args.pooling_layer)
     elif args.criterion_type == 'am_softmax_loss' and args.dataset_class_count is not None:
         model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.dataset_class_count,
-                             am_softmax_linear=True, pooling_layer=args.pooling_layer)
+                             normalized_linear=True, pooling_layer=args.pooling_layer)
     else:
         raise ValueError('--dataset_class_count must be used with "cross_entropy_loss" and "am_softmax_loss" criterion '
                          'types')
@@ -94,19 +94,19 @@ def main():
 
 
 def create_model(backbone_type, n_features, embedding_size,
-                 class_count=None, am_softmax_linear=False, pooling_layer='avg', conv_bias=False):
+                 class_count=None, normalized_linear=False, pooling_layer='avg', conv_bias=False):
     pretrained = True
 
     backbone = create_backbone(backbone_type, n_features, pretrained, conv_bias)
     if pooling_layer == 'avg':
         return AudioDescriptorExtractor(backbone, embedding_size=embedding_size,
-                                        class_count=class_count, am_softmax_linear=am_softmax_linear)
+                                        class_count=class_count, normalized_linear=normalized_linear)
     elif pooling_layer == 'vlad':
         return AudioDescriptorExtractorVLAD(backbone, embedding_size=embedding_size,
-                                            class_count=class_count, am_softmax_linear=am_softmax_linear)
+                                            class_count=class_count, normalized_linear=normalized_linear)
     elif pooling_layer == 'sap':
         return AudioDescriptorExtractorSAP(backbone, embedding_size=embedding_size,
-                                           class_count=class_count, am_softmax_linear=am_softmax_linear)
+                                           class_count=class_count, normalized_linear=normalized_linear)
     else:
         raise ValueError('Invalid pooling layer')
 

@@ -41,7 +41,7 @@ class BackboneDistillationTrainer:
         self._teacher_model = teacher_model.to(device)
         self._teacher_model.eval()
 
-        self._optimizer = torch.optim.Adam(self._student_model.parameters(), lr=learning_rate,
+        self._optimizer = torch.optim.AdamW(self._student_model.parameters(), lr=learning_rate,
                                            weight_decay=weight_decay)
         self._scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self._optimizer, epoch_count)
 

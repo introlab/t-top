@@ -6,9 +6,13 @@ import argparse
 
 from common.file_presence_checker import terminate_if_already_exported
 
+BACKBONE_TYPES = ['open_face', 'efficientnet_b0', 'efficientnet_b1', 'efficientnet_b2', 'efficientnet_b3',
+                  'efficientnet_b4', 'efficientnet_b5', 'efficientnet_b6', 'efficientnet_b7']
+
 
 def main():
     parser = argparse.ArgumentParser(description='Export face descriptor')
+    parser.add_argument('--backbone_type', choices=BACKBONE_TYPES, help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
 
     parser.add_argument('--output_dir', type=str, help='Choose the output directory', required=True)
@@ -29,9 +33,9 @@ def main():
     from common.model_exporter import export_model
 
     from face_recognition.datasets import IMAGE_SIZE
-    from face_recognition.face_descriptor_extractor import FaceDescriptorExtractor
+    from train_face_descriptor_extractor import create_model
 
-    model = FaceDescriptorExtractor(embedding_size=args.embedding_size)
+    model = create_model(args.backbone_type, args.embedding_size)
     x = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16, keys_to_remove=['_classifier._weight'])

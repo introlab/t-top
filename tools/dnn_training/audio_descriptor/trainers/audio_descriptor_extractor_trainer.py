@@ -125,11 +125,6 @@ class AudioDescriptorExtractorTrainer(Trainer):
         if self._criterion_type != 'triplet_loss':
             self._training_accuracy_metric.add(model_output[1], target)
 
-    def _validate(self):
-        super(AudioDescriptorExtractorTrainer, self)._validate()
-        if self._criterion_type == 'am_softmax_loss':
-            self._criterion.next_epoch()
-
     def _clear_between_validation_epoch(self):
         self._validation_loss_metric.clear()
         if self._criterion_type != 'triplet_loss':

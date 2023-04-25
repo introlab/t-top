@@ -1,11 +1,11 @@
 import torch.nn as nn
 
-from common.modules import L2Normalization, GlobalAvgPool2d, GlobalHeightAvgPool2d, AmSoftmaxLinear, NetVLAD
+from common.modules import L2Normalization, GlobalAvgPool2d, GlobalHeightAvgPool2d, NormalizedLinear, NetVLAD
 from audio_descriptor.modules import SAP
 
 
 class AudioDescriptorExtractor(nn.Module):
-    def __init__(self, backbone, embedding_size=128, class_count=None, am_softmax_linear=False):
+    def __init__(self, backbone, embedding_size=128, class_count=None, normalized_linear=False):
         super(AudioDescriptorExtractor, self).__init__()
 
         self._backbone = backbone
@@ -16,7 +16,7 @@ class AudioDescriptorExtractor(nn.Module):
             L2Normalization()
         )
 
-        self._classifier = _create_classifier(embedding_size, class_count, am_softmax_linear)
+        self._classifier = _create_classifier(embedding_size, class_count, normalized_linear)
         self._class_count = class_count
 
     def class_count(self):
@@ -35,7 +35,7 @@ class AudioDescriptorExtractor(nn.Module):
 
 
 class AudioDescriptorExtractorVLAD(nn.Module):
-    def __init__(self, backbone, embedding_size, class_count=None, am_softmax_linear=False):
+    def __init__(self, backbone, embedding_size, class_count=None, normalized_linear=False):
         super(AudioDescriptorExtractorVLAD, self).__init__()
 
         self._backbone = backbone
@@ -49,7 +49,7 @@ class AudioDescriptorExtractorVLAD(nn.Module):
             L2Normalization()
         )
 
-        self._classifier = _create_classifier(embedding_size, class_count, am_softmax_linear)
+        self._classifier = _create_classifier(embedding_size, class_count, normalized_linear)
         self._class_count = class_count
 
     def class_count(self):
@@ -67,7 +67,7 @@ class AudioDescriptorExtractorVLAD(nn.Module):
 
 
 class AudioDescriptorExtractorSAP(nn.Module):
-    def __init__(self, backbone, embedding_size=128, class_count=None, am_softmax_linear=False):
+    def __init__(self, backbone, embedding_size=128, class_count=None, normalized_linear=False):
         super(AudioDescriptorExtractorSAP, self).__init__()
 
         self._backbone = backbone
@@ -79,7 +79,7 @@ class AudioDescriptorExtractorSAP(nn.Module):
             L2Normalization()
         )
 
-        self._classifier = _create_classifier(embedding_size, class_count, am_softmax_linear)
+        self._classifier = _create_classifier(embedding_size, class_count, normalized_linear)
         self._class_count = class_count
 
     def class_count(self):
@@ -98,10 +98,10 @@ class AudioDescriptorExtractorSAP(nn.Module):
             return descriptor
 
 
-def _create_classifier(embedding_size, class_count, am_softmax_linear):
+def _create_classifier(embedding_size, class_count, normalized_linear):
     if class_count is not None:
-        if am_softmax_linear:
-            return AmSoftmaxLinear(embedding_size, class_count)
+        if normalized_linear:
+            return NormalizedLinear(embedding_size, class_count)
         else:
             return nn.Linear(embedding_size, class_count)
     else:

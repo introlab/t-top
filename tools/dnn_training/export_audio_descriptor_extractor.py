@@ -6,6 +6,7 @@ import argparse
 
 from common.file_presence_checker import terminate_if_already_exported
 
+
 def main():
     parser = argparse.ArgumentParser(description='Export audio descriptor extractor')
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
@@ -25,7 +26,8 @@ def main():
                         help='Choose the dataset class count when criterion_type is "cross_entropy_loss" or '
                              '"am_softmax_loss"',
                         default=None)
-    parser.add_argument('--am_softmax_linear', action='store_true', help='Use "AmSoftmaxLinear" instead of "nn.Linear"')
+    parser.add_argument('--normalized_linear', action='store_true',
+                        help='Use "NormalizedLinear" instead of "nn.Linear"')
     parser.add_argument('--conv_bias', action='store_true', help='Set bias=True to Conv2d (open_face_inception only)')
 
     parser.add_argument('--output_dir', type=str, help='Choose the output directory', required=True)
@@ -49,7 +51,7 @@ def main():
 
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
     model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.dataset_class_count,
-                         args.am_softmax_linear, args.pooling_layer, conv_bias=args.conv_bias)
+                         args.normalized_linear, args.pooling_layer, conv_bias=args.conv_bias)
     x = torch.ones((1, 1, image_size[0], image_size[1]))
     keys_to_remove = ['_classifier._weight'] if args.dataset_class_count is None else []
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
