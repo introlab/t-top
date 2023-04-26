@@ -27,7 +27,7 @@ def main():
     parser.add_argument('--batch_size_division', type=int, help='Set the batch size for the training', required=True)
     parser.add_argument('--epoch_count', type=int, help='Choose the epoch count', required=True)
 
-    parser.add_argument('--heatmap_sigma', type=int, help='Choose the sigma value to create the heatmap', required=True)
+    parser.add_argument('--heatmap_sigma', type=float, help='Choose sigma to create the heatmap', required=True)
 
     parser.add_argument('--model_checkpoint', type=str, help='Choose the model checkpoint file', default=None)
 
