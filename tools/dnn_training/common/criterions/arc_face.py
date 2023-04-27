@@ -15,9 +15,8 @@ class ArcFaceLoss(nn.Module):
         self.next_epoch()
 
     def forward(self, scores, target):
-        scores = scores.clone()
-
         angles = torch.arccos(scores)
+        scores = scores.clone()
 
         numerator = self._s * torch.cos(angles[range(scores.size(0)), target] + self._m)
 

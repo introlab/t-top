@@ -42,7 +42,7 @@ class FaceDescriptorExtractor(DnnModel):
 
         with torch.no_grad():
             grid = F.affine_grid(theta, torch.Size((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))).to(self._device)
-            aligned_image = F.grid_sample(image_tensor.unsqueeze(0).to(self._device), grid, mode='nearest').squeeze(0)
+            aligned_image = F.grid_sample(image_tensor.unsqueeze(0).to(self._device), grid, mode='bilinear').squeeze(0)
             cv2_aligned_image = (255 * aligned_image.permute(1, 2, 0)).to(torch.uint8).cpu().numpy()
 
             normalized_aligned_image = self._normalization(aligned_image)

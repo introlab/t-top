@@ -85,22 +85,23 @@ class OpenFaceBackbone(nn.Module):
 class EfficientNetBackbone(nn.Module):
     SUPPORTED_TYPES = ['efficientnet_b0', 'efficientnet_b1', 'efficientnet_b2', 'efficientnet_b3',
                        'efficientnet_b4', 'efficientnet_b5', 'efficientnet_b6', 'efficientnet_b7']
-    LAST_CHANNEL_COUNT_BY_TYPE = {'efficientnet_b0': 256,
-                                  'efficientnet_b1': 256,
-                                  'efficientnet_b2': 256,
-                                  'efficientnet_b3': 256,
-                                  'efficientnet_b4': 256,
-                                  'efficientnet_b5': 256,
-                                  'efficientnet_b6': 256,
-                                  'efficientnet_b7': 256}
+    LAST_CHANNEL_COUNT_BY_TYPE = {'efficientnet_b0': 1280,
+                                  'efficientnet_b1': 1280,
+                                  'efficientnet_b2': 1408,
+                                  'efficientnet_b3': 1536,
+                                  'efficientnet_b4': 1792,
+                                  'efficientnet_b5': 2048,
+                                  'efficientnet_b6': 2304,
+                                  'efficientnet_b7': 2560}
     def __init__(self, type, pretrained_backbone=True):
+        super(EfficientNetBackbone, self).__init__()
+
         if pretrained_backbone:
             backbone_weights = 'DEFAULT'
         else:
             backbone_weights = None
 
-        if (type not in self.SUPPORTED_BACKBONE_TYPES or
-                type not in self.LAST_CHANNEL_COUNT_BY_TYPE):
+        if (type not in self.SUPPORTED_TYPES or type not in self.LAST_CHANNEL_COUNT_BY_TYPE):
             raise ValueError('Invalid backbone type')
 
         self._features_layers = models.__dict__[type](weights=backbone_weights).features
@@ -117,7 +118,6 @@ class EfficientNetBackbone(nn.Module):
 class FaceDescriptorExtractor(nn.Module):
     def __init__(self, backbone, embedding_size=128, class_count=None, normalized_linear=False):
         super(FaceDescriptorExtractor, self).__init__()
-
 
         self._backbone = backbone
         self._global_avg_pool = GlobalAvgPool2d()

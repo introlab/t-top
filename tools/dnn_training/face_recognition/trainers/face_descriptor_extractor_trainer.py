@@ -1,11 +1,10 @@
 import os
 
-import torch.nn as nn
 import torchvision.transforms as transforms
 
 from tqdm import tqdm
 
-from common.criterions import TripletLoss, AmSoftmaxLoss, ArcFaceLoss
+from common.criterions import TripletLoss
 from common.datasets import TripletLossBatchSampler, RandomSharpnessChange, RandomAutocontrast, RandomEqualize, \
     RandomPosterize
 from common.trainers import Trainer
@@ -52,20 +51,7 @@ class FaceDescriptorExtractorTrainer(Trainer):
             self._validation_accuracy_metric = ClassificationAccuracyMetric()
 
     def _create_criterion(self, model):
-        if self._criterion_type == 'triplet_loss':
-            return TripletLoss(margin=self._margin)
-        elif self._criterion_type == 'cross_entropy_loss':
-            return FaceDescriptorCrossEntropyLoss()
-        elif self._criterion_type == 'am_softmax_loss':
-            return FaceDescriptorAmSoftmaxLoss(s=30.0, m=self._margin,
-                                               start_annealing_epoch=0,
-                                               end_annealing_epoch=self._epoch_count // 4)
-        elif self._criterion_type == 'arc_face_loss':
-            return FaceDescriptorArcFaceLoss(s=30.0, m=self._margin,
-                                             start_annealing_epoch=0,
-                                             end_annealing_epoch=self._epoch_count // 4)
-        else:
-            raise ValueError('Invalid criterion type')
+        return _create_criterion(self._criterion_type, self._margin, self._epoch_count)
 
     def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         dataset = Vggface2Dataset(dataset_root, split='training',
@@ -82,10 +68,10 @@ class FaceDescriptorExtractorTrainer(Trainer):
     def _create_dataset_loader(self, dataset, batch_size, batch_size_division):
         if self._criterion_type == 'triplet_loss':
             batch_sampler = TripletLossBatchSampler(dataset, batch_size=batch_size // batch_size_division)
-            return torch.utils.data.DataLoader(dataset, batch_sampler=batch_sampler, num_workers=0)
+            return torch.utils.data.DataLoader(dataset, batch_sampler=batch_sampler, num_workers=8)
         else:
             return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=True,
-                                               num_workers=2)
+                                               num_workers=8)
 
     def _clear_between_training(self):
         self._learning_curves.clear()
@@ -141,24 +127,7 @@ class FaceDescriptorExtractorTrainer(Trainer):
         lfw_evaluation.evaluate()
 
         if self._criterion_type != 'triplet_loss':
-            self._evaluate_classification_accuracy(model, device, dataset_loader)
-
-    def _evaluate_classification_accuracy(self, model, device, dataset_loader):
-        print('Evaluation - Classification')
-        top1_accuracy_metric = ClassificationAccuracyMetric()
-        top5_accuracy_metric = TopNClassificationAccuracyMetric(5)
-        map_metric = ClassificationMeanAveragePrecisionMetric(self._class_count)
-
-        for data in tqdm(dataset_loader):
-            model_output = model(data[0].to(device))
-            target = self._move_target_to_device(data[1], device)
-            top1_accuracy_metric.add(model_output[1], target)
-            top5_accuracy_metric.add(model_output[1], target)
-            map_metric.add(model_output[1], target)
-
-        print('\nTest : Top 1 Accuracy={}, Top 5 Accuracy={}, mAP={}'.format(top1_accuracy_metric.get_accuracy(),
-                                                                             top5_accuracy_metric.get_accuracy(),
-                                                                             map_metric.get_value()))
+            _evaluate_classification_accuracy(model, device, dataset_loader, self._class_count)
 
 
 def create_training_image_transform():
@@ -182,3 +151,38 @@ def create_validation_image_transform():
         transforms.Resize(IMAGE_SIZE),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+
+
+def _create_criterion(criterion_type, margin, epoch_count):
+    if criterion_type == 'triplet_loss':
+        return TripletLoss(margin=margin)
+    elif criterion_type == 'cross_entropy_loss':
+        return FaceDescriptorCrossEntropyLoss()
+    elif criterion_type == 'am_softmax_loss':
+        return FaceDescriptorAmSoftmaxLoss(s=30.0, m=margin,
+                                           start_annealing_epoch=0,
+                                           end_annealing_epoch=epoch_count // 4)
+    elif criterion_type == 'arc_face_loss':
+        return FaceDescriptorArcFaceLoss(s=30.0, m=margin,
+                                         start_annealing_epoch=0,
+                                         end_annealing_epoch=epoch_count // 4)
+    else:
+        raise ValueError('Invalid criterion type')
+
+
+def _evaluate_classification_accuracy(model, device, dataset_loader, class_count):
+    print('Evaluation - Classification')
+    top1_accuracy_metric = ClassificationAccuracyMetric()
+    top5_accuracy_metric = TopNClassificationAccuracyMetric(5)
+    map_metric = ClassificationMeanAveragePrecisionMetric(class_count)
+
+    for data in tqdm(dataset_loader):
+        model_output = model(data[0].to(device))
+        target = data[1].to(device)
+        top1_accuracy_metric.add(model_output[1], target)
+        top5_accuracy_metric.add(model_output[1], target)
+        map_metric.add(model_output[1], target)
+
+    print('\nTest : Top 1 Accuracy={}, Top 5 Accuracy={}, mAP={}'.format(top1_accuracy_metric.get_accuracy(),
+                                                                         top5_accuracy_metric.get_accuracy(),
+                                                                         map_metric.get_value()))
