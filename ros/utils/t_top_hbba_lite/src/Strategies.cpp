@@ -17,6 +17,11 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1);
 }
 
+StrategyType FaceAnimationStrategy::strategyType()
+{
+    return StrategyType::get<FaceAnimationStrategy>();
+}
+
 void FaceAnimationStrategy::onEnabling(const unique_ptr<Desire>& desire)
 {
     Strategy<FaceAnimationDesire>::onEnabling(desire);
@@ -67,6 +72,11 @@ void SpecificFaceFollowingStrategy::onEnabling(const unique_ptr<Desire>& desire)
     }
 }
 
+StrategyType SpecificFaceFollowingStrategy::strategyType()
+{
+    return StrategyType::get<SpecificFaceFollowingStrategy>();
+}
+
 TalkStrategy::TalkStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
@@ -104,6 +114,11 @@ void TalkStrategy::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
     {
         m_desireSet->removeDesire(msg->id);
     }
+}
+
+StrategyType TalkStrategy::strategyType()
+{
+    return StrategyType::get<TalkStrategy>();
 }
 
 GestureStrategy::GestureStrategy(
@@ -146,6 +161,11 @@ void GestureStrategy::gestureDoneSubscriberCallback(const gesture::Done::ConstPt
     }
 }
 
+StrategyType GestureStrategy::strategyType()
+{
+    return StrategyType::get<GestureStrategy>();
+}
+
 PlaySoundStrategy::PlaySoundStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
@@ -184,6 +204,11 @@ void PlaySoundStrategy::soundDoneSubscriberCallback(const sound_player::Done::Co
     {
         m_desireSet->removeDesire(msg->id);
     }
+}
+
+StrategyType PlaySoundStrategy::strategyType()
+{
+    return StrategyType::get<GestureStrategy>();
 }
 
 

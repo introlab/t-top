@@ -7,6 +7,7 @@
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/core/RosFilterPool.h>
 #include <hbba_lite/core/GecodeSolver.h>
+#include <hbba_lite/core/RosStrategyStateLogger.h>
 #include <hbba_lite/core/HbbaLite.h>
 
 #include <t_top_hbba_lite/Strategies.h>
@@ -51,7 +52,8 @@ int startNode(int argc, char* argv[])
     }
 
     auto solver = make_unique<GecodeSolver>();
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
+    auto strategyStateLogger = make_unique<RosStrategyStateLogger>(nodeHandle);
+    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver), move(strategyStateLogger));
 
     QApplication application(argc, argv);
     ControlPanel controlPanel(nodeHandle, desireSet, camera2dWideEnabled);

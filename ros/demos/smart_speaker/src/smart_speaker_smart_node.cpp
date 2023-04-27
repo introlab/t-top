@@ -19,6 +19,7 @@
 #include <hbba_lite/core/RosFilterPool.h>
 #include <hbba_lite/core/GecodeSolver.h>
 #include <hbba_lite/core/HbbaLite.h>
+#include <hbba_lite/core/RosStrategyStateLogger.h>
 
 #include <t_top_hbba_lite/Strategies.h>
 
@@ -61,7 +62,8 @@ void startNode(
     strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
 
     auto solver = make_unique<GecodeSolver>();
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
+    auto strategyStateLogger = make_unique<RosStrategyStateLogger>(nodeHandle);
+    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver), move(strategyStateLogger));
 
     StateManager stateManager;
     type_index askOtherTaskStateType(typeid(SmartAskOtherTaskState));

@@ -24,6 +24,8 @@ public:
     DECLARE_NOT_COPYABLE(FaceAnimationStrategy);
     DECLARE_NOT_MOVABLE(FaceAnimationStrategy);
 
+    StrategyType strategyType() override;
+
 protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
     void onDisabling() override;
@@ -42,6 +44,8 @@ public:
 
     DECLARE_NOT_COPYABLE(SpecificFaceFollowingStrategy);
     DECLARE_NOT_MOVABLE(SpecificFaceFollowingStrategy);
+
+    StrategyType strategyType() override;
 
 protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
@@ -63,6 +67,8 @@ public:
 
     DECLARE_NOT_COPYABLE(TalkStrategy);
     DECLARE_NOT_MOVABLE(TalkStrategy);
+
+    StrategyType strategyType() override;
 
 protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
@@ -88,6 +94,8 @@ public:
     DECLARE_NOT_COPYABLE(GestureStrategy);
     DECLARE_NOT_MOVABLE(GestureStrategy);
 
+    StrategyType strategyType() override;
+
 protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
 
@@ -111,6 +119,8 @@ public:
 
     DECLARE_NOT_COPYABLE(PlaySoundStrategy);
     DECLARE_NOT_MOVABLE(PlaySoundStrategy);
+
+    StrategyType strategyType() override;
 
 protected:
     void onEnabling(const std::unique_ptr<Desire>& desire) override;
