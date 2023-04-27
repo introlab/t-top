@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
@@ -16,6 +17,7 @@ from face_recognition.datasets.align_faces import get_landmarks_from_pose, cv2_t
 
 
 IMAGE_SIZE = (128, 96)
+BLUR_SCORE_SCALE = 2.0
 
 
 class FaceDescriptorExtractor(DnnModel):
@@ -28,11 +30,16 @@ class FaceDescriptorExtractor(DnnModel):
                                                       inference_type=inference_type)
         self._normalization = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
+        self._blur_score_kernel = torch.tensor([[-1.0, -1.0, -1.0],
+                                                [-1.0, 8.0, -1.0],
+                                                [-1.0, -1.0, -1.0]], device=self._device)
+        self._blur_score_kernel = self._blur_score_kernel.repeat(3, 1, 1).unsqueeze(0)
+
     def get_supported_image_size(self):
         return IMAGE_SIZE
 
-    def __call__(self, image_tensor, pose_coordinates, pose_presence):
-        landmarks, theoretical_landmark = get_landmarks_from_pose(pose_coordinates, pose_presence)
+    def __call__(self, image_tensor, pose_coordinates, pose_presence, pose_confidence_threshold):
+        landmarks, theoretical_landmark, alignment_keypoint_count = get_landmarks_from_pose(pose_coordinates, pose_presence, pose_confidence_threshold)
         transform = cv2.getAffineTransform(landmarks.astype(np.float32),
                                            (theoretical_landmark * np.array((IMAGE_SIZE[1], IMAGE_SIZE[0]))).astype(np.float32))
         try:
@@ -43,7 +50,9 @@ class FaceDescriptorExtractor(DnnModel):
         with torch.no_grad():
             grid = F.affine_grid(theta, torch.Size((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))).to(self._device)
             aligned_image = F.grid_sample(image_tensor.unsqueeze(0).to(self._device), grid, mode='bilinear').squeeze(0)
+            blur_score = BLUR_SCORE_SCALE * torch.std(F.conv2d(aligned_image, self._blur_score_kernel)).item()
             cv2_aligned_image = (255 * aligned_image.permute(1, 2, 0)).to(torch.uint8).cpu().numpy()
 
             normalized_aligned_image = self._normalization(aligned_image)
-            return super(FaceDescriptorExtractor, self).__call__(normalized_aligned_image.unsqueeze(0))[0].cpu(), cv2_aligned_image
+            descriptor = super(FaceDescriptorExtractor, self).__call__(normalized_aligned_image.unsqueeze(0))[0].cpu()
+            return descriptor, cv2_aligned_image, alignment_keypoint_count, blur_score

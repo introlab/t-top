@@ -38,7 +38,7 @@ PERSON_POSE_KEYPOINT_COLORS = [(0, 255, 0),
 
 class ObjectAnalysis:
     def __init__(self, center_x, center_y, width, height,
-                 object_class, object_confidence,
+                 object_class, object_confidence, object_class_probability,
                  object_descriptor=None, object_image=None,
                  pose_analysis=None, face_analysis=None):
         self.center_x = center_x
@@ -47,6 +47,7 @@ class ObjectAnalysis:
         self.height = height
         self.object_class = object_class
         self.object_confidence = object_confidence
+        self.object_class_probability = object_class_probability
         self.object_descriptor = object_descriptor
         self.object_image = object_image
 
@@ -57,7 +58,7 @@ class ObjectAnalysis:
     def from_yoloV4_prediction(prediction, object_class_names):
         return ObjectAnalysis(prediction.center_x, prediction.center_y, prediction.width, prediction.height,
                               object_class_names[prediction.class_index], prediction.confidence,
-                              prediction.descriptor)
+                              prediction.class_probabilities[prediction.class_index], prediction.descriptor)
 
 class PoseAnalysis:
     def __init__(self, pose_coordinates, pose_confidence, pose_image):
@@ -67,8 +68,10 @@ class PoseAnalysis:
 
 
 class FaceAnalysis:
-    def __init__(self, descriptor, face_image=None):
+    def __init__(self, descriptor, alignment_keypoint_count, blur_score, face_image=None):
         self.descriptor = descriptor
+        self.alignment_keypoint_count = alignment_keypoint_count
+        self.blur_score = blur_score
         self.face_image = face_image
 
 
@@ -156,13 +159,15 @@ class VideoAnalyzerNode:
         face_analysis = None
         if self._face_descriptor_enabled:
             try:
-                face_descriptor, face_image = self._face_descriptor_extractor(color_image_tensor,
-                                                                              pose_coordinates, pose_confidence)
+                face_descriptor, face_image, face_alignment_keypoint_count, face_blur_score = self._face_descriptor_extractor(
+                    color_image_tensor, pose_coordinates, pose_confidence, self._pose_confidence_threshold)
             except ValueError:
                 face_descriptor = torch.tensor([])
+                face_blur_score = -1.0
                 face_image = None
+                alignment_keypoint_count = 0
 
-            face_analysis = FaceAnalysis(face_descriptor.tolist())
+            face_analysis = FaceAnalysis(face_descriptor.tolist(), face_alignment_keypoint_count, face_blur_score)
             if self._cropped_image_enabled:
                 face_analysis.face_image = face_image
 

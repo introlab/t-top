@@ -111,10 +111,11 @@ def test_face_descriptor_extractor():
                                  [0.75 * IMAGE_SIZE[1], 0.25 * IMAGE_SIZE[0]],
                                  [0.25 * IMAGE_SIZE[1], 0.25 * IMAGE_SIZE[0]]])
     pose_presence = np.array([1.0, 1.0, 1.0, 0.0, 0.0])
+    pose_confidence_threshold = 0.4
 
-    cpu_descriptor = cpu_model(x, pose_coordinates, pose_presence)[0]
-    torch_gpu_descriptor = torch_gpu_model(x, pose_coordinates, pose_presence)[0]
-    trt_gpu_descriptor = trt_gpu_model(x, pose_coordinates, pose_presence)[0]
+    cpu_descriptor = cpu_model(x, pose_coordinates, pose_presence, pose_confidence_threshold)[0]
+    torch_gpu_descriptor = torch_gpu_model(x, pose_coordinates, pose_presence, pose_confidence_threshold)[0]
+    trt_gpu_descriptor = trt_gpu_model(x, pose_coordinates, pose_presence, pose_confidence_threshold)[0]
 
     print('mean(abs(cpu_descriptor - torch_gpu_descriptor)) =',
           mean_abs_diff(cpu_descriptor, torch_gpu_descriptor))

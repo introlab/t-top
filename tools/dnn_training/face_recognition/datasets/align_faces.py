@@ -50,7 +50,7 @@ class FolderFaceAligner:
 
     def _align_person_image(self, input_path, output_path, person_name, image_filename):
         output_size = (ALIGNED_IMAGE_SIZE[1], ALIGNED_IMAGE_SIZE[0])
-        landmarks, theoretical_landmark = self._get_landmarks(input_path, person_name, image_filename)
+        landmarks, theoretical_landmark, _ = self._get_landmarks(input_path, person_name, image_filename)
 
         cv2_image = cv2.imread(os.path.join(input_path, person_name, image_filename))
         cv2_transform = cv2.getAffineTransform(landmarks.astype(np.float32),
@@ -95,7 +95,7 @@ def get_landmarks_from_pose(pose, presence, presence_threshold, ignore_presence_
         theoretical_landmarks = np.array([[0.5, 0.75],
                                          [0.9, 0.25],
                                          [0.1, 0.25]])
-        return landmarks, theoretical_landmarks
+        return landmarks, theoretical_landmarks, 5
     elif (presence[0:3] > presence_threshold).all() and presence[3] > presence_threshold:
         landmarks = np.zeros((3, 2))
         landmarks[0] = pose[0]
@@ -109,7 +109,7 @@ def get_landmarks_from_pose(pose, presence, presence_threshold, ignore_presence_
                                          [0.85, 0.25],
                                          [0.25, 0.25]])
 
-        return landmarks, theoretical_landmarks
+        return landmarks, theoretical_landmarks, 4
 
     elif (presence[0:3] > presence_threshold).all() and presence[4] > presence_threshold:
         landmarks = np.zeros((3, 2))
@@ -124,7 +124,7 @@ def get_landmarks_from_pose(pose, presence, presence_threshold, ignore_presence_
                                          [0.75, 0.25],
                                          [0.15, 0.25]])
 
-        return landmarks, theoretical_landmarks
+        return landmarks, theoretical_landmarks, 4
 
     elif (presence[0:3] > presence_threshold).all() or ignore_presence_threshold_for_nose_eyes:
         eyes_x_diff = pose[1, 0] - pose[2, 0]
@@ -134,7 +134,7 @@ def get_landmarks_from_pose(pose, presence, presence_threshold, ignore_presence_
                                          [0.7, 0.35],
                                          [0.3, 0.35]])
 
-        return pose[0:3], theoretical_landmarks
+        return pose[0:3], theoretical_landmarks, 3
     else:
         raise ValueError('The alignment is not possible')
 
