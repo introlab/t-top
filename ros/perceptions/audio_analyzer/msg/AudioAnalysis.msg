@@ -1,5 +1,6 @@
 std_msgs/Header header
 
+int64 tracking_id
 audio_utils/AudioFrame audio_frame
 
 string[] audio_classes
