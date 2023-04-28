@@ -26,7 +26,8 @@ ControlPanel::ControlPanel(
 
     createUi(camera2dWideEnabled);
 
-    m_baseStatusSubscriber = nodeHandle.subscribe("daemon/base_status", 1, &ControlPanel::baseStatusSubscriberCallback, this);
+    m_baseStatusSubscriber =
+        nodeHandle.subscribe("daemon/base_status", 1, &ControlPanel::baseStatusSubscriberCallback, this);
 }
 
 void ControlPanel::onVolumeChanged(int volume)
@@ -42,14 +43,15 @@ void ControlPanel::baseStatusSubscriberCallback(const daemon_ros_client::BaseSta
     int volume = msg->volume;
     int maximumVolume = msg->maximum_volume;
 
-    invokeLater([=]()
-    {
-        m_batteryLevel->display(QString::number(stateOfCharge));
+    invokeLater(
+        [=]()
+        {
+            m_batteryLevel->display(QString::number(stateOfCharge));
 
-        QSignalBlocker volumeSliderSignalBlocker(m_volumeSlider);
-        m_volumeSlider->setMaximum(maximumVolume);
-        m_volumeSlider->setValue(volume);
-    });
+            QSignalBlocker volumeSliderSignalBlocker(m_volumeSlider);
+            m_volumeSlider->setMaximum(maximumVolume);
+            m_volumeSlider->setValue(volume);
+        });
 }
 
 void ControlPanel::createUi(bool camera2dWideEnabled)
@@ -60,6 +62,7 @@ void ControlPanel::createUi(bool camera2dWideEnabled)
     m_speechTab = new SpeechTab(m_nodeHandle, m_desireSet);
     m_gestureTab = new GestureTab(m_nodeHandle, m_desireSet);
     m_behaviorsTab = new BehaviorsTab(m_desireSet, camera2dWideEnabled);
+    m_ledTab = new LedTab(m_nodeHandle, m_desireSet);
     m_perceptionsTab = new PerceptionsTab(m_nodeHandle, m_desireSet, camera2dWideEnabled);
 
     m_tabWidget = new QTabWidget;
@@ -67,6 +70,7 @@ void ControlPanel::createUi(bool camera2dWideEnabled)
     m_tabWidget->addTab(m_speechTab, "Speech");
     m_tabWidget->addTab(m_gestureTab, "Gesture");
     m_tabWidget->addTab(m_behaviorsTab, "Behaviors");
+    m_tabWidget->addTab(m_ledTab, "LEDs");
     m_tabWidget->addTab(m_perceptionsTab, "Perceptions");
 
     m_volumeSlider = new QSlider;

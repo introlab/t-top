@@ -15,6 +15,7 @@
         <arg name="open_browser" value="$(arg open_browser)"/>
         <arg name="fullscreen" value="$(arg fullscreen_face)"/>
     </include>
+    <include file="$(find t_top)/launch/behaviors/led_emotions.launch"/>
 
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">

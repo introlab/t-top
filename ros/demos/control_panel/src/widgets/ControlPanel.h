@@ -5,6 +5,7 @@
 #include "SpeechTab.h"
 #include "GestureTab.h"
 #include "BehaviorsTab.h"
+#include "LedTab.h"
 #include "PerceptionsTab.h"
 
 #include <QWidget>
@@ -50,6 +51,7 @@ private:
     SpeechTab* m_speechTab;
     GestureTab* m_gestureTab;
     BehaviorsTab* m_behaviorsTab;
+    LedTab* m_ledTab;
     PerceptionsTab* m_perceptionsTab;
 
     QTabWidget* m_tabWidget;

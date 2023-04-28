@@ -122,6 +122,8 @@ void BehaviorsTab::createUi()
     auto globalLayout = new QVBoxLayout;
     globalLayout->addWidget(m_nearestFaceFollowingButton);
     globalLayout->addWidget(m_specificFaceFollowingButton);
+    globalLayout->addLayout(personNameLayout);
+    globalLayout->addSpacing(20);
     globalLayout->addWidget(m_soundFollowingButton);
     if (m_soundObjectPersonFollowingButton != nullptr)
     {
@@ -129,8 +131,6 @@ void BehaviorsTab::createUi()
     }
     globalLayout->addWidget(m_danceButton);
     globalLayout->addWidget(m_exploreButton);
-    globalLayout->addSpacing(20);
-    globalLayout->addLayout(personNameLayout);
     globalLayout->addStretch();
 
 

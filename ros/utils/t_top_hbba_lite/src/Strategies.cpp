@@ -39,6 +39,30 @@ void FaceAnimationStrategy::onDisabling()
     Strategy<FaceAnimationDesire>::onDisabling();
 }
 
+LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+    : Strategy<LedEmotionDesire>(
+          utility,
+          {{"led", 1}},
+          {{"led_emotions/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_nodeHandle(nodeHandle)
+{
+    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1);
+}
+
+void LedEmotionStrategy::onEnabling(const unique_ptr<Desire>& desire)
+{
+    Strategy<LedEmotionDesire>::onEnabling(desire);
+
+    auto ledEmotionDesire = dynamic_cast<LedEmotionDesire*>(desire.get());
+    if (ledEmotionDesire != nullptr)
+    {
+        std_msgs::String msg;
+        msg.data = ledEmotionDesire->name();
+        m_emotionPublisher.publish(msg);
+    }
+}
+
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
@@ -318,6 +342,12 @@ unique_ptr<BaseStrategy>
     createFaceAnimationStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
 {
     return make_unique<FaceAnimationStrategy>(utility, move(filterPool), nodeHandle);
+}
+
+unique_ptr<BaseStrategy>
+    createLedEmotionStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+{
+    return make_unique<LedEmotionStrategy>(utility, move(filterPool), nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)

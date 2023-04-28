@@ -16,4 +16,10 @@ inline void removeAllMovementDesires(DesireSet& desireSet)
     desireSet.removeAllDesiresOfType<ExploreDesire>();
 }
 
+inline void removeAllLedDesires(DesireSet& desireSet)
+{
+    desireSet.removeAllDesiresOfType<DanceDesire>();
+    desireSet.removeAllDesiresOfType<LedEmotionDesire>();
+}
+
 #endif

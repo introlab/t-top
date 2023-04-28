@@ -45,7 +45,7 @@ class LedDanceNode:
             publish_forced(self._none_led_colors)
 
     def _beat_cb(self, msg):
-        if msg.data:
+        if msg.data and not self._led_colors_pub.is_filtering_all_messages:
             self._led_colors_pub.publish(random.choice(self._dance_led_colors))
 
     def run(self):

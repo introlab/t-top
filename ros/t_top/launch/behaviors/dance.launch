@@ -16,7 +16,7 @@
         <remap from="beat" to="dance/beat"/>
     </node>
 
-    <node pkg="dance" type="led_dance_node.py" name="led_dance_node" output="screen">
+    <node pkg="dance" type="led_dance_node.py" name="led_dance_node">
         <param name="led_colors_file" value="$(find dance)/led_colors.json"/>
 
         <remap from="set_led_colors/filter_state" to="led_dance/filter_state"/>

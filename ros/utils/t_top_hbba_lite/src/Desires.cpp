@@ -35,6 +35,8 @@ ExploreDesire::ExploreDesire(uint16_t intensity) : Desire(intensity) {}
 
 FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
 
+LedEmotionDesire::LedEmotionDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
+
 SoundFollowingDesire::SoundFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
 NearestFaceFollowingDesire::NearestFaceFollowingDesire(uint16_t intensity) : Desire(intensity) {}

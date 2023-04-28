@@ -37,6 +37,7 @@ int startNode(int argc, char* argv[])
 
     strategies.emplace_back(createExploreStrategy(filterPool));
     strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createLedEmotionStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createSoundFollowingStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createSpecificFaceFollowingStrategy(filterPool, nodeHandle));
@@ -55,6 +56,7 @@ int startNode(int argc, char* argv[])
 
     QApplication application(argc, argv);
     ControlPanel controlPanel(nodeHandle, desireSet, camera2dWideEnabled);
+    //controlPanel.setFixedSize(600, 900);
     controlPanel.show();
 
     ros::AsyncSpinner spinner(1);
@@ -73,7 +75,7 @@ int main(int argc, char* argv[])
     }
     catch (const std::exception& e)
     {
-        ROS_ERROR_STREAM("Smart speaker crashed (" << e.what() << ")");
+        ROS_ERROR_STREAM("Control panel crashed (" << e.what() << ")");
         return -1;
     }
 }

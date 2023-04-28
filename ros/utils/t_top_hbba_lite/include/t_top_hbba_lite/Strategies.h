@@ -29,6 +29,21 @@ protected:
     void onDisabling() override;
 };
 
+class LedEmotionStrategy : public Strategy<LedEmotionDesire>
+{
+    ros::NodeHandle& m_nodeHandle;
+    ros::Publisher m_emotionPublisher;
+
+public:
+    LedEmotionStrategy(uint16_t utility, std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle);
+
+    DECLARE_NOT_COPYABLE(LedEmotionStrategy);
+    DECLARE_NOT_MOVABLE(LedEmotionStrategy);
+
+protected:
+    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+};
+
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
 {
     ros::NodeHandle& m_nodeHandle;
@@ -144,6 +159,10 @@ std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterP
 
 std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createLedEmotionStrategy(
     std::shared_ptr<FilterPool> filterPool,
     ros::NodeHandle& nodeHandle,
     uint16_t utility = 1);

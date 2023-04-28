@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(control_panel)
+project(led_emotions)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,24 +8,14 @@ project(control_panel)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  audio_analyzer
-  gesture
-  person_identification
-  roscpp
-  std_msgs
-  sensor_msgs
-  talk
-  video_analyzer
-  hbba_lite
-  t_top_hbba_lite
-  speech_to_text
   daemon_ros_client
+  hbba_lite
+  rospy
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-
-set(control_panel_components Core Widgets Gui OpenGL WebKitWidgets)
-find_package(Qt5 COMPONENTS ${control_panel_components} REQUIRED)
+# find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -81,7 +71,7 @@ find_package(Qt5 COMPONENTS ${control_panel_components} REQUIRED)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ################################################
@@ -114,10 +104,10 @@ find_package(Qt5 COMPONENTS ${control_panel_components} REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  #  INCLUDE_DIRS include
-  #  LIBRARIES control_panel
-  #  CATKIN_DEPENDS audio_analyzer gesture person_identification roscpp std_msgs talk video_analyzer
-  #  DEPENDS system_lib
+#  INCLUDE_DIRS include
+#  LIBRARIES led_emotions
+#  CATKIN_DEPENDS daemon_ros_client hbba_lite rospy
+#  DEPENDS system_lib
 )
 
 ###########
@@ -127,13 +117,13 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
+# include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/control_panel.cpp
+#   src/${PROJECT_NAME}/led_emotions.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -144,36 +134,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/control_panel_node.cpp)
-
-set(headers
-  src/QtUtils.h
-  src/widgets/ImageDisplay.h
-  src/widgets/ControlPanel.h
-  src/widgets/AvatarTab.h
-  src/widgets/SpeechTab.h
-  src/widgets/GestureTab.h
-  src/widgets/BehaviorsTab.h
-  src/widgets/LedTab.h
-  src/widgets/PerceptionsTab.h
-)
-
-set(srcs
-  src/control_panel_node.cpp
-  src/widgets/ImageDisplay.cpp
-  src/widgets/ControlPanel.cpp
-  src/widgets/AvatarTab.cpp
-  src/widgets/SpeechTab.cpp
-  src/widgets/GestureTab.cpp
-  src/widgets/BehaviorsTab.cpp
-  src/widgets/LedTab.cpp
-  src/widgets/PerceptionsTab.cpp
-)
-
-qt5_wrap_cpp(project_moc_srcs ${headers})
-
-add_executable(${PROJECT_NAME}_node ${srcs} ${uis} ${headers} ${project_moc_uis} ${project_moc_srcs})
-qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
+# add_executable(${PROJECT_NAME}_node src/led_emotions_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -186,10 +147,9 @@ qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-  ${control_panel_components_link}
-)
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -200,10 +160,10 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/led_emotions_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -238,7 +198,7 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_control_panel.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_led_emotions.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
