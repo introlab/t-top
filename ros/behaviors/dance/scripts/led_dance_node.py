@@ -14,10 +14,10 @@ class LedDanceNode:
         with open(rospy.get_param('~led_colors_file'), 'r') as f:
             self._none_led_colors, self._dance_led_colors = self._load_led_colors(json.load(f))
 
-        self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('set_led_colors/filter_state')
-        self._hbba_filter_state.on_changed(self._hbba_filter_state_cb)
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+                                                            state_service_name='set_led_colors/filter_state')
+        self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 
-        self._led_colors_pub  = rospy.Publisher('daemon/set_led_colors', LedColors, queue_size=1)
         self._beat_sub = rospy.Subscriber('beat', Bool, self._beat_cb, queue_size=1)
 
     def _load_led_colors(self, json_dict):
@@ -40,12 +40,12 @@ class LedDanceNode:
 
         return none_led_colors, dance_led_colors
 
-    def _hbba_filter_state_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
+    def _hbba_filter_state_cb(self, publish_forced, previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
-            self._led_colors_pub.publish(self._none_led_colors)
+            publish_forced(self._none_led_colors)
 
     def _beat_cb(self, msg):
-        if msg.data and not self._hbba_filter_state.is_filtering_all_messages:
+        if msg.data:
             self._led_colors_pub.publish(random.choice(self._dance_led_colors))
 
     def run(self):
