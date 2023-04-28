@@ -139,11 +139,13 @@ add_library(perception_logger
   src/perception_logger/VideoAnalysisLogger.cpp
   src/perception_logger/BinarySerialization.cpp
   src/perception_logger/SpeechLogger.cpp
+  src/perception_logger/HbbaStrategyStateLogger.cpp
   src/perception_logger/sqlite/SQLiteMigration.cpp
   src/perception_logger/sqlite/SQLitePerceptionLogger.cpp
   src/perception_logger/sqlite/SQLiteAudioAnalysisLogger.cpp
   src/perception_logger/sqlite/SQLiteVideoAnalysisLogger.cpp
   src/perception_logger/sqlite/SQLiteSpeechLogger.cpp
+  src/perception_logger/sqlite/SQLiteHbbaStrategyStateLogger.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -232,11 +234,13 @@ catkin_add_gtest(perception_logger-test
   test/perception_logger/AudioAnalysisLoggerTests.cpp
   test/perception_logger/VideoAnalysisLoggerTests.cpp
   test/perception_logger/SpeechLoggerTests.cpp
+  test/perception_logger/HbbaStrategyStateLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteMigrationTests.cpp
   test/perception_logger/sqlite/SQLitePerceptionLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteAudioAnalysisLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteVideoAnalysisLoggerTests.cpp
   test/perception_logger/sqlite/SQLiteSpeechLoggerTests.cpp
+  test/perception_logger/sqlite/SQLiteHbbaStrategyStateLoggerTests.cpp
 )
 if(TARGET perception_logger-test)
   target_link_libraries(perception_logger-test perception_logger ${catkin_LIBRARIES})

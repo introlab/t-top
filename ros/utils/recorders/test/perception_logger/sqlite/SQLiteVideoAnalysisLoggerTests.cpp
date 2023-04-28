@@ -74,8 +74,14 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
 
     SQLiteVideoAnalysisLogger logger(database);
 
-    int64_t id0 = logger.log(
-        VideoAnalysis(Timestamp(101), Position{1, 2, 3}, Direction{4, 5, 6}, "banana", 1.f, 0.5f, BoundingBox{{7, 8}, 9, 10}));
+    int64_t id0 = logger.log(VideoAnalysis(
+        Timestamp(101),
+        Position{1, 2, 3},
+        Direction{4, 5, 6},
+        "banana",
+        1.f,
+        0.5f,
+        BoundingBox{{7, 8}, 9, 10}));
     int64_t id1 = logger.log(VideoAnalysis(
         Timestamp(102),
         Position{11, 12, 13},

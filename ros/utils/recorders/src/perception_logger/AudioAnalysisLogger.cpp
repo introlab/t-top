@@ -10,7 +10,12 @@ AudioAnalysis::AudioAnalysis(Timestamp timestamp, Direction direction, int64_t t
 {
 }
 
-AudioAnalysis::AudioAnalysis(Timestamp timestamp, Direction direction, int64_t trackingId, string classes, vector<float> voiceDescriptor)
+AudioAnalysis::AudioAnalysis(
+    Timestamp timestamp,
+    Direction direction,
+    int64_t trackingId,
+    string classes,
+    vector<float> voiceDescriptor)
     : timestamp(timestamp),
       direction(direction),
       trackingId(trackingId),

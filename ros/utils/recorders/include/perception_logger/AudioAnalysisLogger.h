@@ -16,7 +16,12 @@ struct AudioAnalysis
     std::optional<std::vector<float>> voiceDescriptor;
 
     AudioAnalysis(Timestamp timestamp, Direction direction, int64_t trackingId, std::string classes);
-    AudioAnalysis(Timestamp timestamp, Direction direction, int64_t trackingId, std::string classes, std::vector<float> voiceDescriptor);
+    AudioAnalysis(
+        Timestamp timestamp,
+        Direction direction,
+        int64_t trackingId,
+        std::string classes,
+        std::vector<float> voiceDescriptor);
 };
 
 class AudioAnalysisLogger

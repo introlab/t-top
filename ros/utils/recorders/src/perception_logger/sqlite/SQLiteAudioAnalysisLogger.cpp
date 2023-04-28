@@ -7,16 +7,17 @@ using namespace std;
 
 SQLiteAudioAnalysisLogger::SQLiteAudioAnalysisLogger(SQLite::Database& database) : SQLitePerceptionLogger(database)
 {
-    vector<SQLiteMigration> migrations{SQLiteMigration("BEGIN;"
-                                                       "CREATE TABLE audio_analysis("
-                                                       "    perception_id INTEGER PRIMARY KEY,"
-                                                       "    classes TEXT,"
-                                                       "    voice_descriptor BLOB"
-                                                       ");"
-                                                       "COMMIT;"),
-                                       SQLiteMigration("BEGIN;"
-                                                       "ALTER TABLE audio_analysis ADD tracking_id INTEGER;"
-                                                       "COMMIT;")};
+    vector<SQLiteMigration> migrations{
+        SQLiteMigration("BEGIN;"
+                        "CREATE TABLE audio_analysis("
+                        "    perception_id INTEGER PRIMARY KEY,"
+                        "    classes TEXT,"
+                        "    voice_descriptor BLOB"
+                        ");"
+                        "COMMIT;"),
+        SQLiteMigration("BEGIN;"
+                        "ALTER TABLE audio_analysis ADD tracking_id INTEGER;"
+                        "COMMIT;")};
 
     applyMigrations(database, "audio_analysis", migrations);
 }

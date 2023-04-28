@@ -1,6 +1,7 @@
 #include <perception_logger/sqlite/SQLiteVideoAnalysisLogger.h>
 #include <perception_logger/sqlite/SQLiteAudioAnalysisLogger.h>
 #include <perception_logger/sqlite/SQLiteSpeechLogger.h>
+#include <perception_logger/sqlite/SQLiteHbbaStrategyStateLogger.h>
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
@@ -9,6 +10,7 @@
 #include <audio_analyzer/AudioAnalysis.h>
 #include <talk/Text.h>
 #include <speech_to_text/Transcript.h>
+#include <hbba_lite/StrategyState.h>
 
 #include <memory>
 #include <sstream>
@@ -48,6 +50,7 @@ class PerceptionLoggerNode
     unique_ptr<VideoAnalysisLogger> m_videoAnalysisLogger;
     unique_ptr<AudioAnalysisLogger> m_audioAnalysisLogger;
     unique_ptr<SpeechLogger> m_speechLogger;
+    unique_ptr<HbbaStrategyStateLogger> m_hbbaStrategyStateLogger;
 
     tf::TransformListener m_listener;
 
@@ -55,6 +58,7 @@ class PerceptionLoggerNode
     ros::Subscriber m_audioAnalysisSubscriber;
     ros::Subscriber m_talkTextSubscriber;
     ros::Subscriber m_speechToTextTranscriptSubscriber;
+    ros::Subscriber m_hbbaStrategyStateSubscriber;
 
 public:
     PerceptionLoggerNode(ros::NodeHandle& nodeHandle, PerceptionLoggerNodeConfiguration configuration)
@@ -65,6 +69,7 @@ public:
         m_videoAnalysisLogger = make_unique<SQLiteVideoAnalysisLogger>(m_database);
         m_audioAnalysisLogger = make_unique<SQLiteAudioAnalysisLogger>(m_database);
         m_speechLogger = make_unique<SQLiteSpeechLogger>(m_database);
+        m_hbbaStrategyStateLogger = make_unique<SQLiteHbbaStrategyStateLogger>(m_database);
 
         m_videoAnalysis3dSubscriber =
             m_nodeHandle.subscribe("video_analysis", 10, &PerceptionLoggerNode::videoAnalysisSubscriberCallback, this);
@@ -76,6 +81,11 @@ public:
             "speech_to_text/transcript",
             10,
             &PerceptionLoggerNode::speechToTextTranscriptSubscriberCallback,
+            this);
+        m_hbbaStrategyStateSubscriber = m_nodeHandle.subscribe(
+            "hbba_strategy_state_log",
+            10,
+            &PerceptionLoggerNode::hbbaStrategyStateSubscriberCallback,
             this);
     }
 
@@ -133,6 +143,12 @@ public:
         {
             m_speechLogger->log(Speech(ros::Time::now(), SpeechSource::HUMAN, msg->text));
         }
+    }
+
+    void hbbaStrategyStateSubscriberCallback(const hbba_lite::StrategyState::ConstPtr& msg)
+    {
+        m_hbbaStrategyStateLogger->log(
+            HbbaStrategyState(ros::Time::now(), msg->desire_type_name, msg->strategy_type_name, msg->enabled));
     }
 
     void run() { ros::spin(); }

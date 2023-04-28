@@ -7,26 +7,28 @@ using namespace std;
 
 SQLiteVideoAnalysisLogger::SQLiteVideoAnalysisLogger(SQLite::Database& database) : SQLitePerceptionLogger(database)
 {
-    vector<SQLiteMigration> migrations{SQLiteMigration("BEGIN;"
-                                                       "CREATE TABLE video_analysis("
-                                                       "    perception_id INTEGER PRIMARY KEY,"
-                                                       "    object_class TEXT,"
-                                                       "    bounding_box_centre_x REAL,"
-                                                       "    bounding_box_centre_y REAL,"
-                                                       "    bounding_box_width REAL,"
-                                                       "    bounding_box_height REAL,"
-                                                       "    person_pose_image BLOB,"
-                                                       "    person_pose BLOB,"
-                                                       "    person_pose_confidence BLOB,"
-                                                       "    face_descriptor BLOB"
-                                                       ");"
-                                                       "COMMIT;"),
-                                       SQLiteMigration("BEGIN;"
-                                                       "ALTER TABLE video_analysis ADD object_confidence REAL;"
-                                                       "ALTER TABLE video_analysis ADD object_class_probability REAL;"
-                                                       "ALTER TABLE video_analysis ADD face_alignment_keypoint_count INTEGER;"
-                                                       "ALTER TABLE video_analysis ADD face_blur_score REAL;"
-                                                       "COMMIT;"),};
+    vector<SQLiteMigration> migrations{
+        SQLiteMigration("BEGIN;"
+                        "CREATE TABLE video_analysis("
+                        "    perception_id INTEGER PRIMARY KEY,"
+                        "    object_class TEXT,"
+                        "    bounding_box_centre_x REAL,"
+                        "    bounding_box_centre_y REAL,"
+                        "    bounding_box_width REAL,"
+                        "    bounding_box_height REAL,"
+                        "    person_pose_image BLOB,"
+                        "    person_pose BLOB,"
+                        "    person_pose_confidence BLOB,"
+                        "    face_descriptor BLOB"
+                        ");"
+                        "COMMIT;"),
+        SQLiteMigration("BEGIN;"
+                        "ALTER TABLE video_analysis ADD object_confidence REAL;"
+                        "ALTER TABLE video_analysis ADD object_class_probability REAL;"
+                        "ALTER TABLE video_analysis ADD face_alignment_keypoint_count INTEGER;"
+                        "ALTER TABLE video_analysis ADD face_blur_score REAL;"
+                        "COMMIT;"),
+    };
 
     applyMigrations(database, "video_analysis", migrations);
 }

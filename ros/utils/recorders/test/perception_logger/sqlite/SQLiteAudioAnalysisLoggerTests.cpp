@@ -6,9 +6,16 @@
 
 using namespace std;
 
-void readAudioAnalysis(SQLite::Database& database, int64_t id, int64_t& trackingId, string& classes, vector<float>& voiceDescriptor)
+void readAudioAnalysis(
+    SQLite::Database& database,
+    int64_t id,
+    int64_t& trackingId,
+    string& classes,
+    vector<float>& voiceDescriptor)
 {
-    SQLite::Statement query(database, "SELECT tracking_id, classes, voice_descriptor FROM audio_analysis WHERE perception_id=?");
+    SQLite::Statement query(
+        database,
+        "SELECT tracking_id, classes, voice_descriptor FROM audio_analysis WHERE perception_id=?");
 
     query.bind(1, id);
     if (!query.executeStep())
