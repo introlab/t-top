@@ -171,6 +171,8 @@ private:
             position,
             positionToDirection(position),
             msg.object_class,
+            msg.object_confidence,
+            msg.object_class_probability,
             centreWidthHeightToBoundingBox(msg.center_2d, msg.width_2d, msg.height_2d)};
 
         if (!msg.person_pose_2d.empty())
@@ -199,6 +201,8 @@ private:
         }
         if (!msg.face_descriptor.empty())
         {
+            videoAnalysis.faceAlignmentKeypointCount = msg.face_alignment_keypoint_count;
+            videoAnalysis.faceBlurScore = msg.face_blur_score;
             videoAnalysis.faceDescriptor = msg.face_descriptor;
         }
 
@@ -210,6 +214,7 @@ private:
         AudioAnalysis audioAnalysis(
             msg->header.stamp,
             Direction{msg->direction_x, msg->direction_y, msg->direction_z},
+            msg->tracking_id,
             mergeClasses(msg->audio_classes));
 
         if (!msg->voice_descriptor.empty())

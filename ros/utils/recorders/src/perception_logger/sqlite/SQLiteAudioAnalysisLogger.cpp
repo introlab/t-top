@@ -13,6 +13,9 @@ SQLiteAudioAnalysisLogger::SQLiteAudioAnalysisLogger(SQLite::Database& database)
                                                        "    classes TEXT,"
                                                        "    voice_descriptor BLOB"
                                                        ");"
+                                                       "COMMIT;"),
+                                       SQLiteMigration("BEGIN;"
+                                                       "ALTER TABLE audio_analysis ADD tracking_id INTEGER;"
                                                        "COMMIT;")};
 
     applyMigrations(database, "audio_analysis", migrations);
@@ -25,16 +28,17 @@ int64_t SQLiteAudioAnalysisLogger::log(const AudioAnalysis& analysis)
     int64_t id = insertPerception(analysis.timestamp, nullopt, analysis.direction);
     SQLite::Statement insert(
         m_database,
-        "INSERT INTO audio_analysis(perception_id, classes, voice_descriptor) VALUES(?, ?, ?)");
+        "INSERT INTO audio_analysis(perception_id, tracking_id, classes, voice_descriptor) VALUES(?, ?, ?, ?)");
     insert.clearBindings();
     insert.bind(1, id);
-    insert.bindNoCopy(2, analysis.classes);
+    insert.bind(2, analysis.trackingId);
+    insert.bindNoCopy(3, analysis.classes);
 
     optional<Bytes> voiceDescriptorBytes;
     if (analysis.voiceDescriptor.has_value())
     {
         voiceDescriptorBytes = serializeToBytesNoCopy(analysis.voiceDescriptor.value());
-        insert.bindNoCopy(3, voiceDescriptorBytes->data(), voiceDescriptorBytes->size());
+        insert.bindNoCopy(4, voiceDescriptorBytes->data(), voiceDescriptorBytes->size());
     }
 
     insert.exec();

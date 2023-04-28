@@ -14,6 +14,8 @@ struct VideoAnalysis
     Direction direction;
 
     std::string objectClass;
+    float objectConfidence;
+    float objectClassProbability;
     BoundingBox boundingBox;
 
     std::optional<std::vector<ImagePosition>> personPoseImage;
@@ -21,18 +23,24 @@ struct VideoAnalysis
     std::optional<std::vector<float>> personPoseConfidence;
 
     std::optional<std::vector<float>> faceDescriptor;
+    std::optional<int32_t> faceAlignmentKeypointCount;
+    std::optional<float> faceBlurScore;
 
     VideoAnalysis(
         Timestamp timestamp,
         Position position,
         Direction direction,
         std::string objectClass,
+        float objectConfidence,
+        float objectClassProbability,
         BoundingBox boundingBox);
     VideoAnalysis(
         Timestamp timestamp,
         Position position,
         Direction direction,
         std::string objectClass,
+        float objectConfidence,
+        float objectClassProbability,
         BoundingBox boundingBox,
         std::vector<ImagePosition> personPoseImage,
         std::vector<Position> personPose,
@@ -42,11 +50,15 @@ struct VideoAnalysis
         Position position,
         Direction direction,
         std::string objectClass,
+        float objectConfidence,
+        float objectClassProbability,
         BoundingBox boundingBox,
         std::vector<ImagePosition> personPoseImage,
         std::vector<Position> personPose,
         std::vector<float> personPoseConfidence,
-        std::vector<float> faceDescriptor);
+        std::vector<float> faceDescriptor,
+        int32_t faceAlignmentKeypointCount,
+        float faceBlurScore);
 };
 
 class VideoAnalysisLogger
