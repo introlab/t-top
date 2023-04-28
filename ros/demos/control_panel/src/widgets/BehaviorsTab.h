@@ -7,7 +7,6 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QVariant>
-#include <QVector>
 
 #include <hbba_lite/core/DesireSet.h>
 
