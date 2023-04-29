@@ -68,10 +68,10 @@ class PoseAnalysis:
 
 
 class FaceAnalysis:
-    def __init__(self, descriptor, alignment_keypoint_count, blur_score, face_image=None):
+    def __init__(self, descriptor, alignment_keypoint_count, sharpness_score, face_image=None):
         self.descriptor = descriptor
         self.alignment_keypoint_count = alignment_keypoint_count
-        self.blur_score = blur_score
+        self.sharpness_score = sharpness_score
         self.face_image = face_image
 
 
@@ -159,15 +159,15 @@ class VideoAnalyzerNode:
         face_analysis = None
         if self._face_descriptor_enabled:
             try:
-                face_descriptor, face_image, face_alignment_keypoint_count, face_blur_score = self._face_descriptor_extractor(
+                face_descriptor, face_image, face_alignment_keypoint_count, face_sharpness_score = self._face_descriptor_extractor(
                     color_image_tensor, pose_coordinates, pose_confidence, self._pose_confidence_threshold)
             except ValueError:
                 face_descriptor = torch.tensor([])
-                face_blur_score = -1.0
+                face_sharpness_score = -1.0
                 face_image = None
                 alignment_keypoint_count = 0
 
-            face_analysis = FaceAnalysis(face_descriptor.tolist(), face_alignment_keypoint_count, face_blur_score)
+            face_analysis = FaceAnalysis(face_descriptor.tolist(), face_alignment_keypoint_count, face_sharpness_score)
             if self._cropped_image_enabled:
                 face_analysis.face_image = face_image
 

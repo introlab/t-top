@@ -30,12 +30,12 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis0.boundingBox.center.y, 9.0);
     EXPECT_EQ(analysis0.boundingBox.width, 10.0);
     EXPECT_EQ(analysis0.boundingBox.height, 11.0);
-    EXPECT_EQ(analysis0.personPoseImage, std::nullopt);
-    EXPECT_EQ(analysis0.personPose, std::nullopt);
-    EXPECT_EQ(analysis0.personPoseConfidence, std::nullopt);
-    EXPECT_EQ(analysis0.faceDescriptor, std::nullopt);
-    EXPECT_EQ(analysis0.faceAlignmentKeypointCount, std::nullopt);
-    EXPECT_EQ(analysis0.faceBlurScore, std::nullopt);
+    EXPECT_EQ(analysis0.personPoseImage, nullopt);
+    EXPECT_EQ(analysis0.personPose, nullopt);
+    EXPECT_EQ(analysis0.personPoseConfidence, nullopt);
+    EXPECT_EQ(analysis0.faceDescriptor, nullopt);
+    EXPECT_EQ(analysis0.faceAlignmentKeypointCount, nullopt);
+    EXPECT_EQ(analysis0.faceSharpnessScore, nullopt);
 
     VideoAnalysis analysis1{
         Timestamp(10),
@@ -65,9 +65,9 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis1.personPoseImage, vector<ImagePosition>({ImagePosition{120.0, 130.0}}));
     EXPECT_EQ(analysis1.personPose, vector<Position>({Position{140.0, 150.0, 160.0}}));
     EXPECT_EQ(analysis1.personPoseConfidence, vector<float>({0.5}));
-    EXPECT_EQ(analysis1.faceDescriptor, std::nullopt);
-    EXPECT_EQ(analysis1.faceAlignmentKeypointCount, std::nullopt);
-    EXPECT_EQ(analysis1.faceBlurScore, std::nullopt);
+    EXPECT_EQ(analysis1.faceDescriptor, nullopt);
+    EXPECT_EQ(analysis1.faceAlignmentKeypointCount, nullopt);
+    EXPECT_EQ(analysis1.faceSharpnessScore, nullopt);
 
     VideoAnalysis analysis2{
         Timestamp(100),
@@ -102,5 +102,5 @@ TEST(VideoAnalysisLoggerTests, videoAnalysis_constructor_shouldSetAttributes)
     EXPECT_EQ(analysis2.personPoseConfidence, vector<float>({0.5f}));
     EXPECT_EQ(analysis2.faceDescriptor, vector<float>({200.f}));
     EXPECT_EQ(analysis2.faceAlignmentKeypointCount, 5);
-    EXPECT_EQ(analysis2.faceBlurScore, 0.625);
+    EXPECT_EQ(analysis2.faceSharpnessScore, 0.625);
 }

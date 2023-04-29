@@ -26,7 +26,7 @@ SQLiteVideoAnalysisLogger::SQLiteVideoAnalysisLogger(SQLite::Database& database)
                         "ALTER TABLE video_analysis ADD object_confidence REAL;"
                         "ALTER TABLE video_analysis ADD object_class_probability REAL;"
                         "ALTER TABLE video_analysis ADD face_alignment_keypoint_count INTEGER;"
-                        "ALTER TABLE video_analysis ADD face_blur_score REAL;"
+                        "ALTER TABLE video_analysis ADD face_sharpness_score REAL;"
                         "COMMIT;"),
     };
 
@@ -43,7 +43,7 @@ int64_t SQLiteVideoAnalysisLogger::log(const VideoAnalysis& analysis)
         "INSERT INTO video_analysis(perception_id, object_class, object_confidence, object_class_probability, "
         "bounding_box_centre_x, bounding_box_centre_y, bounding_box_width, bounding_box_height,  "
         "person_pose_image, person_pose, person_pose_confidence, "
-        "face_descriptor, face_alignment_keypoint_count, face_blur_score)"
+        "face_descriptor, face_alignment_keypoint_count, face_sharpness_score)"
         " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     insert.clearBindings();
@@ -88,9 +88,9 @@ int64_t SQLiteVideoAnalysisLogger::log(const VideoAnalysis& analysis)
     {
         insert.bind(13, analysis.faceAlignmentKeypointCount.value());
     }
-    if (analysis.faceBlurScore.has_value())
+    if (analysis.faceSharpnessScore.has_value())
     {
-        insert.bind(14, analysis.faceBlurScore.value());
+        insert.bind(14, analysis.faceSharpnessScore.value());
     }
 
     insert.exec();

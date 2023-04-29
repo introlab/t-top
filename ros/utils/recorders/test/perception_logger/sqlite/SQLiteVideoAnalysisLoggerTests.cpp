@@ -20,14 +20,14 @@ void readVideoAnalysis(
     vector<float>& personPoseConfidence,
     vector<float>& faceDescriptor,
     optional<int32_t>& faceAlignmentKeypointCount,
-    optional<float>& faceBlurScore)
+    optional<float>& faceSharpnessScore)
 {
     SQLite::Statement query(
         database,
         "SELECT object_class, object_confidence, object_class_probability, "
         "bounding_box_centre_x, bounding_box_centre_y, bounding_box_width, bounding_box_height, "
         "person_pose_image, person_pose, person_pose_confidence, "
-        "face_descriptor, face_alignment_keypoint_count, face_blur_score FROM video_analysis WHERE "
+        "face_descriptor, face_alignment_keypoint_count, face_sharpness_score FROM video_analysis WHERE "
         "perception_id=?");
 
     query.bind(1, id);
@@ -42,7 +42,7 @@ void readVideoAnalysis(
         personPoseConfidence.clear();
         faceDescriptor.clear();
         faceAlignmentKeypointCount = nullopt;
-        faceBlurScore = nullopt;
+        faceSharpnessScore = nullopt;
         return;
     }
 
@@ -64,7 +64,7 @@ void readVideoAnalysis(
     }
     if (!query.getColumn(12).isNull())
     {
-        faceBlurScore = query.getColumn(12).getDouble();
+        faceSharpnessScore = query.getColumn(12).getDouble();
     }
 }
 
@@ -121,7 +121,7 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     vector<float> personPoseConfidence;
     vector<float> faceDescriptor;
     optional<int32_t> faceAlignmentKeypointCount;
-    optional<float> faceBlurScore;
+    optional<float> faceSharpnessScore;
 
     readVideoAnalysis(
         database,
@@ -135,7 +135,7 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         personPoseConfidence,
         faceDescriptor,
         faceAlignmentKeypointCount,
-        faceBlurScore);
+        faceSharpnessScore);
     EXPECT_EQ(objectClass, "banana");
     EXPECT_EQ(objectConfidence, 1.f);
     EXPECT_EQ(objectClassProbability, 0.5f);
@@ -145,7 +145,7 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     EXPECT_EQ(personPoseConfidence, vector<float>({}));
     EXPECT_EQ(faceDescriptor, vector<float>({}));
     EXPECT_EQ(faceAlignmentKeypointCount, nullopt);
-    EXPECT_EQ(faceBlurScore, nullopt);
+    EXPECT_EQ(faceSharpnessScore, nullopt);
 
     readVideoAnalysis(
         database,
@@ -159,7 +159,7 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         personPoseConfidence,
         faceDescriptor,
         faceAlignmentKeypointCount,
-        faceBlurScore);
+        faceSharpnessScore);
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(objectConfidence, 0.75f);
     EXPECT_EQ(objectClassProbability, 0.25f);
@@ -169,7 +169,7 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     EXPECT_EQ(personPoseConfidence, vector<float>({0.5f}));
     EXPECT_EQ(faceDescriptor, vector<float>({}));
     EXPECT_EQ(faceAlignmentKeypointCount, nullopt);
-    EXPECT_EQ(faceBlurScore, nullopt);
+    EXPECT_EQ(faceSharpnessScore, nullopt);
 
     readVideoAnalysis(
         database,
@@ -183,7 +183,7 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         personPoseConfidence,
         faceDescriptor,
         faceAlignmentKeypointCount,
-        faceBlurScore);
+        faceSharpnessScore);
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(objectConfidence, 0.5f);
     EXPECT_EQ(objectClassProbability, 0.75f);
@@ -193,5 +193,5 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
     EXPECT_EQ(personPoseConfidence, vector<float>({0.75f}));
     EXPECT_EQ(faceDescriptor, vector<float>({41.f, 42.f}));
     EXPECT_EQ(faceAlignmentKeypointCount, 5);
-    EXPECT_EQ(faceBlurScore, 0.125f);
+    EXPECT_EQ(faceSharpnessScore, 0.125f);
 }

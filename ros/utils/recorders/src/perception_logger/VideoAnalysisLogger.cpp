@@ -61,7 +61,7 @@ VideoAnalysis::VideoAnalysis(
     vector<float> personPoseConfidence,
     vector<float> faceDescriptor,
     int32_t faceAlignmentKeypointCount,
-    float faceBlurScore)
+    float faceSharpnessScore)
     : timestamp{timestamp},
       position{position},
       direction{direction},
@@ -74,7 +74,7 @@ VideoAnalysis::VideoAnalysis(
       personPoseConfidence{move(personPoseConfidence)},
       faceDescriptor{move(faceDescriptor)},
       faceAlignmentKeypointCount{faceAlignmentKeypointCount},
-      faceBlurScore{faceBlurScore}
+      faceSharpnessScore{faceSharpnessScore}
 {
 }
 

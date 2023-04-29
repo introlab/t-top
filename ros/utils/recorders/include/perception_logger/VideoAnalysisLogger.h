@@ -24,7 +24,7 @@ struct VideoAnalysis
 
     std::optional<std::vector<float>> faceDescriptor;
     std::optional<int32_t> faceAlignmentKeypointCount;
-    std::optional<float> faceBlurScore;
+    std::optional<float> faceSharpnessScore;
 
     VideoAnalysis(
         Timestamp timestamp,
@@ -58,7 +58,7 @@ struct VideoAnalysis
         std::vector<float> personPoseConfidence,
         std::vector<float> faceDescriptor,
         int32_t faceAlignmentKeypointCount,
-        float faceBlurScore);
+        float faceSharpnessScore);
 };
 
 class VideoAnalysisLogger

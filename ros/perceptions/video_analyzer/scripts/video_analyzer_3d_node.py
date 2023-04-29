@@ -91,7 +91,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         if object_analysis.face_analysis is not None:
             o.face_descriptor = object_analysis.face_analysis.descriptor
             o.face_alignment_keypoint_count = object_analysis.face_analysis.alignment_keypoint_count
-            o.face_blur_score = object_analysis.face_analysis.blur_score
+            o.face_sharpness_score = object_analysis.face_analysis.sharpness_score
             if object_analysis.face_analysis.face_image is not None:
                 o.face_image = self._cv_bridge.cv2_to_imgmsg(object_analysis.face_analysis.face_image, encoding='rgb8')
 

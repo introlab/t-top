@@ -218,7 +218,7 @@ private:
         if (!msg.face_descriptor.empty())
         {
             videoAnalysis.faceAlignmentKeypointCount = msg.face_alignment_keypoint_count;
-            videoAnalysis.faceBlurScore = msg.face_blur_score;
+            videoAnalysis.faceSharpnessScore = msg.face_sharpness_score;
             videoAnalysis.faceDescriptor = msg.face_descriptor;
         }
 

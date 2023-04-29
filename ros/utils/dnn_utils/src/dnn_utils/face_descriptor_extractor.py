@@ -17,7 +17,7 @@ from face_recognition.datasets.align_faces import get_landmarks_from_pose, cv2_t
 
 
 IMAGE_SIZE = (128, 96)
-BLUR_SCORE_SCALE = 2.0
+SHARPNESS_SCORE_SCALE = 2.0
 
 
 class FaceDescriptorExtractor(DnnModel):
@@ -30,10 +30,10 @@ class FaceDescriptorExtractor(DnnModel):
                                                       inference_type=inference_type)
         self._normalization = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-        self._blur_score_kernel = torch.tensor([[-1.0, -1.0, -1.0],
+        self._sharpness_score_kernel = torch.tensor([[-1.0, -1.0, -1.0],
                                                 [-1.0, 8.0, -1.0],
                                                 [-1.0, -1.0, -1.0]], device=self._device)
-        self._blur_score_kernel = self._blur_score_kernel.repeat(3, 1, 1).unsqueeze(0)
+        self._sharpness_score_kernel = self._sharpness_score_kernel.repeat(3, 1, 1).unsqueeze(0)
 
     def get_supported_image_size(self):
         return IMAGE_SIZE
@@ -50,9 +50,9 @@ class FaceDescriptorExtractor(DnnModel):
         with torch.no_grad():
             grid = F.affine_grid(theta, torch.Size((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))).to(self._device)
             aligned_image = F.grid_sample(image_tensor.unsqueeze(0).to(self._device), grid, mode='bilinear').squeeze(0)
-            blur_score = BLUR_SCORE_SCALE * torch.std(F.conv2d(aligned_image, self._blur_score_kernel)).item()
+            sharpness_score = SHARPNESS_SCORE_SCALE * torch.std(F.conv2d(aligned_image, self._sharpness_score_kernel)).item()
             cv2_aligned_image = (255 * aligned_image.permute(1, 2, 0)).to(torch.uint8).cpu().numpy()
 
             normalized_aligned_image = self._normalization(aligned_image)
             descriptor = super(FaceDescriptorExtractor, self).__call__(normalized_aligned_image.unsqueeze(0))[0].cpu()
-            return descriptor, cv2_aligned_image, alignment_keypoint_count, blur_score
+            return descriptor, cv2_aligned_image, alignment_keypoint_count, sharpness_score

@@ -17,5 +17,5 @@ sensor_msgs/Image person_pose_image
 
 float32[] face_descriptor
 int32 face_alignment_keypoint_count
-float32 face_blur_score
+float32 face_sharpness_score
 sensor_msgs/Image face_image
