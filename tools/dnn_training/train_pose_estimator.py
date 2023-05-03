@@ -35,6 +35,8 @@ def main():
                         default=None)
     parser.add_argument('--teacher_model_checkpoint', type=str, help='Choose the teacher model checkpoint file',
                         default=None)
+    parser.add_argument('--distillation_loss_alpha', type=float, help='Choose the alpha for the distillation loss',
+                        default=0.25)
 
     args = parser.parse_args()
 
@@ -59,7 +61,8 @@ def main():
                                                    batch_size_division=args.batch_size_division,
                                                    heatmap_sigma=args.heatmap_sigma,
                                                    student_model_checkpoint=args.model_checkpoint,
-                                                   teacher_model_checkpoint=args.teacher_model_checkpoint)
+                                                   teacher_model_checkpoint=args.teacher_model_checkpoint,
+                                                   loss_alpha=args.distillation_loss_alpha)
     elif args.teacher_backbone_type is not None or args.teacher_model_checkpoint is not None:
         raise ValueError('teacher_backbone_type and teacher_model_checkpoint must be set.')
     else:
@@ -74,6 +77,7 @@ def main():
                                        heatmap_sigma=args.heatmap_sigma,
                                        model_checkpoint=args.model_checkpoint)
     trainer.train()
+
 
 
 def create_model(backbone_type):

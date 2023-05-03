@@ -16,8 +16,9 @@ class PoseEstimatorDistillationTrainer(DistillationTrainer):
     def __init__(self, device, student_model, teacher_model, dataset_root='', output_path='',
                  epoch_count=10, learning_rate=0.01, weight_decay=0.0, batch_size=128, batch_size_division=4,
                  heatmap_sigma=10,
-                 student_model_checkpoint=None, teacher_model_checkpoint=None):
+                 student_model_checkpoint=None, teacher_model_checkpoint=None, loss_alpha=0.25):
         self._heatmap_sigma = heatmap_sigma
+        self._loss_alpha = loss_alpha
 
         super(PoseEstimatorDistillationTrainer, self).__init__(device, student_model, teacher_model,
                                                                dataset_root=dataset_root,
@@ -39,7 +40,7 @@ class PoseEstimatorDistillationTrainer(DistillationTrainer):
         self._learning_curves = PoseLearningCurves()
 
     def _create_criterion(self, student_model, teacher_model):
-        return PoseEstimationDistillationLoss()
+        return PoseEstimationDistillationLoss(alpha=self._loss_alpha)
 
     def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         return _create_training_dataset_loader(dataset_root, batch_size, batch_size_division, self._heatmap_sigma)
