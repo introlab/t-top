@@ -45,7 +45,7 @@ def main():
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_sig' + str(args.heatmap_sigma) +
                                '_lr' + str(args.learning_rate) + '_wd' + str(args.weight_decay) +
-                               '_t' + str(args.teacher_backbone_type))
+                               '_t' + str(args.teacher_backbone_type) + '_a' + str(args.distillation_loss_alpha))
     save_arguments(output_path, args)
     print_arguments(args)
 
