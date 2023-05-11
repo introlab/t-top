@@ -1,0 +1,15 @@
+@@ -7,8 +7,8 @@
+ WaylandEnable=false
+
+ # Enabling automatic login
+-#  AutomaticLoginEnable = true
+-#  AutomaticLogin = user1
++AutomaticLoginEnable = true
++AutomaticLogin = @@USER@@
+
+ # Enabling timed login
+ #  TimedLoginEnable = true
+@@ -26,4 +26,3 @@
+ # More verbose logs
+ # Additionally lets the X server dump core if it crashes
+ #Enable=true

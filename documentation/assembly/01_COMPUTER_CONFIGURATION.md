@@ -53,11 +53,13 @@
 
 ![WiFi Card](images/assemblies/01C%20wifi%20card.jpg)
 
-### D. Install JetPack 5.0.2
+### D. Install JetPack 5.1.1
 
-1. Install JetPack 5.0.2 onto the computer SSD.
+1. Install JetPack 5.1.1 onto the computer SSD.
 
 ### E. OpenCR Dev Rule
+
+TODO move after repo is cloned
 
 1. Copy [99-opencr-custom.rules](../../tools/udev_rules/99-opencr-custom.rules) in `/etc/udev/rules.d/`.
 2. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
@@ -81,15 +83,12 @@ sudo apt install -y nodejs
 1. Execute the following bash commands.
 
 ```bash
-sudo apt install htop python3-pip
+sudo apt install -y htop python3-pip
 sudo -H pip3 install -U jetson-stats
 
 # Update CMake
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
 sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
-sudo apt update
-sudo apt install kitware-archive-keyring
-sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
 sudo apt update
 sudo apt install cmake
 ```
@@ -98,6 +97,7 @@ sudo apt install cmake
 1. Execute the following bash commands.
 
 ```bash
+mkdir ~/deps
 cd ~/deps
 
 git clone https://github.com/jetsonhacks/buildLibrealsense2Xavier
@@ -130,7 +130,8 @@ sudo apt install -y python3-rosdep \
     python3-vcstool \
     build-essential \
     libboost-all-dev \
-    libpoco-dev python3-empy \
+    libpoco-dev \
+    python3-empy \
     libtinyxml-dev \
     libtinyxml2-dev \
     qt5-default \
@@ -329,6 +330,10 @@ git clone --recurse-submodules git@github.com:introlab/t-top.git
 catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
 ```
 
+### Setup User
+1. Enable autologin in the settings application.
+2. Disable sleep mode in the settings application.
+
 ### Setup Screen
 
 1. Rotate the display in the settings application.
@@ -344,7 +349,310 @@ EndSection
 ```
 
 ## Onboard Computer - Jetson AGX Orin
-**TODO**
+
+TODO A, B and C
+
+TODO merge common with AGX Xavier
+TODO use catkin_make or catkin build for both
+
+<!-- ### D. Install JetPack 5.1.1
+
+1. Install JetPack 5.1.1 onto the computer SSD. -->
+
+<!-- ### E. OpenCR Dev Rule
+
+TODO move after repo is cloned
+
+1. Copy [99-opencr-custom.rules](../../tools/udev_rules/99-opencr-custom.rules) in `/etc/udev/rules.d/`.
+2. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
+2. Copy [99-camera-2d-wide.rules](../../tools/udev_rules/99-camera-2d-wide.rules) in `/etc/udev/rules.d/`.
+3. Add the user to the `dialout` group.
+
+```bash
+sudo usermod -a -G dialout $USER
+``` -->
+
+<!-- ### F. Install NPM
+1. Execute the following bash commands.
+
+```bash
+sudo apt install -y curl software-properties-common
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt install -y nodejs
+``` -->
+
+<!-- ### G. Install Tools
+1. Execute the following bash commands.
+
+```bash
+sudo apt install htop python3-pip
+sudo -H pip3 install -U jetson-stats
+
+# Update CMake
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+sudo apt update
+sudo apt install kitware-archive-keyring
+sudo apt update
+sudo apt install cmake
+``` -->
+
+### H. Install Librealsense 2
+1. Execute the following bash commands.
+
+```bash
+cd ~/deps
+
+git clone https://github.com/jetsonhacks/installRealSenseSDK.git
+cd installRealSenseSDK
+```
+
+2. Add the folowing arguments to the `cmake` command in `buildLibrealsense.sh`.
+
+```bash
+-DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+```
+
+3. Install the missing dependencies
+```bash
+sudo apt install libusb-dev python3.9-dev
+```
+
+4. Execute the following bash commands.
+
+```bash
+./buildLibrealsense.sh --version "v2.50.0" -j $(nproc)
+```
+
+### I. Install ROS
+1. Execute the following bash commands.
+
+```bash
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+sudo apt update
+
+sudo apt install -y python3-rosdep \
+    python3-rosinstall-generator \
+    python3-vcstool \
+    build-essential \
+    libboost-all-dev \
+    libpoco-dev python3-empy \
+    libtinyxml-dev \
+    libtinyxml2-dev \
+    qt5-default \
+    sip-dev \
+    python3-sip \
+    python3-sip-dbg \
+    python3-sip-dev \
+    python3-pyqt5 \
+    python3-nose \
+    python3-twisted \
+    python3-serial \
+    python3-autobahn \
+    python3-tornado \
+    python3-bson \
+    python3-qt-binding \
+    libcurl4-gnutls-dev \
+    libgtest-dev \
+    liblz4-dev \
+    libfltk1.1-dev \
+    liburdfdom-headers-dev \
+    liburdfdom-dev \
+    liburdfdom-tools \
+    libgpgme-dev \
+    libyaml-cpp-dev \
+    libpcl-dev \
+    libgtk-3-dev \
+    libassimp-dev \
+    libogre-1.9-dev \
+    libconfig-dev \
+    liblog4cplus-dev \
+    alsa-utils \
+    liblog4cpp5-dev \
+    liblog4cxx-dev \
+    libbz2-dev \
+    libbullet-dev \
+    libsdl1.2-dev \
+    libsdl-image1.2-dev \
+    libapriltag-dev \
+    python3-catkin-tools
+
+# Install system dependencies
+cd ~/deps
+git clone https://github.com/ros/console_bridge
+cd console_bridge
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+make -j
+sudo make install
+
+cd ~/deps
+git clone https://github.com/ethz-asl/libnabo.git
+cd libnabo
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+make -j
+sudo make install
+
+cd ~/deps
+git clone https://github.com/ethz-asl/libpointmatcher.git
+cd libpointmatcher
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+make -j
+sudo make install
+
+cd ~/deps
+git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
+cd rtabmap/build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+make -j4
+sudo make install
+
+# Install ROS
+sudo rosdep init
+rosdep update
+
+mkdir ~/ros_catkin_ws
+cd ~/ros_catkin_ws
+
+rosinstall_generator desktop_full --rosdistro noetic --deps --tar > noetic-desktop.rosinstall
+mkdir ./src
+vcs import --input noetic-desktop.rosinstall ./src
+rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
+
+# Remove useless packages
+rm -rf ~/ros_catkin_ws/src/gazebo_ros_pkgs/
+
+# Add ROS packages
+cd ~/ros_catkin_ws/src
+git clone -b 1.0.1 https://github.com/GT-RAIL/rosauth.git
+git clone -b noetic-devel https://github.com/ros-drivers/rosserial.git
+git clone -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
+git clone -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
+git clone --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
+
+git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap_ros.git
+git clone -b noetic-devel https://github.com/ros-planning/navigation.git
+
+git clone -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
+git clone -b 2.3.2 https://github.com/IntelRealSense/realsense-ros.git
+git clone https://github.com/OTL/cv_camera.git
+git clone -b 0.6.4-noetic https://github.com/introlab/find-object.git
+
+# Replace not complete packages
+rm -rf geometry2 navigation_msgs vision_opencv image_common perception_pcl pcl_msgs image_transport_plugins
+
+git clone -b noetic-devel https://github.com/ros/geometry2.git
+git clone -b ros1 https://github.com/ros-planning/navigation_msgs.git
+git clone -b noetic https://github.com/ros-perception/vision_opencv.git
+git clone -b noetic-devel https://github.com/ros-perception/image_common.git
+git clone -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
+git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
+git clone -b noetic-devel https://github.com/ros-perception/image_transport_plugins
+
+cd ~/ros_catkin_ws
+catkin config --init --install --space-suffix _isolated --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=0
+catkin build
+
+# Add ROS setup to .bashrc
+echo "source ~/ros_catkin_ws/install_isolated/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+
+### J. Install System Dependancies
+
+1. Execute the following bash commands.
+
+```bash
+sudo apt install -y libasound2-dev \
+    libpulse-dev \
+    libconfig-dev \
+    alsa-utils \
+    gfortran \
+    libgfortran-*-dev \
+    texinfo \
+    libfftw3-dev \
+    libsqlite3-dev \
+    portaudio19-dev \
+    python3-all-dev \
+    libgecode-dev \
+    qt5-default \
+    v4l-utils \
+    libopenblas-dev \
+    libpython3-dev \
+    ffmpeg \
+    chromium-browser
+```
+
+### K. Install Python Dependencies
+
+1. Execute the following bash commands.
+
+```bash
+# Install general dependencies
+sudo apt install -y 'libprotobuf*' protobuf-compiler ninja-build libdc1394-dev
+sudo -H pip3 install -U numpy scipy numba cupy matplotlib google-cloud-texttospeech google-cloud-speech libconf tqdm sounddevice librosa audioread requests ipinfo pybind11-stubgen sphinx build
+sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
+
+# Install PyTorch for Jetson
+cd ~/deps
+wget https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
+sudo -H pip3 install torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
+
+cd ~/deps
+git clone --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
+cd vision
+sudo -H python3 setup.py install
+
+cd ~/deps
+git clone --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
+cd audio
+sudo bash -c 'echo "export PATH=/usr/local/cuda-11.4/bin:\$PATH" >> /root/.bashrc'
+sudo bash -c 'sudo echo "export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:\$LD_LIBRARY_PATH" >> /root/.bashrc'
+sudo -H pip3 install -r requirements.txt
+sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
+
+cd ~/deps
+git clone https://github.com/NVIDIA-AI-IOT/torch2trt
+cd torch2trt
+sudo -H python3 setup.py install --plugins
+```
+
+### L. Clone and Build the Repository
+
+1. Execute the following bash commands.
+
+```bash
+mkdir ~/t-top_ws
+cd ~/t-top_ws
+mkdir src
+catkin config --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+catkin config --profile debug --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+cd src
+git clone --recurse-submodules git@github.com:introlab/t-top.git
+catkin build
+catkin build --profile debug
+```
+
+### Setup Screen
+
+1. Rotate the display in the settings application.
+2. Add `Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"` before `EndSection` in the following section of `/usr/share/X11/xorg.conf.d/40-libinput.conf`.
+
+```
+Section "InputClass"
+        Identifier "libinput touchscreen catchall"
+        MatchIsTouchscreen "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "libinput"
+EndSection
+```
 
 ## Development Computer (Ubuntu 20.04)
 
@@ -405,7 +713,7 @@ sudo apt install -y libasound2-dev \
     libconfig-dev \
     alsa-utils \
     gfortran \
-    libgfortran-*-dev \
+    'libgfortran-*-dev' \
     texinfo \
     libfftw3-dev \
     libsqlite3-dev \
