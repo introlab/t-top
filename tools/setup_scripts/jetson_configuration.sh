@@ -93,6 +93,14 @@ sudo -v && sudo_stay_validated &
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Update and upgrade system"
+ECHO_IN_BLUE "###############################################################"
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Cloning the T-Top repo"
 ECHO_IN_BLUE "###############################################################"
 mkdir -p ~/t-top_ws/src
