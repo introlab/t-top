@@ -9,7 +9,3 @@
 
  # Enabling timed login
  #  TimedLoginEnable = true
-@@ -26,4 +26,3 @@
- # More verbose logs
- # Additionally lets the X server dump core if it crashes
- #Enable=true

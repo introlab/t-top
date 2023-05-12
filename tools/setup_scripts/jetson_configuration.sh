@@ -71,9 +71,9 @@ cd ~/t-top_ws/src
 # TODO remove -b t-top-v4
 git clone --recurse-submodules https://github.com/introlab/t-top.git -b t-top-v4
 
-TTOP_REPO_PATH='~/t-top_ws/src/t-top'
-SETUP_SCRIPTS_DIR="$TTOP_REPO_PATH/tools/setup_scripts"
-PATCH_FILES_DIR="$SETUP_SCRIPTS_DIR/patch"
+TTOP_REPO_PATH=~/t-top_ws/src/t-top
+SETUP_SCRIPTS_DIR=$TTOP_REPO_PATH/tools/setup_scripts
+PATCH_FILES_DIR=$SETUP_SCRIPTS_DIR/patch
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -410,16 +410,25 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Setup user autologin and disable utomatic sleep and screen lock"
 ECHO_IN_BLUE "###############################################################"
-perl -pi -e "s/\@\@USER\@\@/$USER/" $PATCH_FILES_DIR/gdm3_config.patch
-sudo patch -u /etc/gdm3/custom.conf $PATCH_FILES_DIR/gdm3_config.patch
+perl -pe "s/\@\@USER\@\@/$USER/" $PATCH_FILES_DIR/gdm3_config.patch > $PATCH_FILES_DIR/gdm3_config.patch.tmp
+sudo patch -u /etc/gdm3/custom.conf $PATCH_FILES_DIR/gdm3_config.patch.tmp
+rm $PATCH_FILES_DIR/gdm3_config.patch.tmp
 
 gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
 gsettings set org.gnome.desktop.screensaver lock-delay 0
-gsettings set org.gnome.session idle-delay 0
+gsettings set org.gnome.desktop.session idle-delay 0
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Configure screen orientation and touchscreen calibration"
 ECHO_IN_BLUE "###############################################################"
-xrandr --output $(xrandr | grep HDMI | cut -d" " -f1) --rotate right
-patch -u /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
+sudo patch -u /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
+if [ $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
+    xrandr --output $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1) --rotate right
+elif [ $(xrandr | grep 'DP.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
+    xrandr --output $(xrandr | grep 'DP.* connected' | cut -d" " -f1) --rotate right
+else
+    echo "ERROR: No external display detected"
+    # Will fail the script
+    return 1
+fi
