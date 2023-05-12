@@ -22,6 +22,13 @@ else
     }
 fi
 
+sudo_stay_validated () {
+    while true; do
+        sudo -v
+        sleep 60
+    done
+}
+
 cmake_build_install_native () {
     # arg 1 [optional]: number of threads to use (-j)
     mkdir -p build
@@ -30,9 +37,9 @@ cmake_build_install_native () {
     if [ $# -lt 1 ] ; then
         cmake --build .
     else
-        cmake --build -j$1 .
+        cmake --build . -j$1
     fi
-    cmake --install .
+    sudo cmake --install .
 }
 
 add_to_bashrc () {
@@ -59,9 +66,31 @@ is_xavier () {
     fi
 }
 
+clone_git () {
+    # arg 1: git clone command
+    local FOLDER=$(echo $@ | perl -pe 's|.*/(.*)\.git .*|$1|')
+    if [ ! -d "$FOLDER/.git" ] then;
+        git clone $@
+    fi
+}
+
+apply_patch () {
+    patch --dry-run -uN $@ | grep --quiet --no-messages --fixed-regexp "previously applied.*Skipping patch" || patch -u $@
+}
+
+sudo_apply_patch () {
+    sudo patch --dry-run -uN $@ | grep --quiet --no-messages --fixed-regexp "previously applied.*Skipping patch" || sudo patch -u $@
+}
+
 ECHO_IN_GREEN "###############################################################"
 ECHO_IN_GREEN "T-Top Setup Script"
 ECHO_IN_GREEN "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Enter sudo password for the whole script"
+ECHO_IN_BLUE "###############################################################"
+sudo -v && sudo_stay_validated &
+ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Cloning the T-Top repo"
@@ -69,7 +98,7 @@ ECHO_IN_BLUE "###############################################################"
 mkdir -p ~/t-top_ws/src
 cd ~/t-top_ws/src
 # TODO remove -b t-top-v4
-git clone --recurse-submodules https://github.com/introlab/t-top.git -b t-top-v4
+clone_git --recurse-submodules https://github.com/introlab/t-top.git -b t-top-v4
 
 TTOP_REPO_PATH=~/t-top_ws/src/t-top
 SETUP_SCRIPTS_DIR=$TTOP_REPO_PATH/tools/setup_scripts
@@ -82,8 +111,8 @@ ECHO_IN_BLUE "###############################################################"
 if [ is_xavier = "true" ] ; then
     sudo nvpmodel -m 0
 else
-    sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
-    sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
+    grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
+    grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
     # Make sure the change to zero is applied by going to 1
     sudo nvpmodel -m 1 > /dev/null
     sudo nvpmodel -m 0
@@ -139,21 +168,22 @@ ECHO_IN_BLUE ">> Cloning Librealsense 2"
 ECHO_IN_BLUE "###############################################################"
 mkdir -p ~/deps
 cd ~/deps
-
-git clone https://github.com/jetsonhacks/buildLibrealsense2Xavier
-cd buildLibrealsense2Xavier
+clone_git https://github.com/jetsonhacks/buildLibrealsense2Xavier.git
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Patching Librealsense 2"
 ECHO_IN_BLUE "###############################################################"
-patch -u installLibrealsense.sh $PATCH_FILES_DIR/installLibrealsense.patch
+cd ~/deps/buildLibrealsense2Xavier
+apply_patch installLibrealsense.sh $PATCH_FILES_DIR/installLibrealsense.patch
+# patch -u installLibrealsense.sh $PATCH_FILES_DIR/installLibrealsense.patch
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Building and installing Librealsense 2"
 ECHO_IN_BLUE "###############################################################"
-./installLibrealsense.sh
+cd ~/deps/buildLibrealsense2Xavier
+yes | ./installLibrealsense.sh
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -207,57 +237,42 @@ sudo apt install -y python3-rosdep \
     libbullet-dev \
     libsdl1.2-dev \
     libsdl-image1.2-dev \
-    libapriltag-dev
+    libapriltag-dev \
+    libdc1394-22-dev
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install ROS system dependencies"
 ECHO_IN_BLUE "###############################################################"
+
 cd ~/deps
-git clone https://github.com/ros/console_bridge
+clone_git https://github.com/ros/console_bridge.git
 cd console_bridge
-cmake_build_install_native &
-# mkdir build
-# cd build
-# cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-# make -j
-# sudo make install
+cmake_build_install_native
 
 cd ~/deps
-git clone https://github.com/ethz-asl/libnabo.git
+clone_git https://github.com/ethz-asl/libnabo.git
 cd libnabo
-cmake_build_install_native &
-# mkdir build
-# cd build
-# cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-# make -j
-# sudo make install
+cmake_build_install_native
 
 cd ~/deps
-git clone https://github.com/ethz-asl/libpointmatcher.git
+clone_git https://github.com/ethz-asl/libpointmatcher.git
 cd libpointmatcher
-cmake_build_install_native &
-# mkdir build
-# cd build
-# cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-# make -j
-# sudo make install
-
-wait
+cmake_build_install_native
 
 cd ~/deps
-git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
+clone_git -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
+cd rtabmap
 cmake_build_install_native 4
-# cd rtabmap/build
-# cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-# make -j4
-# sudo make install
+
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Generate ROS build workspace and install dependencies"
 ECHO_IN_BLUE "###############################################################"
-sudo rosdep init
+if [ ! -f "/etc/ros/rosdep/sources.list.d/20-default.list" ]
+    sudo rosdep init
+fi
 rosdep update
 
 mkdir -p ~/ros_catkin_ws/src
@@ -278,39 +293,43 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Add missing ROS packages"
 ECHO_IN_BLUE "###############################################################"
 cd ~/ros_catkin_ws/src
-git clone -b 1.0.1 https://github.com/GT-RAIL/rosauth.git
-git clone -b noetic-devel https://github.com/ros-drivers/rosserial.git
-git clone -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
-git clone -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
-git clone --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
+clone_git -b 1.0.1 https://github.com/GT-RAIL/rosauth.git
+clone_git -b noetic-devel https://github.com/ros-drivers/rosserial.git
+clone_git -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
+clone_git -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
+clone_git --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
 
-git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap_ros.git
-git clone -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
-git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
-git clone -b noetic-devel https://github.com/ros-planning/navigation.git
-git clone -b noetic-devel https://github.com/ros-perception/image_transport_plugins
+clone_git -b 0.20.18-noetic https://github.com/introlab/rtabmap_ros.git
+clone_git -b noetic-devel https://github.com/ros-planning/navigation.
 
-git clone -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
-git clone -b 2.3.2 https://github.com/IntelRealSense/realsense-ros.git
-git clone https://github.com/OTL/cv_camera.git
-git clone -b 0.6.4-noetic https://github.com/introlab/find-object.git
+clone_git -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
+clone_git -b 2.3.2 https://github.com/IntelRealSense/realsense-ros.git
+clone_git https://github.com/OTL/cv_camera.git
+clone_git -b 0.6.4-noetic https://github.com/introlab/find-object.git
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Replace incomplete ROS packages"
 ECHO_IN_BLUE "###############################################################"
-rm -rf geometry2 navigation_msgs vision_opencv image_common
+cd ~/ros_catkin_ws/src
+rm -rf geometry2 navigation_msgs vision_opencv image_common perception_pcl pcl_msgs image_transport_plugins
 
-git clone -b noetic-devel https://github.com/ros/geometry2.git
-git clone -b ros1 https://github.com/ros-planning/navigation_msgs.git
-git clone -b noetic https://github.com/ros-perception/vision_opencv.git
-git clone -b noetic-devel https://github.com/ros-perception/image_common.git
+clone_git -b noetic-devel https://github.com/ros/geometry2.git
+clone_git -b ros1 https://github.com/ros-planning/navigation_msgs.git
+clone_git -b noetic https://github.com/ros-perception/vision_opencv.git
+clone_git -b noetic-devel https://github.com/ros-perception/image_common.git
+
+clone_git -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
+clone_git -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
+clone_git -b noetic-devel https://github.com/ros-perception/image_transport_plugins.git
+
+rosdep install --from-paths ./src/image_transport_plugins --ignore-packages-from-source --rosdistro noetic -y
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Uninstall python3.9"
 ECHO_IN_BLUE "###############################################################"
-sudo apt autoremove python3.9
+apt list --installed | grep --quiet --no-messages --fixed-regexp "python3.9/" && sudo apt autoremove -y python3.9 || true
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -324,8 +343,7 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Add ROS setup source to .bashrc"
 ECHO_IN_BLUE "###############################################################"
-SOURCE_LINE='source ~/ros_catkin_ws/install_isolated/setup.bash'
-add_to_bashrc $SOURCE_LINE
+add_to_bashrc 'source ~/ros_catkin_ws/install_isolated/setup.bash'
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -365,16 +383,16 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install PyTorch for Jetson"
 ECHO_IN_BLUE "###############################################################"
 cd ~/deps
-wget https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
+wget -N https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
 sudo -H pip3 install torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
 
 cd ~/deps
-git clone --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
+clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
 cd vision
 sudo -H python3 setup.py install
 
 cd ~/deps
-git clone --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
+clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
 cd audio
 add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
 add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
@@ -382,7 +400,7 @@ sudo -H pip3 install -r requirements.txt
 sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
 
 cd ~/deps
-git clone https://github.com/NVIDIA-AI-IOT/torch2trt
+clone_git https://github.com/NVIDIA-AI-IOT/torch2trt
 cd torch2trt
 sudo -H python3 setup.py install --plugins
 ECHO_IN_BLUE "###############################################################\n"
@@ -411,7 +429,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Setup user autologin and disable utomatic sleep and screen lock"
 ECHO_IN_BLUE "###############################################################"
 perl -pe "s/\@\@USER\@\@/$USER/" $PATCH_FILES_DIR/gdm3_config.patch > $PATCH_FILES_DIR/gdm3_config.patch.tmp
-sudo patch -u /etc/gdm3/custom.conf $PATCH_FILES_DIR/gdm3_config.patch.tmp
+sudo_apply_patch /etc/gdm3/custom.conf $PATCH_FILES_DIR/gdm3_config.patch.tmp
 rm $PATCH_FILES_DIR/gdm3_config.patch.tmp
 
 gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
@@ -422,7 +440,7 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Configure screen orientation and touchscreen calibration"
 ECHO_IN_BLUE "###############################################################"
-sudo patch -u /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
+sudo_apply_patch /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
 if [ $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
     xrandr --output $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1) --rotate right
 elif [ $(xrandr | grep 'DP.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
