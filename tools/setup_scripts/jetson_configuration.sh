@@ -1,3 +1,5 @@
+#! /usr/bin/bash
+
 set -e
 
 BLUE='\033[0;34m'
@@ -48,19 +50,50 @@ add_to_root_bashrc () {
     sudo bash -c "grep --quiet --no-messages --fixed-regexp --line-regexp -- '$1' '$BASHRC_FILE' || echo '$1' >> '$BASHRC_FILE'"
 }
 
+is_xavier () {
+    cat /proc/device-tree/compatible | grep -q "jetson-xavier"
+    if [ $? -eq 0 ] ; then
+        echo true
+    else
+        echo false
+    fi
+}
+
 ECHO_IN_GREEN "###############################################################"
 ECHO_IN_GREEN "T-Top Setup Script"
-ECHO_IN_GREEN "###############################################################"
+ECHO_IN_GREEN "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Cloning the T-Top repo"
 ECHO_IN_BLUE "###############################################################"
 mkdir -p ~/t-top_ws/src
 cd ~/t-top_ws/src
-git clone --recurse-submodules git@github.com:introlab/t-top.git
+# TODO remove -b t-top-v4
+git clone --recurse-submodules https://github.com/introlab/t-top.git -b t-top-v4
 
 TTOP_REPO_PATH='~/t-top_ws/src/t-top'
-PATCH_FILES_DIR="$TTOP_REPO_PATH/tools/setup_scripts/patch"
+SETUP_SCRIPTS_DIR="$TTOP_REPO_PATH/tools/setup_scripts"
+PATCH_FILES_DIR="$SETUP_SCRIPTS_DIR/patch"
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Setting Jetson power mode"
+ECHO_IN_BLUE "###############################################################"
+if [ is_xavier = "true" ] ; then
+    sudo nvpmodel -m 0
+else
+    sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
+    sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
+    # Make sure the change to zero is applied by going to 1
+    sudo nvpmodel -m 1 > /dev/null
+    sudo nvpmodel -m 0
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Disabling sudo password for shutdown and nvpmodel"
+ECHO_IN_BLUE "###############################################################"
+sudo cp $SETUP_SCRIPTS_DIR/files/sudoers_ttop /etc/sudoers.d/ttop
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -315,7 +348,9 @@ sudo apt install -y libasound2-dev \
     libopenblas-dev \
     libpython3-dev \
     ffmpeg \
-    chromium-browser
+    chromium-browser \
+    libqt5websockets5-dev \
+    libqt5charts5-dev
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -353,12 +388,22 @@ sudo -H python3 setup.py install --plugins
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install OpenTera-WebRTC ROS Python dependencies"
+ECHO_IN_BLUE "###############################################################"
+cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_client_ros
+sudo -H pip3 install -r requirements.txt
+cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_webrtc_ros
+sudo -H pip3 install -r requirements.txt
+cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_webrtc_ros/opentera-webrtc
+sudo -H pip3 install -r requirements.txt
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Build the T-Top workspace"
 ECHO_IN_BLUE "###############################################################"
 cd $TTOP_REPO_PATH/../..
 catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-catkin config -profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-
+catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 catkin build
 ECHO_IN_BLUE "###############################################################\n"
 
