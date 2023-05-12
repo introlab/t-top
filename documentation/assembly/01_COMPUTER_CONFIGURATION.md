@@ -8,7 +8,7 @@
 
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson%20agx%20xavier.jpg)                    |
+| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson-agx-xavier.jpg)                        |
 | `SSD`                                 | 1        | ![SSD](images/electronics/SSD.jpg)                                                           |
 
 #### Steps
@@ -28,7 +28,7 @@
 
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson%20agx%20xavier.jpg)                    |
+| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson-agx-xavier.jpg)                        |
 
 #### Steps
 
@@ -44,8 +44,8 @@
 
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson%20agx%20xavier.jpg)                    |
-| `WiFi Card`                           | 1        | ![WiFi Card](images/electronics/wifi%20card.jpg)                                             |
+| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson-agx-xavier.jpg)                        |
+| `WiFi Card`                           | 1        | ![WiFi Card](images/electronics/wifi-card.jpg)                                               |
 
 #### Steps
 

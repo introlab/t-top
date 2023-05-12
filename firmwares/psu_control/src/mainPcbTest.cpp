@@ -368,7 +368,7 @@ static void testCharger()
 
 static void testLightSensor(const char* name, AlsPt19LightSensor& lightSensor)
 {
-    constexpr size_t READ_COUNT = 100;
+    constexpr size_t READ_COUNT = 20;
     constexpr uint32_t TEST_STEP_DELAY_MS = 1000;
 
     DEBUG_SERIAL.print(name);
@@ -388,7 +388,7 @@ static void testLightSensors()
     testLightSensor("Front", frontLightSensor);
     testLightSensor("Back", backLightSensor);
     testLightSensor("Left", leftLightSensor);
-    /testLightSensor("Right", rightLightSensor);
+    testLightSensor("Right", rightLightSensor);
 }
 
 static void testCurrentVoltageSensor()

@@ -78,15 +78,15 @@
 6. Cut 1 6cm `3 Position Male JST XH Cable`
 7. Cut 1 3cm `3 Position Male JST XH Cable`
 
-8. Solder first 5 leds stripe with 17cm `3 Position Female JST XH Cable` and 6cm `3 Position Male JST XH Cable` as shown in the following picture.
+8. Solder first 5 leds stripe with 17 cm `3 Position Female JST XH Cable` and 6 cm `3 Position Male JST XH Cable` as shown in the following picture.
 
 ![LED Strip Long - 5 LEDs](images/assemblies/04/led-strip-long-5.jpg)
 
-9. Solder second 5 leds stripe with 6cm `3 Position Female JST XH Cable` and 3cm `3 Position Male JST XH Cable` as shown in the following picture.
+9. Solder second 5 leds stripe with 6 cm `3 Position Female JST XH Cable` and 3 cm `3 Position Male JST XH Cable` as shown in the following picture.
 
 ![LED Strip Short - 5 LEDs](images/assemblies/04/led-strip-short-5.jpg)
 
-10. Solder long 28 leds stripe `LED Strip 30 per m` with 3cn `3 Position Female JST XH Cable` as shown in the following picture.
+10. Solder long 28 leds stripe `LED Strip 30 per m` with 3 cm `3 Position Female JST XH Cable` as shown in the following picture.
 
 ![LED Strip - 28 LEDs](images/assemblies/04/led-strip-28.jpg)
 
@@ -199,7 +199,7 @@
 | `JST PH Crimp Contact`               | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 
 ### Steps
-> TODO Update steps
+> TODO Update steps 25 cm
 
 1. Cut the `grove cable` in half.
 2. Keep one half.

@@ -14,7 +14,7 @@
 | `M3x10mm Standoff`             | 10       | ![M2x10mm Standoff](images/hardware/M3x10mm-standoff.jpg)                         |
 | `M3x10mm Plastic Standoff`     | 4        | ![M2x10mm Standoff](images/hardware/M3x10mm-plastic-standoff.jpg)                 |
 | `M3x25mm Standoff`             | 4        | ![M2x10mm Standoff](images/hardware/M3x25mm-standoff.jpg)                         |
-| `M3x10mm Socket Screw`         | 14       | ![M3x10mm Socket Screw](images/hardware/M3x10mmsocket.jpg)                        |
+| `M3x10mm Socket Screw`         | 14       | ![M3x10mm Socket Screw](images/hardware/M3x10mmsocket.jpg) TODO change to m3x8                       |
 | `M3 Nuts`                      | 6        | ![M3 Nuts](images/hardware/M3-nut.jpg)                                            |
 | `M3 Plastic Nuts`              | 4        | ![M3 Plastic Nuts](images/hardware/M3-plastic-nut.jpg)                            |
 | `M3x8mm Plastic Screw`         | 4        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                       |
