@@ -18,6 +18,7 @@
 | `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled-power-switch.jpg) **TODO update image**                     |
 | `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet-connector.jpg)                                                   |
 | `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled-robot-power-connector-female.jpg)         |
+| `Assembled White LED`                      | 2        | ![Assembled LED](images/electronics/assembled-LEDs.jpg)                                                            |
 | `M3x8mm Plastic Screw`                     | 22       | ![M3x8mm Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                                       |
 | `Fan Screw`                                | 8        | ![Fan Screw](images/hardware/fan-screw.jpg)                                                                        |
 | `Assembled Push Button`                    | 4        | ![Assembled Push Button](images/electronics/assembled-push-button.jpg)                                                                    |
@@ -70,7 +71,15 @@
 
 ![Base Audio Push Buttons](images/assemblies/06/push-buttons.jpg)
 
-9. Install the `light sensors` with `M2x5 plastic screws`, as shown in the following pictures.
+8. Install the `assembled robot power connector` with epoxy glue, as shown in the following picture.
+
+![Base Audio Power Connector](images/assemblies/06/power-connector.jpg)
+
+9. Install the `assembled white LEDs` with epoxy glue, as shown in the following picture.
+
+![Base Audio LEDs](images/assemblies/06/leds.jpg)
+
+10. Install the `light sensors` with `M2x5 plastic screws`, as shown in the following pictures.
 
 ![Base Audio Light Sensors 1](images/assemblies/06/light-sensors-1.jpg)
 
@@ -99,7 +108,6 @@
 | `8-cm-Long 16 AWG Red Wire`                | 1        | ![`8-cm-long 16 AWG Red Wire](images/electronics/16-AWG-red-wire.jpg)           |
 | `8-cm-Long 16 AWG Black Wire`              | 1        | ![`8-cm-long 16 AWG Black Wire](images/electronics/16-AWG-black-wire.jpg)       |
 | `Male Power Connector with Ferrules`       | 1        | ![Power Connector - Male](images/electronics/power-connector-male.jpg)          |
-| `Assembled White LED`                      | 2        | ![Assembled LED](images/electronics/assembled-LEDs.jpg)                         |
 | `Assembled LED Strip`                      | 3        |                                                                                 |
 
 ### Steps
@@ -132,14 +140,6 @@
 
 ![LED Strips Connector](images/assemblies/06/led-strips-connectors.jpg)
 
-8. Install the `assembled robot power connector` with epoxy glue, as shown in the following picture.
-
-![Base Audio Power Connector](images/assemblies/06/power-connector.jpg)
-
-9. Install the `assembled white LEDs` with epoxy glue, as shown in the following picture.
-
-![Base Audio LEDs](images/assemblies/06/leds.jpg)
-
 10. Install the `Ethernet connector` as shown in the following picture.
 
 ![Base Audio Ethernet](images/assemblies/06/ethernet-connector.jpg)
@@ -153,7 +153,7 @@
 
 ![JST PHR-6 Cable](images/assemblies/06/jst-phr6-cable.jpg)
 
-13. Connect the `assembled white LEDs` as shown in the following picture.
+13. Connect the `assembled white LEDs` as shown in the following picture. The LED labelled "PSU" is connected to the connector labelled "Charg. S.".
 
 ![White LEDs](images/assemblies/06/led-connectors.jpg)
 

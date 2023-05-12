@@ -75,7 +75,7 @@
 
 ### Steps
 
-1. Apply threadlocker the ends of a `threaded rod`.
+1. Apply threadlocker to the ends of a `threaded rod`.
 2. Screw a ball joint to each ends of the `threaded rod` until the distance between the centers of the ball joint holes
    is 191 mm.
 3. Repeat steps 1 to 2 for each `threaded rod`.

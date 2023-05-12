@@ -18,28 +18,28 @@ constexpr long DEBUG_SERIAL_BAUD_RATE = 250000;
 constexpr uint32_t WIRE_CLOCK = 100000;
 
 constexpr uint32_t PWM_RESOLUTION = 12;
-constexpr float PWM_MAX_VALUE = 4095;
+constexpr float PWM_MAX_VALUE = 4095.f;
 
 constexpr uint32_t ADC_RESOLUTION = 12;
-constexpr float ADC_MAX_VALUE = 4095;
+constexpr float ADC_MAX_VALUE = 4095.f;
 
 constexpr uint8_t POWER_OFF_PIN = 2;
 constexpr uint8_t POWER_SWITCH_PIN = 12;
 constexpr uint32_t SHUTDOWN_REQUEST_TIMEOUT_MS = 120000;
-constexpr float SHUTDOWN_COMPLETED_FOR_COMPUTER_AND_DYNAMIXELS_POWER_THRESHOLD_W = 5;
+constexpr float SHUTDOWN_COMPLETED_FOR_COMPUTER_AND_DYNAMIXELS_POWER_THRESHOLD_W = 5.f;
 
 #define BATTERY_WIRE Wire
 constexpr uint8_t BATTERY_STATUS_PIN = 20;
 constexpr uint8_t CHARGER_STATUS_PIN = 21;
-constexpr float BATTERY_CHARGER_CHARGE_CURRENT_LIMIT = 1.0;
-constexpr float BATTERY_CHARGER_INPUT_CURRENT_LIMIT = 9.47;
+constexpr float BATTERY_CHARGER_CHARGE_CURRENT_LIMIT = 1.f;
+constexpr float BATTERY_CHARGER_INPUT_CURRENT_LIMIT = 9.47f;
 
 constexpr uint8_t LED_STRIP_PIN = 1;
 constexpr size_t STATE_OF_CHARGE_LED_COUNT = 5;
 constexpr size_t VOLUME_LED_COUNT = 5;
 constexpr size_t BASE_LED_COUNT = 28;
 constexpr size_t LED_COUNT = STATE_OF_CHARGE_LED_COUNT + VOLUME_LED_COUNT + BASE_LED_COUNT;
-constexpr uint8_t LED_STRIP_MINIMUM_BRIGHTNESS = 32;
+constexpr uint8_t LED_STRIP_MINIMUM_BRIGHTNESS = 64;
 constexpr uint8_t LED_STRIP_MAXIMUM_BRIGHTNESS = 128;
 
 constexpr uint8_t FAN_PIN = 3;
@@ -62,7 +62,7 @@ constexpr uint8_t AUDIO_POWER_AMPLIFIER_MAXIMUM_VOLUME = 63;
 
 #define CURRENT_VOLTAGE_SENSOR_WIRE Wire1
 constexpr uint8_t CURRENT_VOLTAGE_SENSOR_ADDRESS = 0x40;
-constexpr float CURRENT_VOLTAGE_SENSOR_SHUNT_RESISTOR = 0.004;
+constexpr float CURRENT_VOLTAGE_SENSOR_SHUNT_RESISTOR = 0.004f;
 constexpr uint8_t CURRENT_VOLTAGE_SENSOR_MAX_CURRENT = 10;
 
 constexpr uint8_t ONBOARD_TEMPERATURE_PIN = 14;
@@ -78,8 +78,8 @@ constexpr uint8_t FRONT_LIGHT_SENSOR_PIN = 16;
 constexpr uint8_t BACK_LIGHT_SENSOR_PIN = 25;
 constexpr uint8_t LEFT_LIGHT_SENSOR_PIN = 17;
 constexpr uint8_t RIGHT_LIGHT_SENSOR_PIN = 24;
-constexpr float LIGHT_SENSOR_MINIMUM_VALUE = ADC_MAX_VALUE * 0.1;
-constexpr float LIGHT_SENSOR_MAXIMUM_VALUE = ADC_MAX_VALUE * 0.4;
+constexpr float LIGHT_SENSOR_MINIMUM_VALUE = ADC_MAX_VALUE * 0.0f;
+constexpr float LIGHT_SENSOR_MAXIMUM_VALUE = ADC_MAX_VALUE * 0.03f;
 
 constexpr uint8_t START_BUTTON_PIN = 11;
 constexpr uint8_t STOP_BUTTON_PIN = 10;
