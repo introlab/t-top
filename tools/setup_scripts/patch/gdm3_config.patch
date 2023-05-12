@@ -1,0 +1,11 @@
+@@ -7,8 +7,8 @@
+ WaylandEnable=false
+
+ # Enabling automatic login
+-#  AutomaticLoginEnable = true
+-#  AutomaticLogin = user1
++AutomaticLoginEnable = true
++AutomaticLogin = @@USER@@
+
+ # Enabling timed login
+ #  TimedLoginEnable = true
