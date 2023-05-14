@@ -133,7 +133,7 @@ def create_validation_image_transform():
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
 
 
-def _create_training_dataset_loader( dataset_root, batch_size, batch_size_division, heatmap_sigma):
+def _create_training_dataset_loader(dataset_root, batch_size, batch_size_division, heatmap_sigma):
     training_dataset = PoseEstimationCoco(dataset_root,
                                           train=True,
                                           data_augmentation=True,

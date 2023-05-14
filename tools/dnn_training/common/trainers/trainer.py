@@ -72,8 +72,9 @@ class Trainer:
             print('\nValidation - Epoch [{}/{}]'.format(epoch + 1, self._epoch_count), flush=True)
             self._validate()
             self._scheduler.step()
-            if 'next_epoch' in self._criterion.__dict__:
-                self._criterion.next_epoch()
+            next_epoch_method = getattr(self._criterion, 'next_epoch', None)
+            if next_epoch_method is not None:
+                next_epoch_method()
 
             self._print_performances()
             self._save_learning_curves()

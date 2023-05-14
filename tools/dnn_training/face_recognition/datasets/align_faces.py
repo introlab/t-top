@@ -1,6 +1,7 @@
 import os
 import argparse
 import math
+import shutil
 
 import numpy as np
 from PIL import Image
@@ -23,8 +24,9 @@ ALIGNED_IMAGE_SIZE = (128, 96)
 
 
 class FolderFaceAligner:
-    def __init__(self, pose_estimator_model, presence_threshold, ignore_presence_threshold_for_nose_eyes):
-        self._pose_estimator_model = pose_estimator_model
+    def __init__(self, pose_estimator_model, device, presence_threshold, ignore_presence_threshold_for_nose_eyes):
+        self._device = device
+        self._pose_estimator_model = pose_estimator_model.to(device)
         self._pose_estimator_image_transform = transforms.Compose([
             transforms.Resize(POSE_ESTIMATOR_IMAGE_SIZE),
             transforms.ToTensor(),
@@ -47,6 +49,9 @@ class FolderFaceAligner:
                 self._align_person_image(input_path, output_path, person_name, image_filename)
             except (ValueError, np.linalg.LinAlgError):
                 print('Warning: the alignment is impossible ({})'.format(image_filename))
+                if self._ignore_presence_threshold_for_nose_eyes:
+                    shutil.copyfile(os.path.join(input_path, person_name, image_filename),
+                                    os.path.join(output_path, person_name, image_filename))
 
     def _align_person_image(self, input_path, output_path, person_name, image_filename):
         output_size = (ALIGNED_IMAGE_SIZE[1], ALIGNED_IMAGE_SIZE[0])
@@ -69,7 +74,7 @@ class FolderFaceAligner:
         with torch.no_grad():
             image = Image.open(os.path.join(input_path, person_name, image_filename)).convert('RGB')
             pose_estimator_image = self._pose_estimator_image_transform(image)
-            pose_heatmaps = self._pose_estimator_model(pose_estimator_image.unsqueeze(0))
+            pose_heatmaps = self._pose_estimator_model(pose_estimator_image.unsqueeze(0).to(self._device))
             heatmap_coordinates, presence = get_coordinates(pose_heatmaps)
 
             scaled_coordinates = np.zeros((heatmap_coordinates.size()[1], 2))
@@ -78,7 +83,7 @@ class FolderFaceAligner:
                 scaled_coordinates[i, 0] = heatmap_coordinates[0, i, 0] / pose_heatmaps.size()[3] * image.width
                 scaled_coordinates[i, 1] = heatmap_coordinates[0, i, 1] / pose_heatmaps.size()[2] * image.height
 
-        return get_landmarks_from_pose(scaled_coordinates, presence[0],
+        return get_landmarks_from_pose(scaled_coordinates, presence[0].cpu().numpy(),
                                        self._presence_threshold, self._ignore_presence_threshold_for_nose_eyes)
 
 
@@ -188,6 +193,7 @@ def det_3x3(x):
 
 def main():
     parser = argparse.ArgumentParser(description='Align LFW faces')
+    parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
     parser.add_argument('--pose_estimator_backbone_type', choices=BACKBONE_TYPES,
                         help='Choose the pose estimator backbone type', required=True)
     parser.add_argument('--pose_estimator_model_checkpoint', type=str,
@@ -201,11 +207,12 @@ def main():
 
     args = parser.parse_args()
 
+    device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
     pose_estimator_model = create_model(args.pose_estimator_backbone_type)
     load_checkpoint(pose_estimator_model, args.pose_estimator_model_checkpoint)
     pose_estimator_model.eval()
 
-    aligner = FolderFaceAligner(pose_estimator_model,
+    aligner = FolderFaceAligner(pose_estimator_model, device,
                                 args.presence_threshold, args.ignore_presence_threshold_for_nose_eyes)
     aligner.align(args.input, args.output)
 
