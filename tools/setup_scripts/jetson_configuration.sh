@@ -93,8 +93,7 @@ _STAMPNUM=0
 
 checkstamp () {
     # arg 1: file to check
-    filname=$(printf "%02d" $_STAMPNUM)_$1
-    if [ -f "~/.ttop/install_stamps/$filename" ] ; then
+    if [ -f ~/.ttop/install_stamps/*$1 ] ; then
         echo true
     else
         echo false
@@ -104,9 +103,19 @@ checkstamp () {
 makestamp () {
     # arg 1: file to create
     mkdir -p ~/.ttop/install_stamps
-    export _STAMPNUM=$(($_STAMPNUM + 1))
-    filname=$(printf "%02d" $_STAMPNUM)_$1
+    filename=$(printf "%02d" $_STAMPNUM)_$1
     touch ~/.ttop/install_stamps/$filename
+    export _STAMPNUM=$(($_STAMPNUM + 1))
+}
+
+stepstamp () {
+    export _STAMPNUM=$(($_STAMPNUM + 1))
+}
+
+SKIP_SECTION () {
+    # arg 1: message
+    ECHO_IN_ORANGE "$1"
+    stepstamp
 }
 
 ECHO_IN_GREEN "###############################################################"
@@ -144,7 +153,7 @@ if [ $(checkstamp ttop_repo) = "false" ] ; then
     clone_git --recurse-submodules https://github.com/introlab/t-top.git -b t-top-v4
     makestamp ttop_repo
 else
-    ECHO_IN_ORANGE "T-Top repo already cloned, skipping"
+    SKIP_SECTION "T-Top repo already cloned, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -196,7 +205,7 @@ if [ $(checkstamp autologin) = "false" ] ; then
 
     makestamp autologin
 else
-    ECHO_IN_ORANGE "Autologin and automatic sleep and screen lock already setup, skipping"
+    SKIP_SECTION "Autologin and automatic sleep and screen lock already setup, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -219,7 +228,7 @@ if [ $(checkstamp screen_config) = "false" ] ; then
 
     makestamp screen_config
 else
-    ECHO_IN_ORANGE "Screen already configured, skipping"
+    SKIP_SECTION "Screen already configured, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -232,7 +241,7 @@ if [ $(checkstamp node) = "false" ] ; then
     sudo apt install -y nodejs
     makestamp node
 else
-    ECHO_IN_ORANGE "Node already installed, skipping"
+    SKIP_SECTION "Node already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -253,7 +262,7 @@ if [ $(checkstamp cmake) = "false" ] ; then
     sudo apt install -y cmake
     makestamp cmake
 else
-    ECHO_IN_ORANGE "CMake already installed, skipping"
+    SKIP_SECTION "CMake already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -266,7 +275,7 @@ if [ $(checkstamp librealsense_clone) = "false" ] ; then
     clone_git https://github.com/jetsonhacks/buildLibrealsense2Xavier.git
     makestamp librealsense_clone
 else
-    ECHO_IN_ORANGE "Librealsense 2 already cloned, skipping"
+    SKIP_SECTION "Librealsense 2 already cloned, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -287,7 +296,7 @@ if [ $(checkstamp librealsense_build) = "false" ] ; then
     yes | ./installLibrealsense.sh
     makestamp librealsense_build
 else
-    ECHO_IN_ORANGE "Librealsense 2 already built, skipping"
+    SKIP_SECTION "Librealsense 2 already built, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -348,7 +357,7 @@ if [ $(checkstamp ros_build_deps) = "false" ] ; then
         libdc1394-22-dev
     makestamp ros_build_deps
 else
-    ECHO_IN_ORANGE "ROS build dependencies already installed, skipping"
+    SKIP_SECTION "ROS build dependencies already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -379,7 +388,7 @@ if [ $(checkstamp ros_system_deps) = "false" ] ; then
 
     makestamp ros_system_deps
 else
-    ECHO_IN_ORANGE "ROS system dependencies already installed, skipping"
+    SKIP_SECTION "ROS system dependencies already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -402,7 +411,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 
     makestamp ros_ws_deps
 else
-    ECHO_IN_ORANGE "ROS workspace dependencies already installed, skipping"
+    SKIP_SECTION "ROS workspace dependencies already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -413,7 +422,7 @@ if [ $(checkstamp ros_deps_rm) = "false" ] ; then
     rm -rf ~/ros_catkin_ws/src/gazebo_ros_pkgs/
     makestamp ros_deps_rm
 else
-    ECHO_IN_ORANGE "Useless ROS packages already removed, skipping"
+    SKIP_SECTION "Useless ROS packages already removed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -439,7 +448,7 @@ if [ $(checkstamp ros_deps_add) = "false" ] ; then
 
     makestamp ros_deps_add
 else
-    ECHO_IN_ORANGE "Missing ROS packages already added, skipping"
+    SKIP_SECTION "Missing ROS packages already added, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -464,7 +473,7 @@ if [ $(checkstamp ros_deps_replace) = "false" ] ; then
 
     makestamp ros_deps_replace
 else
-    ECHO_IN_ORANGE "Incomplete ROS packages already replaced, skipping"
+    SKIP_SECTION "Incomplete ROS packages already replaced, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -479,7 +488,7 @@ if [ $(checkstamp ros_ws_build) = "false" ] ; then
 
     makestamp ros_ws_build
 else
-    ECHO_IN_ORANGE "ROS workspace already built, skipping"
+    SKIP_SECTION "ROS workspace already built, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -516,7 +525,7 @@ if [ $(checkstamp ttop_system_deps) = "false" ] ; then
 
     makestamp ttop_system_deps
 else
-    ECHO_IN_ORANGE "T-Top system dependencies already installed, skipping"
+    SKIP_SECTION "T-Top system dependencies already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -530,7 +539,7 @@ if [ $(checkstamp ttop_python_deps) = "false" ] ; then
 
     makestamp ttop_python_deps
 else
-    ECHO_IN_ORANGE "T-Top Python dependencies already installed, skipping"
+    SKIP_SECTION "T-Top Python dependencies already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -563,7 +572,7 @@ if [ $(checkstamp pytorch) = "false" ] ; then
 
     makestamp pytorch
 else
-    ECHO_IN_ORANGE "PyTorch already installed, skipping"
+    SKIP_SECTION "PyTorch already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -580,7 +589,7 @@ if [ $(checkstamp opentera_deps) = "false" ] ; then
 
     makestamp opentera_deps
 else
-    ECHO_IN_ORANGE "OpenTera-WebRTC ROS Python dependencies already installed, skipping"
+    SKIP_SECTION "OpenTera-WebRTC ROS Python dependencies already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -595,6 +604,6 @@ if [ $(checkstamp ttop_ws_build) = "false" ] ; then
 
     makestamp ttop_ws_build
 else
-    ECHO_IN_ORANGE "T-Top workspace already built, skipping"
+    SKIP_SECTION "T-Top workspace already built, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
