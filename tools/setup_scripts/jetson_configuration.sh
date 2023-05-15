@@ -69,7 +69,7 @@ is_xavier () {
 clone_git () {
     # arg 1: git clone command
     local FOLDER=$(echo $@ | perl -pe 's|.*/(.*)\.git .*|$1|')
-    if [ ! -d "$FOLDER/.git" ] then;
+    if [ ! -d "$FOLDER/.git" ] ; then
         git clone $@
     fi
 }
@@ -90,6 +90,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Enter sudo password for the whole script"
 ECHO_IN_BLUE "###############################################################"
 sudo -v && sudo_stay_validated &
+SUDO_KEEPALIVE_PID=$!
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -434,7 +435,7 @@ catkin build
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Setup user autologin and disable utomatic sleep and screen lock"
+ECHO_IN_BLUE ">> Setup user autologin and disable automatic sleep and screen lock"
 ECHO_IN_BLUE "###############################################################"
 perl -pe "s/\@\@USER\@\@/$USER/" $PATCH_FILES_DIR/gdm3_config.patch > $PATCH_FILES_DIR/gdm3_config.patch.tmp
 sudo_apply_patch /etc/gdm3/custom.conf $PATCH_FILES_DIR/gdm3_config.patch.tmp
@@ -449,6 +450,8 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Configure screen orientation and touchscreen calibration"
 ECHO_IN_BLUE "###############################################################"
 sudo_apply_patch /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
+
+kill $SUDO_KEEPALIVE_PID
 if [ $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
     xrandr --output $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1) --rotate right
 elif [ $(xrandr | grep 'DP.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
