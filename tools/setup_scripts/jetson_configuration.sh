@@ -566,7 +566,7 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
 
     cd ~/deps
-    clone_git https://github.com/NVIDIA-AI-IOT/torch2trt
+    clone_git https://github.com/NVIDIA-AI-IOT/torch2trt.git
     cd torch2trt
     sudo -H python3 setup.py install --plugins
 
