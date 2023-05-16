@@ -1,21 +1,19 @@
 import os
-
-import torch
-
-from common.modules import load_checkpoint
-
-from pathlib import Path
-
 import signal
 import sys
 from contextlib import contextmanager
+from pathlib import Path
+
+import torch
+from common.modules import load_checkpoint
 
 try:
-    from torch2trt import torch2trt
+    import torch_tensorrt
 
-    torch2trt_found = True
+    torch_tensorrt_found = True
 except ImportError:
-    torch2trt_found = False
+    torch_tensorrt_found = False
+
 
 # Temporarily handle signals to remove files if interrupted during export
 @contextmanager
@@ -45,7 +43,7 @@ def export_model(model, model_checkpoint, x, output_dir, torch_script_filename, 
 
     with handle_sigs(rm_ts):
         _export_torch_script(model, x, output_dir, torch_script_filename)
-    if torch2trt_found:
+    if torch_tensorrt_found:
         with handle_sigs(rm_trt):
             _export_trt(model, x, output_dir, trt_filename, fp16_mode=trt_fp16)
 
@@ -58,5 +56,11 @@ def _export_torch_script(model, x, output_dir, filename):
 def _export_trt(model, x, output_dir, filename, fp16_mode=False):
     device = torch.device('cuda')
     model = model.to(device)
-    model_trt = torch2trt(model, [x.to(device)], fp16_mode=fp16_mode)
-    torch.save(model_trt.state_dict(), os.path.join(output_dir, filename))
+
+    trt_ts_module = torch_tensorrt.compile(
+        model,
+        inputs=[x.to(device)],
+        enabled_precisions={torch.half} if fp16_mode else {torch.float},
+    )
+
+    torch.jit.save(trt_ts_module, os.path.join(output_dir, filename))
