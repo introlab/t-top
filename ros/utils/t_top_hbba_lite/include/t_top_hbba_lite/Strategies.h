@@ -25,7 +25,7 @@ public:
     DECLARE_NOT_MOVABLE(FaceAnimationStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const FaceAnimationDesire& desire) override;
     void onDisabling() override;
 };
 
@@ -41,7 +41,7 @@ public:
     DECLARE_NOT_MOVABLE(LedEmotionStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const LedEmotionDesire& desire) override;
 };
 
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
@@ -59,7 +59,7 @@ public:
     DECLARE_NOT_MOVABLE(SpecificFaceFollowingStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const SpecificFaceFollowingDesire& desire) override;
 };
 
 class TalkStrategy : public Strategy<TalkDesire>
@@ -80,7 +80,7 @@ public:
     DECLARE_NOT_MOVABLE(TalkStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const TalkDesire& desire) override;
 
 private:
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
@@ -104,7 +104,7 @@ public:
     DECLARE_NOT_MOVABLE(GestureStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const GestureDesire& desire) override;
 
 private:
     void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
@@ -128,7 +128,7 @@ public:
     DECLARE_NOT_MOVABLE(PlaySoundStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const PlaySoundDesire& desire) override;
 
 private:
     void soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg);
