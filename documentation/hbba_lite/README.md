@@ -1,7 +1,7 @@
 # HBBA Lite
 HBBA (Hybrid Behavior-Based Architecture) is the control architecture of T-Top. A hybrid robot architecture means that perceptual nodes can communicate with the behavior nodes and the planning modules.
 T-Top uses [HBBA Lite](https://github.com/introlab/hbba_lite/) implementation instead of the [original one](https://github.com/introlab/HBBA) since HBBA Lite is simpler to use but less complete.
- 
+
 ## Definitions
 The following subsections explain each element of the architecture.
 
@@ -29,15 +29,15 @@ Also, it may have parameters used by the strategy.
 
 ### Strategy
 A strategy represents a way to fulfill a desire. The strategy will accomplish the desire once the strategy is activated.
-At least one strategy is required for each desire type. 
+At least one strategy is required for each desire type.
 If there are many strategies for a desire type, the strategy with the highest utility is prioritized.
 A strategy has a list of filters to enable and a list resources required to be enabled.
 The resources can be used to prevent conflicts of actuators between strategies.
-If resources are used to manage the processing time in percent, the strategy resources can contain the estimated processing time in percent. 
+If resources are used to manage the processing time in percent, the strategy resources can contain the estimated processing time in percent.
 So, HBBA will manage the processing time of the robot.
 
 ### Desire Set
-The desire set contains the current desires to fulfill. An observer pattern is implemented in the desire to get notified of changes. 
+The desire set contains the current desires to fulfill. An observer pattern is implemented in the desire to get notified of changes.
 
 ### Motivations
 The motivations modify the content of the desire set to make the robot do something useful.
@@ -73,7 +73,7 @@ public:
 
     // The macro is expanded to :
     // std::unique_ptr<Desire> clone() override { return std::make_unique<Camera3dRecordingDesire>(*this); }                            \
-    // DesireType type() override { return DesireType::get<Camera3dRecordingDesire>(); }    
+    // DesireType type() override { return DesireType::get<Camera3dRecordingDesire>(); }
 };
 ```
 
@@ -102,7 +102,7 @@ Strategies that only change the state of filters do not require creating a subcl
 The following example shows how to create the strategy for the `Camera3dRecordingDesire` previously defined.
 ```cpp
 // The template argument of the class declares the desire type associated with the strategy.
-auto strategy = make_unique<Strategy<Camera3dRecordingDesire>>( 
+auto strategy = make_unique<Strategy<Camera3dRecordingDesire>>(
         utility, // The utility of the strategy
         unordered_map<string, uint16_t>{}, // Declare the resources used by the strategy
         unordered_map<string, FilterConfiguration>{
@@ -138,7 +138,7 @@ public:
         m_nodeHandle(nodeHandle)
     {
         // Create the publisher to send the text to say.
-        m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1); 
+        m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1);
 
         // Create the subscriber to be notified when the text has been said.
         m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
@@ -174,7 +174,7 @@ private:
 
 ### Desire Set
 The following subsections show how to use the desire set. The DesireSet class is thread-safe, so it can be called by any thread.
-Once a change has been made to the desire set, the solver will be run to update the filter states. 
+Once a change has been made to the desire set, the solver will be run to update the filter states.
 To prevent this behavior, a transaction can be created, so the solver will be run when the transaction is destroyed.
 
 #### Add a Desire
@@ -277,14 +277,14 @@ constexpr bool WAIT_FOR_SERVICE = true;
 auto desireSet = make_shared<DesireSet>(); // Create the desire set.
 // Create the filter pool useful to change the filter states.
 // If WAIT_FOR_SERVICE is true, the pool will wait until the service become available.
-auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE); 
+auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
 
 vector<unique_ptr<BaseStrategy>> strategies;
 // Add the strategies related to the application into the vector.
 
 auto solver = make_unique<GecodeSolver>(); // Create the solver.
 HbbaLite hbba(desireSet,
-    move(strategies), 
+    move(strategies),
     {{"motor", 1}, {"sound", 1}, {"led", 1}}, // The resource available on the robot.
     move(solver)); // The constructor starts a thread for the solver.
 
@@ -293,7 +293,7 @@ HbbaLite hbba(desireSet,
 ```
 
 ### Filters
-The following examples show how to add a filter to a perceptual node or a behavior node. 
+The following examples show how to add a filter to a perceptual node or a behavior node.
 By default, the service name to modify the state of the filter is `topic_name/filter_state`.
 
 #### C++ Subscriber
@@ -407,37 +407,39 @@ if __name__ == '__main__':
 ```
 
 
-## T-Top 
+## T-Top
 The following sections present T-Top specific information.
 
-### Resources 
+### Resources
 - `motor`: The resource to prevent conflicts over the motors.
 - `audio`: The resource to prevent conflicts over the sound output.
 - `led`: The resource to prevent conflicts over the LEDs.
 
 ### Desire Types
-- `Camera3dRecordingDesire`: To enable the recording of the 3D camera.
-- `Camera2dWideRecordingDesire`: To enable the recording of the 2D Wide camera.
-- `RobotNameDetectorDesire`: To enable the robot name detector node.
-- `SlowVideoAnalyzer3dDesire`: To enable the video analyzer node for the 3D camera at 1 Hz.
-- `FastVideoAnalyzer3dDesire`: To enable the video analyzer node for the 3D camera at 5 Hz.
-- `FastVideoAnalyzer3dWithAnalyzedImageDesire`: To enable the video analyzer node for the 3D camera at 5 Hz and to publish the analyzed image.
-- `SlowVideoAnalyzer2dWideDesire`: To enable the video analyzer node for the 2D wide camera at 1 Hz.
-- `FastVideoAnalyzer2dWideDesire`: To enable the video analyzer node for the 2D wide camera at 5 Hz.
-- `FastVideoAnalyzer2dWideWithAnalyzedImageDesire`: To enable the video analyzer node for the 2D wide camera at 5 Hz and to publish the analyzed image.
-- `AudioAnalyzerDesire`: To enable the audio analyzer node.
-- `SpeechToTextDesire`: To enable the speech to text node.
-- `ExploreDesire`: To enable the explore node.
-- `FaceAnimationDesire`: To change the face animation.
-- `LedEmotionDesire`: To enable the led emotion node.
-- `SoundFollowingDesire`: To enable the node that makes T-Top follow the loudest sound.
-- `NearestFaceFollowingDesire`: To enable the node that makes T-Top follow the nearest face.
-- `SpecificFaceFollowingDesire`: To enable the node that makes T-Top follow a specific face.
-- `SoundObjectPersonFollowingDesire`: To enable the node that makes T-Top follow the loudest sound, the people and the objects.
-- `TalkDesire`: To make T-Top talk.
-- `GestureDesire`: To make T-Top perform a head gesture.
-- `DanceDesire`: To make T-Top dance.
-- `PlaySoundDesire`: To make T-Top play a sound file.
-- `TelepresenceDesire`: To make T-Top perform a video call
-- `TeleoperationDesire`: To enable remote control of T-Top.
+- [`Camera3dRecordingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L8): To enable the recording of the 3D camera.
+- [`Camera2dWideRecordingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L18): To enable the recording of the 2D Wide camera.
+- [`RobotNameDetectorDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L28): To enable the robot name detector node.
+- [`SlowVideoAnalyzer3dDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L38): To enable the video analyzer node for the 3D camera at 1 Hz.
+- [`FastVideoAnalyzer3dDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L48): To enable the video analyzer node for the 3D camera at 5 Hz.
+- [`FastVideoAnalyzer3dWithAnalyzedImageDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L58): To enable the video analyzer node for the 3D camera at 5 Hz and to publish the analyzed image.
+- [`SlowVideoAnalyzer2dWideDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L68): To enable the video analyzer node for the 2D wide camera at 1 Hz.
+- [`FastVideoAnalyzer2dWideDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L78): To enable the video analyzer node for the 2D wide camera at 5 Hz.
+- [`FastVideoAnalyzer2dWideWithAnalyzedImageDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L88): To enable the video analyzer node for the 2D wide camera at 5 Hz and to publish the analyzed image.
+- [`AudioAnalyzerDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L98): To enable the audio analyzer node.
+- [`SpeechToTextDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L108): To enable the speech to text node.
+- [`ExploreDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L118): To enable the explore node.
+- [`FaceAnimationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L128): To change the face animation.
+- [`LedEmotionDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L151): To enable the led emotion node.
+- [`SoundFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L173): To enable the node that makes T-Top follow the loudest sound.
+- [`NearestFaceFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L183): To enable the node that makes T-Top follow the nearest face.
+- [`SpecificFaceFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L193): To enable the node that makes T-Top follow a specific face.
+- [`SoundObjectPersonFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L212): To enable the node that makes T-Top follow the loudest sound, the people and the objects.
+- [`TalkDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L222): To make T-Top talk.
+- [`GestureDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L241): To make T-Top perform a head gesture.
+- [`DanceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L263): To make T-Top dance.
+- [`PlaySoundDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L273): To make T-Top play a sound file.
+- [`TelepresenceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L292): To make T-Top perform a video call
+- [`TeleoperationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L302): To enable remote control of T-Top.
 
+### Strategies
+The strategies are declared in the following files: [Strategies.h](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Strategies.h) and [Strategies.cpp](../../ros/utils/t_top_hbba_lite/src/Strategies.cpp).
