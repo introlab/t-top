@@ -194,37 +194,31 @@
 | ------------------------------------ | -------- | -------------------------------------------------------------------------------------------- |
 | `Limit Switch`                       | 1        | ![Power Switch](images/electronics/limit-switch.jpg)                                         |
 | `22 AWG White Wire Spool`            | 1        | ![22 AWG White Cable Spool](images/electronics/white-wire.jpg)                               |
-| `22 AWG Black Wire Spool`            | 1        | ![22 AWG Black Cable Spool](images/electronics/black-wire.jpg)                               |
 | `2-Position Female JST PH Connector` | 2        | ![2-Position Female JST PH Connector](images/electronics/2-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`               | 4        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 
 ### Steps
-> TODO Update steps 25 cm
 
-1. Cut the `grove cable` in half.
-2. Keep one half.
-3. Remove the red and white wires.
+1. Cut two `22 AWG white wire` of 25 cm long.
+2. Solder the wires to the limit switch tabs (C and NC).
 
-![Limit Switch Grove Cable](images/assemblies/04F%20grove%20cable.jpg)
+![Limit Switch Tabs](images/assemblies/04/limit-switch-tabs.jpg)
 
-4. Cut a `22 AWG white wire` of 32 cm long.
-5. Cut a `22 AWG black wire` of 32 cm long.
-6. Solder the wires to the `grove cable`, as shown in the following picture.
+3. Insert a `heat shrink tube` over each wire.
+4. Put the `heat shrink tubes` over the tabs.
 
-![Limit Switch Wire](images/assemblies/04F%20wires.jpg)
+![Limit Switch Heat Skrink Tubes](images/assemblies/04/limit-switch-heat-shrink-tubes.jpg)
 
-7. Add a `heat shrink tube` onto each connection.
+5. Crimp a `JST PH crimp contact` onto each wire.
 
-![Limit Switch Heat Shrink Tube](images/assemblies/04F%20heat%20skrink%20tube.jpg)
+![Limit Switch Crimps](images/assemblies/04/limit-switch-crimps.jpg)
 
-8. Insert a `heat shrink tube` over each wire.
-9. Solder the wires to the limit switch tabs (C and NC).
+6. Twist wire together.
 
-![Limit Switch Grove Cable](images/assemblies/04F%20limit%20switch%20tabs.jpg)
+7. Insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
+   picture.
 
-10. Put the `heat shrink tubes` over the tabs.
-
-![Limit Switch Grove Cable](images/assemblies/04F%20limit%20switch%20heat%20shrink%20tube.jpg)
+![Limit Switch Connector](images/assemblies/04/limit-switch-connector.jpg)
 
 ## G. Adafruit MAX9744
 
@@ -305,7 +299,7 @@
 | `16 AWG Ferrule`                     | 4        | ![16 AWG Ferrule](images/electronics/16-AWG-ferrule.jpg)                                     |
 | `JST VHR-2N Connector`               | 2        | ![JST VHR-2N Connector](images/electronics/JST-VHR-2N.jpg)                                   |
 | `JST SVH-21T-1.1 Crimp Contact`      | 4        | ![JST SVH-21T-1.1 Crimp Contact](images/electronics/JST-SVH-21T-1.1.jpg)                     |
-| `JST PHR-6 Cable`                    | 1        | ![JST PHR-6 Cable](images/electronics/JST-PHR-6-Cable.jpg)                                   |
+| `JST PHR-6 Cable`                    | 1        | ![JST PHR-6 Cable](images/electronics/JST-PHR-6-cable.jpg)                                   |
 | `5-Position Female JST PH Connector` | 1        | ![5-Position Female JST PH Connector](images/electronics/5-position-female-JST-PH.jpg)       |
 | `JST PH Crimp Contact`               | 5        | ![JST PH Crimp Contact](images/electronics/JST-PH-crimp.jpg)                                 |
 | `Heat Shrink Tube`                   | 2        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                            |
@@ -364,7 +358,7 @@
 | Part                              | Quantity | Image                                                                                          |
 | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
 | `Computer Power Connector`        | 1        | ![Computer Power Connector - Male](images/electronics/computer-power-connector-male.jpg)       |
-| `T-Connector`                     | 1        | ![T-Connector](images/electronics/t-connector.jpg)                                             |
+| `T-Connector`                     | 1        | ![T-Connector](images/electronics/t-connector-cable.jpg)                                       |
 | `Male Power Connector`            | 2        | ![Power Connector - Male](images/electronics/power-connector-male.jpg)                         |
 | `Female Power Connector`          | 2        | ![Power Connector - Female](images/electronics/power-connector-female.jpg)                     |
 | `Heat Shrink Tube`                | 4        | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                              |
@@ -406,7 +400,26 @@
 | `Big Heat Shrink Tube`                   | 14       | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-blue.jpg)                              |
 | `Small Heat Shrink Tube`                 | 24       | ![Heat Shrink Tube](images/electronics/heat-skrink-tube-yellow.jpg)                            |
 
+### Slip Ring Wire Table
+Solder the wires according to the following table.
+
+| Usage      | Wires                                                          |
+| ---------- | -------------------------------------------------------------- |
+| 12V+       | 1-BLK, 1-BRN, 1-RED, 1-ORG, 1-YEL, 1-GRN, 1-BLU                |
+| 12V-       | 1-PUR, 1-GRY, 1-WHT, 1-PINK, 1-LGT-BLU, 1-WHT-BLK, 2-LGT-BLU   |
+| 19V+       | 1-WHT-BRN, 1-WHT-RED, 1-WHT-ORG, 1-WHT-YEL, 1-WHT-GRN          |
+| 19V-       | 1-WHT-BLU, 1-WHT-PUR, 1-WHT-GRY, 1-BLK-RED, 1-BLK-BRN, 1-TRANS |
+| USB 5V     | 2-BRN                                                          |
+| USB GND    | 2-BLK                                                          |
+| USB Data + | 2-RED                                                          |
+| USB Data - | 2-ORG                                                          |
+| Eth TX +   | 2-YEL                                                          |
+| Eth TX -   | 2-GRN                                                          |
+| Eth RX +   | 2-BLU                                                          |
+| Eth RX -   | 2-PUR                                                          |
+
 ### Steps
+The following steps are examples.
 
 1. Insert a `big heat shrink tube` onto each `power connector` wire.
 2. Solder the black wire of the first `male power connector` to 7 wires of the bottom side of the `slip ring`.
@@ -415,40 +428,23 @@
 6. Solder the red wire of the first `female power connector` to matching wires of the top side of the `slip ring`.
 7. Install the `big heat shrink tubes`.
 
-![Male Power Connector](images/assemblies/04K%20power%20connector%20male.jpg)
-![Female Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+![Male Power Connector](images/assemblies/04/slip-ring-power-connector-male.jpg)
+![Female Power Connector](images/assemblies/04/slip-ring-power-connector-female.jpg)
 
-8. Solder the black wire of the first `female power connector` to 5 wires of the bottom side of the `slip ring`.
+8. Solder the black wire of the first `female power connector` to 6 wires of the bottom side of the `slip ring`.
 9. Solder the black wire of the first `male power connector` to matching wires of the top side of the `slip ring`.
 8. Solder the red wire of the first `female power connector` to 5 wires of the bottom side of the `slip ring`.
 9. Solder the red wire of the first `male power connector` to matching wires of the top side of the `slip ring`.
 10. Install the `big heat shrink tubes`.
 
-![Male Power Connector](images/assemblies/04K%20power%20connector%20male.jpg)
-![Female Power Connector](images/assemblies/04K%20power%20connector%20female.jpg)
+![Male Power Connector](images/assemblies/04/slip-ring-power-connector-male.jpg)
+![Female Power Connector](images/assemblies/04/slip-ring-power-connector-female.jpg)
 
-11. Crimp `JST XH crimp contacts` onto 4 wires of the bottom side of the `slip ring`.
-12. Insert a `small heat shrink tube` onto each matching wire of the top side of the `slip ring`.
-13. Insert a `big heat shrink tube` onto each the matching wires of the top side of the `slip ring`.
+11. Crimp `JST XH crimp contacts` onto 3 wires of the bottom side of the `slip ring`.
+12. Crimp `JST XH crimp contacts` onto the matching wire of the top side of the `slip ring`.
+13. Insert the crimp contacts into two `3-position female JST PH connectors`, as shown in the following pictures.
 
-**TODO Update 14 15 16 17 18 19**
-
-14. Cut the `grove cable` in half.
-15. Keep one half.
-16. Solder each wire of the `grove cable` to a matching wire of the top side of the `slip ring`.
-17. Install the `small heat shrink tubes`.
-18. Install the `big heat shrink tube`.
-19. Insert the crimp contacts into a `3-position female JST XH connector`, as shown in the following pictures and table.
-**TODO Update**
-| `JST XH Connector` | `Grove Cable` |
-| ------------------ | ------------- |
-| Red                | Red           |
-| Orange             | Yellow        |
-| Yellow             | White         |
-| Black              | Black         |
-
-![JST](images/assemblies/04K%20JST.jpg)
-![Grove](images/assemblies/04K%20Grove.jpg)
+![Slip Ring JST PH connectors](images/assemblies/04/slip-ring-rs232.jpg)
 
 20. Cut the `Mini-USB cable` in half.
 21. Cut 4 wires of the bottom side of the `slip ring` near it.
@@ -458,7 +454,7 @@
 25. Install the `small heat shrink tubes`.
 26. Install the `big heat shrink tube`.
 
-![Mini-USB](images/assemblies/04K%20mini-usb.jpg)
+![Mini-USB](images/assemblies/04/slip-ring-mini-usb.jpg)
 
 27. Cut the matching wires of the top side of the `slip ring` near it.
 28. Insert a `small heat shrink tube` onto each wire.
@@ -467,7 +463,7 @@
 31. Install the `small heat shrink tubes`.
 32. Install the `big heat shrink tube`.
 
-![USB-A](images/assemblies/04K%20usb-a.jpg)
+![USB-A](images/assemblies/04/slip-ring-usb-a.jpg)
 
 33. Cut the `Ethernet cable` in half.
 34. Cut 4 wires of the bottom side of the `slip ring` near it.
@@ -483,7 +479,7 @@
 44. Install the `small heat shrink tubes`.
 45. Install the `big heat shrink tube`.
 
-![Ethernet](images/assemblies/04K%20ethernet.jpg)
+![Ethernet](images/assemblies/04/slip-ring-ethernet.jpg)
 
 ## L. Buck-Boost Wires
 
@@ -567,8 +563,9 @@
 
 ![Push Buttons Crimps](images/assemblies/04/push-button-crimps.jpg)
 
-6. For each `push button`, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
+6. Twist wire together.
+
+7. For each `push button`, insert the crimp contacts into a `2-position female JST PH connector`, as shown in the following
    picture.
-7. Twist wire together.
 
 ![Push Buttons](images/assemblies/04/push-button-connector.jpg)
