@@ -1,22 +1,21 @@
 <launch>
     <!--Static tf broadcast launch-->
-    <!-- TODO Update TFs -->
-    <node pkg="tf" type="static_transform_publisher" name="stewart_base_tf_publisher" args="0 0 0.05975 0 0 0 torso_base stewart_base 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="stewart_base_tf_publisher" args="0 0 0.04875 0 0 0 torso_base stewart_base 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="opencr_tf_publisher" args="-0.028881 0 0.005936 0 0 0 stewart_base opencr 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="opencr_imu_tf_publisher" args="0 0 0 1.570796 3.141592 1.570796 opencr opencr_imu 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="dynamixel_control_tf_publisher" args="-0.026336 0.081616 -0.03325 0 0 0 stewart_base dynamixel_control 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="dynamixel_control_imu_tf_publisher" args="0 0 0 0.6124 0.3535 0.3535 0.6124 dynamixel_control dynamixel_control_imu 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="camera_3d_link_tf_publisher" args="0.06396 0 0.15139 0 0 0 head camera_3d_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_3d_link_tf_publisher" args="0.0645 0 0.17189 0 0 0 head camera_3d_link 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_3d_depth_tf_publisher" args="0.01995 0 0 0 0 0 camera_3d_link camera_3d_depth_frame 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_3d_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_depth_frame camera_3d_depth_optical_frame 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_3d_color_tf_publisher" args="0 0 0 0 0 0 camera_3d_depth_frame camera_3d_color_frame 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_3d_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_color_frame camera_3d_color_optical_frame 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_link_tf_publisher" args="0.06728 0 0.11968 0 0 0 head camera_2d_wide_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_link_tf_publisher" args="0.06675 0 0.13968 0 0 0 head camera_2d_wide_link 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_frame_tf_publisher" args="0.0015 0 0 0 0 0 camera_2d_wide_link camera_2d_wide_frame 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_2d_wide_frame camera_2d_wide_optical_frame 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.37968650962 0 0 0 base_link odas 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.41317 0 0 0 base_link odas 100"/>
 
 
     <!-- IMU filter launch -->
@@ -31,6 +30,6 @@
 
     <!--Dynamic tf broadcast and odom launch -->
     <node pkg="daemon_ros_client" type="daemon_ros_client_node" name="daemon_ros_client_node">
-        <param name="base_link_torso_base_delta_z" value="0.151"/>  <!-- TODO Update -->
+        <param name="base_link_torso_base_delta_z" value="0.184"/>
     </node>
 </launch>
