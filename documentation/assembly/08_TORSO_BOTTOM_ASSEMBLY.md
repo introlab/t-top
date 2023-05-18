@@ -229,6 +229,7 @@
 | Part                                  | Quantity | Image                                                                                        |
 | ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
 | `Nvidia Jetson AGX Orin`              | 1        | ![Nvidia Jetson AGX Orin](images/electronics/jetson-agx-orin.jpg)                            |
+| `RTC Clock Battery`                   | 1        | ![RTC Clock Battery](images/electronics/rtc-bat.jpg)                                         |
 | `Stewart Stand`                       | 3        | ![Stewart Stand](images/3d-printed-parts/stewart-stand.jpg)                                  |
 | `Assembled Torso Bottom Dynamixel`    | 1        | ![Assembled Torso Bottom Dynamixel](images/assemblies/08/dynamixel-gear.jpg)                 |
 | `Assembled Limit Switch`              | 1        | ![Assembled Limit Switch](images/electronics/assembled-limit-switch.jpg)                     |
@@ -239,29 +240,33 @@
 
 ### Steps
 
-1. Install a `magnet` with super glue into the dedicated hole of each `Stewart stand`, as shown in the following picture.
+1. Install the `RTC clock battery` as shown in the following picture.
+
+![RTC Clock Battery](images/assemblies/08/rtc-bat.jpg)
+
+2. Install a `magnet` with super glue into the dedicated hole of each `Stewart stand`, as shown in the following picture.
 
 ![Stewart Stand Magnet](images/assemblies/08/stewart-bracket-magnet.jpg)
 
-2. Remove the following screws.
+3. Remove the following screws.
 
 ![Nvidia Jetson AGX Orin Screws](images/assemblies/08/orin-screws.jpg)
 
-3. Remove the stand.
+4. Remove the stand.
 
-4. Install the `Nvidia Jetson AGX Orin` onto the assembly with removed screws, as shown in the following picture.
+5. Install the `Nvidia Jetson AGX Orin` onto the assembly with removed screws, as shown in the following picture.
 
 ![Nvidia Jetson AGX Orin](images/assemblies/08/orin.jpg)
 
-5. Install the `assembled torso bottom dynamixel` onto the assembly with `M2.5x8 plastic screws`, as shown in the following pictures.
+6. Install the `assembled torso bottom dynamixel` onto the assembly with `M2.5x8 plastic screws`, as shown in the following pictures.
 
 ![Dynamixel](images/assemblies/08/orin-dynamixel-1.jpg)
 ![Dynamixel](images/assemblies/08/orin-dynamixel-2.jpg)
 
-6. Install the `stewart stands` onto the assembly, as shown in the following picture.
+7. Install the `stewart stands` onto the assembly, as shown in the following picture.
 
 ![Stewart Stand](images/assemblies/08/orin-stewart-stands.jpg)
 
-7. Install the `assembled limit switch` onto the assembly with `M2.5x12 plastic screws`.
+8. Install the `assembled limit switch` onto the assembly with `M2.5x12 plastic screws`.
 
 ![Limit Switch](images/assemblies/08/limit-switch.jpg)
