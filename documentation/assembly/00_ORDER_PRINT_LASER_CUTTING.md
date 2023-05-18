@@ -285,40 +285,40 @@ Additionally, the 19V Buck-Boost PCB needs the following parts.
 
 In order to assemble the robot, you need to 3D print the following parts that are located [here](../../CAD/STL).
 
-| File                                                                                 | Wall Thickness | Infill Percentage | Quantity | Notes                  |
-| ------------------------------------------------------------------------------------ | -------------- | ----------------- | -------- | ---------------------- |
-| [battery holder](../../CAD/STL/battery%20holder.STL)                                 | 1.2 mm         | 25 %              | 1        |                        |
-| [base audio front left](../../CAD/STL/base%20audio%20front%20left.STL)               | 1.2 mm         | 25 %              | 1        |                        |
-| [base audio front right](../../CAD/STL/base%20audio%20front%20right.STL)             | 1.2 mm         | 25 %              | 1        |                        |
-| [base audio back left](../../CAD/STL/base%20audio%20back%20left.STL)                 | 1.2 mm         | 25 %              | 1        |                        |
-| [base audio back right](../../CAD/STL/base%20audio%20back%20right.STL)               | 1.2 mm         | 25 %              | 1        |                        |
-| [base mic](../../CAD/STL/base%20mic.STL)                                             | 1.2 mm         | 25 %              | 4        |                        |
-| [base gear 1](../../CAD/STL/base%20gear%201.STL)                                     | 1.2 mm         | 25 %              | 1        |                        |
-| [base gear 2](../../CAD/STL/base%20gear%202.STL)                                     | 1.2 mm         | 25 %              | 1        |                        |
-| [base gear 3](../../CAD/STL/base%20gear%203.STL)                                     | 1.2 mm         | 25 %              | 1        |                        |
-| [base gear 4](../../CAD/STL/base%20gear%204.STL)                                     | 1.2 mm         | 25 %              | 1        |                        |
-| [torso bottom external 1](../../CAD/STL/torso%20bottom%20external%201.STL)           | 1.2 mm         | 25 %              | 1        |                        |
-| [torso bottom external 2](../../CAD/STL/torso%20bottom%20external%202.STL)           | 1.2 mm         | 25 %              | 1        |                        |
-| [torso bottom external 3](../../CAD/STL/torso%20bottom%20external%203.STL)           | 1.2 mm         | 25 %              | 1        |                        |
-| [torso bottom internal xavier](../../CAD/STL/torso%20bottom%20internal%20xavier.STL) | 1.2 mm         | 25 %              | 1        | Jetson AGX Xavier Only |
-| [torso bottom internal orin](../../CAD/STL/torso%20bottom%20internal%20orin.STL)     | 1.2 mm         | 25 %              | 1        | Jetson AGX Orin Only   |
-| [torso bottom holder](../../CAD/STL/torso%20bottom%20holder.STL)                     | 1.2 mm         | 25 %              | 3        |                        |
-| [limit switch bracket](../../CAD/STL/limit%20switch%20bracket.STL)                   | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart stand](../../CAD/STL/stewart%20stand.STL)                                   | 1.2 mm         | 25 %              | 3        |                        |
-| [gear servo bracket](../../CAD/STL/gear%20servo%20bracket.STL)                       | 1.2 mm         | 25 %              | 1        |                        |
-| [torso bottom gear](../../CAD/STL/torso%20bottom%20gear.STL)                         | 1.2 mm         | 25 %              | 1        |                        |
-| [torso bottom magnet bracket](../../CAD/STL/torso%20bottom%20magnet%20bracket.STL)   | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart bottom 1](../../CAD/STL/stewart%20bottom%201.STL)                           | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart bottom 2](../../CAD/STL/stewart%20bottom%202.STL)                           | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart bottom 3](../../CAD/STL/stewart%20bottom%203.STL)                           | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart horn left M3](../../CAD/STL/stewart%20horn%20left%20M3.STL)                 | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart horn left M2.5](../../CAD/STL/stewart%20horn%20left%20M2.5.STL)             | 1.2 mm         | 25 %              | 2        |                        |
-| [stewart horn right M3](../../CAD/STL/stewart%20horn%20right%20M3.STL)               | 1.2 mm         | 25 %              | 1        |                        |
-| [stewart horn right M2.5](../../CAD/STL/stewart%20horn%20right%20M2.5.STL)           | 1.2 mm         | 25 %              | 2        |                        |
-| [USB hub bracket](../../CAD/STL/USB%20hub%20stand.STL)                               | 1.2 mm         | 25 %              | 4        |                        |
-| [stewart top](../../CAD/STL/stewart%20top.STL)                                       | 1.2 mm         | 25 %              | 1        |                        |
-| [head](../../CAD/STL/head.STL)                                                       | 1.2 mm         | 25 %              | 1        |                        |
-| [head cable protector](../../CAD/STL/head%20cable%20protector.STL)                   | 1.2 mm         | 25 %              | 1        |                        |
+| File                                                                                 | Xavier | Orin | Wall Thickness | Infill Percentage | Quantity |
+| ------------------------------------------------------------------------------------ | ------ | ---- | -------------- | ----------------- | -------- |
+| [battery holder](../../CAD/STL/battery%20holder.STL)                                 | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base audio front left](../../CAD/STL/base%20audio%20front%20left.STL)               | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base audio front right](../../CAD/STL/base%20audio%20front%20right.STL)             | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base audio back left](../../CAD/STL/base%20audio%20back%20left.STL)                 | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base audio back right](../../CAD/STL/base%20audio%20back%20right.STL)               | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base mic](../../CAD/STL/base%20mic.STL)                                             | X      | X    | 1.2 mm         | 25 %              | 4        |
+| [base gear 1](../../CAD/STL/base%20gear%201.STL)                                     | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base gear 2](../../CAD/STL/base%20gear%202.STL)                                     | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base gear 3](../../CAD/STL/base%20gear%203.STL)                                     | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [base gear 4](../../CAD/STL/base%20gear%204.STL)                                     | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom external 1](../../CAD/STL/torso%20bottom%20external%201.STL)           | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom external 2](../../CAD/STL/torso%20bottom%20external%202.STL)           | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom external 3](../../CAD/STL/torso%20bottom%20external%203.STL)           | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom internal xavier](../../CAD/STL/torso%20bottom%20internal%20xavier.STL) | X      |      | 1.2 mm         | 25 %              | 1        |
+| [torso bottom internal orin](../../CAD/STL/torso%20bottom%20internal%20orin.STL)     |        | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom holder](../../CAD/STL/torso%20bottom%20holder.STL)                     | X      | X    | 1.2 mm         | 25 %              | 3        |
+| [limit switch bracket](../../CAD/STL/limit%20switch%20bracket.STL)                   | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart stand](../../CAD/STL/stewart%20stand.STL)                                   | X      | X    | 1.2 mm         | 25 %              | 3        |
+| [gear servo bracket](../../CAD/STL/gear%20servo%20bracket.STL)                       | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom gear](../../CAD/STL/torso%20bottom%20gear.STL)                         | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom magnet bracket](../../CAD/STL/torso%20bottom%20magnet%20bracket.STL)   | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart bottom 1](../../CAD/STL/stewart%20bottom%201.STL)                           | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart bottom 2](../../CAD/STL/stewart%20bottom%202.STL)                           | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart bottom 3](../../CAD/STL/stewart%20bottom%203.STL)                           | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart horn left M3](../../CAD/STL/stewart%20horn%20left%20M3.STL)                 | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart horn left M2.5](../../CAD/STL/stewart%20horn%20left%20M2.5.STL)             | X      | X    | 1.2 mm         | 25 %              | 2        |
+| [stewart horn right M3](../../CAD/STL/stewart%20horn%20right%20M3.STL)               | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [stewart horn right M2.5](../../CAD/STL/stewart%20horn%20right%20M2.5.STL)           | X      | X    | 1.2 mm         | 25 %              | 2        |
+| [USB hub bracket](../../CAD/STL/USB%20hub%20stand.STL)                               | X      | X    | 1.2 mm         | 25 %              | 4        |
+| [stewart top](../../CAD/STL/stewart%20top.STL)                                       | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [head](../../CAD/STL/head.STL)                                                       | X      | X    | 1.2 mm         | 25 %              | 1        |
+| [head cable protector](../../CAD/STL/head%20cable%20protector.STL)                   | X      | X    | 1.2 mm         | 25 %              | 1        |
 
 # CNC/Laser Cutting
 

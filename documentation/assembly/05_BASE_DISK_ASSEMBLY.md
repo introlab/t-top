@@ -19,7 +19,7 @@
 | `M3 Plastic Nuts`              | 4        | ![M3 Plastic Nuts](images/hardware/M3-plastic-nut.jpg)                            |
 | `M3x8mm Plastic Screw`         | 4        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                       |
 | `Battery Charger`              | 1        | ![Battery Charger](images/electronics/RRC-PMM240-vertical.jpg)                    |
-| `Adafruit MAX9744`             | 1        | ![Adafruit MAX9744](images/assemblies/04G%20heat%20shrink%20tube.jpg)             |
+| `Adafruit MAX9744`             | 1        | ![Adafruit MAX9744](images/assemblies/04/amplifier-heat-shrink-tube.jpg)          |
 | `PSU Control PCB`              | 1        | ![PSU Control PCB](images/electronics/psu-control-pcb.jpg)                        |
 | `12V Buck-Boost PCB`           | 1        | ![12V Buck-Boost PCB](images/assemblies/02/buck-boost-12v-all.jpg)                |
 | `14-cm-Long 16 AWG Red Wire`   | 1        | ![`14-cm-long 16 AWG Red Wire](images/electronics/16-AWG-red-wire.jpg)            |
