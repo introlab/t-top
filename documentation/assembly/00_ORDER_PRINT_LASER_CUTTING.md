@@ -19,6 +19,7 @@ The Xavier and the Orin columns indicate whether the part is required with the J
 | Power Switch                         | X      | X    | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/e-switch/RA812C1121/3778076)                       |
 | Micro USB Connector                  | X      | X    | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/adafruit-industries-llc/4217/10244658)             |
 | Ethernet Connector                   | X      | X    | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/harting/09454521561/8033369)                       |
+| Jumper                               | X      |      | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/sullins-connector-solutions/QPC02SXGN-RC/2618262)  |
 | WiFi Antenna                         | X      |      | 2        | 1                    | 2                | [Link](https://www.digikey.ca/en/products/detail/molex/2042811200/8020428)                          |
 | Intel RealSense D435i                | X      | X    | 1        | 1                    | 1                | [Link](https://www.digikey.ca/en/products/detail/intel-realsense/82635D435IDK5P/9926004)            |
 | Standoff - M2x10mm                   | X      | X    | 4        | 1                    | 4                | [Link](https://www.digikey.ca/en/products/detail/wurth-electronics-inc/971100244/9488622)           |

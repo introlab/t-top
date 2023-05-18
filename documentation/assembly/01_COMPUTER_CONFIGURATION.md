@@ -2,7 +2,20 @@
 
 ## Onboard Computer - Jetson AGX Xavier
 
-### A. Install the SSD
+### A. Install the Auto Power On Jumper
+
+| Part                                  | Quantity | Image                                                                                        |
+| ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `Nvidia Jetson AGX Xavier`            | 1        | ![Nvidia Jetson AGX Xavier](images/electronics/jetson-agx-xavier.jpg)                        |
+| `Jumper`                              | 1        |                                                                                              |
+
+#### Steps
+
+1. Install the jumper as shown in the following picture.
+
+![Nvidia Jetson AGX Xavier Jumper](images/assemblies/01/xavier-jumper.jpg)
+
+### B. Install the SSD
 
 #### Required Parts
 
@@ -15,14 +28,14 @@
 
 1. Remove the following screws.
 
-![Nvidia Jetson AGX Xavier Screws](images/assemblies/01A%20screws.jpg)
+![Nvidia Jetson AGX Xavier Screws](images/assemblies/01/xavier-screws.jpg)
 
 2. Remove the bottom PCB.
 3. Install the SSD, as shown in the following picture.
 
-![Nvidia Jetson AGX Xavier SSD](images/assemblies/01A%20SSD.jpg)
+![Nvidia Jetson AGX Xavier SSD](images/assemblies/01/xavier-ssd.jpg)
 
-### B. Remove dV/dt protection feature (Jetson AGX Xavier)
+### C. Remove dV/dt protection feature
 
 #### Required Parts
 
@@ -36,9 +49,9 @@
 2. Replace the bottom PCB.
 1. Install the following screws.
 
-![Nvidia Jetson AGX Xavier Screws](images/assemblies/01A%20screws.jpg)
+![Nvidia Jetson AGX Xavier Screws](images/assemblies/01/xavier-screws.jpg)
 
-### C. Install the WiFi Card (Jetson AGX Xavier)
+### D. Install the WiFi Card
 
 #### Required Parts
 
@@ -51,18 +64,17 @@
 
 1. Install the `WiFi card` into the `Nvidia Jetson AGX Xavier`.
 
-![WiFi Card](images/assemblies/01C%20wifi%20card.jpg)
+![WiFi Card](images/assemblies/01/xavier-wifi-card.jpg)
 
-### D. Install JetPack 5.1.1
+### E. Install JetPack 5.1.1
 
 1. Install JetPack 5.1.1 onto the computer SSD.
 
-### E. OpenCR Dev Rule
+### F. Dev Rules
 
 TODO move after repo is cloned
 
-1. Copy [99-opencr-custom.rules](../../tools/udev_rules/99-opencr-custom.rules) in `/etc/udev/rules.d/`.
-2. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
+1. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
 2. Copy [99-camera-2d-wide.rules](../../tools/udev_rules/99-camera-2d-wide.rules) in `/etc/udev/rules.d/`.
 3. Add the user to the `dialout` group.
 
@@ -70,7 +82,7 @@ TODO move after repo is cloned
 sudo usermod -a -G dialout $USER
 ```
 
-### F. Install NPM
+### G. Install NPM
 1. Execute the following bash commands.
 
 ```bash
@@ -79,7 +91,7 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 ```
 
-### G. Install Tools
+### H. Install Tools
 1. Execute the following bash commands.
 
 ```bash
@@ -93,7 +105,7 @@ sudo apt update
 sudo apt install cmake
 ```
 
-### H. Install Librealsense 2
+### I. Install Librealsense 2
 1. Execute the following bash commands.
 
 ```bash
@@ -117,7 +129,7 @@ cd buildLibrealsense2Xavier
 ./installLibrealsense.sh
 ```
 
-### I. Install ROS
+### J. Install ROS
 1. Execute the following bash commands.
 
 ```bash
@@ -256,7 +268,7 @@ echo "source ~/ros_catkin_ws/install_isolated/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### J. Install System Dependancies
+### K. Install System Dependancies
 
 1. Execute the following bash commands.
 
@@ -281,7 +293,7 @@ sudo apt install -y libasound2-dev \
     chromium-browser
 ```
 
-### K. Install Python Dependencies
+### L. Install Python Dependencies
 
 1. Execute the following bash commands.
 
@@ -315,7 +327,7 @@ cd torch2trt
 sudo -H python3 setup.py install --plugins
 ```
 
-### L. Clone and Build the Repository
+### M. Clone and Build the Repository
 
 1. Execute the following bash commands.
 
@@ -330,11 +342,11 @@ git clone --recurse-submodules git@github.com:introlab/t-top.git
 catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
 ```
 
-### Setup User
+### N. Setup User
 1. Enable autologin in the settings application.
 2. Disable sleep mode in the settings application.
 
-### Setup Screen
+### O. Setup Screen
 
 1. Rotate the display in the settings application.
 2. Add `Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"` before `EndSection` in the following section of `/usr/share/X11/xorg.conf.d/40-libinput.conf`.
@@ -350,7 +362,22 @@ EndSection
 
 ## Onboard Computer - Jetson AGX Orin
 
-TODO A, B and C
+### A. Install the SSD
+
+#### Required Parts
+
+| Part                                  | Quantity | Image                                                                                        |
+| ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `Nvidia Jetson AGX Orin`              | 1        | ![Nvidia Jetson AGX Orin](images/electronics/jetson-agx-orin.jpg)                            |
+| `SSD`                                 | 1        | ![SSD](images/electronics/SSD.jpg)                                                           |
+
+#### Steps
+
+1. Install the SSD, as shown in the following picture.
+
+![Nvidia Jetson AGX Orin SSD](images/assemblies/01/orin-ssd.jpg)
+
+
 
 TODO merge common with AGX Xavier
 TODO use catkin_make or catkin build for both
