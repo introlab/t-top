@@ -14,7 +14,7 @@
 | `M3x10mm Standoff`             | 10       | ![M2x10mm Standoff](images/hardware/M3x10mm-standoff.jpg)                         |
 | `M3x10mm Plastic Standoff`     | 4        | ![M2x10mm Standoff](images/hardware/M3x10mm-plastic-standoff.jpg)                 |
 | `M3x25mm Standoff`             | 4        | ![M2x10mm Standoff](images/hardware/M3x25mm-standoff.jpg)                         |
-| `M3x10mm Socket Screw`         | 14       | ![M3x10mm Socket Screw](images/hardware/M3x10mmsocket.jpg) TODO change to m3x8                       |
+| `M3x5mm Socket Screw`          | 14       | ![M3x5mm Socket Screw](images/hardware/M3x5mm-socket.jpg)                         |
 | `M3 Nuts`                      | 6        | ![M3 Nuts](images/hardware/M3-nut.jpg)                                            |
 | `M3 Plastic Nuts`              | 4        | ![M3 Plastic Nuts](images/hardware/M3-plastic-nut.jpg)                            |
 | `M3x8mm Plastic Screw`         | 4        | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                       |
@@ -33,12 +33,12 @@
 ![Base Disk Bottom M2](images/assemblies/05/base-disk-bottom-M2.jpg)
 ![Base Disk Bottom M2](images/assemblies/05/base-disk-top-M2.jpg)
 
-2. Install the `M3x10mm standoffs` with `M3x10mm socket screws` onto the `base disk`, as shown in the following pictures.
+2. Install the `M3x10mm standoffs` with `M3x5mm socket screws` onto the `base disk`, as shown in the following pictures.
 
 ![Base Disk Bottom M3](images/assemblies/05/base-disk-bottom-M3.jpg)
 ![Base Disk Bottom M3](images/assemblies/05/base-disk-top-M3.jpg)
 
-3. Install the `M3x10mm plastic standoffs` with `M3x10mm socket screws` onto the `base disk`, as shown in the following
+3. Install the `M3x10mm plastic standoffs` with `M3x5mm socket screws` onto the `base disk`, as shown in the following
    pictures.
 
 ![Base Disk Bottom M3 Plastic](images/assemblies/05/base-disk-bottom-M3-plastic)
