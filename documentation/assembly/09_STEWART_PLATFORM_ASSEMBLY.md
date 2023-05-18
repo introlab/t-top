@@ -95,7 +95,6 @@
 | `Dynamixel Control PCB`                                    | 1        | ![Dynamixel Control PCB](images/assemblies/02/dynamixel-control-7.jpg)                     |
 | `Assembled Stewart Platform Rod`                           | 6        | ![Threaded Rod](images/assemblies/09/stewart-rod.jpg)                                      |
 | `USB Hub`                                                  | 2        | ![USB Hub](images/electronics/usb-hub.jpg)                                                 |
-| `Micro-USB Cable Included with the Touchscreen`            | 1        | ![Micro-USB Cable](images/electronics/micro-usb-cable-screen.jpg)                          |
 | `M3x6 Plastic Screw`                                       | 6        | ![M3x6 Plastic Screw](images/hardware/M3x6mm-plastic.jpg)                                  |
 | `M2.5x8 Plastic Screw`                                     | 46       | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm-plastic.jpg)                              |
 | `M2.5x12 Plastic Screw`                                    | 4        | ![M2.5x12 Plastic Screw](images/hardware/M2.5x12mm-plastic.jpg)                            |
