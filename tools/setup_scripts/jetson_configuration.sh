@@ -570,16 +570,16 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp pytorch) = "false" ] ; then
 
     cd ~/deps
-    wget -N https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.13.0a0+340c4120.nv22.06-cp38-cp38-linux_aarch64.whl
-    sudo -H pip3 install torch-1.13.0a0+340c4120.nv22.06-cp38-cp38-linux_aarch64.whl
+    wget -N https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
+    sudo -H pip3 install torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
 
     cd ~/deps
-    clone_git --depth 1 -b v0.14.0 https://github.com/pytorch/vision.git
+    clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
     cd vision
     sudo -H python3 setup.py install
 
     cd ~/deps
-    clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/audio.git --recurse-submodule
+    clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
     cd audio
     add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
     add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
