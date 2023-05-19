@@ -41,6 +41,8 @@ cd $SCRIPT_PATH/../../../../tools/dnn_training
 # Kill child processes on exit
 trap 'jobs -p | xargs -I '{}' kill '{}' &> /dev/null; wait' INT QUIT KILL TERM
 
+set -e
+
 python3 export_descriptor_yolo_v4.py --dataset_type coco --model_type yolo_v4_tiny --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v4.ts.pth --trt_filename descriptor_yolo_v4.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v4_tiny_3.pth --trt_fp16 $FORCE_EXPORT
 python3 export_yolo_v4.py --model_type yolo_v4_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4.ts.pth --trt_filename yolo_v4.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_tiny.pth --trt_fp16 $FORCE_EXPORT
 
