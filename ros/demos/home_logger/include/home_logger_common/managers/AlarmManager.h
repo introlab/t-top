@@ -17,7 +17,7 @@ class AlarmManager;
 class Alarm
 {
 protected:
-    tl::optional<int> m_id;
+    std::optional<int> m_id;
     Time m_time;
 
 public:
@@ -25,7 +25,7 @@ public:
     Alarm(int id, Time time);
     virtual ~Alarm();
 
-    tl::optional<int> id() const;
+    std::optional<int> id() const;
     Time time() const;
 
     virtual std::string toSpeech() = 0;
@@ -36,7 +36,7 @@ protected:
     friend AlarmManager;
 };
 
-inline tl::optional<int> Alarm::id() const
+inline std::optional<int> Alarm::id() const
 {
     return m_id;
 }

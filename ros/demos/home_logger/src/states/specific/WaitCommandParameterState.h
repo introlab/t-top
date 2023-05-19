@@ -25,8 +25,8 @@ class WaitCommandParameterState : public SoundFaceFollowingState
     bool m_transcriptReceived;
     std::string m_parameterResponse;
 
-    tl::optional<uint64_t> m_faceAnimationDesireId;
-    tl::optional<uint64_t> m_speechToTextDesireId;
+    std::optional<uint64_t> m_faceAnimationDesireId;
+    std::optional<uint64_t> m_speechToTextDesireId;
 
 public:
     WaitCommandParameterState(

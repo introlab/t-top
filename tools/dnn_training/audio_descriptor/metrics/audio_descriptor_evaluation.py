@@ -13,7 +13,7 @@ from common.metrics import RocDistancesThresholdsEvaluation
 
 class AudioDescriptorEvaluation(RocDistancesThresholdsEvaluation):
     def __init__(self, model, device, transforms, dataset_root, output_path):
-        super(AudioDescriptorEvaluation, self).__init__(output_path, thresholds=np.arange(0, 2, 0.001))
+        super(AudioDescriptorEvaluation, self).__init__(output_path, thresholds=np.arange(0, 2, 0.00001))
 
         self._model = model
         self._device = device

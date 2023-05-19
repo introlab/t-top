@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "comparisons.hpp"
+#include "comparisons.h"
 
 using namespace std;
 
@@ -37,8 +37,8 @@ void readVideoAnalysis(
     }
 
     objectClass = query.getColumn(0).getString();
-    boundingBox.centre.x = query.getColumn(1).getDouble();
-    boundingBox.centre.y = query.getColumn(2).getDouble();
+    boundingBox.center.x = query.getColumn(1).getDouble();
+    boundingBox.center.y = query.getColumn(2).getDouble();
     boundingBox.width = query.getColumn(3).getDouble();
     boundingBox.height = query.getColumn(4).getDouble();
     columnToVector(query.getColumn(5), personPoseImage);
@@ -113,9 +113,9 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         faceDescriptor);
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(boundingBox, (BoundingBox{{17, 18}, 19, 20}));
-    EXPECT_EQ(personPoseImage, vector<ImagePosition>({ImagePosition{21, 22}}));
-    EXPECT_EQ(personPose, vector<Position>({Position{23, 24, 25}}));
-    EXPECT_EQ(personPoseConfidence, vector<float>({0.5}));
+    ASSERT_EQ(personPoseImage, vector<ImagePosition>({ImagePosition{21, 22}}));
+    ASSERT_EQ(personPose, vector<Position>({Position{23, 24, 25}}));
+    EXPECT_EQ(personPoseConfidence, vector<float>({0.5f}));
     EXPECT_EQ(faceDescriptor, vector<float>({}));
 
     readVideoAnalysis(
@@ -129,8 +129,8 @@ TEST(SQLiteVideoAnalysisLoggerTests, log_shouldInsertAndReturnId)
         faceDescriptor);
     EXPECT_EQ(objectClass, "person");
     EXPECT_EQ(boundingBox, (BoundingBox{{32, 33}, 34, 35}));
-    EXPECT_EQ(personPoseImage, vector<ImagePosition>({ImagePosition{36, 37}}));
-    EXPECT_EQ(personPose, vector<Position>({Position{38, 39, 40}}));
-    EXPECT_EQ(personPoseConfidence, vector<float>({0.75}));
-    EXPECT_EQ(faceDescriptor, vector<float>({41, 42}));
+    ASSERT_EQ(personPoseImage, vector<ImagePosition>({ImagePosition{36, 37}}));
+    ASSERT_EQ(personPose, vector<Position>({Position{38, 39, 40}}));
+    EXPECT_EQ(personPoseConfidence, vector<float>({0.75f}));
+    EXPECT_EQ(faceDescriptor, vector<float>({41.f, 42.f}));
 }

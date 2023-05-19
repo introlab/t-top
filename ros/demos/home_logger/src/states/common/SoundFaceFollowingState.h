@@ -3,12 +3,12 @@
 
 #include "../State.h"
 
-#include <tl/optional.hpp>
+#include <optional>
 
 class SoundFaceFollowingState : public State
 {
     DesireType m_followingDesireType;
-    tl::optional<uint64_t> m_followingDesireId;
+    std::optional<uint64_t> m_followingDesireId;
     uint64_t m_videoAnalysisWithoutPersonCount;
 
 public:

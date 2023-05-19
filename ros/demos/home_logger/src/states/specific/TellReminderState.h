@@ -21,7 +21,7 @@ public:
 class TellReminderState : public TalkState
 {
     ReminderManager& m_reminderManager;
-    tl::optional<Reminder> m_reminder;
+    std::optional<Reminder> m_reminder;
 
 public:
     TellReminderState(

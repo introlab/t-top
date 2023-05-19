@@ -9,7 +9,7 @@ using namespace std;
 TEST(ReminderManagerTests, reminderConstructors_shouldSetAttributes)
 {
     Reminder testee0("bob", DateTime(Date(2022, 5, 10), Time(17, 30)), FaceDescriptor({1.f, 2.f}));
-    EXPECT_EQ(testee0.id(), tl::nullopt);
+    EXPECT_EQ(testee0.id(), nullopt);
     EXPECT_EQ(testee0.text(), "bob");
     EXPECT_EQ(testee0.datetime(), DateTime(Date(2022, 5, 10), Time(17, 30)));
     EXPECT_EQ(testee0.faceDescriptor().data(), vector<float>({1.f, 2.f}));

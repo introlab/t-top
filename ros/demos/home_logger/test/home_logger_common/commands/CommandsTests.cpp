@@ -10,7 +10,7 @@ TEST(CommandTests, weatherCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.transcript(), "t0");
     EXPECT_EQ(testee0.type(), CommandType::get<WeatherCommand>());
     EXPECT_FALSE(testee0.isComplete());
-    EXPECT_EQ(testee0.time(), tl::nullopt);
+    EXPECT_EQ(testee0.time(), nullopt);
 
     WeatherCommand testee1("t1", WeatherTime::WEEK);
     EXPECT_EQ(testee1.transcript(), "t1");
@@ -41,7 +41,7 @@ TEST(CommandTests, setVolumeCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.transcript(), "t0");
     EXPECT_EQ(testee0.type(), CommandType::get<SetVolumeCommand>());
     EXPECT_FALSE(testee0.isComplete());
-    EXPECT_EQ(testee0.volumePercent(), tl::nullopt);
+    EXPECT_EQ(testee0.volumePercent(), nullopt);
 
     SetVolumeCommand testee1("t1", 2.5f);
     EXPECT_EQ(testee1.transcript(), "t1");
@@ -96,81 +96,81 @@ TEST(CommandTests, addAlarmCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.transcript(), "t0");
     EXPECT_EQ(testee0.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee0.isComplete());
-    EXPECT_EQ(testee0.alarmType(), tl::nullopt);
-    EXPECT_EQ(testee0.weekDay(), tl::nullopt);
-    EXPECT_EQ(testee0.date(), tl::nullopt);
-    EXPECT_EQ(testee0.time(), tl::nullopt);
+    EXPECT_EQ(testee0.alarmType(), nullopt);
+    EXPECT_EQ(testee0.weekDay(), nullopt);
+    EXPECT_EQ(testee0.date(), nullopt);
+    EXPECT_EQ(testee0.time(), nullopt);
 
-    AddAlarmCommand testee1("t0", AlarmType::PUNCTUAL, tl::nullopt, tl::nullopt, tl::nullopt);
+    AddAlarmCommand testee1("t0", AlarmType::PUNCTUAL, nullopt, nullopt, nullopt);
     EXPECT_EQ(testee1.transcript(), "t0");
     EXPECT_EQ(testee1.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee1.isComplete());
     EXPECT_EQ(testee1.alarmType(), AlarmType::PUNCTUAL);
-    EXPECT_EQ(testee1.weekDay(), tl::nullopt);
-    EXPECT_EQ(testee1.date(), tl::nullopt);
-    EXPECT_EQ(testee1.time(), tl::nullopt);
+    EXPECT_EQ(testee1.weekDay(), nullopt);
+    EXPECT_EQ(testee1.date(), nullopt);
+    EXPECT_EQ(testee1.time(), nullopt);
 
-    AddAlarmCommand testee2("t0", AlarmType::PUNCTUAL, tl::nullopt, Date(2022, 7, 3), tl::nullopt);
+    AddAlarmCommand testee2("t0", AlarmType::PUNCTUAL, nullopt, Date(2022, 7, 3), nullopt);
     EXPECT_EQ(testee2.transcript(), "t0");
     EXPECT_EQ(testee2.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee2.isComplete());
     EXPECT_EQ(testee2.alarmType(), AlarmType::PUNCTUAL);
-    EXPECT_EQ(testee2.weekDay(), tl::nullopt);
+    EXPECT_EQ(testee2.weekDay(), nullopt);
     EXPECT_EQ(testee2.date(), Date(2022, 7, 3));
-    EXPECT_EQ(testee2.time(), tl::nullopt);
+    EXPECT_EQ(testee2.time(), nullopt);
 
-    AddAlarmCommand testee3("t0", AlarmType::PUNCTUAL, tl::nullopt, tl::nullopt, Time(10, 40));
+    AddAlarmCommand testee3("t0", AlarmType::PUNCTUAL, nullopt, nullopt, Time(10, 40));
     EXPECT_EQ(testee3.transcript(), "t0");
     EXPECT_EQ(testee3.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee3.isComplete());
     EXPECT_EQ(testee3.alarmType(), AlarmType::PUNCTUAL);
-    EXPECT_EQ(testee3.weekDay(), tl::nullopt);
-    EXPECT_EQ(testee3.date(), tl::nullopt);
+    EXPECT_EQ(testee3.weekDay(), nullopt);
+    EXPECT_EQ(testee3.date(), nullopt);
     EXPECT_EQ(testee3.time(), Time(10, 40));
 
-    AddAlarmCommand testee4("t0", AlarmType::PUNCTUAL, tl::nullopt, Date(2022, 7, 3), Time(10, 40));
+    AddAlarmCommand testee4("t0", AlarmType::PUNCTUAL, nullopt, Date(2022, 7, 3), Time(10, 40));
     EXPECT_EQ(testee4.transcript(), "t0");
     EXPECT_EQ(testee4.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_TRUE(testee4.isComplete());
     EXPECT_EQ(testee4.alarmType(), AlarmType::PUNCTUAL);
-    EXPECT_EQ(testee4.weekDay(), tl::nullopt);
+    EXPECT_EQ(testee4.weekDay(), nullopt);
     EXPECT_EQ(testee4.date(), Date(2022, 7, 3));
     EXPECT_EQ(testee4.time(), Time(10, 40));
 
-    AddAlarmCommand testee5("t0", AlarmType::DAILY, tl::nullopt, tl::nullopt, tl::nullopt);
+    AddAlarmCommand testee5("t0", AlarmType::DAILY, nullopt, nullopt, nullopt);
     EXPECT_EQ(testee5.transcript(), "t0");
     EXPECT_EQ(testee5.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee5.isComplete());
     EXPECT_EQ(testee5.alarmType(), AlarmType::DAILY);
-    EXPECT_EQ(testee5.weekDay(), tl::nullopt);
-    EXPECT_EQ(testee5.date(), tl::nullopt);
-    EXPECT_EQ(testee5.time(), tl::nullopt);
+    EXPECT_EQ(testee5.weekDay(), nullopt);
+    EXPECT_EQ(testee5.date(), nullopt);
+    EXPECT_EQ(testee5.time(), nullopt);
 
-    AddAlarmCommand testee6("t0", AlarmType::DAILY, tl::nullopt, tl::nullopt, Time(10, 40));
+    AddAlarmCommand testee6("t0", AlarmType::DAILY, nullopt, nullopt, Time(10, 40));
     EXPECT_EQ(testee6.transcript(), "t0");
     EXPECT_EQ(testee6.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_TRUE(testee6.isComplete());
     EXPECT_EQ(testee6.alarmType(), AlarmType::DAILY);
-    EXPECT_EQ(testee6.weekDay(), tl::nullopt);
-    EXPECT_EQ(testee6.date(), tl::nullopt);
+    EXPECT_EQ(testee6.weekDay(), nullopt);
+    EXPECT_EQ(testee6.date(), nullopt);
     EXPECT_EQ(testee6.time(), Time(10, 40));
 
-    AddAlarmCommand testee7("t0", AlarmType::WEEKLY, tl::nullopt, tl::nullopt, Time(10, 40));
+    AddAlarmCommand testee7("t0", AlarmType::WEEKLY, nullopt, nullopt, Time(10, 40));
     EXPECT_EQ(testee7.transcript(), "t0");
     EXPECT_EQ(testee7.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_FALSE(testee7.isComplete());
     EXPECT_EQ(testee7.alarmType(), AlarmType::WEEKLY);
-    EXPECT_EQ(testee7.weekDay(), tl::nullopt);
-    EXPECT_EQ(testee7.date(), tl::nullopt);
+    EXPECT_EQ(testee7.weekDay(), nullopt);
+    EXPECT_EQ(testee7.date(), nullopt);
     EXPECT_EQ(testee7.time(), Time(10, 40));
 
-    AddAlarmCommand testee8("t0", AlarmType::WEEKLY, 1, tl::nullopt, Time(10, 40));
+    AddAlarmCommand testee8("t0", AlarmType::WEEKLY, 1, nullopt, Time(10, 40));
     EXPECT_EQ(testee8.transcript(), "t0");
     EXPECT_EQ(testee8.type(), CommandType::get<AddAlarmCommand>());
     EXPECT_TRUE(testee8.isComplete());
     EXPECT_EQ(testee8.alarmType(), AlarmType::WEEKLY);
     EXPECT_EQ(testee8.weekDay(), 1);
-    EXPECT_EQ(testee8.date(), tl::nullopt);
+    EXPECT_EQ(testee8.date(), nullopt);
     EXPECT_EQ(testee8.time(), Time(10, 40));
 }
 
@@ -188,7 +188,7 @@ TEST(CommandTests, removeAlarmCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.transcript(), "t0");
     EXPECT_EQ(testee0.type(), CommandType::get<RemoveAlarmCommand>());
     EXPECT_FALSE(testee0.isComplete());
-    EXPECT_EQ(testee0.id(), tl::nullopt);
+    EXPECT_EQ(testee0.id(), nullopt);
 
     RemoveAlarmCommand testee1("t0", 10);
     EXPECT_EQ(testee1.transcript(), "t0");
@@ -237,37 +237,37 @@ TEST(CommandTests, addReminderCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.transcript(), "t0");
     EXPECT_EQ(testee0.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee0.isComplete());
-    EXPECT_EQ(testee0.text(), tl::nullopt);
-    EXPECT_EQ(testee0.date(), tl::nullopt);
-    EXPECT_EQ(testee0.time(), tl::nullopt);
-    EXPECT_EQ(testee0.faceDescriptor(), tl::nullopt);
+    EXPECT_EQ(testee0.text(), nullopt);
+    EXPECT_EQ(testee0.date(), nullopt);
+    EXPECT_EQ(testee0.time(), nullopt);
+    EXPECT_EQ(testee0.faceDescriptor(), nullopt);
 
-    AddReminderCommand testee1("t0", "Hello", tl::nullopt, tl::nullopt, tl::nullopt);
+    AddReminderCommand testee1("t0", "Hello", nullopt, nullopt, nullopt);
     EXPECT_EQ(testee1.transcript(), "t0");
     EXPECT_EQ(testee1.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee1.isComplete());
     EXPECT_EQ(testee1.text(), "Hello");
-    EXPECT_EQ(testee1.date(), tl::nullopt);
-    EXPECT_EQ(testee1.time(), tl::nullopt);
-    EXPECT_EQ(testee1.faceDescriptor(), tl::nullopt);
+    EXPECT_EQ(testee1.date(), nullopt);
+    EXPECT_EQ(testee1.time(), nullopt);
+    EXPECT_EQ(testee1.faceDescriptor(), nullopt);
 
-    AddReminderCommand testee2("t0", "Hello", Date(2022, 7, 3), tl::nullopt, tl::nullopt);
+    AddReminderCommand testee2("t0", "Hello", Date(2022, 7, 3), nullopt, nullopt);
     EXPECT_EQ(testee2.transcript(), "t0");
     EXPECT_EQ(testee2.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee2.isComplete());
     EXPECT_EQ(testee2.text(), "Hello");
     EXPECT_EQ(testee2.date(), Date(2022, 7, 3));
-    EXPECT_EQ(testee2.time(), tl::nullopt);
-    EXPECT_EQ(testee2.faceDescriptor(), tl::nullopt);
+    EXPECT_EQ(testee2.time(), nullopt);
+    EXPECT_EQ(testee2.faceDescriptor(), nullopt);
 
-    AddReminderCommand testee3("t0", "Hello", Date(2022, 7, 3), Time(10, 40), tl::nullopt);
+    AddReminderCommand testee3("t0", "Hello", Date(2022, 7, 3), Time(10, 40), nullopt);
     EXPECT_EQ(testee3.transcript(), "t0");
     EXPECT_EQ(testee3.type(), CommandType::get<AddReminderCommand>());
     EXPECT_FALSE(testee3.isComplete());
     EXPECT_EQ(testee3.text(), "Hello");
     EXPECT_EQ(testee3.date(), Date(2022, 7, 3));
     EXPECT_EQ(testee3.time(), Time(10, 40));
-    EXPECT_EQ(testee3.faceDescriptor(), tl::nullopt);
+    EXPECT_EQ(testee3.faceDescriptor(), nullopt);
 
     AddReminderCommand testee4("t0", "Hello", Date(2022, 7, 3), Time(10, 40), FaceDescriptor({1.f}));
     EXPECT_EQ(testee4.transcript(), "t0");
@@ -294,7 +294,7 @@ TEST(CommandTests, removeReminderCommand_constructor_shouldSetAttributes)
     EXPECT_EQ(testee0.transcript(), "t0");
     EXPECT_EQ(testee0.type(), CommandType::get<RemoveReminderCommand>());
     EXPECT_FALSE(testee0.isComplete());
-    EXPECT_EQ(testee0.id(), tl::nullopt);
+    EXPECT_EQ(testee0.id(), nullopt);
 
     RemoveReminderCommand testee1("t0", 10);
     EXPECT_EQ(testee1.transcript(), "t0");

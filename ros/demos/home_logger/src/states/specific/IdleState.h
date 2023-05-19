@@ -18,9 +18,9 @@ class IdleState : public SoundFaceFollowingState
     Time m_wakeUpTime;
     float m_faceDescriptorThreshold;
 
-    tl::optional<uint64_t> m_faceAnimationDesireId;
-    tl::optional<uint64_t> m_robotNameDetectorDesireId;
-    tl::optional<uint64_t> m_videoAnalyzer3dDesireId;
+    std::optional<uint64_t> m_faceAnimationDesireId;
+    std::optional<uint64_t> m_robotNameDetectorDesireId;
+    std::optional<uint64_t> m_videoAnalyzer3dDesireId;
 
     bool m_chargeNeeded;
     std::chrono::time_point<std::chrono::system_clock> m_lastChargingMessageTime;
@@ -53,7 +53,7 @@ protected:
     void onEveryTenMinutesTimeout() override;
 
 private:
-    tl::optional<Reminder> findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+    std::optional<Reminder> findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg);
     void switchToAlarmState(std::vector<std::unique_ptr<Alarm>> alarms);
 };
 

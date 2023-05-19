@@ -18,9 +18,9 @@ public:
 protected:
     std::shared_ptr<WeatherCommand> parseSpecific(
         const std::shared_ptr<WeatherCommand>& command,
-        const tl::optional<std::string>& parameterName,
-        const tl::optional<std::string>& parameterResponse,
-        const tl::optional<FaceDescriptor>& faceDescriptor) override;
+        const std::optional<std::string>& parameterName,
+        const std::optional<std::string>& parameterResponse,
+        const std::optional<FaceDescriptor>& faceDescriptor) override;
 
 private:
     std::shared_ptr<WeatherCommand> parseTime(const std::shared_ptr<WeatherCommand>& command, const std::string& text);

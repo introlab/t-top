@@ -13,10 +13,10 @@ VideoAnalysis::VideoAnalysis(
       direction{direction},
       objectClass{move(objectClass)},
       boundingBox{boundingBox},
-      personPoseImage{tl::nullopt},
-      personPose{tl::nullopt},
-      personPoseConfidence{tl::nullopt},
-      faceDescriptor{tl::nullopt}
+      personPoseImage{std::nullopt},
+      personPose{std::nullopt},
+      personPoseConfidence{std::nullopt},
+      faceDescriptor{std::nullopt}
 {
 }
 VideoAnalysis::VideoAnalysis(
@@ -36,7 +36,7 @@ VideoAnalysis::VideoAnalysis(
       personPoseImage{move(personPoseImage)},
       personPose{move(personPose)},
       personPoseConfidence{move(personPoseConfidence)},
-      faceDescriptor{tl::nullopt}
+      faceDescriptor{std::nullopt}
 {
 }
 VideoAnalysis::VideoAnalysis(

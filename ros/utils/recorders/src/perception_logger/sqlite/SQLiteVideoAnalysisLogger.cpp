@@ -1,6 +1,7 @@
 #include <perception_logger/sqlite/SQLiteVideoAnalysisLogger.h>
 
 #include <perception_logger/sqlite/SQLiteMigration.h>
+#include <perception_logger/BinarySerialization.h>
 
 using namespace std;
 
@@ -39,38 +40,37 @@ int64_t SQLiteVideoAnalysisLogger::log(const VideoAnalysis& analysis)
     insert.clearBindings();
     insert.bind(1, id);
     insert.bind(2, analysis.objectClass);
-    insert.bind(3, analysis.boundingBox.centre.x);
-    insert.bind(4, analysis.boundingBox.centre.y);
+    insert.bind(3, analysis.boundingBox.center.x);
+    insert.bind(4, analysis.boundingBox.center.y);
     insert.bind(5, analysis.boundingBox.width);
     insert.bind(6, analysis.boundingBox.height);
 
+    optional<Bytes> personPoseImageBytes;
     if (analysis.personPoseImage.has_value())
     {
-        insert.bindNoCopy(
-            7,
-            reinterpret_cast<const void*>(analysis.personPoseImage.value().data()),
-            analysis.personPoseImage.value().size() * sizeof(ImagePosition));
+        personPoseImageBytes = serializeToBytesNoCopy(analysis.personPoseImage.value());
+        insert.bindNoCopy(7, personPoseImageBytes->data(), personPoseImageBytes->size());
     }
+
+    optional<Bytes> personPoseBytes;
     if (analysis.personPose.has_value())
     {
-        insert.bindNoCopy(
-            8,
-            reinterpret_cast<const void*>(analysis.personPose.value().data()),
-            analysis.personPose.value().size() * sizeof(Position));
+        personPoseBytes = serializeToBytesNoCopy(analysis.personPose.value());
+        insert.bindNoCopy(8, personPoseBytes->data(), personPoseBytes->size());
     }
+
+    optional<Bytes> personPoseConfidenceBytes;
     if (analysis.personPoseConfidence.has_value())
     {
-        insert.bindNoCopy(
-            9,
-            reinterpret_cast<const void*>(analysis.personPoseConfidence.value().data()),
-            analysis.personPoseConfidence.value().size() * sizeof(float));
+        personPoseConfidenceBytes = serializeToBytesNoCopy(analysis.personPoseConfidence.value());
+        insert.bindNoCopy(9, personPoseConfidenceBytes->data(), personPoseConfidenceBytes->size());
     }
+
+    optional<Bytes> faceDescriptorBytes;
     if (analysis.faceDescriptor.has_value())
     {
-        insert.bindNoCopy(
-            10,
-            reinterpret_cast<const void*>(analysis.faceDescriptor.value().data()),
-            analysis.faceDescriptor.value().size() * sizeof(float));
+        faceDescriptorBytes = serializeToBytesNoCopy(analysis.faceDescriptor.value());
+        insert.bindNoCopy(10, faceDescriptorBytes->data(), faceDescriptorBytes->size());
     }
 
     insert.exec();

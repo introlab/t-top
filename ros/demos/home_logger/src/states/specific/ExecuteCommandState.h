@@ -13,9 +13,9 @@ class ExecuteCommandStateParameter : public StateParameter
 public:
     std::shared_ptr<Command> command;
 
-    tl::optional<std::string> parameterName;
-    tl::optional<std::string> parameterResponse;
-    tl::optional<FaceDescriptor> faceDescriptor;
+    std::optional<std::string> parameterName;
+    std::optional<std::string> parameterResponse;
+    std::optional<FaceDescriptor> faceDescriptor;
 
     ExecuteCommandStateParameter();
     explicit ExecuteCommandStateParameter(std::shared_ptr<Command> command);

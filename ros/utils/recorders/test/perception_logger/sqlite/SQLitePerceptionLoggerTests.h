@@ -2,6 +2,7 @@
 #define SQLITE_PERCEPTION_LOGGER_TESTS_H
 
 #include <perception_logger/PerceptionLogger.h>
+#include <perception_logger/BinarySerialization.h>
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
@@ -16,9 +17,16 @@ void columnToVector(const SQLite::Column& column, std::vector<T>& vec)
     }
     else
     {
-        const T* data = reinterpret_cast<const T*>(column.getBlob());
+        const std::byte* data = reinterpret_cast<const std::byte*>(column.getBlob());
         size_t size = column.size() / sizeof(T);
-        vec = std::vector<T>(data, data + size);
+        vec.clear();
+
+        for (size_t i = 0; i < size; i++)
+        {
+            std::array<std::byte, sizeof(T)> bytes;
+            memcpy(bytes.data(), data + i * sizeof(T), sizeof(T));
+            vec.push_back(fromLittleEndianBytes<T>(bytes));
+        }
     }
 }
 
