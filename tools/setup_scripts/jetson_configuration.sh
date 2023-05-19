@@ -554,7 +554,8 @@ if [ $(checkstamp ttop_python_deps) = "false" ] ; then
         python3-audioread \
         python3-requests \
         python3-sphinx
-    sudo -H pip3 install cupy google-cloud-texttospeech google-cloud-speech libconf sounddevice librosa ipinfo pybind11-stubgen build
+    sudo -H pip3 install google-cloud-texttospeech google-cloud-speech libconf sounddevice librosa ipinfo pybind11-stubgen build
+    sudo -H pip3 install cupy==9.6.0
     sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 
     makestamp ttop_python_deps
