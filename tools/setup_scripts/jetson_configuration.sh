@@ -128,7 +128,7 @@ ECHO_IN_BLUE "###############################################################"
 sudo -v && sudo_stay_validated &
 SUDO_KEEPALIVE_PID=$!
 trap "kill ${SUDO_KEEPALIVE_PID}" EXIT
-trap "exit" INT TERM QUIT KILL
+trap "exit" INT TERM KILL
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -166,7 +166,7 @@ else
     grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
     grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
     # Make sure the change to zero is applied by going to 1
-    sudo nvpmodel -m 1 > /dev/null
+    sudo nvpmodel -m 1 &> /dev/null
     sudo nvpmodel -m 0
 fi
 ECHO_IN_BLUE "###############################################################\n"
@@ -215,15 +215,16 @@ if [ $(checkstamp screen_config) = "false" ] ; then
 
     sudo_apply_patch /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
 
-    if [ $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
-        xrandr --output $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1) --rotate right
-    elif [ $(xrandr | grep 'DP.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
-        xrandr --output $(xrandr | grep 'DP.* connected' | cut -d" " -f1) --rotate right
-    else
-        echo "ERROR: No external display detected"
-        # Will fail the script
-        return 1
-    fi
+    # TODO replace with something permanent
+    # if [ $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
+    #     xrandr --output $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1) --rotate right
+    # elif [ $(xrandr | grep 'DP.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
+    #     xrandr --output $(xrandr | grep 'DP.* connected' | cut -d" " -f1) --rotate right
+    # else
+    #     echo "ERROR: No external display detected"
+    #     # Will fail the script
+    #     return 1
+    # fi
 
     makestamp screen_config
 else
@@ -247,8 +248,13 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Installing tools"
 ECHO_IN_BLUE "###############################################################"
-sudo apt install -y htop python3-pip perl
-sudo -H pip3 install -U jetson-stats
+if [ $(checkstamp install_tools) = "false" ] ; then
+    sudo apt install -y htop python3-pip perl
+    sudo -H pip3 install -U jetson-stats
+    makestamp install_tools
+else
+    SKIP_SECTION "Tools already installed, skipping"
+fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -308,7 +314,8 @@ if [ $(checkstamp ros_build_deps) = "false" ] ; then
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
     sudo apt update
 
-    sudo apt install -y python3-rosdep \
+    sudo apt install -y \
+        python3-rosdep \
         python3-rosinstall-generator \
         python3-vcstool \
         python3-catkin-tools \
@@ -468,7 +475,8 @@ if [ $(checkstamp ros_deps_replace) = "false" ] ; then
     clone_git -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
     clone_git -b noetic-devel https://github.com/ros-perception/image_transport_plugins.git
 
-    rosdep install --from-paths ./image_transport_plugins --ignore-packages-from-source --rosdistro noetic -y
+    cd ~/ros_catkin_ws
+    rosdep install --from-paths ./src/image_transport_plugins --ignore-packages-from-source --rosdistro noetic -y
 
     makestamp ros_deps_replace
 else
@@ -501,7 +509,8 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install system dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_system_deps) = "false" ] ; then
-    sudo apt install -y libasound2-dev \
+    sudo apt install -y \
+        libasound2-dev \
         libpulse-dev \
         libconfig-dev \
         alsa-utils \
@@ -532,8 +541,21 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install general Python dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_python_deps) = "false" ] ; then
-    sudo apt install -y 'libprotobuf*' protobuf-compiler ninja-build
-    sudo -H pip3 install numpy scipy numba cupy matplotlib google-cloud-texttospeech google-cloud-speech libconf tqdm sounddevice librosa audioread requests ipinfo pybind11-stubgen sphinx build
+    sudo apt install -y \
+        'libprotobuf*' \
+        protobuf-compiler \
+        ninja-build \
+        python3-numpy \
+        python3-scipy \
+        python3-numba \
+        python3-matplotlib \
+        python3-sklearn \
+        python3-tqdm \
+        python3-audioread \
+        python3-requests \
+        python3-sphinx
+    sudo -H pip3 install google-cloud-texttospeech google-cloud-speech libconf sounddevice librosa ipinfo pybind11-stubgen build
+    sudo -H pip3 install cupy==9.6.0
     sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 
     makestamp ttop_python_deps
@@ -548,16 +570,16 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp pytorch) = "false" ] ; then
 
     cd ~/deps
-    wget -N https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
-    sudo -H pip3 install torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
+    wget -N https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.13.0a0+340c4120.nv22.06-cp38-cp38-linux_aarch64.whl
+    sudo -H pip3 install torch-1.13.0a0+340c4120.nv22.06-cp38-cp38-linux_aarch64.whl
 
     cd ~/deps
-    clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
+    clone_git --depth 1 -b v0.14.0 https://github.com/pytorch/vision.git
     cd vision
     sudo -H python3 setup.py install
 
     cd ~/deps
-    clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
+    clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/audio.git --recurse-submodule
     cd audio
     add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
     add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
@@ -582,8 +604,6 @@ if [ $(checkstamp opentera_deps) = "false" ] ; then
     cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_client_ros
     sudo -H pip3 install -r requirements.txt
     cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_webrtc_ros
-    sudo -H pip3 install -r requirements.txt
-    cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_webrtc_ros/opentera-webrtc
     sudo -H pip3 install -r requirements.txt
 
     makestamp opentera_deps
