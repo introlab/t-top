@@ -1,4 +1,4 @@
-# face_following
+# sound_following
 
 This folder contains the node to make T-Top follow the loudest sound.
 

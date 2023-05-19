@@ -64,6 +64,7 @@ public:
     DECLARE_DESIRE_METHODS(FastVideoAnalyzer3dWithAnalyzedImageDesire)
 };
 
+
 class SlowVideoAnalyzer2dWideDesire : public Desire
 {
 public:
@@ -146,6 +147,7 @@ inline const std::string& FaceAnimationDesire::name() const
     return m_name;
 }
 
+
 class LedEmotionDesire : public Desire
 {
     std::string m_name;
@@ -166,6 +168,7 @@ inline const std::string& LedEmotionDesire::name() const
 {
     return m_name;
 }
+
 
 class SoundFollowingDesire : public Desire
 {
@@ -294,6 +297,7 @@ public:
 
     DECLARE_DESIRE_METHODS(TelepresenceDesire);
 };
+
 
 class TeleoperationDesire : public Desire
 {

@@ -145,6 +145,7 @@ void DaemonRosClientNode::handleImuData(Device source, const ImuDataPayload& pay
     // WARNING must be tread safe, called from Qt Thread
     sensor_msgs::Imu msg;
     msg.header.stamp = ros::Time::now();
+    msg.header.frame_id = "dynamixel_control_imu";
     msg.orientation.x = 0;
     msg.orientation.y = 0;
     msg.orientation.z = 0;

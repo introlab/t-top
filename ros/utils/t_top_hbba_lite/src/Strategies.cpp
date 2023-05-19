@@ -17,17 +17,13 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1);
 }
 
-void FaceAnimationStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void FaceAnimationStrategy::onEnabling(const FaceAnimationDesire& desire)
 {
     Strategy<FaceAnimationDesire>::onEnabling(desire);
 
-    auto faceAnimationDesire = dynamic_cast<FaceAnimationDesire*>(desire.get());
-    if (faceAnimationDesire != nullptr)
-    {
-        std_msgs::String msg;
-        msg.data = faceAnimationDesire->name();
-        m_animationPublisher.publish(msg);
-    }
+    std_msgs::String msg;
+    msg.data = desire.name();
+    m_animationPublisher.publish(msg);
 }
 
 void FaceAnimationStrategy::onDisabling()
@@ -50,17 +46,13 @@ LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> 
     m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1);
 }
 
-void LedEmotionStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
 {
     Strategy<LedEmotionDesire>::onEnabling(desire);
 
-    auto ledEmotionDesire = dynamic_cast<LedEmotionDesire*>(desire.get());
-    if (ledEmotionDesire != nullptr)
-    {
-        std_msgs::String msg;
-        msg.data = ledEmotionDesire->name();
-        m_emotionPublisher.publish(msg);
-    }
+    std_msgs::String msg;
+    msg.data = desire.name();
+    m_emotionPublisher.publish(msg);
 }
 
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
@@ -78,17 +70,13 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
 }
 
-void SpecificFaceFollowingStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void SpecificFaceFollowingStrategy::onEnabling(const SpecificFaceFollowingDesire& desire)
 {
     Strategy<SpecificFaceFollowingDesire>::onEnabling(desire);
 
-    auto specificFaceFollowingDesire = dynamic_cast<SpecificFaceFollowingDesire*>(desire.get());
-    if (specificFaceFollowingDesire != nullptr)
-    {
-        std_msgs::String msg;
-        msg.data = specificFaceFollowingDesire->targetName();
-        m_targetNamePublisher.publish(msg);
-    }
+    std_msgs::String msg;
+    msg.data = desire.targetName();
+    m_targetNamePublisher.publish(msg);
 }
 
 TalkStrategy::TalkStrategy(
@@ -108,18 +96,14 @@ TalkStrategy::TalkStrategy(
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
 }
 
-void TalkStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void TalkStrategy::onEnabling(const TalkDesire& desire)
 {
     Strategy<TalkDesire>::onEnabling(desire);
 
-    auto talkDesire = dynamic_cast<TalkDesire*>(desire.get());
-    if (talkDesire != nullptr)
-    {
-        talk::Text msg;
-        msg.text = talkDesire->text();
-        msg.id = talkDesire->id();
-        m_talkPublisher.publish(msg);
-    }
+    talk::Text msg;
+    msg.text = desire.text();
+    msg.id = desire.id();
+    m_talkPublisher.publish(msg);
 }
 
 void TalkStrategy::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
@@ -148,18 +132,14 @@ GestureStrategy::GestureStrategy(
         nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
 }
 
-void GestureStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void GestureStrategy::onEnabling(const GestureDesire& desire)
 {
     Strategy<GestureDesire>::onEnabling(desire);
 
-    auto gestureDesire = dynamic_cast<GestureDesire*>(desire.get());
-    if (gestureDesire != nullptr)
-    {
-        gesture::GestureName msg;
-        msg.name = gestureDesire->name();
-        msg.id = gestureDesire->id();
-        m_gesturePublisher.publish(msg);
-    }
+    gesture::GestureName msg;
+    msg.name = desire.name();
+    msg.id = desire.id();
+    m_gesturePublisher.publish(msg);
 }
 
 void GestureStrategy::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
@@ -188,18 +168,14 @@ PlaySoundStrategy::PlaySoundStrategy(
         nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
 }
 
-void PlaySoundStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)
 {
     Strategy<PlaySoundDesire>::onEnabling(desire);
 
-    auto playSoundDesire = dynamic_cast<PlaySoundDesire*>(desire.get());
-    if (playSoundDesire != nullptr)
-    {
-        sound_player::SoundFile msg;
-        msg.path = playSoundDesire->path();
-        msg.id = playSoundDesire->id();
-        m_pathPublisher.publish(msg);
-    }
+    sound_player::SoundFile msg;
+    msg.path = desire.path();
+    msg.id = desire.id();
+    m_pathPublisher.publish(msg);
 }
 
 void PlaySoundStrategy::soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg)

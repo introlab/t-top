@@ -61,5 +61,4 @@
 1. Install `mic base pre-assemblies` onto the `audio base assembly` with `M3x12mm plastic screws`, as shown in the
    following picture.
 
-**TODO update image**
-![Mic Base](images/assemblies/07C%20mic%20base.jpg)
+![Mic Base](images/assemblies/07/mic-base.jpg)

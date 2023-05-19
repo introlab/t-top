@@ -15,7 +15,7 @@
 | `Assembled Speaker`                        | 4        | ![Assembled Speaker](images/electronics/assembled-speaker.jpg)                                                     |
 | `Assembled Fan`                            | 2        | ![Assembled Fan](images/electronics/assembled-fan.jpg)                                                             |
 | `Micro USB Connector`                      | 1        | ![Micro USB Connector](images/electronics/micro-usb-connector.jpg)                                                 |
-| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled-power-switch.jpg) **TODO update image**                     |
+| `Assembled Power Switch`                   | 1        | ![Assembled Power Switch](images/electronics/assembled-power-switch.jpg)                                           |
 | `Ethernet Connector`                       | 1        | ![Ethernet Connector](images/electronics/ethernet-connector.jpg)                                                   |
 | `Assembled Robot Power Connector - Female` | 1        | ![Assembled Robot Power Connector - Female](images/electronics/assembled-robot-power-connector-female.jpg)         |
 | `Assembled White LED`                      | 2        | ![Assembled LED](images/electronics/assembled-LEDs.jpg)                                                            |
@@ -83,11 +83,11 @@
 
 ![Base Audio Light Sensors 1](images/assemblies/06/light-sensors-1.jpg)
 
-![Base Audio Light Sensors 1](images/assemblies/06/light-sensors-2.jpg)
+![Base Audio Light Sensors 2](images/assemblies/06/light-sensors-2.jpg)
 
-![Base Audio Light Sensors 1](images/assemblies/06/light-sensors-3.jpg)
+![Base Audio Light Sensors 3](images/assemblies/06/light-sensors-3.jpg)
 
-**TODO add the missing image**
+![Base Audio Light Sensors 4](images/assemblies/06/light-sensors-4.jpg)
 
 ## B. Audio Base Assembly
 
@@ -98,8 +98,7 @@
 | `Audio Base Pre-Assembly`                  | 1        |                                                                                 |
 | `Base Disk Pre-Assembly`                   | 1        |                                                                                 |
 | `M3x8mm Plastic Screw`                     | 12       | ![M3x8mm Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                     |
-| `25-cm-Long 20 AWG Adafruit MAX9744 Wires` | 4        | ![25-cm-Long 20 AWG Adafruit MAX9744 Wires](images/assemblies/04G%20power%20wires.jpg)              |
-| `Adafruit MAX9744`                         | 1        | ![Adafruit MAX9744](images/assemblies/04G%20heat%20shrink%20tube.jpg)           |
+| `Adafruit MAX9744`                         | 1        | ![Adafruit MAX9744](images/assemblies/04/amplifier-heat-shrink-tube.jpg)        |
 | `M2 Nuts`                                  | 4        | ![M3 Nuts](images/hardware/M2-nut.jpg)                                          |
 | `Assembled JST PHR-6 Cable`                | 1        |                                                                                 |
 | `Female Power Connector with Ferrules`     | 1        | ![Power Connector - Female](images/electronics/power-connector-female.jpg)      |
@@ -198,28 +197,18 @@
 
 ![Tie Wraps](images/assemblies/06/tie-wraps.jpg)
 
-24. Connect the `female power connector with ferrules` to a `12V Buck-Boost PCB` output, as shown in the following
-    picture.
-
-**TODO update image**
-![12V](images/assemblies/06B%2012V.jpg)
+24. Connect the `female power connector with ferrules` to a `12V Buck-Boost PCB` output.
 
 25. Install the `19V Buck-Boost PCB`  with `M3 nuts` (orange circle), as shown in the following picture.
 
-**TODO update image**
-![19V Buck-Boost PCB](images/assemblies/06B%2019V%20buck-boost%20pcb.jpg)
+![19V Buck-Boost PCB](images/assemblies/06/19V-buck-boost-nuts.jpg)
 
 26. Connect the `19V Buck-Boost PCB` input to a `PSU control PCB` output with `8-cm-long 16 AWG wires`, as shown in the
     following picture.
 
-**TODO update image**
-![19V Buck-Boost PCB Wires](images/assemblies/06B%2019V%20buck-boost%20pcb%20wires.jpg)
+![19V Buck-Boost PCB Wires](images/assemblies/06/19V-buck-boost-wires.jpg)
 
-27. Connect the `male power connector with ferrules` to a `19V Buck-Boost PCB` output, as shown in the following
-    picture.
-
-**TODO update image**
-![19V](images/assemblies/06B%2019V.jpg)
+27. Connect the `male power connector with ferrules` to a `19V Buck-Boost PCB` output.
 
 ## C. Setup the Battery Charger
 
@@ -250,12 +239,16 @@
 | ---------------------------- | -------- | -------------------------------------------------------------------------------------- |
 | `Battery - RRC2054-2`        | 1        | ![Battery - RRC2054-2](images/electronics/RRC2054-2.jpg)                               |
 | `Ground Loop Noise Isolator` | 2        | ![Ground Loop Noise Isolator](images/electronics/ground-loop-noise-isolator.jpg)       |
+| `Diffuser Plastic Sheet`     | 1        |                                                                                        |
 
 ### Steps
 
 1. Install the `battery` and the `ground loop noise isolators` with tie wraps, as shown in the following picture.
 
-**TODO update image**
-![Battery](images/assemblies/06D%20battery.jpg)
+![Battery](images/assemblies/06/battery.jpg)
 
 2. Connect the `ground loop noise isolators` to the `Adafruit MAX9744`.
+
+3. Cut the LED diffusers according to the groove dimensions.
+4. Send the back of the LED diffusers.
+5. Install the LED diffusers with super glue.

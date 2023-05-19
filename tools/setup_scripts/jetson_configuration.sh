@@ -180,7 +180,6 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Setting up udev rules"
 ECHO_IN_BLUE "###############################################################"
-sudo cp $TTOP_REPO_PATH/tools/udev_rules/99-opencr-custom.rules /etc/udev/rules.d/
 sudo cp $TTOP_REPO_PATH/tools/udev_rules/99-teensy.rules /etc/udev/rules.d/
 sudo cp $TTOP_REPO_PATH/tools/udev_rules/99-camera-2d-wide.rules /etc/udev/rules.d/
 ECHO_IN_BLUE "###############################################################\n"
