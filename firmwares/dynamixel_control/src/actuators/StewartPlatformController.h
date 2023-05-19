@@ -29,7 +29,7 @@ public:
     StewartPlatformController(Dynamixel2Arduino& dynamixel);
     ~StewartPlatformController();
 
-    void begin();
+    bool begin();
 
     void setPose(const HeadPose& pose);
 

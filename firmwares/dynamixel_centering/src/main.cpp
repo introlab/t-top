@@ -14,6 +14,8 @@ constexpr unsigned long MOTOR_BAUD_RATE = 1000000;
 
 constexpr uint32_t STARTUP_DELAY_MS = 5000;
 
+constexpr float POSITION_OFFSET_DEGREE = 180.f;
+
 static Dynamixel2Arduino dynamixel(DYNAMIXEL_SERIAL, DYNAMIXEL_DIR_PIN);
 
 void setup()
@@ -51,7 +53,7 @@ void setup()
         return;
     }
 
-    if (!dynamixel.setGoalPosition(MOTOR_ID, 0, UNIT_DEGREE))
+    if (!dynamixel.setGoalPosition(MOTOR_ID, POSITION_OFFSET_DEGREE, UNIT_DEGREE))
     {
         DEBUG_SERIAL.println("setGoalPosition failed");
         return;

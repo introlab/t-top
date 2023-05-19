@@ -44,6 +44,7 @@ void setupDynamixel()
     digitalWrite(DYNAMIXEL_ENABLE_PIN, true);
 
     dynamixel.begin(DYNAMIXEL_BAUD_RATE);
+    delay(SETUP_DYNAMIXEL_DELAY_MS);
 
     DEBUG_SERIAL.println("Setup Dynamixel - End");
 }

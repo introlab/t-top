@@ -2,6 +2,7 @@
 
 #if FIRMWARE_MODE == FIRMWARE_MODE_NORMAL
 
+#include "criticalError.h"
 #include "mainCommon.h"
 #include "actuators/StewartPlatformController.h"
 #include "actuators/TorsoController.h"
@@ -59,6 +60,7 @@ void setup()
     imuDataReady = false;
     setupImu(onImuDataReadyInterrupt);
     setupSerialCommunicationManagers();
+    setupDynamixel();
     setupControllers();
 
     motorStatusTicker.start();
@@ -87,7 +89,11 @@ static void setupControllers()
 {
     DEBUG_SERIAL.println("Setup Controllers - Start");
 
-    stewartPlatformController.begin();
+    if (!stewartPlatformController.begin())
+    {
+        CRITICAL_ERROR("stewartPlatformController.begin() failed");
+    }
+
     torsoController.begin();
 
     DEBUG_SERIAL.println("Setup Controllers - End");

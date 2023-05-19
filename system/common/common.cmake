@@ -30,7 +30,7 @@ target_include_directories(serial_communication_common PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/SerialCommunication/src
     ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/Crc8/src
     ${CMAKE_CURRENT_LIST_DIR}/../../firmwares/common/lib/ClassMacro/src
-    ${CMAKE_CURRENT_LIST_DIR}/../../ros/utils/recorders/3rd_party/optional/include
+    ${CMAKE_CURRENT_LIST_DIR}/../optional/include
     ${CMAKE_CURRENT_LIST_DIR}/src
 )
 

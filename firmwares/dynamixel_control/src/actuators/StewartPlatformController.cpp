@@ -11,23 +11,56 @@ StewartPlatformController::StewartPlatformController(Dynamixel2Arduino& dynamixe
 
 StewartPlatformController::~StewartPlatformController() {}
 
-void StewartPlatformController::begin()
+bool StewartPlatformController::begin()
 {
     for (size_t i = 0; i < STEWART_SERVO_COUNT; i++)
     {
-        m_dynamixel.ping(STEWART_PLATFORM_DYNAMIXEL_IDS[i]);
+        if (!m_dynamixel.ping(STEWART_PLATFORM_DYNAMIXEL_IDS[i]))
+        {
+            DEBUG_SERIAL.print("ping failed with : ");
+            DEBUG_SERIAL.println(static_cast<int>(STEWART_PLATFORM_DYNAMIXEL_IDS[i]));
+            return false;
+        }
 
-        m_dynamixel.torqueOff(STEWART_PLATFORM_DYNAMIXEL_IDS[i]);
-        dynamixelSetNormalDirectionIfNeeded(m_dynamixel, STEWART_PLATFORM_DYNAMIXEL_IDS[i]);
-        m_dynamixel.torqueOn(STEWART_PLATFORM_DYNAMIXEL_IDS[i]);
-
-        m_dynamixel.setOperatingMode(STEWART_PLATFORM_DYNAMIXEL_IDS[i], OP_POSITION);
+        if (!m_dynamixel.torqueOff(STEWART_PLATFORM_DYNAMIXEL_IDS[i]))
+        {
+            DEBUG_SERIAL.print("torqueOff failed with : ");
+            DEBUG_SERIAL.println(static_cast<int>(STEWART_PLATFORM_DYNAMIXEL_IDS[i]));
+            return false;
+        }
+        if (!dynamixelSetNormalDirectionIfNeeded(m_dynamixel, STEWART_PLATFORM_DYNAMIXEL_IDS[i]))
+        {
+            DEBUG_SERIAL.print("dynamixelSetNormalDirectionIfNeeded failed with : ");
+            DEBUG_SERIAL.println(static_cast<int>(STEWART_PLATFORM_DYNAMIXEL_IDS[i]));
+            return false;
+        }
+        if (!m_dynamixel.setOperatingMode(STEWART_PLATFORM_DYNAMIXEL_IDS[i], OP_POSITION))
+        {
+            DEBUG_SERIAL.print("setOperatingMode failed with : ");
+            DEBUG_SERIAL.println(static_cast<int>(STEWART_PLATFORM_DYNAMIXEL_IDS[i]));
+            return false;
+        }
+        if (!m_dynamixel.torqueOn(STEWART_PLATFORM_DYNAMIXEL_IDS[i]))
+        {
+            DEBUG_SERIAL.print("torqueOn failed with : ");
+            DEBUG_SERIAL.println(static_cast<int>(STEWART_PLATFORM_DYNAMIXEL_IDS[i]));
+            return false;
+        }
     }
 
     for (size_t i = 0; i < STEWART_SERVO_COUNT; i++)
     {
-        m_dynamixel.setGoalPosition(STEWART_PLATFORM_DYNAMIXEL_IDS[i], 0.f, UNIT_DEGREE);
+        if (!m_dynamixel.setGoalPosition(STEWART_PLATFORM_DYNAMIXEL_IDS[i],
+                STEWART_PLATFORM_DYNAMIXEL_POSITION_OFFSET_DEGREE,
+                UNIT_DEGREE))
+        {
+            DEBUG_SERIAL.print("setGoalPosition failed with : ");
+            DEBUG_SERIAL.println((int)STEWART_PLATFORM_DYNAMIXEL_IDS[i]);
+            return false;
+        }
     }
+
+    return true;
 }
 
 void StewartPlatformController::setPose(const HeadPose& pose)
@@ -49,7 +82,9 @@ void StewartPlatformController::setPose(const HeadPose& pose)
 
     for (size_t i = 0; i < STEWART_SERVO_COUNT; i++)
     {
-        m_dynamixel.setGoalPosition(STEWART_PLATFORM_DYNAMIXEL_IDS[i], radToDeg(servoAngles[i]), UNIT_DEGREE);
+        m_dynamixel.setGoalPosition(STEWART_PLATFORM_DYNAMIXEL_IDS[i],
+            STEWART_PLATFORM_DYNAMIXEL_POSITION_OFFSET_DEGREE + radToDeg(servoAngles[i]),
+            UNIT_DEGREE);
     }
 }
 

@@ -7,6 +7,11 @@ project(TTOP_Daemon)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_INSTALL_PREFIX /opt/t-top/)
+if (NOT DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "")
+endif ()
+
 ## Required Qt5 Modules
 find_package(Qt5 REQUIRED COMPONENTS Core Network WebSockets SerialPort)
 
@@ -40,3 +45,5 @@ qt5_wrap_cpp(daemon_headers_moc ${daemon_headers})
 add_executable(daemon ${daemon_srcs} ${daemon_headers} ${daemon_headers_moc} ${daemon_other_files})
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(daemon Qt5::Core Qt5::Network Qt5::WebSockets Qt5::SerialPort serial_communication_common)
+
+install(TARGETS daemon DESTINATION bin)
