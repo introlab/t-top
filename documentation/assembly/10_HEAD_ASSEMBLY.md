@@ -12,8 +12,8 @@
 | `M3x5mm Screw Included with the Touchscreen` | 4        | ![M3x5mm Screw](images/hardware/M3x5mm-screen.jpg)                         |
 | `Spacer Included with the Touchscreen`       | 4        | ![Spacer](images/hardware/spacer-screen.jpg)                               |
 | `Intel RealSense D435i`                      | 1        | ![Intel RealSense D435i](images/electronics/intel-realsense-D435i.jpg)     |
-| `Wide Angle Camera`                          | 1        | **TODO image**                                                             |
-| `Wide Angle Camera Lens`                     | 1        | **TODO image**                                                             |
+| `Wide Angle Camera`                          | 1        | ![Wide Angle Camera](images/electronics/wide-angle-camera.jpg)             |
+| `Wide Angle Camera Lens`                     | 1        | ![Wide Angle Camera Lens](images/electronics/wide-angle-camera-lens.jpg)   |
 
 ### Steps
 
