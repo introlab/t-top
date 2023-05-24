@@ -72,7 +72,9 @@ class OpenFaceBackbone(nn.Module):
                             kernel_stride=[1],
                             out_channels=[384],
                             reduce_size=[96, 96, 256],
-                            pool=nn.MaxPool2d(kernel_size=3, stride=1, padding=1))
+                            pool=nn.MaxPool2d(kernel_size=3, stride=1, padding=1)),
+
+            nn.AvgPool2d(kernel_size=3, stride=(2, 1))
         )
 
     def forward(self, x):
