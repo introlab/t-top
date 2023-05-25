@@ -125,7 +125,8 @@ ECHO_IN_GREEN "###############################################################\n
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Enter sudo password for the whole script"
 ECHO_IN_BLUE "###############################################################"
-sudo -v && sudo_stay_validated &
+sudo -v
+sudo_stay_validated &
 SUDO_KEEPALIVE_PID=$!
 trap "kill ${SUDO_KEEPALIVE_PID}" EXIT
 trap "exit" INT TERM KILL
@@ -215,16 +216,7 @@ if [ $(checkstamp screen_config) = "false" ] ; then
 
     sudo_apply_patch /usr/share/X11/xorg.conf.d/40-libinput.conf $PATCH_FILES_DIR/40-libinput.patch
 
-    # TODO replace with something permanent
-    # if [ $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
-    #     xrandr --output $(xrandr | grep 'HDMI.* connected' | cut -d" " -f1) --rotate right
-    # elif [ $(xrandr | grep 'DP.* connected' | cut -d" " -f1 | wc -l) -eq 1 ] ; then
-    #     xrandr --output $(xrandr | grep 'DP.* connected' | cut -d" " -f1) --rotate right
-    # else
-    #     echo "ERROR: No external display detected"
-    #     # Will fail the script
-    #     return 1
-    # fi
+    # TODO rotate the screen here using way that's scripted and persistent on reboot
 
     makestamp screen_config
 else
@@ -249,7 +241,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Installing tools"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp install_tools) = "false" ] ; then
-    sudo apt install -y htop python3-pip perl
+    sudo apt install -y htop python3-pip perl rsync
     sudo -H pip3 install -U jetson-stats
     makestamp install_tools
 else
@@ -388,7 +380,7 @@ if [ $(checkstamp ros_system_deps) = "false" ] ; then
     cmake_build_install_native
 
     cd ~/deps
-    clone_git -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
+    clone_git -b 0.21.1-noetic https://github.com/introlab/rtabmap.git
     cd rtabmap
     cmake_build_install_native 4
 
@@ -444,7 +436,7 @@ if [ $(checkstamp ros_deps_add) = "false" ] ; then
     clone_git -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
     clone_git --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
 
-    clone_git -b 0.20.18-noetic https://github.com/introlab/rtabmap_ros.git
+    clone_git -b 0.21.1-noetic https://github.com/introlab/rtabmap_ros.git
     clone_git -b noetic-devel https://github.com/ros-planning/navigation.git
 
     clone_git -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
@@ -554,9 +546,9 @@ if [ $(checkstamp ttop_python_deps) = "false" ] ; then
         python3-audioread \
         python3-requests \
         python3-sphinx
-    sudo -H pip3 install google-cloud-texttospeech google-cloud-speech libconf sounddevice librosa ipinfo pybind11-stubgen build
-    sudo -H pip3 install cupy==9.6.0
-    sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
+
+    sudo -H pip3 install 'cython>=0.29.22,<0.30.0'
+    sudo -H pip3 install -r $SETUP_SCRIPTS_DIR/files/requirements.txt
 
     makestamp ttop_python_deps
 else
@@ -583,7 +575,7 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd audio
     add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
     add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
-    sudo -H pip3 install -r requirements.txt
+    sudo -H pip3 install kaldi_io==0.9.5
     sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
 
     cd ~/deps
@@ -617,7 +609,7 @@ ECHO_IN_BLUE ">> Build the T-Top workspace"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_ws_build) = "false" ] ; then
     cd $TTOP_REPO_PATH/../..
-    catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     catkin build
 

@@ -66,8 +66,7 @@
 1. Place the `Stewart platform assembly` onto the `torso bottom assembly` without installing the screws, as shown in the
    following picture.
 
-**TODO update images**
-![Stewart Platform Assembly](images/assemblies/11B%20stewart.jpg)
+![Stewart Platform Assembly](images/assemblies/11/stewart.jpg)
 
 2. Connect the `Dynamixel control power connector` to the `Dynamixel control PCB` (the cable must pass through the `Stewart bottom` hole).
 3. Connect the `limit switch connector` to the following connector of the `Dynamixel control PCB` (the cable must pass through the `Stewart bottom` hole).

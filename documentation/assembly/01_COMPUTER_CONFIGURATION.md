@@ -69,20 +69,111 @@
 ### E. Install JetPack 5.1.1
 
 1. Install JetPack 5.1.1 onto the computer SSD.
+TODO add procedure (links to NVidia doc)?
 
-### F. Dev Rules
+### F. Connect the screen
 
-TODO move after repo is cloned
+TODO connect the screen (add image and material)
 
-1. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
-2. Copy [99-camera-2d-wide.rules](../../tools/udev_rules/99-camera-2d-wide.rules) in `/etc/udev/rules.d/`.
-3. Add the user to the `dialout` group.
+
+### G. Rotate the display
+TODO rotate the display (add image)
+
+
+### G. Run the setup script
+
+1. Execute the following bash command on the robot.
+
+```bash
+wget -q -O - https://raw.githubusercontent.com/introlab/t-top/main/tools/setup_scripts/jetson_configuration.sh | bash
+```
+
+#### Alternate way: manual setup
+TODO update manual setup based on script
+
+### F. Update the robot
+Execute the following bash commands on the robot.
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+```
+
+### G. Clone the repository
+Execute the following bash commands on the robot to clone the T-Top repository.
+
+```bash
+mkdir -p ~/t-top_ws/src
+cd ~/t-top_ws/src
+
+git clone --recurse-submodules https://github.com/introlab/t-top.git
+```
+
+### H. Configure the Jetson power mode
+For the Jetson AGX Xavier, execute the following bash command on the robot.
+
+```bash
+sudo nvpmodel -m 0
+```
+
+For the Jetson AGX Orin, execute the following bash commands on the robot.
+
+```bash
+sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
+sudo cp ~/t-top_ws/src/t-top/tools/setup_scripts/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
+
+sudo nvpmodel -m 1 &> /dev/null
+sudo nvpmodel -m 0
+```
+
+### I. System configuration
+1. Disable the sudo password requirement for `shutdown` and `nvpmodel` by executing the following bash command on the robot.
+
+```bash
+sudo cp ~/t-top_ws/src/t-top/tools/setup_scripts/files/sudoers_ttop /etc/sudoers.d/ttop
+```
+
+2. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
+
+```bash
+sudo cp ~/t-top_ws/src/t-top/tools/udev_rules/99-teensy.rules /etc/udev/rules.d/
+```
+
+3. Copy [99-camera-2d-wide.rules](../../tools/udev_rules/99-camera-2d-wide.rules) in `/etc/udev/rules.d/`.
+
+```bash
+sudo cp ~/t-top_ws/src/t-top/tools/udev_rules/99-camera-2d-wide.rules /etc/udev/rules.d/
+```
+
+4. Add the user to the `dialout` group by executing the following bash command on the robot.
 
 ```bash
 sudo usermod -a -G dialout $USER
 ```
 
-### G. Install NPM
+5. Setup autologin in the settings menu.
+
+6. Disable automatic sleep and screen lock by executing the following bash commands on the robot.
+
+```bash
+gsettings set org.gnome.desktop.screensaver ubuntu-lock-on-suspend 'false'
+gsettings set org.gnome.desktop.screensaver lock-delay 0
+gsettings set org.gnome.desktop.session idle-delay 0
+```
+
+8. Add `Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"` before `EndSection` in the following section of `/usr/share/X11/xorg.conf.d/40-libinput.conf`.
+
+```
+Section "InputClass"
+        Identifier "libinput touchscreen catchall"
+        MatchIsTouchscreen "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "libinput"
+EndSection
+```
+
+### J. Install NPM
 1. Execute the following bash commands.
 
 ```bash
@@ -91,28 +182,28 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 ```
 
-### H. Install Tools
+### K. Install Tools
 1. Execute the following bash commands.
 
 ```bash
-sudo apt install -y htop python3-pip
+sudo apt install -y htop python3-pip perl
 sudo -H pip3 install -U jetson-stats
 
 # Update CMake
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
 sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
 sudo apt update
-sudo apt install cmake
+sudo apt install -y cmake
 ```
 
-### I. Install Librealsense 2
+### L. Install Librealsense 2
 1. Execute the following bash commands.
 
 ```bash
 mkdir ~/deps
 cd ~/deps
 
-git clone https://github.com/jetsonhacks/buildLibrealsense2Xavier
+git clone https://github.com/jetsonhacks/buildLibrealsense2Xavier.git
 cd buildLibrealsense2Xavier
 ```
 
@@ -126,7 +217,10 @@ cd buildLibrealsense2Xavier
 4. Execute the following bash commands.
 
 ```bash
+# Cannot be installed to build librealsense
+sudo apt autoremove -y libapriltag-dev
 ./installLibrealsense.sh
+sudo apt install -y libapriltag-dev
 ```
 
 ### J. Install ROS
@@ -134,10 +228,11 @@ cd buildLibrealsense2Xavier
 
 ```bash
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
 sudo apt update
 
-sudo apt install -y python3-rosdep \
+sudo apt install -y \
+    python3-rosdep \
     python3-rosinstall-generator \
     python3-vcstool \
     build-essential \
@@ -181,333 +276,12 @@ sudo apt install -y python3-rosdep \
     libbullet-dev \
     libsdl1.2-dev \
     libsdl-image1.2-dev \
-    libapriltag-dev
-
-# Install system dependencies
-cd ~/deps
-git clone https://github.com/ros/console_bridge
-cd console_bridge
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j
-sudo make install
-
-cd ~/deps
-git clone https://github.com/ethz-asl/libnabo.git
-cd libnabo
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j
-sudo make install
-
-cd ~/deps
-git clone https://github.com/ethz-asl/libpointmatcher.git
-cd libpointmatcher
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j
-sudo make install
-
-cd ~/deps
-git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
-cd rtabmap/build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j4
-sudo make install
-
-# Install ROS
-sudo rosdep init
-rosdep update
-
-mkdir ~/ros_catkin_ws
-cd ~/ros_catkin_ws
-
-rosinstall_generator desktop_full --rosdistro noetic --deps --tar > noetic-desktop.rosinstall
-mkdir ./src
-vcs import --input noetic-desktop.rosinstall ./src
-rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
-
-# Remove useless packages
-rm -rf ~/ros_catkin_ws/src/gazebo_ros_pkgs/
-
-# Add ROS packages
-cd ~/ros_catkin_ws/src
-git clone -b 1.0.1 https://github.com/GT-RAIL/rosauth.git
-git clone -b noetic-devel https://github.com/ros-drivers/rosserial.git
-git clone -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
-git clone -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
-git clone --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
-
-git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap_ros.git
-git clone -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
-git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
-git clone -b noetic-devel https://github.com/ros-planning/navigation.git
-git clone -b noetic-devel https://github.com/ros-perception/image_transport_plugins
-
-git clone -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
-git clone -b 2.3.2 https://github.com/IntelRealSense/realsense-ros.git
-git clone https://github.com/OTL/cv_camera.git
-git clone -b 0.6.4-noetic https://github.com/introlab/find-object.git
-
-# Replace not complete packages
-rm -rf geometry2 navigation_msgs vision_opencv image_common
-
-git clone -b noetic-devel https://github.com/ros/geometry2.git
-git clone -b ros1 https://github.com/ros-planning/navigation_msgs.git
-git clone -b noetic https://github.com/ros-perception/vision_opencv.git
-git clone -b noetic-devel https://github.com/ros-perception/image_common.git
-
-cd ~/ros_catkin_ws
-./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=0
-
-# Add ROS setup to .bashrc
-echo "source ~/ros_catkin_ws/install_isolated/setup.bash" >> ~/.bashrc
-source ~/.bashrc
-```
-
-### K. Install System Dependancies
-
-1. Execute the following bash commands.
-
-```bash
-sudo apt install -y libasound2-dev \
-    libpulse-dev \
-    libconfig-dev \
-    alsa-utils \
-    gfortran \
-    libgfortran-*-dev \
-    texinfo \
-    libfftw3-dev \
-    libsqlite3-dev \
-    portaudio19-dev \
-    python3-all-dev \
-    libgecode-dev \
-    qt5-default \
-    v4l-utils \
-    libopenblas-dev \
-    libpython3-dev \
-    ffmpeg \
-    chromium-browser
-```
-
-### L. Install Python Dependencies
-
-1. Execute the following bash commands.
-
-```bash
-# Install general dependencies
-sudo apt install -y 'libprotobuf*' protobuf-compiler ninja-build
-sudo -H pip3 install numpy scipy numba cupy matplotlib google-cloud-texttospeech google-cloud-speech libconf tqdm sounddevice librosa audioread requests ipinfo pybind11-stubgen sphinx build
-sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
-
-# Install PyTorch for Jetson
-cd ~/deps
-wget https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
-sudo -H pip3 install torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl
-
-cd ~/deps
-git clone --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
-cd vision
-sudo -H python3 setup.py install
-
-cd ~/deps
-git clone --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
-cd audio
-sudo bash -c 'echo "export PATH=/usr/local/cuda-11.4/bin:\$PATH" >> /root/.bashrc'
-sudo bash -c 'sudo echo "export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:\$LD_LIBRARY_PATH" >> /root/.bashrc'
-sudo -H pip3 install -r requirements.txt
-sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
-
-cd ~/deps
-git clone https://github.com/NVIDIA-AI-IOT/torch2trt
-cd torch2trt
-sudo -H python3 setup.py install --plugins
-```
-
-### M. Clone and Build the Repository
-
-1. Execute the following bash commands.
-
-```bash
-mkdir ~/t-top_ws
-cd ~/t-top_ws
-mkdir src
-catkin_make
-
-cd src
-git clone --recurse-submodules git@github.com:introlab/t-top.git
-catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-```
-
-### N. Setup User
-1. Enable autologin in the settings application.
-2. Disable sleep mode in the settings application.
-
-### O. Setup Screen
-
-1. Rotate the display in the settings application.
-2. Add `Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"` before `EndSection` in the following section of `/usr/share/X11/xorg.conf.d/40-libinput.conf`.
-
-```
-Section "InputClass"
-        Identifier "libinput touchscreen catchall"
-        MatchIsTouchscreen "on"
-        MatchDevicePath "/dev/input/event*"
-        Driver "libinput"
-EndSection
-```
-
-## Onboard Computer - Jetson AGX Orin
-
-### A. Install the SSD
-
-#### Required Parts
-
-| Part                                  | Quantity | Image                                                                                        |
-| ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `Nvidia Jetson AGX Orin`              | 1        | ![Nvidia Jetson AGX Orin](images/electronics/jetson-agx-orin.jpg)                            |
-| `SSD`                                 | 1        | ![SSD](images/electronics/SSD.jpg)                                                           |
-
-#### Steps
-
-1. Install the SSD, as shown in the following picture.
-
-![Nvidia Jetson AGX Orin SSD](images/assemblies/01/orin-ssd.jpg)
-
-
-
-TODO merge common with AGX Xavier
-TODO use catkin_make or catkin build for both
-
-<!-- ### D. Install JetPack 5.1.1
-
-1. Install JetPack 5.1.1 onto the computer SSD. -->
-
-<!-- ### E. OpenCR Dev Rule
-
-TODO move after repo is cloned
-
-1. Copy [99-opencr-custom.rules](../../tools/udev_rules/99-opencr-custom.rules) in `/etc/udev/rules.d/`.
-2. Copy [99-teensy.rules](../../tools/udev_rules/99-teensy.rules) in `/etc/udev/rules.d/`.
-2. Copy [99-camera-2d-wide.rules](../../tools/udev_rules/99-camera-2d-wide.rules) in `/etc/udev/rules.d/`.
-3. Add the user to the `dialout` group.
-
-```bash
-sudo usermod -a -G dialout $USER
-``` -->
-
-<!-- ### F. Install NPM
-1. Execute the following bash commands.
-
-```bash
-sudo apt install -y curl software-properties-common
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt install -y nodejs
-``` -->
-
-<!-- ### G. Install Tools
-1. Execute the following bash commands.
-
-```bash
-sudo apt install htop python3-pip
-sudo -H pip3 install -U jetson-stats
-
-# Update CMake
-wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
-sudo apt update
-sudo apt install kitware-archive-keyring
-sudo apt update
-sudo apt install cmake
-``` -->
-
-### H. Install Librealsense 2
-1. Execute the following bash commands.
-
-```bash
-cd ~/deps
-
-git clone https://github.com/jetsonhacks/installRealSenseSDK.git
-cd installRealSenseSDK
-```
-
-2. Add the folowing arguments to the `cmake` command in `buildLibrealsense.sh`.
-
-```bash
--DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-```
-
-3. Install the missing dependencies
-```bash
-sudo apt install libusb-dev python3.9-dev
-```
-
-4. Execute the following bash commands.
-
-```bash
-./buildLibrealsense.sh --version "v2.50.0" -j $(nproc)
-```
-
-### I. Install ROS
-1. Execute the following bash commands.
-
-```bash
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-sudo apt update
-
-sudo apt install -y python3-rosdep \
-    python3-rosinstall-generator \
-    python3-vcstool \
-    build-essential \
-    libboost-all-dev \
-    libpoco-dev python3-empy \
-    libtinyxml-dev \
-    libtinyxml2-dev \
-    qt5-default \
-    sip-dev \
-    python3-sip \
-    python3-sip-dbg \
-    python3-sip-dev \
-    python3-pyqt5 \
-    python3-nose \
-    python3-twisted \
-    python3-serial \
-    python3-autobahn \
-    python3-tornado \
-    python3-bson \
-    python3-qt-binding \
-    libcurl4-gnutls-dev \
-    libgtest-dev \
-    liblz4-dev \
-    libfltk1.1-dev \
-    liburdfdom-headers-dev \
-    liburdfdom-dev \
-    liburdfdom-tools \
-    libgpgme-dev \
-    libyaml-cpp-dev \
-    libpcl-dev \
-    libgtk-3-dev \
-    libassimp-dev \
-    libogre-1.9-dev \
-    libconfig-dev \
-    liblog4cplus-dev \
-    alsa-utils \
-    liblog4cpp5-dev \
-    liblog4cxx-dev \
-    libbz2-dev \
-    libbullet-dev \
-    libsdl1.2-dev \
-    libsdl-image1.2-dev \
     libapriltag-dev \
-    python3-catkin-tools
+    libdc1394-22-dev
 
 # Install system dependencies
 cd ~/deps
-git clone https://github.com/ros/console_bridge
+git clone https://github.com/ros/console_bridge.git
 cd console_bridge
 mkdir build
 cd build
@@ -544,11 +318,10 @@ sudo make install
 sudo rosdep init
 rosdep update
 
-mkdir ~/ros_catkin_ws
+mkdir -p ~/ros_catkin_ws/src
 cd ~/ros_catkin_ws
 
 rosinstall_generator desktop_full --rosdistro noetic --deps --tar > noetic-desktop.rosinstall
-mkdir ./src
 vcs import --input noetic-desktop.rosinstall ./src
 rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
 
@@ -563,7 +336,7 @@ git clone -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
 git clone -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
 git clone --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
 
-git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap_ros.git
+git clone -b 0.21.1-noetic https://github.com/introlab/rtabmap_ros.git
 git clone -b noetic-devel https://github.com/ros-planning/navigation.git
 
 git clone -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
@@ -578,12 +351,18 @@ git clone -b noetic-devel https://github.com/ros/geometry2.git
 git clone -b ros1 https://github.com/ros-planning/navigation_msgs.git
 git clone -b noetic https://github.com/ros-perception/vision_opencv.git
 git clone -b noetic-devel https://github.com/ros-perception/image_common.git
-git clone -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
-git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
-git clone -b noetic-devel https://github.com/ros-perception/image_transport_plugins
+
+clone_git -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
+clone_git -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
+clone_git -b noetic-devel https://github.com/ros-perception/image_transport_plugins.git
+
 
 cd ~/ros_catkin_ws
-catkin config --init --install --space-suffix _isolated --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=0
+rosdep install --from-paths ./src/image_transport_plugins --ignore-packages-from-source --rosdistro noetic -y
+# Can not be installed for the build, as CMake will pick it instead of the system 3.8
+sudo apt autoremove -y python3.9
+
+catkin config --init --install --space-suffix _isolated --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=0 -Wno-dev
 catkin build
 
 # Add ROS setup to .bashrc
@@ -591,12 +370,13 @@ echo "source ~/ros_catkin_ws/install_isolated/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### J. Install System Dependancies
+### K. Install System Dependencies
 
 1. Execute the following bash commands.
 
 ```bash
-sudo apt install -y libasound2-dev \
+sudo apt install -y \
+    libasound2-dev \
     libpulse-dev \
     libconfig-dev \
     alsa-utils \
@@ -613,18 +393,33 @@ sudo apt install -y libasound2-dev \
     libopenblas-dev \
     libpython3-dev \
     ffmpeg \
-    chromium-browser
+    chromium-browser \
+    libqt5websockets5-dev \
+    libqt5charts5-dev
 ```
 
-### K. Install Python Dependencies
+### L. Install Python Dependencies
 
 1. Execute the following bash commands.
 
 ```bash
 # Install general dependencies
-sudo apt install -y 'libprotobuf*' protobuf-compiler ninja-build libdc1394-dev
-sudo -H pip3 install -U numpy scipy numba cupy matplotlib google-cloud-texttospeech google-cloud-speech libconf tqdm sounddevice librosa audioread requests ipinfo pybind11-stubgen sphinx build
-sudo -H pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
+sudo apt install -y \
+    'libprotobuf*' \
+    protobuf-compiler \
+    ninja-build \
+    python3-numpy \
+    python3-scipy \
+    python3-numba \
+    python3-matplotlib \
+    python3-sklearn \
+    python3-tqdm \
+    python3-audioread \
+    python3-requests \
+    python3-sphinx
+
+sudo -H pip3 install 'cython>=0.29.22,<0.30.0'
+sudo -H pip3 install -r ~/t-top_ws/src/t-top/tools/setup_scripts/files/requirements.txt
 
 # Install PyTorch for Jetson
 cd ~/deps
@@ -650,35 +445,19 @@ cd torch2trt
 sudo -H python3 setup.py install --plugins
 ```
 
-### L. Clone and Build the Repository
+### M. Build the Repository
 
 1. Execute the following bash commands.
 
 ```bash
-mkdir ~/t-top_ws
 cd ~/t-top_ws
-mkdir src
-catkin config --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-catkin config --profile debug --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-cd src
-git clone --recurse-submodules git@github.com:introlab/t-top.git
+# Default development profile, using RelWithDebInfo
+catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+# Release profile, build with 'catkin build --profile release'
+catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
 catkin build
-catkin build --profile debug
-```
-
-### Setup Screen
-
-1. Rotate the display in the settings application.
-2. Add `Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"` before `EndSection` in the following section of `/usr/share/X11/xorg.conf.d/40-libinput.conf`.
-
-```
-Section "InputClass"
-        Identifier "libinput touchscreen catchall"
-        MatchIsTouchscreen "on"
-        MatchDevicePath "/dev/input/event*"
-        Driver "libinput"
-EndSection
 ```
 
 ## Development Computer (Ubuntu 20.04)
@@ -710,14 +489,16 @@ sudo apt install -y nodejs
 
 ```bash
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
 sudo apt update
+
 sudo apt install -y ros-noetic-desktop-full
 echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 sudo rosdep init
 rosdep update
-sudo apt install -y python3-rosinstall \
+sudo apt install -y \
+    python3-rosinstall \
     python3-rosinstall-generator \
     python3-wstool \
     build-essential \
@@ -730,7 +511,7 @@ sudo apt install -y python3-rosinstall \
     ros-noetic-cv-camera
 ```
 
-### D. Install System Dependancies
+### D. Install System Dependencies
 
 1. Execute the following bash commands.
 
