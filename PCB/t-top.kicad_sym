@@ -1,9 +1,9 @@
 (kicad_symbol_lib (version 20211014) (generator kicad_symbol_editor)
-  (symbol "+10-25V" (power) (pin_names (offset 0)) (in_bom yes) (on_board yes)
+  (symbol "+10-24V" (power) (pin_names (offset 0)) (in_bom yes) (on_board yes)
     (property "Reference" "#PWR" (id 0) (at 0 -3.81 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Value" "+10-25V" (id 1) (at 0 3.556 0)
+    (property "Value" "+10-24V" (id 1) (at 0 3.556 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (id 2) (at 0 0 0)
@@ -12,7 +12,7 @@
     (property "Datasheet" "" (id 3) (at 0 0 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (symbol "+10-25V_0_1"
+    (symbol "+10-24V_0_1"
       (polyline
         (pts
           (xy -0.762 1.27)
@@ -38,7 +38,7 @@
         (fill (type none))
       )
     )
-    (symbol "+10-25V_1_1"
+    (symbol "+10-24V_1_1"
       (pin power_in line (at 0 0 90) (length 0) hide
         (name "10-25V" (effects (font (size 1.27 1.27))))
         (number "1" (effects (font (size 1.27 1.27))))

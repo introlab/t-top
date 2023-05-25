@@ -101,8 +101,9 @@ See the [bill of materials](00_ORDER_PRINT_LASER_CUTTING.md#psu-control-pcb).
 ![Teensy](images/assemblies/02/teensy-lc.jpg)
 
 46. Solder the female headers (U2) to the PCB.
-47. Solder C6.
-48. Clip the Teensy LC onto the PCB.
+47. Solder D7.
+48. Solder C6.
+49. Clip the Teensy LC onto the PCB.
 
 ![PSU Control PCB - 8](images/assemblies/02/psu-control-8.jpg)
 
