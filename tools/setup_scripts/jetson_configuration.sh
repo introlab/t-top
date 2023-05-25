@@ -380,7 +380,7 @@ if [ $(checkstamp ros_system_deps) = "false" ] ; then
     cmake_build_install_native
 
     cd ~/deps
-    clone_git -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
+    clone_git -b 0.21.1-noetic https://github.com/introlab/rtabmap.git
     cd rtabmap
     cmake_build_install_native 4
 
