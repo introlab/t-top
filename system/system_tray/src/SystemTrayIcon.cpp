@@ -113,12 +113,11 @@ void SystemTrayIcon::updateStateOfChargeText(bool isPsuConnected,
                                              float current,
                                              float voltage)
 {
-    m_stateOfChargeAction->setText(QString::number(stateOfCharge) + " %"
-                                   + " " +  QString::number(voltage) + " V"
-                                   + " " +  QString::number(current) + " A"
+    m_stateOfChargeAction->setText(QString::number(stateOfCharge, 'f', 1) + " %"
+                                   + " " +  QString::number(voltage, 'f', 1) + " V"
+                                   + " " +  QString::number(current, 'f', 1) + " A"
                                    + " " +  QString(isPsuConnected ? " PSU" : "")
                                    + " " +  QString(isBatteryCharging ? " Charging" : "")
                                    + " " +  QString(hasChargerError ? " Charger Error" : "")
                                    + " " +  QString(hasBatteryError ? " Battery Error" : ""));
 }
-
