@@ -141,6 +141,7 @@ void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messag
 void DaemonApp::parseJetsonModel()
 {
     m_jetsonModel = get_jetson_model();
+    qDebug() << "Jetson model: " << get_jetson_model_name(m_jetsonModel).c_str();
 }
 
 void DaemonApp::setupWebSocketServers()

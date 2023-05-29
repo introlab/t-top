@@ -11,6 +11,24 @@
 
 #include <tl/optional.hpp>
 
+
+std::string get_jetson_model_name(JetsonModel model)
+{
+    switch (model)
+    {
+        case JetsonModel::XAVIER:
+            return "Xavier";
+        case JetsonModel::ORIN:
+            return "Orin";
+        case JetsonModel::UNKNOWN:
+            return "Unknown";
+        default:
+            throw std::runtime_error(
+                std::string("Unimplemented name for JetsonModel value [") +
+                std::to_string(static_cast<std::underlying_type_t<JetsonModel>>(model)) + "]");
+    }
+}
+
 static tl::optional<std::string> read_file(const std::string& path)
 {
     if (!QFile(QString::fromStdString(path)).exists())
