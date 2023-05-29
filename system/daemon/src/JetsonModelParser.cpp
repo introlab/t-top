@@ -1,8 +1,9 @@
 #include "JetsonModelParser.h"
 
+#include <QFile>
+
 #include <string>
 #include <string_view>
-#include <filesystem>
 #include <fstream>
 #include <map>
 #include <vector>
@@ -10,11 +11,9 @@
 
 #include <tl/optional.hpp>
 
-namespace fs = std::filesystem;
-
-static tl::optional<std::string> read_file(const fs::path& path)
+static tl::optional<std::string> read_file(const std::string& path)
 {
-    if (!fs::exists(path))
+    if (!QFile(QString::fromStdString(path)).exists())
     {
         return tl::nullopt;
     }
@@ -25,7 +24,7 @@ static tl::optional<std::string> read_file(const fs::path& path)
     return content;
 }
 
-static std::vector<std::string> split_string(std::string_view text, char delimiter)
+static std::vector<std::string> split_string(const std::string& text, char delimiter)
 {
     std::stringstream ss;
     std::vector<std::string> out;
@@ -49,7 +48,7 @@ static std::vector<std::string> split_string(std::string_view text, char delimit
     return out;
 }
 
-static tl::optional<std::string> get_p_number(std::string_view text)
+static tl::optional<std::string> get_p_number(const std::string& text)
 {
     auto parts = split_string(text, '/');
     auto dts_part = parts.back();

@@ -4,7 +4,7 @@ project(TTOP_Daemon)
 
 
 ## Set compile options
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INSTALL_PREFIX /opt/t-top/)
