@@ -146,8 +146,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/control_panel_node.cpp)
 
-set(headers
-  src/QtUtils.h
+set(moc_headers
   src/widgets/ImageDisplay.h
   src/widgets/ControlPanel.h
   src/widgets/AvatarTab.h
@@ -156,6 +155,10 @@ set(headers
   src/widgets/BehaviorsTab.h
   src/widgets/LedTab.h
   src/widgets/PerceptionsTab.h
+)
+
+set(other_headers
+  src/QtUtils.h
 )
 
 set(srcs
@@ -170,9 +173,9 @@ set(srcs
   src/widgets/PerceptionsTab.cpp
 )
 
-qt5_wrap_cpp(project_moc_srcs ${headers})
+qt5_wrap_cpp(project_moc_srcs ${moc_headers})
 
-add_executable(${PROJECT_NAME}_node ${srcs} ${uis} ${headers} ${project_moc_uis} ${project_moc_srcs})
+add_executable(${PROJECT_NAME}_node ${srcs} ${uis} ${moc_headers} ${other_headers} ${project_moc_uis} ${project_moc_srcs})
 qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 
 ## Rename C++ executable without prefix

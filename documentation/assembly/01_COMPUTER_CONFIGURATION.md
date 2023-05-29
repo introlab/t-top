@@ -286,8 +286,8 @@ cd console_bridge
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j
-sudo make install
+cmake --build .
+sudo cmake --install .
 
 cd ~/deps
 git clone https://github.com/ethz-asl/libnabo.git
@@ -295,8 +295,8 @@ cd libnabo
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j
-sudo make install
+cmake --build .
+sudo cmake --install .
 
 cd ~/deps
 git clone https://github.com/ethz-asl/libpointmatcher.git
@@ -304,15 +304,15 @@ cd libpointmatcher
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j
-sudo make install
+cmake --build .
+sudo cmake --install .
 
 cd ~/deps
-git clone -b 0.20.18-noetic https://github.com/introlab/rtabmap.git
+git clone -b 0.21.1-noetic https://github.com/introlab/rtabmap.git
 cd rtabmap/build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-make -j4
-sudo make install
+cmake --build . -j4
+sudo cmake --install .
 
 # Install ROS
 sudo rosdep init
@@ -395,7 +395,17 @@ sudo apt install -y \
     ffmpeg \
     chromium-browser \
     libqt5websockets5-dev \
-    libqt5charts5-dev
+    libqt5charts5-dev \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-good1.0-dev \
+    libgstreamer-plugins-bad1.0-dev \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    gstreamer1.0-tools
 ```
 
 ### L. Install Python Dependencies
@@ -445,15 +455,40 @@ cd torch2trt
 sudo -H python3 setup.py install --plugins
 ```
 
-### M. Build the Repository
+### M. Install the T-Top hardware daemon and system tray
+1. Build and install the daemon:
+```bash
+cd ~/t-top_ws/src/t-top/system/daemon
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+cmake --build .
+sudo cmake --install .
+```
+2. Build and install the system tray:
+```bash
+cd ~/t-top_ws/src/t-top/system/system_tray
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
+cmake --build .
+sudo cmake --install .
+```
+3. Enable the deamon service:
+```bash
+sudo systemctl enable ttop_hardware_daemon.service
+sudo systemctl start ttop_hardware_daemon.service
+```
+
+### N. Build the Repository
 
 1. Execute the following bash commands.
 
 ```bash
 cd ~/t-top_ws
 
-# Default development profile, using RelWithDebInfo
-catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+# Default development profile, using Debug
+catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 # Release profile, build with 'catkin build --profile release'
 catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 

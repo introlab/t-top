@@ -4,7 +4,7 @@ project(TTOP_Daemon)
 
 
 ## Set compile options
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INSTALL_PREFIX /opt/t-top/)
@@ -34,6 +34,7 @@ set (daemon_srcs
     src/DaemonSerialManager.cpp
     src/ProcessUtils.cpp
     src/main.cpp
+    src/JetsonModelParser.cpp
 )
 
 set (daemon_other_files
@@ -46,4 +47,10 @@ add_executable(daemon ${daemon_srcs} ${daemon_headers} ${daemon_headers_moc} ${d
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(daemon Qt5::Core Qt5::Network Qt5::WebSockets Qt5::SerialPort serial_communication_common)
 
+set(USER_NAME $ENV{USER})
+set(HOME_DIR $ENV{HOME})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/resources/ttop_hardware_daemon.service.in ${CMAKE_CURRENT_BINARY_DIR}/ttop_hardware_daemon.service @ONLY)
+
 install(TARGETS daemon DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ttop_hardware_daemon.service DESTINATION /etc/systemd/system)
+install(DIRECTORY DESTINATION working_directory/daemon)

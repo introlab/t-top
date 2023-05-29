@@ -46,4 +46,10 @@ add_executable(ttop-system-tray ${system_tray_srcs} ${system_tray_headers} ${sys
 target_include_directories(ttop-system-tray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(ttop-system-tray Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebSockets serial_communication_common)
 
+set(USER_NAME $ENV{USER})
+set(HOME_DIR $ENV{HOME})
+
 install(TARGETS ttop-system-tray DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/resources/ttop_system_tray.desktop DESTINATION ${HOME_DIR}/.config/autostart)
+install(DIRECTORY DESTINATION working_directory/system_tray)
+install(CODE "execute_process(COMMAND chown ${USER_NAME}:${USER_NAME} ${HOME_DIR}/.config/autostart/ttop_system_tray.desktop)")

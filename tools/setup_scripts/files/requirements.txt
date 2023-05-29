@@ -15,3 +15,5 @@ scikit-learn<0.22.3,>=0.22.2
 matplotlib==3.1.2
 llvmlite==0.31.0
 git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
+protobuf==3.20.3
+grpcio-status==1.48.2

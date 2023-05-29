@@ -5,7 +5,12 @@ set -e
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+TTOP_REPO_PATH=~/t-top_ws/src/t-top
+SETUP_SCRIPTS_DIR=$TTOP_REPO_PATH/tools/setup_scripts
+PATCH_FILES_DIR=$SETUP_SCRIPTS_DIR/patch
 
 if [ -t 1 ]; then
     ECHO_IN_BLUE () {
@@ -17,6 +22,9 @@ if [ -t 1 ]; then
     ECHO_IN_ORANGE () {
         echo -e ${ORANGE}${1}${NC}
     }
+    ECHO_IN_RED () {
+        echo -e ${RED}${1}${NC}
+    }
 else
     ECHO_IN_BLUE () {
         echo ${1}
@@ -25,6 +33,9 @@ else
         echo ${1}
     }
     ECHO_IN_ORANGE () {
+        echo ${1}
+    }
+    ECHO_IN_RED () {
         echo ${1}
     }
 fi
@@ -64,13 +75,8 @@ add_to_root_bashrc () {
     sudo bash -c "grep --quiet --no-messages --fixed-regexp --line-regexp -- '$1' '$BASHRC_FILE' || echo '$1' >> '$BASHRC_FILE'"
 }
 
-is_xavier () {
-    cat /proc/device-tree/compatible | grep -q "jetson-xavier"
-    if [ $? -eq 0 ] ; then
-        echo true
-    else
-        echo false
-    fi
+get_jetson_model () {
+    $TTOP_REPO_PATH/tools/jetson_model/get_jetson_model.py
 }
 
 clone_git () {
@@ -143,10 +149,6 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Cloning the T-Top repo"
 ECHO_IN_BLUE "###############################################################"
-TTOP_REPO_PATH=~/t-top_ws/src/t-top
-SETUP_SCRIPTS_DIR=$TTOP_REPO_PATH/tools/setup_scripts
-PATCH_FILES_DIR=$SETUP_SCRIPTS_DIR/patch
-
 if [ $(checkstamp ttop_repo) = "false" ] ; then
     mkdir -p ~/t-top_ws/src
     cd ~/t-top_ws/src
@@ -158,17 +160,24 @@ else
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
+JETSON_MODEL=$(get_jetson_model)
+
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Setting Jetson power mode"
 ECHO_IN_BLUE "###############################################################"
-if [ is_xavier = "true" ] ; then
+if [ $JETSON_MODEL = "xavier" ] ; then
     sudo nvpmodel -m 0
-else
+elif [ $JETSON_MODEL = "orin" ] ; then
     grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
     grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
     # Make sure the change to zero is applied by going to 1
     sudo nvpmodel -m 1 &> /dev/null
     sudo nvpmodel -m 0
+elif [ $JETSON_MODEL = "not_jetson" ] ; then
+    : # Not a Jetson, we don't do anything
+else
+    ECHO_IN_RED "Setting power mode not implemented for unknown jetson model [$JETSON_MODEL]"
+    exit 1
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
@@ -521,7 +530,18 @@ if [ $(checkstamp ttop_system_deps) = "false" ] ; then
         ffmpeg \
         chromium-browser \
         libqt5websockets5-dev \
-        libqt5charts5-dev
+        libqt5charts5-dev \
+        libqt5serialport5-dev \
+        libgstreamer1.0-dev \
+        libgstreamer-plugins-base1.0-dev \
+        libgstreamer-plugins-good1.0-dev \
+        libgstreamer-plugins-bad1.0-dev \
+        gstreamer1.0-plugins-base \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
+        gstreamer1.0-libav \
+        gstreamer1.0-tools
 
     makestamp ttop_system_deps
 else
@@ -605,11 +625,40 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Build and install the T-Top hardware daemon"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp ttop_daemon) = "false" ] ; then
+    cd $TTOP_REPO_PATH/system/daemon
+    cmake_build_install_native
+
+    sudo systemctl enable ttop_hardware_daemon.service
+    sudo systemctl start ttop_hardware_daemon.service
+
+    makestamp ttop_daemon
+else
+    SKIP_SECTION "T-Top daemon already built and installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Build and install the T-Top hardware system tray"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp ttop_system_tray) = "false" ] ; then
+    cd $TTOP_REPO_PATH/system/system_tray
+    cmake_build_install_native
+
+    makestamp ttop_system_tray
+else
+    SKIP_SECTION "T-Top system tray already built and installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Build the T-Top workspace"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_ws_build) = "false" ] ; then
     cd $TTOP_REPO_PATH/../..
-    catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     catkin build
 

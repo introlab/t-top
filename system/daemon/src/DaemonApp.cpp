@@ -8,6 +8,8 @@
 #include "ProcessUtils.h"
 #include <cmath>
 
+#include "JetsonModelParser.h"
+
 using namespace std;
 
 DaemonApp::DaemonApp(int& argc, char* argv[])
@@ -138,28 +140,7 @@ void DaemonApp::onNewError(const char* message, tl::optional<MessageType> messag
 
 void DaemonApp::parseJetsonModel()
 {
-    QCommandLineParser parser;
-    parser.addPositionalArgument("jetson_model", "Select the jetson model (xavier or orin)");
-    parser.process(*this);
-
-    if (parser.positionalArguments().size() != 1)
-    {
-        parser.showHelp(-1);
-    }
-
-    const QString& jetsonModel = parser.positionalArguments()[0];
-    if (jetsonModel == "xavier")
-    {
-        m_jetsonModel = JetsonModel::XAVIER;
-    }
-    else if (jetsonModel == "orin")
-    {
-        m_jetsonModel = JetsonModel::ORIN;
-    }
-    else
-    {
-        parser.showHelp(-1);
-    }
+    m_jetsonModel = get_jetson_model();
 }
 
 void DaemonApp::setupWebSocketServers()

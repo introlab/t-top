@@ -8,6 +8,8 @@
 #include <QList>
 #include "DaemonWebSocketServer.h"
 #include "DaemonSerialManager.h"
+#include "JetsonModelParser.h"
+
 
 constexpr const char* LOW_POWER_MODE_MODEL_INDEX = "0";
 constexpr const char* HIGH_POWER_MODE_MODEL_INDEX = "1";
@@ -17,12 +19,6 @@ constexpr float MAX_SCREEN_BRIGHTNESS = 1.f;
 constexpr float LIGHT_LEVEL_ALPHA = 0.3;
 
 constexpr qint64 SHUTDOWN_TIMEOUT_SEC = 90;
-
-enum class JetsonModel
-{
-    XAVIER,
-    ORIN
-};
 
 class DaemonApp : public QCoreApplication
 {
