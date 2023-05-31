@@ -1467,13 +1467,13 @@
       (reference "F1") (unit 1) (value "10A Slow Blow") (footprint "t-top:M205_FUSE")
     )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/59651d3d-64ce-40da-a23b-21d2dc567ed9"
-      (reference "J1") (unit 1) (value "Vin (10-25V)") (footprint "t-top:OSTTA020161")
+      (reference "J1") (unit 1) (value "Vin (10-24V)") (footprint "t-top:OSTTA020161")
     )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/e25d06e5-c10b-4f54-8856-efd3a802ca0c"
-      (reference "J2") (unit 1) (value "Vout (10-25V)") (footprint "t-top:OSTTA020161")
+      (reference "J2") (unit 1) (value "Vout (10-24V)") (footprint "t-top:OSTTA020161")
     )
     (path "/0ec1e19c-2d8a-40fb-a27f-fde467b9d0d4/664bf2c4-b617-4267-ad46-f80f0a882d7b"
-      (reference "J4") (unit 1) (value "Vout (10-25V)") (footprint "t-top:OSTTA020161")
+      (reference "J4") (unit 1) (value "Vout (10-24V)") (footprint "t-top:OSTTA020161")
     )
     (path "/2f2b990c-5205-4e57-8b39-075988c8b0b3/27e78bcb-0b41-446e-ace9-ba0df10172a5"
       (reference "J6") (unit 1) (value "LED Strip") (footprint "Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical")
