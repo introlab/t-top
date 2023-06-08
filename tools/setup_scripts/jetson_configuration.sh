@@ -379,12 +379,12 @@ if [ $(checkstamp ros_system_deps) = "false" ] ; then
     cmake_build_install_native
 
     cd ~/deps
-    clone_git https://github.com/ethz-asl/libnabo.git
+    clone_git https://github.com/ethz-asl/libnabo.git -b 1.0.7
     cd libnabo
     cmake_build_install_native
 
     cd ~/deps
-    clone_git https://github.com/ethz-asl/libpointmatcher.git
+    clone_git https://github.com/ethz-asl/libpointmatcher.git -b 1.3.1
     cd libpointmatcher
     cmake_build_install_native
 
