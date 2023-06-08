@@ -39,11 +39,14 @@ void DaemonRosClientNode::setVolumeCallback(const std_msgs::UInt8::ConstPtr& msg
 {
     SetVolumePayload payload;
     payload.volume = msg->data;
-    // WARNING This is called from the ROS Thread (send must be thread safe)
-    if (m_websocketProtocolWrapper)
-    {
-        m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
-    }
+
+    QTimer::singleShot(0, this, [=] ()
+    { 
+        if (m_websocketProtocolWrapper)
+        {
+            m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
+        }
+    });
 }
 
 void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::LedColors::ConstPtr& msg)
@@ -56,11 +59,13 @@ void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::LedColor
         payload.colors[i].blue = msg->colors[i].blue;
     }
 
-    // WARNING This is called from the ROS Thread (send must be thread safe)
-    if (m_websocketProtocolWrapper)
-    {
-        m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
-    }
+    QTimer::singleShot(0, this, [=] ()
+    { 
+        if (m_websocketProtocolWrapper)
+        {
+            m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
+        }
+    });
 }
 
 void DaemonRosClientNode::setTorsoOrientationCallback(const std_msgs::Float32::ConstPtr& msg)
@@ -68,11 +73,13 @@ void DaemonRosClientNode::setTorsoOrientationCallback(const std_msgs::Float32::C
     SetVolumePayload payload;
     payload.volume = msg->data;
 
-    // WARNING This is called from the ROS Thread (send must be thread safe)
-    if (m_websocketProtocolWrapper)
-    {
-        m_websocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload);
-    }
+    QTimer::singleShot(0, this, [=] ()
+    { 
+        if (m_websocketProtocolWrapper)
+        {
+            m_websocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload);
+        }
+    });
 }
 
 void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -92,11 +99,13 @@ void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::PoseStamped::
     payload.headPoseOrientationY = msg->pose.orientation.y;
     payload.headPoseOrientationZ = msg->pose.orientation.z;
 
-    // WARNING This is called from the ROS Thread (send must be thread safe)
-    if (m_websocketProtocolWrapper)
-    {
-        m_websocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload);
-    }
+    QTimer::singleShot(0, this, [=] ()
+    { 
+        if (m_websocketProtocolWrapper)
+        {
+            m_websocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload);
+        }
+    });
 }
 
 void DaemonRosClientNode::handleBaseStatus(Device source, const BaseStatusPayload& payload)
