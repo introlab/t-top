@@ -74,7 +74,8 @@ void TorsoController::findZeroOffset()
     do
     {
         dynamixelPosition = degToRad(m_dynamixel.getPresentPosition(TORSO_DYNAMIXEL_ID, UNIT_DEGREE));
-        isZeroOffsetFound = digitalRead(TORSO_LIMIT_SWITCH_PIN);
+        isZeroOffsetFound = !digitalRead(TORSO_LIMIT_SWITCH_PIN);
+
     } while (std::abs(dynamixelPosition - goalPosition) > 0.01 && !isZeroOffsetFound);
 
     if (isZeroOffsetFound)
