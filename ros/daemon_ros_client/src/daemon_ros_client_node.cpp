@@ -43,6 +43,8 @@ int main(int argc, char** argv)
 
     // Run ROS in background
     ros::AsyncSpinner spinner(1);
+    spinner.start();
+
     catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
 
     // Initialize and start Qt App
