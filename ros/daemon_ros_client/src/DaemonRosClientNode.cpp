@@ -1,5 +1,7 @@
 #include "DaemonRosClientNode.h"
 
+#include <QTimer>
+
 
 DaemonRosClientNode::DaemonRosClientNode(int &argc, char* argv[], ros::NodeHandle& nodeHandle, DaemonRosClientNodeConfiguration configuration)
    : QCoreApplication(argc, argv), m_websocketProtocolWrapper(nullptr), m_nodeHandle(nodeHandle), m_configuration(move(configuration))
