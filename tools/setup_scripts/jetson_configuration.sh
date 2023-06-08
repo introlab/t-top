@@ -657,6 +657,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Build the T-Top workspace"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_ws_build) = "false" ] ; then
+    source ~/.bashrc
     cd $TTOP_REPO_PATH/../..
     catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON

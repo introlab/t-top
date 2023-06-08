@@ -196,6 +196,7 @@ void DaemonRosClientNode::handleMotorStatus(Device source, const MotorStatusPayl
 
     sendTorsoTf(msg.header.stamp, msg.torso_orientation);
     sendHeadTf(msg.header.stamp, msg.head_pose);
+    m_baseStatusPub.publish(msg);
 }
 
 void DaemonRosClientNode::sendTorsoTf(const ros::Time& stamp, float torsoOrientation)
