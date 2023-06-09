@@ -96,16 +96,22 @@ void loop()
 {
     if (shutdownManager.isShutdownRequested())
     {
+        DEBUG_SERIAL.println("Send shutdown request");
         serialCommunicationManager.send(Device::COMPUTER, ShutdownPayload(), millis());
         serialCommunicationManager.send(Device::DYNAMIXEL_CONTROL, ShutdownPayload(), millis());
+        ledStrip.closeAllBaseLeds();
+
         shutdownManager.setShutdownRequestHandled();
     }
     else if (shutdownManager.isShutdownPending())
     {
+        DEBUG_SERIAL.println("Shutdown pending");
         if (shutdownManager.hasShutdownRequestTimeout() || isShutdownCompletedForComputerAndDynamixels())
         {
+            DEBUG_SERIAL.println("Shutdown");
             shutdownManager.shutdown();
         }
+        delay(SHUTDOWN_PENDING_DELAY_MS);
     }
     else
     {
@@ -254,6 +260,9 @@ static bool isShutdownCompletedForComputerAndDynamixels()
     float current = currentVoltageSensor.readCurrent();
     float voltage = currentVoltageSensor.readVoltage();
     float power = current * voltage;
+
+    DEBUG_SERIAL.print("Power=");
+    DEBUG_SERIAL.println(power);
 
     return power < SHUTDOWN_COMPLETED_FOR_COMPUTER_AND_DYNAMIXELS_POWER_THRESHOLD_W;
 }

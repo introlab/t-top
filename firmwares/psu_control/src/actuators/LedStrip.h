@@ -29,6 +29,7 @@ public:
     void setStateOfCharge(float stateOfCharge);
     void setVolume(uint8_t volume);
     bool setBaseLedColors(const Color* colors, size_t size);
+    void closeAllBaseLeds();
 
 private:
     void setLevel(size_t offset, float value, float maximumValue, size_t ledCount);

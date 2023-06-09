@@ -46,6 +46,15 @@ bool LedStrip::setBaseLedColors(const Color* colors, size_t size)
     return true;
 }
 
+void LedStrip::closeAllBaseLeds()
+{
+    for (size_t i = 0; i < BASE_LED_COUNT; i++)
+    {
+        m_leds.setPixel(STATE_OF_CHARGE_LED_COUNT + VOLUME_LED_COUNT + i, 0, 0, 0);
+    }
+    m_leds.show();
+}
+
 void LedStrip::setLevel(size_t offset, float value, float maximumValue, size_t ledCount)
 {
     const float step = maximumValue / ledCount;

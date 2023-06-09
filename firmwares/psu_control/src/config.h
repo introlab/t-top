@@ -98,5 +98,6 @@ constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
 constexpr uint32_t ERROR_DELAY_MS = 1000;
 constexpr uint32_t STATUS_TICKER_INTERVAL_MS = 250;
 constexpr uint32_t BUTTON_TICKER_INTERVAL_MS = 100;
+constexpr uint32_t SHUTDOWN_PENDING_DELAY_MS = 1000;
 
 #endif
