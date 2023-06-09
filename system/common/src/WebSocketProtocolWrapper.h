@@ -81,6 +81,7 @@ void WebSocketProtocolWrapper::send(Device source, Device destination, const Pay
 
     //Send to websocket (in a single message, with no preamble and no CRC8)
     m_websocket->sendBinaryMessage(QByteArray((char*) buffer.dataToRead(), buffer.sizeToRead()));
+    m_websocket->flush();
 }
 
 

@@ -36,6 +36,7 @@ void DaemonSerialPortWrapper::read(SerialCommunicationBufferView& buffer)
 void DaemonSerialPortWrapper::write(const uint8_t* data, size_t size)
 {
     size_t write_size = m_serialPort.write(reinterpret_cast<const char*>(data), size);
+    m_serialPort.flush();
     if (write_size != size)
     {
         qDebug() << "Writing buffer... error expected: " << size << " got: " << write_size;
