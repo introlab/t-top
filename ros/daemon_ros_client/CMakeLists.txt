@@ -146,6 +146,7 @@ include_directories(
 
 set(app_headers
   src/DaemonRosClientNode.h
+  src/QtUtils.h
 )
 
 set (app_sources

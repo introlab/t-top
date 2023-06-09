@@ -50,7 +50,6 @@ void DaemonSerialManager::onErrorOccurred(QSerialPort::SerialPortError error)
 void DaemonSerialManager::onReadyRead()
 {
     // Update manager
-    qDebug() << "void DaemonSerialManager::onReadyRead()";
     m_serialCommunicationManager->update(QDateTime::currentMSecsSinceEpoch());
 }
 

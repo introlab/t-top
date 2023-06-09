@@ -26,9 +26,6 @@ DaemonApp::DaemonApp(int& argc, char* argv[])
 
 void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 {
-    qDebug() << "********* "
-             << "void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload &payload)";
-
     setPowerMode(payload.isPsuConnected);
     setScreenBrightness(
         payload.frontLightSensor,
@@ -44,8 +41,6 @@ void DaemonApp::onNewBaseStatus(Device source, const BaseStatusPayload& payload)
 
 void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& payload)
 {
-    qDebug() << "********* "
-             << "void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload &payload)";
     foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
@@ -54,8 +49,6 @@ void DaemonApp::onNewButtonPressed(Device source, const ButtonPressedPayload& pa
 
 void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payload)
 {
-    qDebug() << "********* "
-             << "void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload &payload)";
     foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
@@ -64,8 +57,6 @@ void DaemonApp::onNewMotorStatus(Device source, const MotorStatusPayload& payloa
 
 void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 {
-    qDebug() << "********* "
-             << "void DaemonApp::onNewImuData(Device source, const ImuDataPayload &payload)";
     foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
@@ -74,9 +65,6 @@ void DaemonApp::onNewImuData(Device source, const ImuDataPayload& payload)
 
 void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 {
-    qDebug() << "********* "
-             << "void DaemonApp::onNewShutdown(Device source, const ShutdownPayload &payload)";
-
     foreach (DaemonWebSocketServer* server, m_webSocketServers)
     {
         server->sendToClients(source, payload);
@@ -87,9 +75,6 @@ void DaemonApp::onNewShutdown(Device source, const ShutdownPayload& payload)
 
 void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t* data, size_t size)
 {
-    qDebug() << "********* "
-             << "void DaemonApp::onNewRouteFromWebSocket(Device destination, const uint8_t *data, size_t size)";
-
     // Send to serial...
     SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> buffer;
     buffer.write(data, size);
@@ -196,12 +181,12 @@ void DaemonApp::setPowerMode(bool isPsuConnected)
 
     if ((m_lastIsPsuConnected == tl::nullopt || m_lastIsPsuConnected == true) && !isPsuConnected)
     {
-        // Set low power mode
+        qDebug() << "********* DaemonApp::setPowerMode Set low power mode";
         QProcess::startDetached("sudo", {"nvpmodel", "-m", LOW_POWER_MODE_MODEL_INDEX});
     }
     else if ((m_lastIsPsuConnected == tl::nullopt || m_lastIsPsuConnected == false) && isPsuConnected)
     {
-        // Set high power mode
+        qDebug() << "********* DaemonApp::setPowerMode Set high power mode";
         QProcess::startDetached("sudo", {"nvpmodel", "-m", HIGH_POWER_MODE_MODEL_INDEX});
     }
 
