@@ -203,7 +203,7 @@ void DaemonApp::setScreenBrightness(float front, float back, float left, float r
 
     // TODO change the screen arg
     // xrandr -q | grep " connected" to get connected screen
-    QProcess::startDetached("xrandr", {"--output", "TODO_set_screen", "--brightness", QString::number(brightness)});
+    // QProcess::startDetached("xrandr", {"--output", "TODO_set_screen", "--brightness", QString::number(brightness)});
 #endif
 }
 

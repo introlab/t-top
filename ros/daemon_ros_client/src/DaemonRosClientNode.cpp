@@ -73,12 +73,12 @@ void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::LedColor
 
 void DaemonRosClientNode::setTorsoOrientationCallback(const std_msgs::Float32::ConstPtr& msg)
 {
-    SetVolumePayload payload;
-    payload.volume = msg->data;
+    SetTorsoOrientationPayload payload;
+    payload.torsoOrientation = msg->data;
 
     invokeLater(
         [=]()
-        { 
+        {
             if (m_websocketProtocolWrapper)
             {
                 m_websocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload);
