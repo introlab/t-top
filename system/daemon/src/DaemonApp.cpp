@@ -194,12 +194,12 @@ void DaemonApp::setPowerMode(bool isPsuConnected)
         return;
     }
 
-    if (m_lastIsPsuConnected && !isPsuConnected)
+    if ((m_lastIsPsuConnected == tl::nullopt || m_lastIsPsuConnected == true) && !isPsuConnected)
     {
         // Set low power mode
         QProcess::startDetached("sudo", {"nvpmodel", "-m", LOW_POWER_MODE_MODEL_INDEX});
     }
-    else if (!m_lastIsPsuConnected && isPsuConnected)
+    else if ((m_lastIsPsuConnected == tl::nullopt || m_lastIsPsuConnected == false) && isPsuConnected)
     {
         // Set high power mode
         QProcess::startDetached("sudo", {"nvpmodel", "-m", HIGH_POWER_MODE_MODEL_INDEX});
