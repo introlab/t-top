@@ -97,7 +97,8 @@ void StewartPlatformController::readCurrentPose(float servoAngles[], HeadPose& p
 {
     for (size_t i = 0; i < STEWART_SERVO_COUNT; i++)
     {
-        servoAngles[i] = degToRad(m_dynamixel.getPresentPosition(STEWART_PLATFORM_DYNAMIXEL_IDS[i], UNIT_DEGREE));
+        float offsetServoAngleDeg = m_dynamixel.getPresentPosition(STEWART_PLATFORM_DYNAMIXEL_IDS[i], UNIT_DEGREE);
+        servoAngles[i] = degToRad(offsetServoAngleDeg - STEWART_PLATFORM_DYNAMIXEL_POSITION_OFFSET_DEGREE);
     }
 
     Eigen::Vector3f position;

@@ -51,6 +51,6 @@ constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
 // Timing configuration
 constexpr uint32_t SETUP_DYNAMIXEL_DELAY_MS = 2000;
 constexpr uint32_t ERROR_DELAY_MS = 1000;
-constexpr uint32_t MOTOR_STATUS_TICKER_INTERVAL_MS = 10;
+constexpr uint32_t MOTOR_STATUS_TICKER_INTERVAL_MS = 33;
 
 #endif
