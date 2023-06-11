@@ -3,6 +3,8 @@
 
 #include <QWebSocket>
 #include <QObject>
+#include <QTimer>
+
 #include "SerialCommunicationBuffer.h"
 #include "SerialMessages.h"
 #include "SerialMessagePayloads.h"
@@ -26,6 +28,9 @@
 class WebSocketProtocolWrapper : public QObject
 {
     Q_OBJECT
+
+    static constexpr int CHECK_WEBSOCKET_TIMER_INTERVAL_MS = 1000;
+
 public:
     static constexpr const int ROS_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT;
     static constexpr const int CLI_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT;
@@ -34,14 +39,11 @@ public:
     static constexpr const char* CLI_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT);
     static constexpr const char* TRAY_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT);
 
-    WebSocketProtocolWrapper(QWebSocket* websocket, QObject *parent=nullptr);
-    WebSocketProtocolWrapper(const QUrl url, QObject *parent=nullptr);
-
-    QWebSocket* getWebSocket();
+    explicit WebSocketProtocolWrapper(QWebSocket* websocket, QObject* parent=nullptr);
+    explicit WebSocketProtocolWrapper(const QUrl& url, QObject* parent=nullptr);
 
     template<class Payload>
     void send(Device source, Device destination, const Payload& payload, qint64 timestamp_ms=QDateTime::currentMSecsSinceEpoch());
-
 
 signals:
     void newBaseStatus(Device source, const BaseStatusPayload& payload);
@@ -55,15 +57,21 @@ signals:
     void newShutdown(Device source, const ShutdownPayload& payload);
     void newRoute(Device destination, const uint8_t* data, size_t size);
     void newError(const char* message, tl::optional<MessageType> messageType);
-    void disconnected();
+
     void connected();
+    void disconnected();
 
 protected slots:
     void binaryMessageReceived(const QByteArray &message);
     void websocketConnected();
+    void websocketDisconnected();
+    void websocketErrorOccurred(QAbstractSocket::SocketError error);
 
 private:
-    QWebSocket *m_websocket;
+    void createWebSocketFromUrl(const QUrl& url);
+
+    QWebSocket* m_websocket;
+    QTimer* m_websocketCheckTimer;
 };
 
 template<class Payload>

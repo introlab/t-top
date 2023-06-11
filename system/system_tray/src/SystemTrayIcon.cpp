@@ -2,17 +2,19 @@
 
 
 SystemTrayIcon::SystemTrayIcon(QObject* parent)
-    : QSystemTrayIcon(QIcon(":/icons/resources/robot-icon.png"), parent),
-      m_menu(nullptr)
+    : QSystemTrayIcon(parent),
+      m_greenRobotIcon(":/icons/resources/green-robot-icon.png"),
+      m_redRobotIcon(":/icons/resources/red-robot-icon.png")
 {
-    setToolTip("TTOP Configuration");
+    setToolTip("T-TOP Configuration");
+    setIcon(m_redRobotIcon);
+
     setupMenu();
 }
 
 void SystemTrayIcon::setupMenu()
 {
-    m_menu = new QMenu("TTOP");
-
+    m_menu = new QMenu("T-TOP");
 
     m_stateOfChargeAction = new QAction("State of charge: ", m_menu);
     m_stateOfChargeAction->setDisabled(true);
@@ -75,6 +77,19 @@ void SystemTrayIcon::enableActions(bool enabled)
     m_resetHeadAction->setEnabled(enabled);
 }
 
+void SystemTrayIcon::setConnected(bool connected)
+{
+    if (connected)
+    {
+        setIcon(m_greenRobotIcon);
+    }
+    else
+    {
+        setIcon(m_redRobotIcon);
+        enableActions(false);
+    }
+}
+
 void SystemTrayIcon::onStateOfChargeAction()
 {
     qDebug() << "onStateOfChargeAction";
@@ -105,19 +120,18 @@ void SystemTrayIcon::onResetHeadAction()
     qDebug() << "onResetHeadAction";
 }
 
-void SystemTrayIcon::updateStateOfChargeText(bool isPsuConnected,
-                                             bool hasChargerError,
-                                             bool isBatteryCharging,
-                                             bool hasBatteryError,
-                                             float stateOfCharge,
-                                             float current,
-                                             float voltage)
+void SystemTrayIcon::updateStateOfChargeText(
+    bool isPsuConnected,
+    bool hasChargerError,
+    bool isBatteryCharging,
+    bool hasBatteryError,
+    float stateOfCharge,
+    float current,
+    float voltage)
 {
-    m_stateOfChargeAction->setText(QString::number(stateOfCharge, 'f', 1) + " %"
-                                   + " " +  QString::number(voltage, 'f', 1) + " V"
-                                   + " " +  QString::number(current, 'f', 1) + " A"
-                                   + " " +  QString(isPsuConnected ? " PSU" : "")
-                                   + " " +  QString(isBatteryCharging ? " Charging" : "")
-                                   + " " +  QString(hasChargerError ? " Charger Error" : "")
-                                   + " " +  QString(hasBatteryError ? " Battery Error" : ""));
+    m_stateOfChargeAction->setText(
+        QString::number(stateOfCharge, 'f', 1) + " %" + " " + QString::number(voltage, 'f', 1) + " V" + " " +
+        QString::number(current, 'f', 1) + " A" + " " + QString(isPsuConnected ? " PSU" : "") + " " +
+        QString(isBatteryCharging ? " Charging" : "") + " " + QString(hasChargerError ? " Charger Error" : "") + " " +
+        QString(hasBatteryError ? " Battery Error" : ""));
 }

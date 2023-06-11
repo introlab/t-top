@@ -13,13 +13,16 @@ class SystemTrayApp : public QApplication
     static constexpr uint8_t VOLUME_STEP = 3;
 
 public:
-    SystemTrayApp(int &argc, char* argv[]);
+    SystemTrayApp(int& argc, char* argv[]);
 
 private slots:
 
     // From websocket serial manager
     void onNewBaseStatus(Device source, const BaseStatusPayload& payload);
     void onNewError(const char* message, tl::optional<MessageType> messageType);
+
+    void onWebsocketConnected();
+    void onWebsocketDisconnected();
 
     // From system tray menu
     void onSystemTrayVolumeUp();
@@ -29,7 +32,6 @@ private slots:
     void onSystemTrayResetHead();
 
 private:
-
     void connectWebSocketProtocolWrapperSignals();
     void connectSystemTraySignals();
 

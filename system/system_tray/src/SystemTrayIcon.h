@@ -30,15 +30,17 @@ signals:
     void resetHeadClicked();
 
 public slots:
-    void updateStateOfChargeText(bool isPsuConnected,
-                                 bool hasChargerError,
-                                 bool isBatteryCharging,
-                                 bool hasBatteryError,
-                                 float stateOfCharge,
-                                 float current,
-                                 float voltage);
+    void updateStateOfChargeText(
+        bool isPsuConnected,
+        bool hasChargerError,
+        bool isBatteryCharging,
+        bool hasBatteryError,
+        float stateOfCharge,
+        float current,
+        float voltage);
 
     void enableActions(bool enabled);
+    void setConnected(bool connected);
 
 private slots:
     void onStateOfChargeAction();
@@ -50,6 +52,9 @@ private slots:
 
 
 private:
+    QIcon m_greenRobotIcon;
+    QIcon m_redRobotIcon;
+
     QMenu* m_menu;
     QAction* m_stateOfChargeAction;
     QAction* m_volumeUpAction;

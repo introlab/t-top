@@ -42,9 +42,14 @@ void DaemonSerialManager::printAvailablePorts()
 void DaemonSerialManager::onErrorOccurred(QSerialPort::SerialPortError error)
 {
     qDebug() << "DaemonSerialManager::onErrorOccurred" << error;
-    m_serialCommunicationManager.reset();
-    m_serialPort->deleteLater();
-    m_serialPort = nullptr;
+    QTimer::singleShot(
+        0,
+        [this]()
+        {
+            m_serialCommunicationManager.reset();
+            m_serialPort->deleteLater();
+            m_serialPort = nullptr;
+        });
 }
 
 void DaemonSerialManager::onReadyRead()
