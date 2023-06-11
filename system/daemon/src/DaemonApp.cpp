@@ -211,7 +211,9 @@ void DaemonApp::terminateAllROSProcessesAndShutdown()
 {
 #ifdef __linux__
     auto pids = listPidsMatchingTheCriteria("roslaunch");
+    qDebug() << "Shutdown of roslaunch processes (" << pids << ")";
     shutdownProcessesAndWait(pids, SHUTDOWN_TIMEOUT_SEC);
+    qDebug() << "Shutdown of roslaunch processes completed";
     QProcess::startDetached("sudo", {"shutdown", "now"});
 #endif
 }

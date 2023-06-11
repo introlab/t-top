@@ -144,7 +144,7 @@ void SerialCommunicationManager::updateCurrentRxMessageSize()
     }                                                                                                                  \
     auto variable = *variable##Optional;
 
-#define CHECK_CRC8_AND_CALL_HANDLER(handler, header, payload)                                                          \
+#define CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(device, handler, header, payload)                                         \
     do                                                                                                                 \
     {                                                                                                                  \
         auto expectedCrc8Value = m_rxBuffer.read<uint8_t>();                                                           \
@@ -153,7 +153,11 @@ void SerialCommunicationManager::updateCurrentRxMessageSize()
             logError("CRC8 Error", header.messageType());                                                              \
             return;                                                                                                    \
         }                                                                                                              \
-        else if ((handler) != nullptr)                                                                                 \
+        if (header.acknowledgmentNeeded())                                                                             \
+        {                                                                                                              \
+            send(Message<AcknowledgmentPayload>(device, header.source(), AcknowledgmentPayload{header.messageId()}));  \
+        }                                                                                                              \
+        if ((handler) != nullptr)                                                                                      \
         {                                                                                                              \
             handler(header.source(), payload);                                                                         \
         }                                                                                                              \
@@ -198,70 +202,65 @@ void SerialCommunicationManager::readAndHandleRxMessage(uint8_t messageSize)
         case MessageType::BASE_STATUS:
         {
             CHECK_BUFFER_READ(payload, BaseStatusPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_baseStatusHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_baseStatusHandler, header, payload);
             break;
         }
 
         case MessageType::BUTTON_PRESSED:
         {
             CHECK_BUFFER_READ(payload, ButtonPressedPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_buttonPressedHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_buttonPressedHandler, header, payload);
             break;
         }
 
         case MessageType::SET_VOLUME:
         {
             CHECK_BUFFER_READ(payload, SetVolumePayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_setVolumeHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_setVolumeHandler, header, payload);
             break;
         }
 
         case MessageType::SET_LED_COLORS:
         {
             CHECK_BUFFER_READ(payload, SetLedColorsPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_setLedColorsHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_setLedColorsHandler, header, payload);
             break;
         }
 
         case MessageType::MOTOR_STATUS:
         {
             CHECK_BUFFER_READ(payload, MotorStatusPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_motorStatusHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_motorStatusHandler, header, payload);
             break;
         }
 
         case MessageType::IMU_DATA:
         {
             CHECK_BUFFER_READ(payload, ImuDataPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_imuDataHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_imuDataHandler, header, payload);
             break;
         }
 
         case MessageType::SET_TORSO_ORIENTATION:
         {
             CHECK_BUFFER_READ(payload, SetTorsoOrientationPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_setTorsoOrientationHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_setTorsoOrientationHandler, header, payload);
             break;
         }
 
         case MessageType::SET_HEAD_POSE:
         {
             CHECK_BUFFER_READ(payload, SetHeadPosePayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_setHeadPoseHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_setHeadPoseHandler, header, payload);
             break;
         }
 
         case MessageType::SHUTDOWN:
         {
             CHECK_BUFFER_READ(payload, ShutdownPayload::readFrom(m_rxBuffer));
-            CHECK_CRC8_AND_CALL_HANDLER(m_shutdownHandler, header, payload);
+            CHECK_CRC8_SEND_ACK_AND_CALL_HANDLER(m_device, m_shutdownHandler, header, payload);
             break;
         }
-    }
-
-    if (header.acknowledgmentNeeded())
-    {
-        send(Message<AcknowledgmentPayload>(m_device, header.source(), AcknowledgmentPayload{header.messageId()}));
     }
 }
 
