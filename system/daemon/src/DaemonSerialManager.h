@@ -19,7 +19,7 @@ class DaemonSerialManager : public QObject
     QTimer* m_checkSerialPortTimer;
 
     static constexpr long COMMUNICATION_SERIAL_BAUD_RATE = 115200;
-    static constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 50;
+    static constexpr uint32_t COMMUNICATION_ACKNOWLEDGMENT_TIMEOUT_MS = 100;
     static constexpr uint32_t COMMUNICATION_MAXIMUM_TRIAL_COUNT = 5;
     static constexpr int CHECK_SERIAL_PORT_TIMER_INTERVAL_MS = 1000;
 
