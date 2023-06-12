@@ -39,7 +39,7 @@ bool anyProcessExists(const QList<uint32_t>& pids)
     for (uint32_t pid : pids)
     {
         QDir dir("/proc/" + QString::number(pid));
-        if (!dir.exists())
+        if (dir.exists())
         {
             return true;
         }
