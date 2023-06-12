@@ -2,6 +2,7 @@ import os
 
 import torch
 import torch.nn.functional as F
+import torchaudio.transforms as transforms
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 from dnn_utils.audio_transforms import normalize
