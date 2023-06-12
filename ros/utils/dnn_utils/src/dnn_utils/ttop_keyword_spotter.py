@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
-from dnn_utils.audio_transforms import MFCC, GPU_SUPPORTED, normalize
+from dnn_utils.audio_transforms import MFCC, normalize
 
 
 DURATION = 16000
@@ -35,9 +35,7 @@ class TTopKeywordSpotter(DnnModel):
 
     def __call__(self, x):
         with torch.no_grad():
-            if GPU_SUPPORTED:
-                x = x.to(self._device)
-
+            x = x.to(self._device)
             x = normalize(x)
             mfcc_features = self._mfcc_transform(x).unsqueeze(0)
             scores = super(TTopKeywordSpotter, self).__call__(mfcc_features.unsqueeze(0))[0]
