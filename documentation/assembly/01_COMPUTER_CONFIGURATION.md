@@ -589,12 +589,6 @@ cd torch2trt
 sudo python3 setup.py install --plugins
 ```
 
-3. Install CuPy.
-
-```bash
-sudo -H pip3 install cupy
-```
-
 ### G. Clone the Repository
 
 1. Execute the following bash commands.
