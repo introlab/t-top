@@ -20,7 +20,7 @@ class MulticlassAudioDescriptorExtractor(DnnModel):
 
         super(MulticlassAudioDescriptorExtractor, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                        inference_type=inference_type)
-        self._transform = MelSpectrogram(SAMPLING_FREQUENCY, N_FFT, N_MELS)
+        self._transform = MelSpectrogram(SAMPLING_FREQUENCY, N_FFT, N_MELS).to(self._device)
 
     def get_supported_sampling_frequency(self):
         return SAMPLING_FREQUENCY

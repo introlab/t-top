@@ -22,7 +22,7 @@ class TTopKeywordSpotter(DnnModel):
 
         super(TTopKeywordSpotter, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                  inference_type=inference_type)
-        self._mfcc_transform = MFCC(SAMPLING_FREQUENCY, N_FFT, N_MFCC)
+        self._mfcc_transform = MFCC(SAMPLING_FREQUENCY, N_FFT, N_MFCC).to(self._device)
 
     def get_supported_sampling_frequency(self):
         return SAMPLING_FREQUENCY
