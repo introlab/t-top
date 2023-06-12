@@ -1,9 +1,10 @@
 import os
 
 import torch
+import torchaudio.transforms as transforms
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
-from dnn_utils.audio_transforms import MelSpectrogram, normalize, standardize_every_frame
+from dnn_utils.audio_transforms import normalize, standardize_every_frame
 
 
 DURATION = 63840
@@ -20,7 +21,9 @@ class VoiceDescriptorExtractor(DnnModel):
 
         super(VoiceDescriptorExtractor, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                        inference_type=inference_type)
-        self._transform = MelSpectrogram(SAMPLING_FREQUENCY, N_FFT, N_MELS).to(self._device)
+        self._transform = transforms.MelSpectrogram(sample_rate=SAMPLING_FREQUENCY,
+                                                    n_fft=N_FFT,
+                                                    n_mels=N_MELS).to(self._device)
 
     def get_supported_sampling_frequency(self):
         return SAMPLING_FREQUENCY

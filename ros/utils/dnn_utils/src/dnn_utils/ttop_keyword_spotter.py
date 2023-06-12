@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
-from dnn_utils.audio_transforms import MFCC, normalize
+from dnn_utils.audio_transforms import normalize
 
 
 DURATION = 16000
@@ -22,7 +22,12 @@ class TTopKeywordSpotter(DnnModel):
 
         super(TTopKeywordSpotter, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                  inference_type=inference_type)
-        self._mfcc_transform = MFCC(SAMPLING_FREQUENCY, N_FFT, N_MFCC).to(self._device)
+        melkwargs = {
+            'n_fft': N_FFT
+        }
+        self._transform = transforms.MFCC(sample_rate=SAMPLING_FREQUENCY,
+                                          n_mfcc=N_MFCC,
+                                          melkwargs=melkwargs).to(self._device)
 
     def get_supported_sampling_frequency(self):
         return SAMPLING_FREQUENCY
@@ -37,7 +42,7 @@ class TTopKeywordSpotter(DnnModel):
         with torch.no_grad():
             x = x.to(self._device)
             x = normalize(x)
-            mfcc_features = self._mfcc_transform(x).unsqueeze(0)
+            mfcc_features = self._transform(x).unsqueeze(0)
             scores = super(TTopKeywordSpotter, self).__call__(mfcc_features.unsqueeze(0))[0]
             probabilities = F.softmax(scores, dim=0)
             return probabilities.cpu()
