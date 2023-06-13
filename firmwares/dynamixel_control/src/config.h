@@ -31,7 +31,7 @@ constexpr Icm40627::AntiAliasFilterBandwidth IMU_ANTI_ALIAS_FILTER_BANDWIDTH = I
 #define DYNAMIXEL_SERIAL Serial2
 constexpr uint8_t DYNAMIXEL_ENABLE_PIN = 2;
 constexpr uint8_t DYNAMIXEL_DIR_PIN = 9;
-constexpr long DYNAMIXEL_BAUD_RATE = 1000000;
+constexpr long DYNAMIXEL_BAUD_RATE = 4000000;
 
 constexpr size_t STEWART_SERVO_COUNT = 6;
 constexpr uint8_t STEWART_PLATFORM_DYNAMIXEL_IDS[STEWART_SERVO_COUNT] = {1, 2, 3, 4, 5, 6};

@@ -10,7 +10,7 @@ constexpr uint8_t DYNAMIXEL_ENABLE_PIN = 2;
 constexpr float DYNAMIXEL_PROTOCOL_VERSION = 2.0;
 
 constexpr uint8_t MOTOR_ID = 1;
-constexpr unsigned long MOTOR_BAUD_RATE = 1000000;
+constexpr unsigned long MOTOR_BAUD_RATE = 4000000;
 
 constexpr uint32_t STARTUP_DELAY_MS = 5000;
 

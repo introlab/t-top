@@ -13,7 +13,9 @@ constexpr uint8_t MOTOR_ID = 1;
 constexpr uint8_t NEW_MOTOR_ID = 1;  // TODO change
 
 constexpr unsigned long MOTOR_BAUD_RATE = 57600;
-constexpr unsigned long NEW_MOTOR_BAUD_RATE = 1000000;
+constexpr unsigned long NEW_MOTOR_BAUD_RATE = 4000000;
+
+constexpr uint8_t RETURN_DELAY_TIME = 5;
 
 constexpr uint32_t STARTUP_DELAY_MS = 5000;
 
@@ -42,6 +44,13 @@ void setup()
         DEBUG_SERIAL.println("torqueOff failed");
         return;
     }
+    if (!dynamixel.writeControlTableItem(ControlTableItem::RETURN_DELAY_TIME, MOTOR_ID, RETURN_DELAY_TIME))
+    {
+        DEBUG_SERIAL.println("setReturnDelayTime failed");
+        return;
+    }
+    DEBUG_SERIAL.println("setReturnDelayTime succeeded");
+
     if (!dynamixel.setID(MOTOR_ID, NEW_MOTOR_ID))
     {
         DEBUG_SERIAL.println("setID failed");
@@ -49,7 +58,7 @@ void setup()
     }
     DEBUG_SERIAL.println("setID succeeded");
 
-    if (!dynamixel.setBaudrate(MOTOR_ID, NEW_MOTOR_BAUD_RATE))
+    if (!dynamixel.setBaudrate(NEW_MOTOR_ID, NEW_MOTOR_BAUD_RATE))
     {
         DEBUG_SERIAL.println("setBaudrate failed");
         return;
