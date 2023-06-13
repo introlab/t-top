@@ -35,8 +35,6 @@ static TorsoController torsoController(dynamixel);
 static void setupSerialCommunicationManagers();
 static void setupControllers();
 
-static void updateSerialCommunicationManagers();
-
 static void onMotorStatusTicker();
 static void onImuDataReadyInterrupt();
 static void sendImuData();
@@ -111,11 +109,6 @@ void loop()
 
     motorStatusTicker.update();
 
-    updateSerialCommunicationManagers();
-}
-
-static void updateSerialCommunicationManagers()
-{
     computerSerialCommunicationManager.update(millis());
     psuControlSerialCommunicationManager.update(millis());
 }
@@ -125,14 +118,12 @@ static void onMotorStatusTicker()
     MotorStatusPayload motorStatusPayload;
     motorStatusPayload.torsoOrientation = torsoController.readOrientation();
     motorStatusPayload.torsoServoSpeed = torsoController.readServoSpeed();
-    updateSerialCommunicationManagers();
 
     float headServoAngles[STEWART_SERVO_COUNT];
     HeadPose headPose;
     int16_t headServoSpeeds[STEWART_SERVO_COUNT];
     stewartPlatformController.readCurrentPose(headServoAngles, headPose);
     stewartPlatformController.readServoSpeeds(headServoSpeeds);
-    updateSerialCommunicationManagers();
 
     motorStatusPayload.headServoAngle1 = headServoAngles[0];
     motorStatusPayload.headServoAngle2 = headServoAngles[1];
