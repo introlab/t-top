@@ -229,6 +229,7 @@ def _write_init_shortcut(layer, in_channels, cumulated_strides):
 
     return in_channels[-1], cumulated_strides[-1]
 
+
 def _write_init_yolo(python_file, i, layer, cumulated_stride):
     not_supported_options = ['show_details', 'counters_per_class', 'label_smooth_eps',
                              'objectness_smooth', 'new_coords', 'focal_loss',

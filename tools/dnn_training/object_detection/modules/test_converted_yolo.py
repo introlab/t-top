@@ -33,7 +33,7 @@ def main():
     args = parser.parse_args()
 
     model = create_model(args.model_type)
-    model.load_weights(args.weights_path) # TODO uncomment
+    model.load_weights(args.weights_path)  # TODO uncomment
 
     image = Image.open(args.image_path)
 

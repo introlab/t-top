@@ -7,7 +7,6 @@ import torch.nn as nn
 
 from object_detection.modules.yolo_layer import YoloV7Layer
 
-
 IMAGE_SIZE = (640, 640)
 IN_CHANNELS = 3
 
@@ -333,7 +332,6 @@ class YoloV7Tiny(nn.Module):
             nn.Conv2d(in_channels=512, out_channels=255, kernel_size=1),
             YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], 80)
         )
-
 
     def get_image_size(self):
         return IMAGE_SIZE

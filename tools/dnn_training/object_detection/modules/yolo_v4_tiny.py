@@ -8,6 +8,7 @@ from object_detection.modules.yolo_layer import YoloV4Layer
 IMAGE_SIZE = (416, 416)
 IN_CHANNELS = 3
 
+
 # Generated from: yolov4-tiny.cfg:
 class YoloV4Tiny(nn.Module):
     def __init__(self):

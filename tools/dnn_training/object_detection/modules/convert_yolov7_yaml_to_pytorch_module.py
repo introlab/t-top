@@ -16,7 +16,8 @@ def convert(yaml_path, python_output_path, class_name):
 
     all_anchor_counts = [len(a) // 2 for a in yaml_data['anchors']]
 
-    layers, output_strides = _convert_yaml_to_layers(yaml_data['backbone'] + yaml_data['head'], yaml_data['nc'], all_anchor_counts)
+    layers, output_strides = _convert_yaml_to_layers(yaml_data['backbone'] + yaml_data['head'], yaml_data['nc'],
+                                                     all_anchor_counts)
 
     with open(python_output_path, 'w') as python_file:
         _write_header(python_file, class_name, yaml_path)
@@ -39,7 +40,9 @@ def _convert_yaml_to_layers(yaml_list, class_count, all_anchor_counts):
     for i, (input_index, c, layer_type, arguments) in enumerate(yaml_list):
         if c != 1:
             raise ValueError('C must be 1.')
-        layers.append(_convert_to_layer(class_count, all_anchor_counts, all_outputs, all_channels, all_strides, input_index, layer_type, arguments, i))
+        layers.append(
+            _convert_to_layer(class_count, all_anchor_counts, all_outputs, all_channels, all_strides, input_index,
+                              layer_type, arguments, i))
 
         if layer_type == 'Detect':
             break
@@ -48,7 +51,8 @@ def _convert_yaml_to_layers(yaml_list, class_count, all_anchor_counts):
     return layers, output_strides
 
 
-def _convert_to_layer(class_count, all_anchor_counts, all_outputs, all_channels, all_strides, input_index, layer_type, arguments, i):
+def _convert_to_layer(class_count, all_anchor_counts, all_outputs, all_channels, all_strides, input_index, layer_type,
+                      arguments, i):
     input = _input_index_to_input(input_index, all_outputs)
     input_channels = _input_index_to_channels(input_index, all_channels)
     input_stride = _input_index_to_stride(input_index, all_strides)
@@ -65,7 +69,8 @@ def _convert_to_layer(class_count, all_anchor_counts, all_outputs, all_channels,
     elif layer_type == 'nn.Upsample':
         layer, output, output_channels, stride = _convert_upsample_to_layer(input, input_channels, arguments, i)
     elif layer_type == 'Detect':
-        return _convert_detect_to_layer(class_count, all_anchor_counts, input_index, all_outputs, all_channels, all_strides)
+        return _convert_detect_to_layer(class_count, all_anchor_counts, input_index, all_outputs, all_channels,
+                                        all_strides)
     else:
         raise ValueError('Invalid layer type (' + layer_type + ')')
 
@@ -194,7 +199,7 @@ def _convert_detect_to_layer(class_count, all_anchor_counts, input_indexes, all_
                       f'            nn.Conv2d(in_channels={all_channels[input_index]}, out_channels={all_anchor_counts[i] * (class_count + 5)}, kernel_size=1),\n'
                       f'            YoloV7Layer(IMAGE_SIZE, {all_strides[input_index]}, self._anchors[{i}], {class_count})\n'
                       f'        )\n'
-                     )
+                      )
         forward_code += f'        {output_names[i]} = {layer_names[i]}({all_outputs[input_index]})\n'
 
     forward_code += f'        return [{", ".join(output_names)}]'
@@ -229,7 +234,8 @@ def _write_init(python_file, layers, class_name, anchors, output_strides):
     python_file.write(f'        self._output_strides = {output_strides}\n')
 
     for a in anchors:
-        python_file.write(f'        self._anchors.append(np.array([({a[0]}, {a[1]}), ({a[2]}, {a[3]}), ({a[4]}, {a[5]})]))\n')
+        python_file.write(
+            f'        self._anchors.append(np.array([({a[0]}, {a[1]}), ({a[2]}, {a[3]}), ({a[4]}, {a[5]})]))\n')
 
     python_file.write('\n')
     for layer in layers:
@@ -265,7 +271,8 @@ def _write_load_weights(python_file):
     python_file.write('        loaded_state_dict = self._filter_static_dict(torch.load(weights_path), \'anchor\')\n')
     python_file.write('        current_state_dict = self._filter_static_dict(self.state_dict(), \'offset\')\n')
     python_file.write('\n')
-    python_file.write('        for i, (kl, kc) in enumerate(zip(loaded_state_dict.keys(), current_state_dict.keys())):\n')
+    python_file.write(
+        '        for i, (kl, kc) in enumerate(zip(loaded_state_dict.keys(), current_state_dict.keys())):\n')
     python_file.write('            if current_state_dict[kc].size() != loaded_state_dict[kl].size():\n')
     python_file.write('                raise ValueError(\'Mismatching size.\')\n')
     python_file.write('            current_state_dict[kc] = loaded_state_dict[kl]\n')
