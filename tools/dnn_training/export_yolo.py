@@ -8,7 +8,7 @@ from common.file_presence_checker import terminate_if_already_exported
 
 def main():
     parser = argparse.ArgumentParser(description='Export yolo v4')
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny'],
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
                         help='Choose the model type', required=True)
 
     parser.add_argument('--output_dir', type=str, help='Choose the output directory', required=True)
@@ -37,13 +37,19 @@ def main():
 
 
 def create_model(model_type):
-    from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
     from object_detection.modules.yolo_v4 import YoloV4
+    from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
+    from object_detection.modules.yolo_v7 import YoloV7
+    from object_detection.modules.yolo_v7_tiny import YoloV7Tiny
 
     if model_type == 'yolo_v4':
         model = YoloV4()
     elif model_type == 'yolo_v4_tiny':
         model = YoloV4Tiny()
+    elif model_type == 'yolo_v7':
+        model = YoloV7()
+    elif model_type == 'yolo_v7_tiny':
+        model = YoloV7Tiny()
     else:
         raise ValueError('Invalid model type')
 

@@ -35,6 +35,7 @@ def main():
 
     model = create_model(args.model_type)
     model.load_weights(args.weights_path)
+    model.eval()
 
     image = Image.open(args.image_path)
 
