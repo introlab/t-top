@@ -63,6 +63,10 @@ def _convert_to_layer(class_count, all_anchor_counts, all_outputs, all_channels,
         layer, output, output_channels, stride = _convert_mp_to_layer(input, input_channels, arguments, i)
     elif layer_type == 'SP':
         layer, output, output_channels, stride = _convert_sp_to_layer(input, input_channels, arguments, i)
+    elif layer_type == 'SPPCSPC':
+        layer, output, output_channels, stride = _convert_sppcspc_to_layer(input, input_channels, arguments, i)
+    elif layer_type == 'RepConv':
+        layer, output, output_channels, stride = _convert_rep_conv_to_layer(input, input_channels, arguments, i)
     elif layer_type == 'Concat':
         stride = 1
         layer, output, output_channels = _convert_concat_to_layer(input, input_channels, arguments, i)
@@ -109,12 +113,15 @@ def _input_index_to_stride(input_index, all_strides):
 
 
 def _convert_conv_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 6:
+        raise ValueError('Too many arguments')
+
     output_channels = arguments[0]
     kernel_size = arguments[1] if len(arguments) > 1 else 1
     stride = arguments[2] if len(arguments) > 2 else 1
     padding = arguments[3] if len(arguments) > 3 and arguments[3] != 'None' else kernel_size // 2
     groups = arguments[4] if len(arguments) > 4 else 1
-    activation = arguments[5] if len(arguments) > 4 else 'nn.SiLU()'
+    activation = arguments[5] if len(arguments) > 5 else 'nn.SiLU()'
 
     layer_name = f'self._conv{i}'
     output = 'y' + str(i)
@@ -131,6 +138,9 @@ def _convert_conv_to_layer(input, input_channels, arguments, i):
 
 
 def _convert_mp_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 1:
+        raise ValueError('Too many arguments')
+
     kernel_size = arguments[0] if len(arguments) > 0 else 2
     stride = kernel_size
 
@@ -144,6 +154,9 @@ def _convert_mp_to_layer(input, input_channels, arguments, i):
 
 
 def _convert_sp_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 2:
+        raise ValueError('Too many arguments')
+
     kernel_size = arguments[0] if len(arguments) > 0 else 3
     stride = arguments[1] if len(arguments) > 1 else 1
 
@@ -156,7 +169,46 @@ def _convert_sp_to_layer(input, input_channels, arguments, i):
     return Layer(init_code, forward_code), output, input_channels, stride
 
 
+def _convert_sppcspc_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 1:
+        raise ValueError('Too many arguments')
+
+    output_channels = arguments[0]
+    stride = 1
+
+    layer_name = f'self._sppcspc{i}'
+    output = 'y' + str(i)
+
+    init_code = f'        {layer_name} = YoloV7SPPCSPC({input_channels}, {output_channels})'
+    forward_code = f'        {output} = {layer_name}({input})'
+
+    return Layer(init_code, forward_code), output, output_channels, stride
+
+
+def _convert_rep_conv_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 6:
+        raise ValueError('Too many arguments')
+
+    output_channels = arguments[0]
+    kernel_size = arguments[1] if len(arguments) > 1 else 1
+    stride = arguments[2] if len(arguments) > 2 else 1
+    padding = arguments[3] if len(arguments) > 3 and arguments[3] != 'None' else kernel_size // 2
+    groups = arguments[4] if len(arguments) > 4 else 1
+    activation = arguments[5] if len(arguments) > 5 else 'nn.SiLU()'
+
+    layer_name = f'self._rep_conv{i}'
+    output = 'y' + str(i)
+
+    init_code = f'        {layer_name} = RepConv(in_channels={input_channels}, out_channels={output_channels}, kernel_size={kernel_size}, stride={stride}, padding={padding}, groups={groups}, activation={activation})'
+    forward_code = f'        {output} = {layer_name}({input})'
+
+    return Layer(init_code, forward_code), output, output_channels, stride
+
+
 def _convert_concat_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 1:
+        raise ValueError('Too many arguments')
+
     dim = arguments[0] if len(arguments) > 0 else 1
 
     output = 'y' + str(i)
@@ -168,6 +220,9 @@ def _convert_concat_to_layer(input, input_channels, arguments, i):
 
 
 def _convert_upsample_to_layer(input, input_channels, arguments, i):
+    if len(arguments) > 3:
+        raise ValueError('Too many arguments')
+
     size = arguments[0] if len(arguments) > 0 else None
     scale_factor = arguments[1] if len(arguments) > 1 else None
     mode = arguments[2] if len(arguments) > 2 else 'nearest'
@@ -216,6 +271,7 @@ def _write_header(python_file, class_name, yaml_path):
     python_file.write('import torch.nn as nn\n')
     python_file.write('\n')
     python_file.write('from object_detection.modules.yolo_layer import YoloV7Layer\n')
+    python_file.write('from object_detection.modules.yolo_v7_modules import YoloV7SPPCSPC, RepConv\n')
     python_file.write('\n')
     python_file.write('\n')
     python_file.write(f'IMAGE_SIZE = (640, 640)\n')

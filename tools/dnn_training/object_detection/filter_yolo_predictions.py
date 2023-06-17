@@ -1,7 +1,8 @@
 import torch
+import torchvision.ops
 
 from object_detection.criterions.yolo_v4_loss import calculate_iou
-from object_detection.modules.yolo_layer import CONFIDENCE_INDEX
+from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CONFIDENCE_INDEX
 
 
 def group_predictions(predictions):

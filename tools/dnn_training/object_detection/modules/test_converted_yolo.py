@@ -7,6 +7,7 @@ import torch
 
 from object_detection.modules.yolo_v4 import YoloV4
 from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
+from object_detection.modules.yolo_v7 import YoloV7
 from object_detection.modules.yolo_v7_tiny import YoloV7Tiny
 from object_detection.datasets.coco_detection_transforms import CocoDetectionValidationTransforms
 from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
@@ -25,7 +26,7 @@ COCO_CLASSES = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'tr
 
 def main():
     parser = argparse.ArgumentParser(description='Test the specified converted model')
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7_tiny'],
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
                         help='Choose the mode', required=True)
     parser.add_argument('--weights_path', type=str, help='Choose the weights file path', required=True)
     parser.add_argument('--image_path', type=str, help='Choose the image file', required=True)
@@ -33,7 +34,7 @@ def main():
     args = parser.parse_args()
 
     model = create_model(args.model_type)
-    model.load_weights(args.weights_path)  # TODO uncomment
+    model.load_weights(args.weights_path)
 
     image = Image.open(args.image_path)
 
@@ -46,6 +47,8 @@ def create_model(model_type):
         return YoloV4()
     elif model_type == 'yolo_v4_tiny':
         return YoloV4Tiny()
+    elif model_type == 'yolo_v7':
+        return YoloV7()
     elif model_type == 'yolo_v7_tiny':
         return YoloV7Tiny()
     else:
@@ -61,8 +64,10 @@ def get_predictions(model, image):
         predictions = model(image_tensor.unsqueeze(0))
         print('Inference time: ', time.time() - start, 's')
 
+        start = time.time()
         predictions = group_predictions(predictions)[0]
         predictions = filter_yolo_predictions(predictions, confidence_threshold=0.5, nms_threshold=0.45)
+        print('Postprocessing time: ', time.time() - start, 's')
 
         return predictions, metadata['scale']
 
