@@ -3,11 +3,11 @@ import sys
 import torch
 
 try:
-    from torch2trt import TRTModule
+    import torch_tensorrt
 
-    torch2trt_found = True
+    torch_tensorrt_found = True
 except ImportError:
-    torch2trt_found = False
+    torch_tensorrt_found = False
 
 
 def load_exported_model(torch_script_path, trt_path):
@@ -16,13 +16,13 @@ def load_exported_model(torch_script_path, trt_path):
         model = torch.jit.load(torch_script_path)
         model = model.to(device)
     elif trt_path is not None:
-        if not torch2trt_found:
-            print('"torch2trt" is not supported.')
+        if not torch_tensorrt_found:
+            print('"torch_tensorrt" is not supported.')
             sys.exit()
         else:
             device = torch.device('cuda')
-            model = TRTModule()
-            model.load_state_dict(torch.load(trt_path))
+            model = torch.jit.load(trt_path)
+            model = model.to(device)
     else:
         print('"torch_script_path" or "trt_path" is required.')
         sys.exit()

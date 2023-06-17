@@ -1,5 +1,5 @@
 """
-You need to install : https://github.com/NVIDIA-AI-IOT/torch2trt#option-2---with-plugins-experimental
+You need to install : https://github.com/pytorch/TensorRT
 """
 
 import argparse
@@ -25,9 +25,7 @@ def main():
     terminate_if_already_exported(args.output_dir, args.torch_script_filename, args.trt_filename, args.force_export_if_exists)
 
     import torch
-
     from common.model_exporter import export_model
-
     from face_recognition.datasets import IMAGE_SIZE
     from face_recognition.face_descriptor_extractor import FaceDescriptorExtractor
 

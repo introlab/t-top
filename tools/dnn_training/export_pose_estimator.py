@@ -1,10 +1,11 @@
 """
-You need to install : https://github.com/NVIDIA-AI-IOT/torch2trt#option-2---with-plugins-experimental
+You need to install : https://github.com/pytorch/TensorRT
 """
 
 import argparse
 
 from common.file_presence_checker import terminate_if_already_exported
+
 
 def main():
     parser = argparse.ArgumentParser(description='Export pose estimator')
@@ -26,9 +27,7 @@ def main():
     terminate_if_already_exported(args.output_dir, args.torch_script_filename, args.trt_filename, args.force_export_if_exists)
 
     import torch
-
     from common.model_exporter import export_model
-
     from pose_estimation.trainers.pose_estimator_trainer import IMAGE_SIZE
     from train_pose_estimator import create_model
 

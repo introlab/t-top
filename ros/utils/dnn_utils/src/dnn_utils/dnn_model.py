@@ -3,13 +3,13 @@ import time
 import torch
 
 try:
-    from torch2trt import TRTModule
-    TORCH2TRT_FOUND = True
+    import torch_tensortt
+
+    torch_tensorrt_found = True
 except ImportError:
-    TORCH2TRT_FOUND = False
+    torch_tensorrt_found = False
 
 import rospkg
-
 
 PACKAGE_PATH = rospkg.RosPack().get_path('dnn_utils')
 
@@ -69,12 +69,14 @@ class DnnModel:
             self._model_latency = model_latency
 
     def _replace_model_by_tensor_rt_model_if_faster(self, tensor_rt_model_path, sample_input):
-        if not torch.cuda.is_available() or not TORCH2TRT_FOUND:
+        if not torch.cuda.is_available() or not torch_tensorrt_found:
             return
 
         device = torch.device('cuda')
-        model = TRTModule()
-        model.load_state_dict(torch.load(tensor_rt_model_path))
+        model = torch.jit.load(tensor_rt_model_path).to(device)
+        model.eval()
+
+        model(sample_input.to(device)) # JIT step
 
         start_time = time.time()
         model(sample_input.to(device))

@@ -1,10 +1,11 @@
 """
-You need to install : https://github.com/NVIDIA-AI-IOT/torch2trt#option-2---with-plugins-experimental
+You need to install : https://github.com/pytorch/TensorRT
 """
 
 import argparse
 
 from common.file_presence_checker import terminate_if_already_exported
+
 
 def main():
     parser = argparse.ArgumentParser(description='Export audio descriptor extractor')
@@ -42,9 +43,7 @@ def main():
     terminate_if_already_exported(args.output_dir, args.torch_script_filename, args.trt_filename, args.force_export_if_exists)
 
     import torch
-
     from common.model_exporter import export_model
-
     from train_audio_descriptor_extractor import create_model
 
     image_size = (args.n_features, args.waveform_size // (args.n_fft // 2) + 1)
