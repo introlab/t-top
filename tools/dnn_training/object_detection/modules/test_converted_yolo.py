@@ -7,7 +7,6 @@ import torch
 
 from object_detection.modules.yolo_v4 import YoloV4
 from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
-from object_detection.modules.yolo_v7_tiny import YoloV7Tiny
 from object_detection.datasets.coco_detection_transforms import CocoDetectionValidationTransforms
 from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CLASSES_INDEX
@@ -25,15 +24,14 @@ COCO_CLASSES = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'tr
 
 def main():
     parser = argparse.ArgumentParser(description='Test the specified converted model')
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7_tiny'],
-                        help='Choose the mode', required=True)
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny'], help='Choose the mode', required=True)
     parser.add_argument('--weights_path', type=str, help='Choose the weights file path', required=True)
     parser.add_argument('--image_path', type=str, help='Choose the image file', required=True)
 
     args = parser.parse_args()
 
     model = create_model(args.model_type)
-    model.load_weights(args.weights_path) # TODO uncomment
+    model.load_weights(args.weights_path)
 
     image = Image.open(args.image_path)
 
@@ -46,15 +44,13 @@ def create_model(model_type):
         return YoloV4()
     elif model_type == 'yolo_v4_tiny':
         return YoloV4Tiny()
-    elif model_type == 'yolo_v7_tiny':
-        return YoloV7Tiny()
     else:
         raise ValueError('Invalid model type')
 
 
 def get_predictions(model, image):
     with torch.no_grad():
-        transforms = CocoDetectionValidationTransforms(model.get_image_size(), one_hot_class=True)
+        transforms = CocoDetectionValidationTransforms(model.get_image_size())
         image_tensor, _, metadata = transforms(image, None)
 
         start = time.time()

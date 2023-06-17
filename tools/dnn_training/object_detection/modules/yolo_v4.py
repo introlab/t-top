@@ -5,13 +5,13 @@ import torch.nn as nn
 
 from common.modules import Mish
 
-from object_detection.modules.yolo_layer import YoloV4Layer
+from object_detection.modules.yolo_layer import YoloLayer
 
 IMAGE_SIZE = (608, 608)
 IN_CHANNELS = 3
 
 
-# Generated from: yolov4.cfg:
+# Genereated from: yolov4.cfg:
 class YoloV4(nn.Module):
     def __init__(self):
         super(YoloV4, self).__init__()
@@ -532,7 +532,7 @@ class YoloV4(nn.Module):
         )
         self._anchors.append(np.array([(12, 16), (19, 36), (40, 28)]))
         self._output_strides.append(8)
-        self._yolo139 = YoloV4Layer(IMAGE_SIZE, 8, self._anchors[-1].tolist(), 80, scale_x_y=1.2)
+        self._yolo139 = YoloLayer(IMAGE_SIZE, 8, self._anchors[-1].tolist(), 80, 1.2)
 
         self._conv141 = nn.Sequential(
             nn.Conv2d(128, 256, 3, stride=2, padding=1, bias=False),
@@ -575,7 +575,7 @@ class YoloV4(nn.Module):
         )
         self._anchors.append(np.array([(36, 75), (76, 55), (72, 146)]))
         self._output_strides.append(16)
-        self._yolo150 = YoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, scale_x_y=1.1)
+        self._yolo150 = YoloLayer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, 1.1)
 
         self._conv152 = nn.Sequential(
             nn.Conv2d(256, 512, 3, stride=2, padding=1, bias=False),
@@ -618,7 +618,7 @@ class YoloV4(nn.Module):
         )
         self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
         self._output_strides.append(32)
-        self._yolo161 = YoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, scale_x_y=1.05)
+        self._yolo161 = YoloLayer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, 1.05)
 
     def get_class_count(self):
         return 80
