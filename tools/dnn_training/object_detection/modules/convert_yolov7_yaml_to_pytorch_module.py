@@ -128,7 +128,7 @@ def _convert_conv_to_layer(input, input_channels, arguments, i):
 
     init_code = (f'        {layer_name} = nn.Sequential(\n'
                  f'            nn.Conv2d(in_channels={input_channels}, out_channels={output_channels}, kernel_size={kernel_size}, stride={stride}, padding={padding}, groups={groups}, bias=False),\n'
-                 f'            nn.BatchNorm2d({output_channels}),\n'
+                 f'            nn.BatchNorm2d({output_channels}, eps=0.001),\n'
                  f'            {activation},\n'
                  f'        )'
                  )
@@ -252,7 +252,7 @@ def _convert_detect_to_layer(class_count, all_anchor_counts, input_indexes, all_
 
         init_code += (f'        {layer_names[i]} = nn.Sequential(\n'
                       f'            nn.Conv2d(in_channels={all_channels[input_index]}, out_channels={all_anchor_counts[i] * (class_count + 5)}, kernel_size=1),\n'
-                      f'            YoloV7Layer(IMAGE_SIZE, {all_strides[input_index]}, self._anchors[{i}], {class_count})\n'
+                      f'            YoloV7Layer(IMAGE_SIZE, {all_strides[input_index]}, self._anchors[{i}], {class_count}, class_probs=class_probs)\n'
                       f'        )\n'
                       )
         forward_code += f'        {output_names[i]} = {layer_names[i]}({all_outputs[input_index]})\n'
@@ -283,7 +283,7 @@ def _write_header(python_file, class_name, yaml_path):
 
 
 def _write_init(python_file, layers, class_name, anchors, output_strides):
-    python_file.write('    def __init__(self):\n')
+    python_file.write('    def __init__(self, class_probs=False):\n')
     python_file.write(f'        super({class_name}, self).__init__()\n\n')
 
     python_file.write('        self._anchors = []\n')

@@ -63,10 +63,12 @@ def _resize_image(image, size):
 
     image = image.resize((int(w * scale), int(h * scale)), Image.BILINEAR)
 
-    padded_image = Image.new('RGB', (size[0], size[1]), (128, 128, 128))
-    padded_image.paste(image)
+    offset_x = int((size[0] - image.width) / 2)
+    offset_y = int((size[1] - image.height) / 2)
+    padded_image = Image.new('RGB', (size[0], size[1]), (114, 114, 114))
+    padded_image.paste(image, (offset_x, offset_y))
 
-    return padded_image, scale
+    return padded_image, scale, offset_x, offset_y
 
 
 def _hflip_bbox(target, image_size):
@@ -122,7 +124,7 @@ class CocoDetectionTrainingTransforms:
 
         image, target = _random_crop(image, target)
 
-        resized_image, scale = _resize_image(image, self._image_size)
+        resized_image, scale, offset_x, offset_y = _resize_image(image, self._image_size)
         target = _convert_bbox_to_yolo(target, scale, self._image_size, self._one_hot_class)
 
         if random.random() < self._horizontal_flip_p:
@@ -132,7 +134,9 @@ class CocoDetectionTrainingTransforms:
         resized_image_tensor = F.to_tensor(resized_image)
 
         metadata = {
-            'scale': scale
+            'scale': scale,
+            'offset_x': offset_x,
+            'offset_y': offset_y
         }
         return resized_image_tensor, target, metadata
 
@@ -143,13 +147,15 @@ class CocoDetectionValidationTransforms:
         self._one_hot_class = one_hot_class
 
     def __call__(self, image, target):
-        resized_image, scale = _resize_image(image, self._image_size)
+        resized_image, scale, offset_x, offset_y = _resize_image(image, self._image_size)
         resized_image_tensor = F.to_tensor(resized_image)
 
         if target is not None:
             target = _convert_bbox_to_yolo(target, scale, self._image_size, self._one_hot_class)
 
         metadata = {
-            'scale': scale
+            'scale': scale,
+            'offset_x': offset_x,
+            'offset_y': offset_y
         }
         return resized_image_tensor, target, metadata

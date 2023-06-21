@@ -13,7 +13,7 @@ IN_CHANNELS = 3
 
 # Generated from: yolov7-tiny.yaml:
 class YoloV7Tiny(nn.Module):
-    def __init__(self):
+    def __init__(self, class_probs=False):
         super(YoloV7Tiny, self).__init__()
 
         self._anchors = []
@@ -24,129 +24,129 @@ class YoloV7Tiny(nn.Module):
 
         self._conv0 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv1 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv2 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv3 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv4 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv5 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv7 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._max_pool8 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv9 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv10 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv11 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv12 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv14 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._max_pool15 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv16 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv17 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv18 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv19 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv21 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._max_pool22 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv23 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv24 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv25 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv26 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv28 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv29 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv30 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._max_pool31 = nn.MaxPool2d(kernel_size=5, stride=1, padding=2)
@@ -155,100 +155,100 @@ class YoloV7Tiny(nn.Module):
 
         self._conv35 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv37 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv38 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._upsample39 = nn.Upsample(scale_factor=2, mode='nearest')
         self._conv40 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv42 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv43 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv44 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv45 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv47 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv48 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._upsample49 = nn.Upsample(scale_factor=2, mode='nearest')
         self._conv50 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv52 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=32, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv53 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=32, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv54 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv55 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv57 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv58 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv60 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv61 = nn.Sequential(
@@ -258,79 +258,79 @@ class YoloV7Tiny(nn.Module):
         )
         self._conv62 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv63 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv65 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv66 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv68 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv69 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv70 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv71 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._conv73 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv74 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv75 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.LeakyReLU(0.1),
         )
         self._conv76 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.LeakyReLU(0.1),
         )
 
         self._yolo0 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], 80)
+            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], 80, class_probs=class_probs)
         )
         self._yolo1 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], 80)
+            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], 80, class_probs=class_probs)
         )
         self._yolo2 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], 80)
+            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], 80, class_probs=class_probs)
         )
 
     def get_image_size(self):

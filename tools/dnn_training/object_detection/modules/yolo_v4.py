@@ -13,7 +13,7 @@ IN_CHANNELS = 3
 
 # Generated from: yolov4.cfg:
 class YoloV4(nn.Module):
-    def __init__(self):
+    def __init__(self, class_probs=False):
         super(YoloV4, self).__init__()
         self._anchors = []
         self._output_strides = []
@@ -618,7 +618,7 @@ class YoloV4(nn.Module):
         )
         self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
         self._output_strides.append(32)
-        self._yolo161 = YoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, scale_x_y=1.05)
+        self._yolo161 = YoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, scale_x_y=1.05, class_probs=class_probs)
 
     def get_class_count(self):
         return 80

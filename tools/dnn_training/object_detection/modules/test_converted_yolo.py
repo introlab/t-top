@@ -10,7 +10,7 @@ from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
 from object_detection.modules.yolo_v7 import YoloV7
 from object_detection.modules.yolo_v7_tiny import YoloV7Tiny
 from object_detection.datasets.coco_detection_transforms import CocoDetectionValidationTransforms
-from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
+from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions_by_classes
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CLASSES_INDEX
 
 COCO_CLASSES = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
@@ -39,21 +39,23 @@ def main():
 
     image = Image.open(args.image_path)
 
-    predictions, scale = get_predictions(model, image)
-    display_predictions(predictions, scale, image)
+    predictions, scale, offset_x, offset_y = get_predictions(model, image)
+    display_predictions(predictions, scale, offset_x, offset_y, image)
 
 
-def create_model(model_type):
+def create_model(model_type, class_probs=False):
     if model_type == 'yolo_v4':
-        return YoloV4()
+        model = YoloV4(class_probs=class_probs)
     elif model_type == 'yolo_v4_tiny':
-        return YoloV4Tiny()
+        model = YoloV4Tiny(class_probs=class_probs)
     elif model_type == 'yolo_v7':
-        return YoloV7()
+        model = YoloV7(class_probs=class_probs)
     elif model_type == 'yolo_v7_tiny':
-        return YoloV7Tiny()
+        model = YoloV7Tiny(class_probs=class_probs)
     else:
         raise ValueError('Invalid model type')
+
+    return model
 
 
 def get_predictions(model, image):
@@ -67,18 +69,18 @@ def get_predictions(model, image):
 
         start = time.time()
         predictions = group_predictions(predictions)[0]
-        predictions = filter_yolo_predictions(predictions, confidence_threshold=0.5, nms_threshold=0.45)
+        predictions = filter_yolo_predictions_by_classes(predictions, confidence_threshold=0.5, nms_threshold=0.45)
         print('Postprocessing time: ', time.time() - start, 's')
 
-        return predictions, metadata['scale']
+        return predictions, metadata['scale'], metadata['offset_x'], metadata['offset_y']
 
 
-def display_predictions(predictions, scale, image):
+def display_predictions(predictions, scale, offset_x, offset_y, image):
     draw = ImageDraw.Draw(image)
 
     for prediction in predictions:
-        center_x = prediction[X_INDEX].item() / scale
-        center_y = prediction[Y_INDEX].item() / scale
+        center_x = (prediction[X_INDEX].item() - offset_x) / scale
+        center_y = (prediction[Y_INDEX].item() - offset_y) / scale
         w = prediction[W_INDEX].item() / scale
         h = prediction[H_INDEX].item() / scale
         class_index = torch.argmax(prediction[CLASSES_INDEX:]).item()

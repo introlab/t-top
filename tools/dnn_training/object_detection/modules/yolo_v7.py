@@ -15,7 +15,7 @@ IN_CHANNELS = 3
 
 # Generated from: yolov7.yaml:
 class YoloV7(nn.Module):
-    def __init__(self):
+    def __init__(self, class_probs=False):
         super(YoloV7, self).__init__()
 
         self._anchors = []
@@ -26,420 +26,420 @@ class YoloV7(nn.Module):
 
         self._conv0 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.BatchNorm2d(32, eps=0.001),
             nn.SiLU(),
         )
         self._conv1 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv2 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv3 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv4 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv5 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv6 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv7 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv8 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv9 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv11 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._max_pool12 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv13 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv14 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv15 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv17 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv18 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv19 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv20 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv21 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv22 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv24 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
         self._max_pool25 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv26 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv27 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv28 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv30 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv31 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv32 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv33 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv34 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv35 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv37 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(1024),
+            nn.BatchNorm2d(1024, eps=0.001),
             nn.SiLU(),
         )
         self._max_pool38 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv39 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
         self._conv40 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
         self._conv41 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv43 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv44 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv45 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv46 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv47 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv48 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv50 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(1024),
+            nn.BatchNorm2d(1024, eps=0.001),
             nn.SiLU(),
         )
         self._sppcspc51 = YoloV7SPPCSPC(1024, 512)
         self._conv52 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._upsample53 = nn.Upsample(scale_factor=2, mode='nearest')
         self._conv54 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv56 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv57 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv58 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv59 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv60 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv61 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv63 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv64 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._upsample65 = nn.Upsample(scale_factor=2, mode='nearest')
         self._conv66 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv68 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv69 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv70 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv71 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv72 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
         self._conv73 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv75 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._max_pool76 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv77 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv78 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv79 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv81 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv82 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv83 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv84 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv85 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
         self._conv86 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(128),
+            nn.BatchNorm2d(128, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv88 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._max_pool89 = nn.MaxPool2d(kernel_size=2, stride=2)
         self._conv90 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv91 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv92 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv94 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
         self._conv95 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
         self._conv96 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv97 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv98 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
         self._conv99 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, bias=False),
-            nn.BatchNorm2d(256),
+            nn.BatchNorm2d(256, eps=0.001),
             nn.SiLU(),
         )
 
         self._conv101 = nn.Sequential(
             nn.Conv2d(in_channels=2048, out_channels=512, kernel_size=1, stride=1, padding=0, groups=1, bias=False),
-            nn.BatchNorm2d(512),
+            nn.BatchNorm2d(512, eps=0.001),
             nn.SiLU(),
         )
         self._rep_conv102 = RepConv(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1, groups=1, activation=nn.SiLU())
@@ -448,15 +448,15 @@ class YoloV7(nn.Module):
 
         self._yolo0 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], 80)
+            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], 80, class_probs=class_probs)
         )
         self._yolo1 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], 80)
+            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], 80, class_probs=class_probs)
         )
         self._yolo2 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], 80)
+            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], 80, class_probs=class_probs)
         )
 
 

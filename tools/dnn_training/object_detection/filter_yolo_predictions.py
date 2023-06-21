@@ -1,8 +1,7 @@
 import torch
-import torchvision.ops
 
 from object_detection.criterions.yolo_v4_loss import calculate_iou
-from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CONFIDENCE_INDEX
+from object_detection.modules.yolo_layer import CONFIDENCE_INDEX, CLASSES_INDEX
 
 
 def group_predictions(predictions):
@@ -20,7 +19,36 @@ def group_predictions(predictions):
 
 def filter_yolo_predictions(predictions, confidence_threshold=0.7, nms_threshold=0.6):
     predictions = predictions[predictions[:, CONFIDENCE_INDEX] > confidence_threshold]
+    return _nms(predictions, nms_threshold)
 
+
+def filter_yolo_predictions_by_classes(predictions, confidence_threshold=0.7, nms_threshold=0.6):
+    predictions = predictions[predictions[:, CONFIDENCE_INDEX] > confidence_threshold]
+    predictions_by_class_index = _group_predictions_by_class_index(predictions)
+
+    valid_predictions = []
+    for c, p in predictions_by_class_index.items():
+        valid_predictions += _nms(p, nms_threshold)
+    return valid_predictions
+
+
+def _group_predictions_by_class_index(predictions):
+    class_count = predictions[:, CLASSES_INDEX:].size(1)
+    class_indexes = torch.argmax(predictions[:, CLASSES_INDEX:], dim=1).tolist()
+
+    predictions_by_class_index = {c: [] for c in range(class_count)}
+    for i, c in enumerate(class_indexes):
+        predictions_by_class_index[c].append(predictions[i:i + 1])
+
+    tensor_predictions_by_class_index = {}
+    for c in predictions_by_class_index.keys():
+        if len(predictions_by_class_index[c]) > 0:
+            tensor_predictions_by_class_index[c] = torch.cat(predictions_by_class_index[c], dim=0)
+
+    return tensor_predictions_by_class_index
+
+
+def _nms(predictions, nms_threshold):
     sorted_index = torch.argsort(predictions[:, CONFIDENCE_INDEX], descending=True)
     predictions = predictions[sorted_index]
 

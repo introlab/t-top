@@ -8,22 +8,22 @@ class YoloV7SPPCSPC(nn.Module):
 
         self._conv0 = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
         self._conv1 = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
         self._conv2 = nn.Sequential(
             nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
         self._conv3 = nn.Sequential(
             nn.Conv2d(out_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
 
@@ -33,17 +33,17 @@ class YoloV7SPPCSPC(nn.Module):
 
         self._conv4 = nn.Sequential(
             nn.Conv2d(4 * out_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
         self._conv5 = nn.Sequential(
             nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
         self._conv6 = nn.Sequential(
             nn.Conv2d(2 * out_channels, out_channels, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.BatchNorm2d(out_channels, eps=0.001),
             nn.SiLU()
         )
 
@@ -67,12 +67,12 @@ class RepConv(nn.Module):
         self._identity = nn.BatchNorm2d(in_channels) if in_channels == out_channels and stride == 1 else None
         self._conv_kxk = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, groups=groups, bias=False),
-            nn.BatchNorm2d(out_channels)
+            nn.BatchNorm2d(out_channels, eps=0.001)
         )
 
         self._conv_1x1 = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, padding=padding_1x1, groups=groups, bias=False),
-            nn.BatchNorm2d(out_channels)
+            nn.BatchNorm2d(out_channels, eps=0.001)
         )
 
         self._activation = activation

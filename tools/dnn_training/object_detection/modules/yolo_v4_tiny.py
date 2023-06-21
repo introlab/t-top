@@ -11,7 +11,7 @@ IN_CHANNELS = 3
 
 # Generated from: yolov4-tiny.cfg:
 class YoloV4Tiny(nn.Module):
-    def __init__(self):
+    def __init__(self, class_probs=False):
         super(YoloV4Tiny, self).__init__()
 
         self._anchors = []
@@ -137,7 +137,7 @@ class YoloV4Tiny(nn.Module):
         )
         self._anchors.append(np.array([(23, 27), (37, 58), (81, 82)]))
         self._output_strides.append(16)
-        self._yolo37 = YoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, scale_x_y=1.05)
+        self._yolo37 = YoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, scale_x_y=1.05, class_probs=class_probs)
 
     def get_image_size(self):
         return IMAGE_SIZE

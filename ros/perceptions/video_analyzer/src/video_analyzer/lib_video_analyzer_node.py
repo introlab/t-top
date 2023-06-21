@@ -13,7 +13,7 @@ from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
 
-from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
+from dnn_utils import DescriptorYoloV4, Yolo, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
 import hbba_lite
 
 
@@ -78,6 +78,7 @@ class FaceAnalysis:
 class VideoAnalyzerNode:
     def __init__(self):
         self._use_descriptor_yolo_v4 = rospy.get_param('~use_descriptor_yolo_v4')
+        self._yolo_model = rospy.get_param('~yolo_model', None)
         self._confidence_threshold = rospy.get_param('~confidence_threshold')
         self._nms_threshold = rospy.get_param('~nms_threshold')
         self._person_probability_threshold = rospy.get_param('~person_probability_threshold')
@@ -97,8 +98,8 @@ class VideoAnalyzerNode:
             self._object_detector = DescriptorYoloV4(confidence_threshold=self._confidence_threshold,
                                                      nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         else:
-            self._object_detector = YoloV4(confidence_threshold=self._confidence_threshold,
-                                           nms_threshold=self._nms_threshold, inference_type=self._inference_type)
+            self._object_detector = Yolo(self._yolo_model, confidence_threshold=self._confidence_threshold,
+                                         nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         self._object_class_names = self._object_detector.get_class_names()
 
         if self._pose_enabled:

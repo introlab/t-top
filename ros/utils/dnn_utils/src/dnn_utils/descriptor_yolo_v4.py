@@ -80,5 +80,5 @@ class DescriptorYoloV4(DnnModel):
 
         image_tensor = F.interpolate(image_tensor, size=output_size, mode='bilinear')
         self._padded_image[:, :, :image_tensor.size()[2], :image_tensor.size()[3]] = image_tensor
-        self._padded_image[:, :, image_tensor.size()[2]:, image_tensor.size()[3]:] = 128
+        self._padded_image[:, :, image_tensor.size()[2]:, image_tensor.size()[3]:] = 0.44705882352
         return scale

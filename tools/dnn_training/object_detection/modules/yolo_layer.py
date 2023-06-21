@@ -1,3 +1,7 @@
+
+
+import pickle
+
 import torch
 import torch.nn as nn
 
@@ -10,12 +14,14 @@ CLASSES_INDEX = 5
 
 
 class YoloV4Layer(nn.Module):
-    def __init__(self, image_size, stride, anchors, class_count, scale_x_y=1.0):
+    def __init__(self, image_size, stride, anchors, class_count, scale_x_y=1.0, class_probs=False):
         super(YoloV4Layer, self).__init__()
+        self._class_probs = class_probs
+
         self._grid_size = (image_size[1] // stride, image_size[0] // stride)
         self._stride = stride
 
-        self._anchors = [(a[0] // stride, a[1] // stride) for a in anchors]
+        self._anchors = [(a[0] / stride, a[1] / stride) for a in anchors]
         self._class_count = class_count
         self._scale_x_y = scale_x_y
 
@@ -69,18 +75,22 @@ class YoloV4Layer(nn.Module):
 
         # Transform confidence
         confidence = torch.sigmoid(t[:, :, :, :, self._confidence_index:self._confidence_index + 1])
-        descriptors = t[:, :, :, :, self._classes_index:]
+        classes = t[:, :, :, :, self._classes_index:]
+        if self._class_probs:
+            classes = torch.sigmoid(classes)
 
-        return torch.cat([x, y, w, h, confidence, descriptors], dim=4)
+        return torch.cat([x, y, w, h, confidence, classes], dim=4)
 
 
 class YoloV7Layer(nn.Module):
-    def __init__(self, image_size, stride, anchors, class_count):
+    def __init__(self, image_size, stride, anchors, class_count, class_probs=False):
         super(YoloV7Layer, self).__init__()
+        self._class_probs = class_probs
+
         self._grid_size = (image_size[1] // stride, image_size[0] // stride)
         self._stride = stride
 
-        self._anchors = [(a[0] // stride, a[1] // stride) for a in anchors]
+        self._anchors = [(a[0] / stride, a[1] / stride) for a in anchors]
         self._class_count = class_count
 
         x = torch.arange(self._grid_size[1])
@@ -131,6 +141,8 @@ class YoloV7Layer(nn.Module):
 
         # Transform confidence
         confidence = torch.sigmoid(t[:, :, :, :, self._confidence_index:self._confidence_index + 1])
-        descriptors = t[:, :, :, :, self._classes_index:]
+        classes = t[:, :, :, :, self._classes_index:]
+        if self._class_probs:
+            classes = torch.sigmoid(classes)
 
-        return torch.cat([x, y, w, h, confidence, descriptors], dim=4)
+        return torch.cat([x, y, w, h, confidence, classes], dim=4)

@@ -92,7 +92,7 @@ def _write_header(python_file, layer, class_name, cfg_path):
 
 
 def _write_init(python_file, layers, in_channels, class_name):
-    python_file.write('    def __init__(self):\n')
+    python_file.write('    def __init__(self, class_probs=False):\n')
     python_file.write('        super({}, self).__init__()\n'.format(class_name))
     python_file.write('        self._anchors = []\n')
     python_file.write('        self._output_strides = []\n')
@@ -249,7 +249,7 @@ def _write_init_yolo(python_file, i, layer, cumulated_stride):
 
     python_file.write('        self._anchors.append(np.array({}))\n'.format(anchors))
     python_file.write('        self._output_strides.append({})\n'.format(cumulated_stride))
-    python_file.write('        self._yolo{} = YoloV4Layer({}, {}, {}, {}, scale_x_y={})'
+    python_file.write('        self._yolo{} = YoloV4Layer({}, {}, {}, {}, scale_x_y={}, class_probs=class_probs)'
                       .format(i, 'IMAGE_SIZE', cumulated_stride, 'self._anchors[-1].tolist()', class_count,
                               scale_x_y))
     return 0

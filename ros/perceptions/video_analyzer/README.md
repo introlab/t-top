@@ -8,6 +8,7 @@ This node uses RGB images, so the 3D positions are not set.
 
 #### Parameters
  - `use_descriptor_yolo_v4` (bool): Indicates to use the network extracting a object embedding or not.
+ - `yolo_model` (string): If descriptor_yolo_v4 is not used, it indicates which model to use for YOLO (yolo_v4, yolo_v4_tiny, yolo_v7 or yolo_v7_tiny).
  - `confidence_threshold` (double): The object confidence threshold.
  - `nms_threshold` (double): The Non-Maximum Suppresion threshold.
  - `person_probability_threshold` (double): The person confidence threshold.
@@ -37,6 +38,7 @@ This node uses RGB-D images, so the 3D positions are set.
 
 #### Parameters
  - `use_descriptor_yolo_v4` (bool): Indicates to use the network extracting a object embedding or not.
+ - `yolo_model` (string): If descriptor_yolo_v4 is not used, it indicates which model to use for YOLO (yolo_v4, yolo_v4_tiny, yolo_v7 or yolo_v7_tiny).
  - `confidence_threshold` (double): The object confidence threshold.
  - `nms_threshold` (double): The Non-Maximum Suppresion threshold.
  - `person_probability_threshold` (double): The person confidence threshold.
