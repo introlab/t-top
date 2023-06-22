@@ -4,14 +4,17 @@ import uuid
 import os
 import json
 import random
+from enum import Enum, auto
 
 from google.cloud import texttospeech
 
 
+
 class VoiceGenerator(ABC):
-    def __init__(self, directory: str, language: str):
+    def __init__(self, directory: str, language: str, voice_type: str):
         self._directory = directory
         self._language = language
+        self._voice_type = self._get_voice_type(voice_type)
 
         os.makedirs(directory, exist_ok=True)
 
@@ -21,19 +24,41 @@ class VoiceGenerator(ABC):
 
     def _generate_random_path(self, extension: str) -> str:
         return os.path.join(self._directory, str(uuid.uuid4()) + extension)
+    
+    def _get_voice_type(self, voice_type) -> str:
+        if voice_type == 'male' and self._language == 'en':
+            return VoiceType.MALE_UK.value
+        elif voice_type == 'female' and self._language == 'en':
+            return VoiceType.FEMALE_UK.value
+        elif voice_type == 'female' and self._language == 'fr':
+            return VoiceType.FEMALE_FR_GOOD.value
+        elif voice_type == 'male' and self._language == 'fr':
+            return VoiceType.MALE_FR_NOSY.value
+
+class VoiceType(Enum):
+    MALE_FR_SLOW_DEEP = "fr-CA-Standard-D"
+    MALE_FR_NOSY = "fr-CA-Standard-B"
+    FEMALE_FR_GOOD = "fr-CA-Standard-C"
+    MALE_FR_4X_EXPENSIVE = "fr-CA-Neural2-B"
+    FEMALE_UK = "en-GB-Standard-C"
+    MALE_UK = "en-GB-Standard-D"
+    FEMALE_US_= "en-US-Standard-G"
+    MALE_US = "en-US-Standard-I"
 
 
 class GoogleVoiceGenerator(VoiceGenerator):
-    def __init__(self, directory: str, language: str, speaking_rate: float):
-        super().__init__(directory, language)
+    def __init__(self, directory: str, language: str, speaking_rate: float, voice_type: str):
+        super().__init__(directory, language, voice_type)
         self._speaking_rate = speaking_rate
         self._language_code = self._get_language_code()
+        self._voice_type = self._get_voice_type(voice_type)
+
 
     def generate(self, text: str) -> str:
         client = texttospeech.TextToSpeechClient()
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
-        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code,
+        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = self._voice_type,
                                                   ssml_gender=texttospeech.SsmlVoiceGender.MALE)
         audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
                                                 speaking_rate=self._speaking_rate)
@@ -53,11 +78,14 @@ class GoogleVoiceGenerator(VoiceGenerator):
             return 'fr-CA'
         else:
             raise ValueError(f'Not supported language ({self._language})')
+    
+    
+            
 
 
 class CachedVoiceGenerator(VoiceGenerator):
     def __init__(self, voice_generator: VoiceGenerator, cache_size: int):
-        super().__init__(voice_generator._directory, voice_generator._language)
+        super().__init__(voice_generator._directory, voice_generator._language, voice_generator._voice_type)
         if cache_size < 1:
             raise ValueError('The cache size must be at least 1.')
 

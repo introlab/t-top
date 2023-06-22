@@ -2,6 +2,7 @@
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="voice_type" default="male"/> <!-- male , female -->
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="visualization" default="false"/>
@@ -27,6 +28,7 @@
         <arg name="language" value="$(arg language)"/>
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
+        <arg name="voice_type" default="$(arg voice_type)"/> <!-- male , female -->        
         <arg name="simulation" value="$(arg simulation)"/>
         <arg name="open_browser" value="$(arg open_browser)"/>
         <arg name="fullscreen_face" value="$(arg fullscreen_face)"/>
