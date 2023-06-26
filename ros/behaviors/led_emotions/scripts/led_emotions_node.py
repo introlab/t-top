@@ -64,7 +64,7 @@ class LedDanceNode:
 
         if msg.data not in self._led_patterns_by_emotion_name:
             rospy.logerr(f'Invalid emotion name ({msg.data})')
-            self._start_timer(self._led_patterns_by_emotion_name[msg.data])
+        self._start_timer(self._led_patterns_by_emotion_name[msg.data])
 
     def _stop_timer(self):
         if self._timer is not None:
