@@ -34,6 +34,8 @@ class VoiceGenerator(ABC):
             return VoiceType.FEMALE_FR_GOOD.value
         elif voice_type == 'male' and self._language == 'fr':
             return VoiceType.MALE_FR_NOSY.value
+        else :
+            return VoiceType.MALE_FR_NOSY.value
 
 class VoiceType(Enum):
     MALE_FR_SLOW_DEEP = "fr-CA-Standard-D"
@@ -58,9 +60,8 @@ class GoogleVoiceGenerator(VoiceGenerator):
         client = texttospeech.TextToSpeechClient()
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
-        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = self._voice_type,
-                                                  ssml_gender=texttospeech.SsmlVoiceGender.MALE)
-        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
+        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = self._voice_type)
+        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.LINEAR16,
                                                 speaking_rate=self._speaking_rate)
 
         response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
@@ -127,15 +128,21 @@ class CachedVoiceGenerator(VoiceGenerator):
 
         self._save_index(self._index)
 
+    def _get_cache_key(self, text: str) -> str:
+        # Create a key for the cach which includes text, language and voice type
+        return '\t'.join([text, self._language, self._voice_type])
+
     def generate(self, text: str) -> str:
-        if text in self._index:
-            return self._index[text]
+        key = self._get_cache_key(text)
+
+        if key in self._index:
+            return self._index[key]
 
         if len(self._index) + 1 > self._cache_size:
             self._remove_one_cache_item()
 
         file_path = self._voice_generator.generate(text)
-        self._index[text] = file_path
+        self._index[key] = file_path
         self._save_index(self._index)
 
         return file_path
