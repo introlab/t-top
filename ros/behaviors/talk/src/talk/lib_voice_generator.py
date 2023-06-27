@@ -62,7 +62,7 @@ class GoogleVoiceGenerator(VoiceGenerator):
         synthesis_input = texttospeech.SynthesisInput(text=text)
         voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = self._voice_type)
         audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.LINEAR16,
-                                                speaking_rate=self._speaking_rate)
+                                                speaking_rate=self._speaking_rate)  #LINEAR16 instead of MP3 to avoid warning PySoundFile failed. Trying audioread instead. 
 
         response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
 
