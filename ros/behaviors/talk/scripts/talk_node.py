@@ -36,7 +36,7 @@ class TalkNode:
         audio_directory_path = os.path.join(self._pkg_path, 'audio_files')
 
         google_voice_generator = GoogleVoiceGenerator(audio_directory_path, language, speaking_rate, voice_type)
-        self._voice_generator = CachedVoiceGenerator(google_voice_generator, cache_size)
+        self._voice_generator = CachedVoiceGenerator(google_voice_generator, cache_size, voice_type)
 
         self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)

@@ -5,6 +5,7 @@ import os
 import json
 import random
 from enum import Enum, auto
+import rospy
 
 from google.cloud import texttospeech
 
@@ -14,7 +15,7 @@ class VoiceGenerator(ABC):
     def __init__(self, directory: str, language: str, voice_type: str):
         self._directory = directory
         self._language = language
-        self._voice_type = self._get_voice_type(voice_type)
+       # self._voice_type = self._get_voice_type(language, voice_type)
 
         os.makedirs(directory, exist_ok=True)
 
@@ -25,17 +26,25 @@ class VoiceGenerator(ABC):
     def _generate_random_path(self, extension: str) -> str:
         return os.path.join(self._directory, str(uuid.uuid4()) + extension)
     
-    def _get_voice_type(self, voice_type) -> str:
-        if voice_type == 'male' and self._language == 'en':
-            return VoiceType.MALE_UK.value
-        elif voice_type == 'female' and self._language == 'en':
-            return VoiceType.FEMALE_UK.value
-        elif voice_type == 'female' and self._language == 'fr':
-            return VoiceType.FEMALE_FR_GOOD.value
-        elif voice_type == 'male' and self._language == 'fr':
-            return VoiceType.MALE_FR_NOSY.value
-        else :
-            return VoiceType.MALE_FR_NOSY.value
+    
+    def _get_voice_type(self, _language: str, voice_type: str) -> str:
+        voice_dict = {
+            ('en', 'male'): VoiceType.MALE_UK.value,
+            ('en', 'female'): VoiceType.FEMALE_UK.value,
+            ('fr', 'female'): VoiceType.FEMALE_FR_GOOD.value,
+            ('fr', 'male'): VoiceType.MALE_FR_NOSY.value
+                    }
+        result = voice_dict.get((_language, voice_type), VoiceType.MALE_US.value) # set a default value if the key if not found
+        return result
+    
+    def _get_language_code(self, _language: str) -> str:
+        if _language == 'en':
+            return 'en-US'
+        elif _language == 'fr':
+            return 'fr-CA'
+        else:
+            raise ValueError(f'Not supported language ({self._language})')
+    
 
 class VoiceType(Enum):
     MALE_FR_SLOW_DEEP = "fr-CA-Standard-D"
@@ -48,20 +57,29 @@ class VoiceType(Enum):
     MALE_US = "en-US-Standard-I"
 
 
+
 class GoogleVoiceGenerator(VoiceGenerator):
     def __init__(self, directory: str, language: str, speaking_rate: float, voice_type: str):
-        super().__init__(directory, language, voice_type)
+        super().__init__(directory, language, voice_type)  
+        self._voice_type = self._get_voice_type(language, voice_type)
+        self._language_code = self._get_language_code(language)
         self._speaking_rate = speaking_rate
-        self._language_code = self._get_language_code()
-        self._voice_type = self._get_voice_type(voice_type)
+
+        print('Voice type: %s', self._voice_type)  # Debug print statement
+        print('Language code: %s', self._language_code)  # Debug print statement
+
+
+
+    def get_voice_type(self):
+        return self._voice_type
 
 
     def generate(self, text: str) -> str:
         client = texttospeech.TextToSpeechClient()
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
-        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = self._voice_type)
-        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.LINEAR16,
+        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = GoogleVoiceGenerator.get_voice_type(self))        
+        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
                                                 speaking_rate=self._speaking_rate)  #LINEAR16 instead of MP3 to avoid warning PySoundFile failed. Trying audioread instead. 
 
         response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
@@ -72,21 +90,16 @@ class GoogleVoiceGenerator(VoiceGenerator):
 
         return file_path
 
-    def _get_language_code(self) -> str:
-        if self._language == 'en':
-            return 'en-US'
-        elif self._language == 'fr':
-            return 'fr-CA'
-        else:
-            raise ValueError(f'Not supported language ({self._language})')
+    
     
     
             
 
 
 class CachedVoiceGenerator(VoiceGenerator):
-    def __init__(self, voice_generator: VoiceGenerator, cache_size: int):
-        super().__init__(voice_generator._directory, voice_generator._language, voice_generator._voice_type)
+    def __init__(self, voice_generator: VoiceGenerator, cache_size: int, voice_type: str):
+        super().__init__(voice_generator._directory, voice_generator._language, voice_type)
+        self._voice_type = voice_type
         if cache_size < 1:
             raise ValueError('The cache size must be at least 1.')
 
