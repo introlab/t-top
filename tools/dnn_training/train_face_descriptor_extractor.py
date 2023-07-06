@@ -15,7 +15,7 @@ BACKBONE_TYPES = ['open_face', 'efficientnet_b0', 'efficientnet_b1', 'efficientn
 def main():
     parser = argparse.ArgumentParser(description='Train Backbone')
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
-    parser.add_argument('--vvgface2_dataset_root', type=str, help='Choose the Vggface2 root path', required=True)
+    parser.add_argument('--dataset_roots', nargs='+', type=str, help='Choose the Vggface2 root path', required=True)
     parser.add_argument('--lfw_dataset_root', type=str, help='Choose the LFW root path', required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--backbone_type', choices=BACKBONE_TYPES, help='Choose the backbone type', required=True)
@@ -61,7 +61,7 @@ def main():
                                                              learning_rate=args.learning_rate,
                                                              weight_decay=args.weight_decay,
                                                              criterion_type=args.criterion_type,
-                                                             vvgface2_dataset_root=args.vvgface2_dataset_root,
+                                                             dataset_roots=args.dataset_roots,
                                                              lfw_dataset_root=args.lfw_dataset_root,
                                                              output_path=output_path,
                                                              batch_size=args.batch_size,
@@ -76,7 +76,7 @@ def main():
                                                  learning_rate=args.learning_rate,
                                                  weight_decay=args.weight_decay,
                                                  criterion_type=args.criterion_type,
-                                                 vvgface2_dataset_root=args.vvgface2_dataset_root,
+                                                 dataset_roots=args.dataset_roots,
                                                  lfw_dataset_root=args.lfw_dataset_root,
                                                  output_path=output_path,
                                                  batch_size=args.batch_size,

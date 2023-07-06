@@ -192,7 +192,7 @@ def det_3x3(x):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Align LFW faces')
+    parser = argparse.ArgumentParser(description='Align faces')
     parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
     parser.add_argument('--pose_estimator_backbone_type', choices=BACKBONE_TYPES,
                         help='Choose the pose estimator backbone type', required=True)

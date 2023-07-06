@@ -13,7 +13,9 @@ from common.metrics import LossMetric, ClassificationAccuracyMetric, TopNClassif
 
 from face_recognition.criterions import FaceDescriptorAmSoftmaxLoss, FaceDescriptorArcFaceLoss, \
     FaceDescriptorCrossEntropyLoss
-from face_recognition.datasets import IMAGE_SIZE, Vggface2Dataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
+from face_recognition.datasets import IMAGE_SIZE, FaceDataset, FaceConcatDataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES, \
+    LFW_OVERLAPPED_MSCELEB1M_CLASS_NAMES
+from face_recognition.datasets import ImbalancedFaceDatasetSampler
 from face_recognition.metrics import LfwEvaluation
 
 import torch
@@ -21,7 +23,7 @@ import torch.utils.data
 
 
 class FaceDescriptorExtractorTrainer(Trainer):
-    def __init__(self, device, model, vvgface2_dataset_root='', lfw_dataset_root='', output_path='',
+    def __init__(self, device, model, dataset_roots='', lfw_dataset_root='', output_path='',
                  epoch_count=10, learning_rate=0.01, weight_decay=0.0, criterion_type='triplet_loss',
                  batch_size=128, margin=0.2,
                  model_checkpoint=None):
@@ -31,7 +33,7 @@ class FaceDescriptorExtractorTrainer(Trainer):
         self._class_count = model.class_count()
 
         super(FaceDescriptorExtractorTrainer, self).__init__(device, model,
-                                                             dataset_root=vvgface2_dataset_root,
+                                                             dataset_root=dataset_roots,
                                                              output_path=output_path,
                                                              epoch_count=epoch_count,
                                                              learning_rate=learning_rate,
@@ -53,24 +55,24 @@ class FaceDescriptorExtractorTrainer(Trainer):
     def _create_criterion(self, model):
         return _create_criterion(self._criterion_type, self._margin, self._epoch_count)
 
-    def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        dataset = Vggface2Dataset(dataset_root, split='training',
-                                  transforms=create_training_image_transform(),
-                                  ignored_classes=LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES)
+    def _create_training_dataset_loader(self, dataset_roots, batch_size, batch_size_division):
+        dataset = _create_dataset(dataset_roots, 'training', create_training_image_transform())
+        return self._create_dataset_loader(dataset, batch_size, batch_size_division,
+                                           use_imbalanced_face_dataset_sampler=True)
+
+    def _create_validation_dataset_loader(self, dataset_roots, batch_size, batch_size_division):
+        dataset = _create_dataset(dataset_roots, 'validation', create_validation_image_transform())
         return self._create_dataset_loader(dataset, batch_size, batch_size_division)
 
-    def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        dataset = Vggface2Dataset(dataset_root, split='validation',
-                                  transforms=create_validation_image_transform(),
-                                  ignored_classes=LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES)
-        return self._create_dataset_loader(dataset, batch_size, batch_size_division)
-
-    def _create_dataset_loader(self, dataset, batch_size, batch_size_division):
+    def _create_dataset_loader(self, dataset, batch_size, batch_size_division,
+                               use_imbalanced_face_dataset_sampler=False):
         if self._criterion_type == 'triplet_loss':
             batch_sampler = TripletLossBatchSampler(dataset, batch_size=batch_size // batch_size_division)
             return torch.utils.data.DataLoader(dataset, batch_sampler=batch_sampler, num_workers=8)
         else:
-            return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=True,
+            sampler = ImbalancedFaceDatasetSampler(dataset) if use_imbalanced_face_dataset_sampler else None
+            return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division,
+                                               sampler=sampler,
                                                num_workers=8)
 
     def _clear_between_training(self):
@@ -168,6 +170,21 @@ def _create_criterion(criterion_type, margin, epoch_count):
                                          end_annealing_epoch=epoch_count // 4)
     else:
         raise ValueError('Invalid criterion type')
+
+
+def _create_dataset(dataset_roots, split, transforms):
+    datasets = []
+    for dataset_root in dataset_roots:
+        ignored_classes = []
+        if 'vgg' in dataset_root.lower():
+            ignored_classes = LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
+        elif 'ms' in dataset_root.lower():
+            ignored_classes = LFW_OVERLAPPED_MSCELEB1M_CLASS_NAMES
+
+        dataset = FaceDataset(dataset_root, split=split, ignored_classes=ignored_classes)
+        datasets.append(dataset)
+
+    return FaceConcatDataset(datasets, transforms=transforms)
 
 
 def _evaluate_classification_accuracy(model, device, dataset_loader, class_count):

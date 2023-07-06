@@ -5,9 +5,9 @@ from common.trainers import DistillationTrainer
 from common.metrics import LossMetric, ClassificationAccuracyMetric, LossLearningCurves, LossAccuracyLearningCurves
 
 from face_recognition.criterions import FaceDescriptorDistillationLoss
-from face_recognition.datasets import Vggface2Dataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
+from face_recognition.datasets import ImbalancedFaceDatasetSampler
 from face_recognition.metrics import LfwEvaluation
-from face_recognition.trainers.face_descriptor_extractor_trainer import _create_criterion, \
+from face_recognition.trainers.face_descriptor_extractor_trainer import _create_criterion, _create_dataset, \
     _evaluate_classification_accuracy, create_training_image_transform, create_validation_image_transform
 
 import torch
@@ -15,7 +15,7 @@ import torch.utils.data
 
 
 class FaceDescriptorExtractorDistillationTrainer(DistillationTrainer):
-    def __init__(self, device, model, teacher_model, vvgface2_dataset_root='', lfw_dataset_root='', output_path='',
+    def __init__(self, device, model, teacher_model, dataset_roots='', lfw_dataset_root='', output_path='',
                  epoch_count=10, learning_rate=0.01, weight_decay=0.0, criterion_type='triplet_loss',
                  batch_size=128, margin=0.2,
                  student_model_checkpoint=None, teacher_model_checkpoint=None):
@@ -26,7 +26,7 @@ class FaceDescriptorExtractorDistillationTrainer(DistillationTrainer):
 
         super(FaceDescriptorExtractorDistillationTrainer, self).__init__(
             device, model, teacher_model,
-            dataset_root=vvgface2_dataset_root,
+            dataset_root=dataset_roots,
             output_path=output_path,
             epoch_count=epoch_count,
             learning_rate=learning_rate,
@@ -49,24 +49,23 @@ class FaceDescriptorExtractorDistillationTrainer(DistillationTrainer):
     def _create_criterion(self, student_model, teacher_model):
         return FaceDescriptorDistillationLoss(_create_criterion(self._criterion_type, self._margin, self._epoch_count))
 
-    def _create_training_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        dataset = Vggface2Dataset(dataset_root, split='training',
-                                  transforms=create_training_image_transform(),
-                                  ignored_classes=LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES)
+    def _create_training_dataset_loader(self, dataset_roots, batch_size, batch_size_division):
+        dataset = _create_dataset(dataset_roots, 'training', create_training_image_transform())
+        return self._create_dataset_loader(dataset, batch_size, batch_size_division,
+                                           use_imbalanced_face_dataset_sampler=True)
+
+    def _create_validation_dataset_loader(self, dataset_roots, batch_size, batch_size_division):
+        dataset = _create_dataset(dataset_roots, 'validation', create_validation_image_transform())
         return self._create_dataset_loader(dataset, batch_size, batch_size_division)
 
-    def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
-        dataset = Vggface2Dataset(dataset_root, split='validation',
-                                  transforms=create_validation_image_transform(),
-                                  ignored_classes=LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES)
-        return self._create_dataset_loader(dataset, batch_size, batch_size_division)
-
-    def _create_dataset_loader(self, dataset, batch_size, batch_size_division):
+    def _create_dataset_loader(self, dataset, batch_size, batch_size_division,
+                               use_imbalanced_face_dataset_sampler=False):
         if self._criterion_type == 'triplet_loss':
             batch_sampler = TripletLossBatchSampler(dataset, batch_size=batch_size // batch_size_division)
             return torch.utils.data.DataLoader(dataset, batch_sampler=batch_sampler, num_workers=8)
         else:
-            return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=True,
+            sampler = ImbalancedFaceDatasetSampler(dataset) if use_imbalanced_face_dataset_sampler else None
+            return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, sampler=sampler,
                                                num_workers=8)
 
     def _clear_between_training(self):

@@ -21,7 +21,7 @@ from train_pose_estimator import create_model as create_pose_estimator_model, BA
 from common.modules import load_checkpoint
 
 from object_detection.datasets import ObjectDetectionCoco, CocoDetectionValidationTransforms
-from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
+from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions_by_classes
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CONFIDENCE_INDEX
 from object_detection.modules.yolo_layer import CLASSES_INDEX
 from object_detection.modules.test_converted_yolo import create_model as create_yolo_model
@@ -68,9 +68,9 @@ class ObjectDetectionFolder(Dataset):
 
 
 # TODO Refactor to reduce code duplication
-class CocoPoseEvaluationWithYoloV4():
+class CocoPoseEvaluationWithYolo():
     def __init__(self, yolo_model, pose_estimator_model, device, dataset_root, dataset_split, output_path,
-                 confidence_threshold=0.001, nms_threshold=0.65, presence_threshold=0.0):
+                 confidence_threshold=0.01, nms_threshold=0.5, presence_threshold=0.0):
         self._device = device
         self._yolo_model = yolo_model.to(device)
         self._pose_estimator_model = pose_estimator_model.to(device)
@@ -118,9 +118,9 @@ class CocoPoseEvaluationWithYoloV4():
             for image, _, metadata in tqdm(self._dataset):
                 yolo_predictions = self._yolo_model.forward(image.unsqueeze(0).to(self._device))
                 yolo_predictions = group_predictions(yolo_predictions)[0]
-                yolo_predictions = filter_yolo_predictions(yolo_predictions,
-                                                           confidence_threshold=self._confidence_threshold,
-                                                           nms_threshold=self._nms_threshold)
+                yolo_predictions = filter_yolo_predictions_by_classes(yolo_predictions,
+                                                                      confidence_threshold=self._confidence_threshold,
+                                                                      nms_threshold=self._nms_threshold)
 
                 results.extend(self._get_image_results(yolo_predictions, metadata))
 
@@ -138,7 +138,7 @@ class CocoPoseEvaluationWithYoloV4():
         for yolo_prediction in yolo_predictions:
             class_probs = yolo_prediction[CLASSES_INDEX:]
             class_index = torch.argmax(class_probs, dim=0).item()
-            confidence = yolo_prediction[CONFIDENCE_INDEX].item() * class_probs[class_index].item()
+            confidence = yolo_prediction[CONFIDENCE_INDEX].item()
             if class_index != PERSON_CLASS_INDEX or confidence < self._confidence_threshold:
                 continue
 
@@ -239,8 +239,8 @@ def main():
     pose_estimator_model = create_pose_estimator_model(args.pose_backbone_type)
     load_checkpoint(pose_estimator_model, args.pose_model_checkpoint)
 
-    evaluation = CocoPoseEvaluationWithYoloV4(yolo_model, pose_estimator_model, device,
-                                              args.dataset_root, args.dataset_split, args.output_path)
+    evaluation = CocoPoseEvaluationWithYolo(yolo_model, pose_estimator_model, device,
+                                            args.dataset_root, args.dataset_split, args.output_path)
     evaluation.evaluate()
 
 

@@ -2,11 +2,17 @@ import os
 import random
 
 import torch
+import torch.nn as nn
 import torchaudio
 import torchaudio.transforms as transforms
 
 from common.datasets.audio_transform_utils import to_mono, resample, resize_waveform, resize_waveform_random, \
     normalize, standardize_every_frame, RandomPitchShift, RandomTimeStretch
+
+
+class LogModule(nn.Module):
+    def forward(self, x, eps=1e-6):
+        return torch.log10(x + eps)
 
 
 class _AudioDescriptorTransforms:
@@ -26,6 +32,13 @@ class _AudioDescriptorTransforms:
             self._audio_transform = transforms.MelSpectrogram(sample_rate=self._sample_rate,
                                                               n_fft=n_fft,
                                                               n_mels=n_features)
+        elif audio_transform_type == 'log_mel_spectrogram':
+            self._audio_transform = nn.Sequential(
+                transforms.MelSpectrogram(sample_rate=self._sample_rate,
+                                          n_fft=n_fft,
+                                          n_mels=n_features),
+                LogModule()
+            )
         elif audio_transform_type == 'spectrogram':
             if n_features != (n_fft // 2 + 1):
                 raise ValueError('n_features must be equal to (n_fft // 2 + 1) '

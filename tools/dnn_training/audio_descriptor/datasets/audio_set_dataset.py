@@ -1,18 +1,17 @@
 import os
-import csv
+import json
 
 from audio_descriptor.datasets.multiclass_audio_descriptor_dataset import MulticlassAudioDescriptorDataset
 
 
-class Fsd50kDataset(MulticlassAudioDescriptorDataset):
+class AudioSetDataset(MulticlassAudioDescriptorDataset):
     def _list_classes(self, root):
-        class_indexes_by_name = {}
-        with open(os.path.join(root, 'FSD50K.ground_truth', 'vocabulary.csv'), newline='') as vocabulary_file:
-            vocabulary_reader = csv.reader(vocabulary_file, delimiter=',', quotechar='"')
-            for class_index, class_name, _ in vocabulary_reader:
-                class_indexes_by_name[class_name] = int(class_index)
+        with open(os.path.join(root, 'ontology.json')) as ontology_file:
+            ontology_data = json.load(ontology_file)
 
-        return class_indexes_by_name
+        class_names = [d['id'] for d in ontology_data]
+        class_names.sort()
+        return {i: c for i, c in enumerate(class_names)}
 
     def _list_sounds(self, root, split, enhanced_targets):
         folder, filename = self._get_folder_and_sound_file(split, enhanced_targets)
@@ -21,9 +20,10 @@ class Fsd50kDataset(MulticlassAudioDescriptorDataset):
         with open(os.path.join(root, filename), 'r') as sound_file:
             for line in sound_file:
                 values = line.split(' ')
+                filename = values[0]
                 class_names = (n.strip() for n in values[1:])
                 sounds.append({
-                    'path': os.path.join(folder, values[0]),
+                    'path': os.path.join(folder, filename[:2], filename),
                     'target': self._create_target(class_names)
                 })
 
@@ -31,14 +31,14 @@ class Fsd50kDataset(MulticlassAudioDescriptorDataset):
 
     def _get_folder_and_sound_file(self, split, enhanced_targets):
         if split == 'training' and enhanced_targets:
-            return 'FSD50K.dev_audio', 'train_enhanced.txt'
+            return 'train', 'train_enhanced.txt'
         elif split == 'training' and not enhanced_targets:
-            return 'FSD50K.dev_audio', 'train.txt'
+            return 'train', 'train.txt'
         elif split == 'validation' and enhanced_targets:
-            return 'FSD50K.dev_audio', 'validation_enhanced.txt'
+            return 'balanced_train', 'validation_enhanced.txt'
         elif split == 'validation' and not enhanced_targets:
-            return 'FSD50K.dev_audio', 'validation.txt'
+            return 'balanced_train', 'validation.txt'
         elif split == 'testing':
-            return 'FSD50K.eval_audio', 'test.txt'
+            return 'eval', 'test.txt'
         else:
             raise ValueError('Invalid split')
