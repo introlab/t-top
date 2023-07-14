@@ -66,21 +66,55 @@
 
 ![WiFi Card](images/assemblies/01/xavier-wifi-card.jpg)
 
-### E. Install JetPack 5.1.1
+## Onboard Computer - Jetson AGX Orin
 
-1. Install JetPack 5.1.1 onto the computer SSD.
-TODO add procedure (links to NVidia doc)?
+### A. Install the SSD
 
-### F. Connect the screen
+#### Required Parts
 
-TODO connect the screen (add image and material)
+| Part                                  | Quantity | Image                                                                                        |
+| ------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `Nvidia Jetson AGX Orin`              | 1        | ![Nvidia Jetson AGX Orin](images/electronics/jetson-agx-orin.jpg)                            |
+| `SSD`                                 | 1        | ![SSD](images/electronics/SSD.jpg)                                                           |
 
+#### Steps
 
-### G. Rotate the display
-TODO rotate the display (add image)
+1. Install the SSD, as shown in the following picture.
 
+![Nvidia Jetson AGX Orin SSD](images/assemblies/01/orin-ssd.jpg)
 
-### G. Run the setup script
+## Onboard Computer - Common Software Setup
+
+### A. Install JetPack 5.1.1
+
+1. Install JetPack 5.1.1 onto the computer SSD using the [instructions from Nvidia](https://developer.nvidia.com/embedded/jetpack)
+
+### B. Connect the screen
+
+#### Required Parts
+
+| Part                                         | Quantity | Image                                                                      |
+| -------------------------------------------- | -------- | -------------------------------------------------------------------------- |
+| `HDMI Cable`                                 | 1        | ![HDMI Cable](images/electronics/HDMI-cable.jpg)                           |
+| `Touchscreen`                                | 1        | ![Touchscreen](images/electronics/screen.jpg)                              |
+
+#### Steps
+
+1. Connect the screen to the Jetson using the HDMI cable.
+2. Turn on the `touchscreen` as shown in the following picture.
+
+![Touchscreen Switch](images/assemblies/10/screen-switch.jpg)
+
+### C. Rotate the display
+1. Open "Settings"
+2. Navigate to the "Display" tab
+3. Set the orientation to 'Portrait Left" a shown below
+
+![Settings Screen Orientation](images/assemblies/01/settings-screen-orientation.png)
+
+4. Select "Keep changes" when prompted
+
+### D. Run the setup script
 
 1. Execute the following bash command on the robot.
 
@@ -89,9 +123,8 @@ wget -q -O - https://raw.githubusercontent.com/introlab/t-top/main/tools/setup_s
 ```
 
 #### Alternate way: manual setup
-TODO update manual setup based on script
 
-### F. Update the robot
+### D. Update the robot
 Execute the following bash commands on the robot.
 
 ```bash
@@ -100,7 +133,7 @@ sudo apt upgrade -y
 sudo apt autoremove -y
 ```
 
-### G. Clone the repository
+### E. Clone the repository
 Execute the following bash commands on the robot to clone the T-Top repository.
 
 ```bash
@@ -110,7 +143,7 @@ cd ~/t-top_ws/src
 git clone --recurse-submodules https://github.com/introlab/t-top.git
 ```
 
-### H. Configure the Jetson power mode
+### F. Configure the Jetson power mode
 For the Jetson AGX Xavier, execute the following bash command on the robot.
 
 ```bash
@@ -127,7 +160,7 @@ sudo nvpmodel -m 1 &> /dev/null
 sudo nvpmodel -m 0
 ```
 
-### I. System configuration
+### G. System configuration
 1. Disable the sudo password requirement for `shutdown` and `nvpmodel` by executing the following bash command on the robot.
 
 ```bash
@@ -173,7 +206,7 @@ Section "InputClass"
 EndSection
 ```
 
-### J. Install NPM
+### H. Install NPM
 1. Execute the following bash commands.
 
 ```bash
@@ -182,7 +215,7 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install -y nodejs
 ```
 
-### K. Install Tools
+### I. Install Tools
 1. Execute the following bash commands.
 
 ```bash
@@ -196,7 +229,7 @@ sudo apt update
 sudo apt install -y cmake
 ```
 
-### L. Install Librealsense 2
+### J. Install Librealsense 2
 1. Execute the following bash commands.
 
 ```bash
@@ -223,7 +256,7 @@ sudo apt autoremove -y libapriltag-dev
 sudo apt install -y libapriltag-dev
 ```
 
-### J. Install ROS
+### K. Install ROS
 1. Execute the following bash commands.
 
 ```bash
@@ -370,7 +403,7 @@ echo "source ~/ros_catkin_ws/install_isolated/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### K. Install System Dependencies
+### L. Install System Dependencies
 
 1. Execute the following bash commands.
 
@@ -408,7 +441,7 @@ sudo apt install -y \
     gstreamer1.0-tools
 ```
 
-### L. Install Python Dependencies
+### M. Install Python Dependencies
 
 1. Execute the following bash commands.
 
@@ -455,7 +488,7 @@ cd torch2trt
 sudo -H python3 setup.py install --plugins
 ```
 
-### M. Install the T-Top hardware daemon and system tray
+### N. Install the T-Top hardware daemon and system tray
 1. Build and install the daemon:
 ```bash
 cd ~/t-top_ws/src/t-top/system/daemon
@@ -480,7 +513,7 @@ sudo systemctl enable ttop_hardware_daemon.service
 sudo systemctl start ttop_hardware_daemon.service
 ```
 
-### N. Build the Repository
+### O. Build the Repository
 
 1. Execute the following bash commands.
 

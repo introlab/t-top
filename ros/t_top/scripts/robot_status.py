@@ -17,7 +17,7 @@ def clamp(value: float, min_value: float, max_value: float) -> float:
     return max(min(value, max_value), min_value)
 
 
-class BaseStatus:
+class BaseStatusData:
     def __init__(self,
                  percentage: Optional[float] = None,
                  voltage: Optional[float] = None,
@@ -61,7 +61,7 @@ class RobotStatusPublisher():
         self.bytes_sent = 0
         self.bytes_recv = 0
 
-        self.base_status = BaseStatus()
+        self.base_status = BaseStatusData()
         self.base_status_lock = Lock()
         self.base_status_sub = rospy.Subscriber(
             "daemon/base_status",
@@ -93,7 +93,7 @@ class RobotStatusPublisher():
 
     def _base_status_cb(self, msg):
         with self.base_status_lock:
-            self.base_status = BaseStatus(
+            self.base_status = BaseStatusData(
                 msg.state_of_charge,
                 msg.voltage,
                 msg.current,
