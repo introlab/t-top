@@ -59,3 +59,27 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 - `pose/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.
+
+
+### `led_dance_node.py`
+
+This node makes T-Top torso dance on the beat. The moves are randomly chosen.
+
+#### Parameters
+
+- `led_colors_file` (string): The JSON file path containing the LED patterns.
+
+#### Subscribed Topics
+
+- `beat` ([std_msgs/Bool](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Bool.html)): The beat topic from the
+  beat_detector_node.
+
+#### Published Topics
+
+- `daemon/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)):
+  The LED colors.
+
+#### Services
+
+- `set_led_colors/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+  state service to enable or disable the behavior.
