@@ -8,202 +8,181 @@
 | ------------------------------------------------ | -------- | ---------------------------------------------------------------|
 | `Dynamixel XL430-W250-T (ID 1, 2 3, 4, 5 and 6)` | 6        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T.jpg) |
 | `OpenCR`                                         | 1        | ![OpenCR](images/electronics/OpenCR.jpg)                       |
-| `Dynamixel Cable`                                | 1        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)   |
+| `Dynamixel Cable`                                | 1        | ![Dynamixel Cable](images/electronics/dynamixel-cable.jpg)     |
 | `Micro USB Cable`                                | 1        |                                                                |
 | `12V Power Supply`                               | 1        |                                                                |
 | `Computer`                                       | 1        |                                                                |
 
 ### Steps
 
-1. Open the Arduino IDE.
-2. Connect the `12V power supply` to the OpenCR.
-3. Connect the `OpenCR` to the computer with the `micro USB cable`.
-4. Make sure the `OpenCR` switch is OFF.
-5. Connect the `OpenCR` and a `Dynamixel XL430-W250-T` with the `Dynamixel cable`.
+1. Open the [project](../../firmwares/dynamixel_centering/) in PlatformIO.
+2. Connect the `Dynamixel control PCB` to the computer with the `micro USB cable`.
+3. Connect the `Dynamixel control PCB` and a `Dynamixel XL430-W250-T` with the `Dynamixel cable`.
+4. Connect the `12V power supply` to the `Dynamixel control PCB`.
+5. Change the value of `MOTOR_ID` according to the current `Dynamixel XL430-W250-T.
+6. Program the `Dynamixel control PCB`.
+7. Open the serial monitor.
+8. Wait until the `Dynamixel XL430-W250-T` is centered.
+9. Repeat steps 3 to 8 for each `Dynamixel XL430-W250-T`.
 
-![OpenCR, Dynamixel XL430-W250-T, Dynamixel cable](images/assemblies/02%20dynamixel.jpg)
-
-6. Turn ON the `OpenCR` switch.
-7. Use the `h_Position` example (`OpenCR/08. DynamixelWorkbench/h_Position`) to change the baud rate to 1000000.
-    1. Change the value of `DXL_ID` according to the selected `Dynamixel XL430-W250-T`.
-    2. Change the value of `BAUDRATE` to 1000000.
-    3. Comment the line `dxl_wb.goalPosition(dxl_id, (int32_t)1023);`.
-8. Program the OpenCR.
-10. Wait until the `Dynamixel XL430-W250-T` is centered.
-11. Turn OFF the `OpenCR` switch.
-12. Disconnect the `Dynamixel XL430-W250-T`.
-13. Identify the ID on the `Dynamixel XL430-W250-T`.
-14. Repeat steps 4 to 13 for each `Dynamixel XL430-W250-T`.
-
-## B. Odd-Id Dynamixel Pre-Assembly
+## B. Dynamixel Pre-Assembly
 
 ### Required Parts
 
-| Part                                     | Quantity | Image                                                                             |
-| ---------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| `Dynamixel XL430-W250-T (ID 1, 3 and 5)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID1.jpg)              |
-| `Dynamixel XL430-W250-T Screw`           | 1        | ![Dynamixel XL430-W250-T Screw](images/hardware/Dynamixel%20screw.jpg)            |
-| `Stewart Horn (Right)`                   | 3        | ![Stewart Horn (Right)](images/3d%20printed%20parts/stewart%20horn%20(right).jpg) |
-| `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                     |
+| Part                                           | Quantity | Image                                                                             |
+| ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `Dynamixel XL430-W250-T (ID 1, 2, 3, 4 and 5)` | 6        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T-id1.jpg)                |
+| `Stewart Horn Left M2.5`                       | 2        | ![Stewart Horn Left M2.5](images/3d-printed-parts/stewart-horn-left-M2.5.jpg)     |
+| `Stewart Horn Left M3`                         | 2        | ![Stewart Horn Left M3](images/3d-printed-parts/stewart-horn-left-M3.jpg)         |
+| `Stewart Horn Right M2.5`                      | 2        | ![Stewart Horn Right M2.5](images/3d-printed-parts/stewart-horn-right-M2.5.jpg)   |
+| `Stewart Horn Right M3`                        | 2        | ![Stewart Horn Right M3](images/3d-printed-parts/stewart-horn-right-M3.jpg)       |
+| `M2x12mm Socket Screw`                         | 24       | ![M2x12mm Socket Screw](images/hardware/M2x12mm-socket.jpg)                       |
 
 ### Steps
 
-1. Install the `stewart horn (right)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in
+1. Install a `stewart horn left M2.5` onto each `Dynamixel XL430-W250-T with the ID 2 and 6` with the `M2x12mm socket screws`, as shown in
    the following picture.
 
-![Dynamixel Right](images/assemblies/09B%20dynamixel%20right.jpg)
+![Stewart Horn Left M2.5](images/assemblies/09/stewart-horn-left-M2.5.jpg)
 
-2. Repeat step 1 for each `Dynamixel XL430-W250-T`.
+2. Install the `stewart horn left M3` onto the `Dynamixel XL430-W250-T with the ID 4` with the `M2x12mm socket screws`, as shown in
+   the following picture.
 
-![Dynamixel ID 1, 3 and 5](images/assemblies/09B%20dynamixel%201%203%205.jpg)
+![Stewart Horn Left M3](images/assemblies/09/stewart-horn-left-M3.jpg)
 
-## C. Even-Id Dynamixel Pre-Assembly
+3. Install a `stewart horn right M2.5` onto each `Dynamixel XL430-W250-T with the ID 1 and 5` with the `M2x12mm socket screws`, as shown in
+   the following picture.
 
-### Required Parts
+![Stewart Horn Right M2.5](images/assemblies/09/stewart-horn-right-M2.5.jpg)
 
-| Part                                     | Quantity | Image                                                                             |
-| ---------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| `Dynamixel XL430-W250-T (ID 2, 4 and 6)` | 3        | ![Dynamixel XL430-W250-T](images/electronics/XL430-W250-T%20ID2.jpg)              |
-| `Dynamixel XL430-W250-T Screw`           | 1        | ![Dynamixel XL430-W250-T Screw](images/hardware/Dynamixel%20screw.jpg)            |
-| `Stewart Horn (Left)`                    | 3        | ![Stewart Horn (Right)](images/3d%20printed%20parts/stewart%20horn%20(left).jpg)  |
-| `M2x12mm Socket Screw`                   | 12       | ![M2x12mm Socket Screw](images/hardware/M2x12mm%20socket.jpg)                     |
+4. Install the `stewart horn right M3` onto the `Dynamixel XL430-W250-T with the ID 3` with the `M2x12mm socket screws`, as shown in
+   the following picture.
 
-### Steps
+![Stewart Horn Right M3](images/assemblies/09/stewart-horn-right-M3.jpg)
 
-1. Install the `stewart horn (left)` onto the `Dynamixel XL430-W250-T` with the `M2x12mm socket screws`, as shown in the
-   following picture.
-
-![Dynamixel Left](images/assemblies/09C%20dynamixel%20left.jpg)
-
-2. Repeat step 1 for each `Dynamixel XL430-W250-T`.
-
-![Dynamixel ID 2, 4 and 6](images/assemblies/09C%20dynamixel%202%204%206.jpg)
-
-## D. Stewart Platform Rod Pre-Assembly
+## C. Stewart Platform Rod Pre-Assembly
 
 ### Required Parts
 
 | Part                           | Quantity | Image                                                              |
 | ------------------------------ | -------- | ------------------------------------------------------------------ |
-| `Ball Joint - M3xL26mm Silver` | 12       | ![Ball joint - M3xL26mm Silver](images/hardware/ball%20joint.jpg)  |
-| `Threaded Rod - M3x170mm`      | 6        | ![Threaded Rod - M3x170mm](images/hardware/stewart%20rod.jpg)      |
+| `Ball Joint - M3xL20mm Silver` | 12       | ![Ball joint - M3xL26mm Silver](images/hardware/ball-joint.jpg)    |
+| `Threaded Rod - M3x170mm`      | 6        | ![Threaded Rod - M3x180mm](images/hardware/stewart-rod.jpg)        |
 
 ### Steps
 
-1. Apply threadlocker the ends of a `threaded rod`.
+1. Apply threadlocker to the ends of a `threaded rod`.
 2. Screw a ball joint to each ends of the `threaded rod` until the distance between the centers of the ball joint holes
-   is 181 mm.
+   is 191 mm.
 3. Repeat steps 1 to 2 for each `threaded rod`.
 
-![Threaded Rod](images/assemblies/09D%20stewart%20rod.jpg)
+![Threaded Rod](images/assemblies/09/stewart-rod.jpg)
 
-## E. OpenCR Pre-Assembly
-
-### Required Parts
-
-| Part                 | Quantity | Image                                                                     |
-| -------------------- | -------- | ------------------------------------------------------------------------- |
-| `OpenCR`             | 1        | ![OpenCR](images/electronics/OpenCR.jpg)                                  |
-| `Grove Base Shield`  | 1        | ![Grove Base Shield](images/electronics/Grove%20base%20shield.jpg)        |
-| `OpenCR support 1`   | 1        | ![OpenCR support 1](images/3d%20printed%20parts/OpenCR%20support%201.jpg) |
-| `OpenCR support 2`   | 1        | ![OpenCR support 2](images/3d%20printed%20parts/OpenCR%20support%202.jpg) |
-| `M3x8 Plastic Screw` | 4        | ![M3x8 Plastic Screw](images/hardware/M3x8mm%20plastic.jpg)              |
-
-### Steps
-
-1. Install the `Grove Base Shield` onto the `OpenCR`.
-
-![OpenCR + Grove Base Shield](images/assemblies/09E%20OpenCR.jpg)
-
-2. Install the `ÒpenCR` onto the `OpenCR supports` with `M3x8 plastic screws`, as shown in the following picture.
-
-![OpenCR Supports](images/assemblies/09E%20OpenCR%20supports.jpg)
-
-## F. Stewart Platform
+## D. Stewart Platform
 
 ### Required Parts
 
 | Part                                                       | Quantity | Image                                                                                      |
 | ---------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------ |
-| `Stewart Bottom`                                           | 1        | ![Stewart Bottom](images/3d%20printed%20parts/stewart%20bottom.jpg)                        |
-| `Stewart Top`                                              | 1        | ![Stewart Top](images/3d%20printed%20parts/stewart%20top.jpg)                              |
-| `USB Hub Support`                                          | 4        | ![USB Hub Support](images/3d%20printed%20parts/USB%20hub%20support.jpg)                    |
-| `Assembled Dynamixel XL430-W250-T (ID 1, 2 3, 4, 5 and 6)` | 6        | ![Dynamixel XL430-W250-T](images/assemblies/09B%20dynamixel%201%203%205.jpg) ![Dynamixel ID 2, 4 and 6](images/assemblies/09C%20dynamixel%202%204%206.jpg) |
-| `Dynamixel Cable`                                          | 6        | ![Dynamixel Cable](images/electronics/dynamixel%20cable.jpg)                               |
-| `Dynamixel XL430-W250-T Cable Cover`                       | 6        | ![Dynamixel XL430-W250-T Cable Cover](images/electronics/XL430-W250-T%20cable%20cover.jpg) |
-| `Assembled OpenCR`                                         | 1        | ![OpenCR](images/assemblies/09E%20OpenCR%20supports.jpg)                                   |
-| `Assembled Stewart Platform Rod`                           | 6        | ![Threaded Rod](images/assemblies/09D%20stewart%20rod.jpg)                                 |
-| `USB Hub`                                                  | 2        | ![USB Hub](images/electronics/USB%20hub.jpg)                                               |
-| `Micro-USB Cable Included with the Touchscreen`            | 1        | ![Micro-USB Cable](images/electronics/Micro-USB%20cable%20screen.jpg)                      |
-| `M2.5x8 Plastic Screw`                                     | 36       | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm%20plastic.jpg)                            |
-| `M3x12 Plastic Screw`                                      | 24       | ![M3x12 Plastic Screw](images/hardware/M3x12mm%20plastic.jpg)                              |
+| `Stewart Bottom 1`                                         | 1        | ![Stewart Bottom 1](images/3d-printed-parts/stewart-bottom-1.jpg)                          |
+| `Stewart Bottom 2`                                         | 1        | ![Stewart Bottom 2](images/3d-printed-parts/stewart-bottom-2.jpg)                          |
+| `Stewart Bottom 3`                                         | 1        | ![Stewart Bottom 3](images/3d-printed-parts/stewart-bottom-3.jpg)                          |
+| `Stewart Top`                                              | 1        | ![Stewart Top](images/3d-printed-parts/stewart-top.jpg)                                    |
+| `USB Hub Stand`                                            | 4        | ![USB Hub Support](images/3d-printed-parts/USB-hub-stand.jpg)                              |
+| `Assembled Dynamixel XL430-W250-T (ID 1, 2 3, 4, 5 and 6)` | 6        | ![Stewart Horn Left M2.5](images/assemblies/09/stewart-horn-left-M2.5.jpg) ![Stewart Horn Left M3](images/assemblies/09/stewart-horn-left-M3.jpg) ![Stewart Horn Right M2.5](images/assemblies/09/stewart-horn-right-M2.5.jpg) ![Stewart Horn Right M3](images/assemblies/09/stewart-horn-right-M3.jpg) |
+| `Dynamixel Cable`                                          | 7        | ![Dynamixel Cable](images/electronics/dynamixel-cable.jpg)                                 |
+| `Dynamixel XL430-W250-T Cable Cover`                       | 6        | ![Dynamixel XL430-W250-T Cable Cover](images/electronics/XL430-W250-T-cable-cover.jpg)     |
+| `Dynamixel Control PCB`                                    | 1        | ![Dynamixel Control PCB](images/assemblies/02/dynamixel-control-7.jpg)                     |
+| `Assembled Stewart Platform Rod`                           | 6        | ![Threaded Rod](images/assemblies/09/stewart-rod.jpg)                                      |
+| `USB Hub`                                                  | 2        | ![USB Hub](images/electronics/usb-hub.jpg)                                                 |
+| `M3x6 Plastic Screw`                                       | 6        | ![M3x6 Plastic Screw](images/hardware/M3x6mm-plastic.jpg)                                  |
+| `M2.5x8 Plastic Screw`                                     | 46       | ![M2.5x8 Plastic Screw](images/hardware/M2.5x8mm-plastic.jpg)                              |
+| `M2.5x12 Plastic Screw`                                    | 4        | ![M2.5x12 Plastic Screw](images/hardware/M2.5x12mm-plastic.jpg)                            |
+| `M3x8 Plastic Screw`                                       | 4        | ![M3x8 Plastic Screw](images/hardware/M3x8mm-plastic.jpg)                                  |
+| `M3x12 Plastic Screw`                                      | 14       | ![M3x12 Plastic Screw](images/hardware/M3x12mm-plastic.jpg)                                |
+| `Big Spring`                                               | 2        | ![Big Spring](images/hardware/big-spring.jpg)                                              |
+| `Small Spring`                                             | 4        | ![Small Spring](images/hardware/small-spring.jpg)                                          |
 
 ### Steps
 
-1. Place the `Assembled Dynamixel XL430-W250-T with the ID 1` under the `Stewart bottom`, according to the following
+1. Install the `Stewart bottom` parts together with the `M3x6 plastic screws`, as shown in the first following picture. Sand the part if needed.
+
+![Stewart Bottom](images/assemblies/09/stewart-bottom.jpg)
+
+2. Place the `Assembled Dynamixel XL430-W250-T with the ID 1` under the `Stewart bottom`, according to the following
    picture.
 
-![Dynamixel IDS](images/assemblies/09F%20ids.jpg)
+![Dynamixel IDS](images/assemblies/09/ids.jpg)
 
-2. Install the `Assembled Dynamixel XL430-W250-T with the ID 1` with `M2.5x8 plastic screws`.
+3. Install the `Assembled Dynamixel XL430-W250-T with the ID 1` with `M2.5x8 plastic screws`.
 
-![Dynamixel Screws](images/assemblies/09F%20dynamixel%20screws%201.jpg)
-![Dynamixel Screws](images/assemblies/09F%20dynamixel%20screws%202.jpg)
-![Dynamixel Screws](images/assemblies/09F%20dynamixel%20screws%203.jpg)
+![Dynamixel Screws](images/assemblies/09/dynamixel-screws-1.jpg)
+![Dynamixel Screws](images/assemblies/09/dynamixel-screws-2.jpg)
+![Dynamixel Screws](images/assemblies/09/dynamixel-screws-3.jpg)
 
-3. Repeat steps 1 to 2 for the other `Assembled Dynamixel XL430-W250-T`.
+4. Repeat steps 2 to 3 for the other `Assembled Dynamixel XL430-W250-T`.
 
-![All Dynamixel](images/assemblies/09F%20all%20dynamixel.jpg)
+5. Install a `M3x8 plastic screw` into the horn of the `Assembled Dynamixel XL430-W250-T with the ID 3`, as as shown in the following picture.
 
-4. Connect the `Dynamixel with the ID 1` and the `Dynamixel with the ID 2` together with a `Dynamixel cable`.
+![Spring Screw](images/assemblies/09/big-spring-M3x8.jpg)
 
-![Dynamixel Cable](images/assemblies/09F%20dynamixel%20cable.jpg)
+6. Install a  `M3x12 plastic screw` into the Stewart Bottom near the `Assembled Dynamixel XL430-W250-T with the ID 3`, as as shown in the following picture.
 
-5. Connect the `Dynamixel with the ID 3` and the `Dynamixel with the ID 4` together with a `Dynamixel cable`.
-6. Connect the `Dynamixel with the ID 5` and the `Dynamixel with the ID 6` together with a `Dynamixel cable`.
-7. Connect the `Dynamixel with the ID 2` and the `Dynamixel with the ID 3` together with a `Dynamixel cable`.
-8. Connect a `Dynamixel cable` into the `Dynamixel with the ID 1`.
-9. Connect a `Dynamixel cable` into the `Dynamixel with the ID 6`.
-10. Install the `Dynamixel XL430-W250-T cable covers` onto all `Dynamixel`.
-11. Install tie wraps to hold the cables, as shown in the following picture.
+![Spring Screw](images/assemblies/09/big-spring-M3x12.jpg)
 
-![Dynamixel Tie Wrap](images/assemblies/09F%20cable%20tie%20wrap.jpg)
+7. Install a `big spring` as as shown in the following picture.
 
-12. Install the `USB hub supports` with `M3x12 plastic screws`, as shown in the following picture.
+![Spring Screw](images/assemblies/09/big-spring.jpg)
 
-![USB Hub Supports](images/assemblies/09F%20USB%20hub%20supports.jpg)
+8. Repeat steps 5 to 7 for the`Assembled Dynamixel XL430-W250-T with the ID 4`.
 
-13. Connect the `Dynamixel cable` of the `Dynamixel with the ID 1` to the OpenCR.
-14. Connect the `Dynamixel cable` of the `Dynamixel with the ID 6` to the OpenCR.
+9. Install a `M2.5x8 plastic screw` and a `small spring` into the horn of the `Assembled Dynamixel XL430-W250-T with the ID 5`, as as shown in the following picture.
 
-![OpenCR Cables](images/assemblies/09F%20OpenCR%20cables.jpg)
+![Spring Screw](images/assemblies/09/small-spring-M2.5x8.jpg)
 
-15. Install the `OpenCR` with `M3x12 plastic screws`, as shown in the following pictures.
+10. Install a `M3x12 plastic screw` and the `small spring` into the Stewart Bottom near the `Assembled Dynamixel XL430-W250-T with the ID 5`, as as shown in the following picture.
 
-![OpenCR Scews](images/assemblies/09F%20OpenCR%20screws%201.jpg)
-![OpenCR Scews](images/assemblies/09F%20OpenCR%20screws%202.jpg)
+![Spring Screw](images/assemblies/09/small-spring-M2.5x12.jpg)
 
-16. Install the `USB hubs` with tie wraps, as shown in the following picture.
+11. Repeat steps 9 to 10 for the`Assembled Dynamixel XL430-W250-T with the ID 1, 2 and 6`.
 
-![USB Hubs](images/assemblies/09F%20USB%20hubs.jpg)
+12. Connect the `Dynamixel with the ID 3` and the `Dynamixel with the ID 4` together with a `Dynamixel cable`.
+13. Connect the `Dynamixel with the ID 4` and the `Dynamixel with the ID 5` together with a `Dynamixel cable`.
+14. Connect the `Dynamixel with the ID 2` and the `Dynamixel with the ID 1` together with a `Dynamixel cable`.
+15. Connect the `Dynamixel with the ID 1` and the `Dynamixel with the ID 6` together with a `Dynamixel cable`.
+16. Connect a `Dynamixel cable` into the `Dynamixel with the ID 5`.
+17. Connect a `Dynamixel cable` into the `Dynamixel with the ID 6`.
+18. Connect a `Dynamixel cable` into the `Dynamixel with the ID 4`.
+19. Install the `Dynamixel XL430-W250-T cable covers` onto all `Dynamixel`.
+20. Install the `USB hub stands` with `M3x12 plastic screws`, as shown in the following picture.
 
-17. Install an `assembled Stewart platform rod` onto each `Stewart horn` with a `M3x12 plastic screw`, as shown in the
+![USB Hub Stands](images/assemblies/09/USB-hub-stands.jpg)
+
+21. Connect the `Dynamixel cable` of the `Dynamixel with the ID 5` to the `Dynamixel Control PCB`.
+22. Connect the `Dynamixel cable` of the `Dynamixel with the ID 6` to the `Dynamixel Control PCB`.
+23. Install the `Dynamixel Control PCB` with `M3x8 plastic screws`, as shown in the following picture.
+
+![Dynamixel Control PCB Scews](images/assemblies/09/dynamixel-control-PCB.jpg)
+
+24. Install tie wraps to hold the cables, as shown in the following picture.
+
+![Dynamixel Tie Wrap](images/assemblies/09/cable-tie.jpg)
+
+25. Install an `assembled Stewart platform rod` onto each `Stewart horn` with a `M3x12 plastic screw`, as shown in the
     following picture.
 
-![Bottom Rod](images/assemblies/09F%20bottom%20rod.jpg)
+![Bottom Rod](images/assemblies/09/bottom-rod.jpg)
 
-18. Align the top `ball joints` with the nearest red line, as shown in the following picture.
+26. Align the top `ball joints` with the nearest red line, as shown in the following picture.
 
-![Ball Joint](images/assemblies/09F%20ball%20joint.jpg)
+![Ball Joint](images/assemblies/09/ball-joint-alignment.jpg)
 
-19. Install the `Stewart top` onto the top `ball joints` with `M3x12 plastic screws`, as shown in the following
+27. Install the `Stewart top` onto the top `ball joints` with `M3x12 plastic screws`, as shown in the following
     pictures.
 
-![Stewart Top](images/assemblies/09F%20stewart%20top%201.jpg)
-![Stewart Top](images/assemblies/09F%20stewart%20top%202.jpg)
+![Stewart Top](images/assemblies/09/stewart-top-1.jpg)
+![Stewart Top](images/assemblies/09/stewart-top-2.jpg)
 
-20. Connect the `OpenCR` to a `USB hub` with the `micro-USB cable`, as shown in the following picture.
+28. Install the `USB hubs` with tie wraps, as shown in the following picture.
 
-![OpentCR Cable](images/assemblies/09F%20USB%20cable.jpg)
-
-21. Connect the `Dynamixel cables` to the `OpenCR`.
+![USB Hubs](images/assemblies/09/USB-hubs.jpg)

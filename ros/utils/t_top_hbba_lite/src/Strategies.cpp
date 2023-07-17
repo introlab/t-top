@@ -22,17 +22,13 @@ StrategyType FaceAnimationStrategy::strategyType()
     return StrategyType::get<FaceAnimationStrategy>();
 }
 
-void FaceAnimationStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void FaceAnimationStrategy::onEnabling(const FaceAnimationDesire& desire)
 {
     Strategy<FaceAnimationDesire>::onEnabling(desire);
 
-    auto faceAnimationDesire = dynamic_cast<FaceAnimationDesire*>(desire.get());
-    if (faceAnimationDesire != nullptr)
-    {
-        std_msgs::String msg;
-        msg.data = faceAnimationDesire->name();
-        m_animationPublisher.publish(msg);
-    }
+    std_msgs::String msg;
+    msg.data = desire.name();
+    m_animationPublisher.publish(msg);
 }
 
 void FaceAnimationStrategy::onDisabling()
@@ -42,6 +38,26 @@ void FaceAnimationStrategy::onDisabling()
     m_animationPublisher.publish(msg);
 
     Strategy<FaceAnimationDesire>::onDisabling();
+}
+
+LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+    : Strategy<LedEmotionDesire>(
+          utility,
+          {{"led", 1}},
+          {{"led_emotions/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_nodeHandle(nodeHandle)
+{
+    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1);
+}
+
+void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
+{
+    Strategy<LedEmotionDesire>::onEnabling(desire);
+
+    std_msgs::String msg;
+    msg.data = desire.name();
+    m_emotionPublisher.publish(msg);
 }
 
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
@@ -59,22 +75,13 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
 }
 
-void SpecificFaceFollowingStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void SpecificFaceFollowingStrategy::onEnabling(const SpecificFaceFollowingDesire& desire)
 {
     Strategy<SpecificFaceFollowingDesire>::onEnabling(desire);
 
-    auto specificFaceFollowingDesire = dynamic_cast<SpecificFaceFollowingDesire*>(desire.get());
-    if (specificFaceFollowingDesire != nullptr)
-    {
-        std_msgs::String msg;
-        msg.data = specificFaceFollowingDesire->targetName();
-        m_targetNamePublisher.publish(msg);
-    }
-}
-
-StrategyType SpecificFaceFollowingStrategy::strategyType()
-{
-    return StrategyType::get<SpecificFaceFollowingStrategy>();
+    std_msgs::String msg;
+    msg.data = desire.targetName();
+    m_targetNamePublisher.publish(msg);
 }
 
 TalkStrategy::TalkStrategy(
@@ -94,18 +101,14 @@ TalkStrategy::TalkStrategy(
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
 }
 
-void TalkStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void TalkStrategy::onEnabling(const TalkDesire& desire)
 {
     Strategy<TalkDesire>::onEnabling(desire);
 
-    auto talkDesire = dynamic_cast<TalkDesire*>(desire.get());
-    if (talkDesire != nullptr)
-    {
-        talk::Text msg;
-        msg.text = talkDesire->text();
-        msg.id = talkDesire->id();
-        m_talkPublisher.publish(msg);
-    }
+    talk::Text msg;
+    msg.text = desire.text();
+    msg.id = desire.id();
+    m_talkPublisher.publish(msg);
 }
 
 void TalkStrategy::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
@@ -139,18 +142,14 @@ GestureStrategy::GestureStrategy(
         nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
 }
 
-void GestureStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void GestureStrategy::onEnabling(const GestureDesire& desire)
 {
     Strategy<GestureDesire>::onEnabling(desire);
 
-    auto gestureDesire = dynamic_cast<GestureDesire*>(desire.get());
-    if (gestureDesire != nullptr)
-    {
-        gesture::GestureName msg;
-        msg.name = gestureDesire->name();
-        msg.id = gestureDesire->id();
-        m_gesturePublisher.publish(msg);
-    }
+    gesture::GestureName msg;
+    msg.name = desire.name();
+    msg.id = desire.id();
+    m_gesturePublisher.publish(msg);
 }
 
 void GestureStrategy::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
@@ -184,18 +183,14 @@ PlaySoundStrategy::PlaySoundStrategy(
         nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
 }
 
-void PlaySoundStrategy::onEnabling(const unique_ptr<Desire>& desire)
+void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)
 {
     Strategy<PlaySoundDesire>::onEnabling(desire);
 
-    auto playSoundDesire = dynamic_cast<PlaySoundDesire*>(desire.get());
-    if (playSoundDesire != nullptr)
-    {
-        sound_player::SoundFile msg;
-        msg.path = playSoundDesire->path();
-        msg.id = playSoundDesire->id();
-        m_pathPublisher.publish(msg);
-    }
+    sound_player::SoundFile msg;
+    msg.path = desire.path();
+    msg.id = desire.id();
+    m_pathPublisher.publish(msg);
 }
 
 void PlaySoundStrategy::soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg)
@@ -345,6 +340,12 @@ unique_ptr<BaseStrategy>
     return make_unique<FaceAnimationStrategy>(utility, move(filterPool), nodeHandle);
 }
 
+unique_ptr<BaseStrategy>
+    createLedEmotionStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+{
+    return make_unique<LedEmotionStrategy>(utility, move(filterPool), nodeHandle);
+}
+
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<SoundFollowingDesire>>(
@@ -406,11 +407,12 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
 {
     return make_unique<Strategy<DanceDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{{"motor", 1}, {"led", 1}},
         unordered_map<string, FilterConfiguration>{
             {"beat_detector/filter_state", FilterConfiguration::onOff()},
             {"head_dance/filter_state", FilterConfiguration::onOff()},
             {"torso_dance/filter_state", FilterConfiguration::onOff()},
+            {"led_dance/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));
 }

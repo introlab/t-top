@@ -1,9 +1,10 @@
 import os
 
 import torch
+import torchaudio.transforms as transforms
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
-from dnn_utils.audio_transforms import MelSpectrogram, GPU_SUPPORTED, normalize, standardize_every_frame
+from dnn_utils.audio_transforms import normalize, standardize_every_frame
 
 # TODO set DURATION = 63840, N_MELS = 96 N_FFT = 480
 DURATION = 64000
@@ -20,7 +21,9 @@ class MulticlassAudioDescriptorExtractor(DnnModel):
 
         super(MulticlassAudioDescriptorExtractor, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                        inference_type=inference_type)
-        self._transform = MelSpectrogram(SAMPLING_FREQUENCY, N_FFT, N_MELS)
+        self._transform = transforms.MelSpectrogram(sample_rate=SAMPLING_FREQUENCY,
+                                                    n_fft=N_FFT,
+                                                    n_mels=N_MELS).to(self._device)
 
     def get_supported_sampling_frequency(self):
         return SAMPLING_FREQUENCY
@@ -64,9 +67,7 @@ class MulticlassAudioDescriptorExtractor(DnnModel):
 
     def __call__(self, x):
         with torch.no_grad():
-            if GPU_SUPPORTED:
-                x = x.to(self._device)
-
+            x = x.to(self._device)
             x = normalize(x)
             spectrogram = self._transform(x).unsqueeze(0)
             # spectrogram = standardize_every_frame(spectrogram) TODO use standardize_every_frame

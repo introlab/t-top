@@ -24,4 +24,5 @@ perceptual nodes and widgets to show their result.
 | ![Speech](images/tab_speech.png)           | ![Speech](images/tab_speech.png)                               |
 | ![Gesture](images/tab_gesture.png)         | ![Gesture](images/tab_gesture.png)                             |
 | ![Behavior](images/tab_behaviors.png)      | ![Behavior](images/tab_behaviors_with_camera_2d_wide.png)      |
+| ![LEDs](images/tab_leds.png)               | ![LEDs](images/tab_leds.png)                                   |
 | ![Perceptions](images/tab_perceptions.png) | ![Perceptions](images/tab_perceptions_with_camera_2d_wide.png) |

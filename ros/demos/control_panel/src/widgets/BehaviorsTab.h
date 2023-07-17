@@ -46,12 +46,12 @@ private:
     // UI members
     QPushButton* m_nearestFaceFollowingButton;
     QPushButton* m_specificFaceFollowingButton;
+    QLineEdit* m_personNameLineEdit;
+
     QPushButton* m_soundFollowingButton;
     QPushButton* m_soundObjectPersonFollowingButton;
     QPushButton* m_danceButton;
     QPushButton* m_exploreButton;
-
-    QLineEdit* m_personNameLineEdit;
 };
 
 template<class D, class... DesireArgs>
@@ -63,6 +63,10 @@ void BehaviorsTab::onButtonToggled(bool checked, QPushButton* button, DesireArgs
 
         auto transaction = m_desireSet->beginTransaction();
         removeAllMovementDesires(*m_desireSet);
+        if (button == m_danceButton)
+        {
+            removeAllLedDesires(*m_desireSet);
+        }
 
         auto desire = std::make_unique<D>(desireArgs...);
         m_desireId = static_cast<qint64>(desire->id());

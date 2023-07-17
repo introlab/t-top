@@ -1,0 +1,8 @@
+@@ -42,6 +42,7 @@
+         MatchIsTouchscreen "on"
+         MatchDevicePath "/dev/input/event*"
+         Driver "libinput"
++        Option "CalibrationMatrix" "0 1 0 -1 0 1 0 0 1"
+ EndSection
+
+ Section "InputClass"

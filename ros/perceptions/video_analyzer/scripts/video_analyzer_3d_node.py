@@ -109,7 +109,8 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         y0 = int(y - self._depth_mean_offset)
         x1 = int(x + self._depth_mean_offset)
         y1 = int(y + self._depth_mean_offset)
-        depth = depth_image[y0:y1, x0:x1].mean()
+        depth_pixels = depth_image[y0:y1, x0:x1]
+        depth = depth_pixels[depth_pixels != 0].mean()
         K = depth_camera_info.K
 
         point = Point()

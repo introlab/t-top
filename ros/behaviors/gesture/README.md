@@ -14,14 +14,15 @@ This node makes T-Top perform gestures.
 
 #### Subscribed Topics
 
+- `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
 - `gesture/name` ([gesture/GestureName](msg/GestureName.msg)): The gesture to perform.
     - Supported values : `yes`, `no`, `maybe`, `origin_all`, `origin_head`, `origin_torso`
 
 #### Published Topics
 
-- `opencr/head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
   The head pose.
-- `opencr/torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `daemon/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
   torso orientation.
 - `gesture/done` ([gesture/Done](msg/Done.msg)): Indicates that the gesture is finished.
 

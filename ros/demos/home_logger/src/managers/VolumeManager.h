@@ -2,15 +2,18 @@
 #define HOME_LOGGER_MANAGERS_VOLUME_MANAGER_H
 
 #include <ros/ros.h>
-#include <std_msgs/Int8.h>
+#include <std_msgs/UInt8.h>
+#include <daemon_ros_client/BaseStatus.h>
 
 #include <hbba_lite/utils/ClassMacros.h>
 
 class VolumeManager
 {
     float m_currentVolumePercent;
+    float m_maximumVolumePercent;
 
     ros::Publisher m_volumePublisher;
+    ros::Subscriber m_baseStatusSubscriber;
 
 public:
     VolumeManager(ros::NodeHandle& nodeHandle);
@@ -23,7 +26,11 @@ public:
     float getVolume() const;
 
 private:
-    std_msgs::Int8 volumeToMsg(float volumePercent);
+    void baseStatusSubscriberCallback(const daemon_ros_client::BaseStatus::ConstPtr& msg);
+
+    std_msgs::UInt8 volumeToMsg(float volumePercent);
+    float volumeIntToPercent(uint8_t v);
+    uint8_t volumePercentToInt(float v);
 };
 
 #endif

@@ -1,27 +1,44 @@
 #include "actuators/AudioPowerAmplifier.h"
 #include "config.h"
 
-constexpr int AUDIO_POWER_AMPLIFIER_MAX_VOLUME = 63;
-
-AudioPowerAmplifier::AudioPowerAmplifier(TwoWire& wire) : m_wire(wire) {}
-
-AudioPowerAmplifier::~AudioPowerAmplifier() {}
+AudioPowerAmplifier::AudioPowerAmplifier(TwoWire& wire, const uint8_t* addresses, const size_t size)
+    : m_wire(wire),
+      m_addresses(addresses),
+      m_size(size),
+      m_maximumVolume(AUDIO_POWER_AMPLIFIER_MAXIMUM_VOLUME),
+      m_volume(AUDIO_POWER_AMPLIFIER_DEFAULT_VOLUME)
+{
+}
 
 void AudioPowerAmplifier::begin()
 {
-    setVolume(24);
+    setVolume(m_volume);
+}
+
+void AudioPowerAmplifier::setMaximumVolume(uint8_t maximumVolume)
+{
+    m_maximumVolume = maximumVolume;
+    if (m_maximumVolume > AUDIO_POWER_AMPLIFIER_MAXIMUM_VOLUME)
+    {
+        m_maximumVolume = AUDIO_POWER_AMPLIFIER_MAXIMUM_VOLUME;
+    }
+    if (m_volume > m_maximumVolume)
+    {
+        setVolume(m_maximumVolume);
+    }
 }
 
 void AudioPowerAmplifier::setVolume(uint8_t volume)
 {
-    if (volume > AUDIO_POWER_AMPLIFIER_MAX_VOLUME)
+    m_volume = volume;
+    if (m_volume > m_maximumVolume)
     {
-        volume = AUDIO_POWER_AMPLIFIER_MAX_VOLUME;
+        m_volume = m_maximumVolume;
     }
 
-    for (int i = 0; i < AUDIO_POWER_AMPLIFIER_COUNT; i++)
+    for (size_t i = 0; i < m_size; i++)
     {
-        writeVolume(AUDIO_POWER_AMPLIFIER_I2C_ADDRESSES[i], volume);
+        writeVolume(m_addresses[i], m_volume);
     }
 }
 

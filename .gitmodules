@@ -16,3 +16,6 @@
 [submodule "ros/utils/hbba_lite"]
 	path = ros/utils/hbba_lite
 	url = https://github.com/introlab/hbba_lite.git
+[submodule "system/optional"]
+	path = system/optional
+	url = https://github.com/TartanLlama/optional.git

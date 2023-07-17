@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="daemon_ros_client" type="daemon_ros_client_node" name="daemon_ros_client" output="screen">
+        <param name="base_link_torso_base_delta_z" value="0"/>
+    </node>
+</launch>

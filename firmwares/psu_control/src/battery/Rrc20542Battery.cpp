@@ -11,8 +11,8 @@ bool Rrc20542Battery::readTemperature(float& temperature, size_t trialCount)
     }
 
     temperature = value;
-    temperature /= 10;
-    temperature -= 273.15;
+    temperature /= 10.f;
+    temperature -= 273.15f;
     return true;
 }
 
@@ -25,7 +25,7 @@ bool Rrc20542Battery::readVoltage(float& voltage, size_t trialCount)
     }
 
     voltage = value;
-    voltage /= 1000;
+    voltage /= 1000.f;
     return true;
 }
 
@@ -38,7 +38,7 @@ bool Rrc20542Battery::readCurrent(float& current, size_t trialCount)
     }
 
     current = static_cast<int16_t>(value);
-    current /= 1000;
+    current /= 1000.f;
     return true;
 }
 
@@ -51,7 +51,7 @@ bool Rrc20542Battery::readAverageCurrent(float& current, size_t trialCount)
     }
 
     current = static_cast<int16_t>(value);
-    current /= 1000;
+    current /= 1000.f;
     return true;
 }
 
@@ -88,7 +88,7 @@ bool Rrc20542Battery::readRemainingCapacity(float& capacity, size_t trialCount)
     }
 
     capacity = value;
-    capacity /= 1000;
+    capacity /= 1000.f;
     return true;
 }
 
@@ -101,7 +101,7 @@ bool Rrc20542Battery::readFullChargeCapacity(float& capacity, size_t trialCount)
     }
 
     capacity = value;
-    capacity /= 1000;
+    capacity /= 1000.f;
     return true;
 }
 
@@ -173,7 +173,7 @@ bool Rrc20542Battery::readDesignCapacity(float& capacity, size_t trialCount)
     }
 
     capacity = value;
-    capacity /= 1000;
+    capacity /= 1000.f;
     return true;
 }
 
@@ -186,7 +186,7 @@ bool Rrc20542Battery::readDesignVoltage(float& voltage, size_t trialCount)
     }
 
     voltage = value;
-    voltage /= 1000;
+    voltage /= 1000.f;
     return true;
 }
 

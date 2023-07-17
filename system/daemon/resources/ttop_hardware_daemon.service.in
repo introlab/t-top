@@ -1,0 +1,15 @@
+[Unit]
+Description=T-Top Hardware Daemon
+
+[Service]
+User=@USER_NAME@
+Group=@USER_NAME@
+ExecStart=/opt/t-top/bin/daemon
+WorkingDirectory=/opt/t-top/working_directory/daemon
+Restart=always
+RestartSec=3s
+KillMode=process
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

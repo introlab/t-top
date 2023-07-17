@@ -119,14 +119,9 @@ void IdleState::onRobotNameDetected()
         StateType::get<WaitCommandState>()));
 }
 
-void IdleState::onBaseStatusChanged(
-    float stateOfCharge,
-    float voltage,
-    float current,
-    bool isPsuConnected,
-    bool isBatteryCharging)
+void IdleState::onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg)
 {
-    m_chargeNeeded = stateOfCharge <= LOW_STATE_OF_CHARGE && !isPsuConnected;
+    m_chargeNeeded = msg->state_of_charge <= LOW_STATE_OF_CHARGE && !msg->is_psu_connected;
 }
 
 void IdleState::onEveryMinuteTimeout()

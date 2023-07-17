@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   video_analyzer
   recorders
+  daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions
