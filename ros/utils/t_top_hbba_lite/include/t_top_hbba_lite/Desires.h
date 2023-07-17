@@ -64,6 +64,7 @@ public:
     DECLARE_DESIRE_METHODS(FastVideoAnalyzer3dWithAnalyzedImageDesire)
 };
 
+
 class SlowVideoAnalyzer2dWideDesire : public Desire
 {
 public:
@@ -129,6 +130,10 @@ class FaceAnimationDesire : public Desire
     std::string m_name;
 
 public:
+    /**
+     * Available animation names: normal, sleep, blink, wink_left, wink_right, awe, skeptic, angry, sad, disgust, fear,
+     * happy
+     */
     explicit FaceAnimationDesire(std::string name, uint16_t intensity = 1);
     ~FaceAnimationDesire() override = default;
 
@@ -138,6 +143,28 @@ public:
 };
 
 inline const std::string& FaceAnimationDesire::name() const
+{
+    return m_name;
+}
+
+
+class LedEmotionDesire : public Desire
+{
+    std::string m_name;
+
+public:
+    /**
+     * Available emotion names: joy, trust, sadness, fear, anger
+     */
+    explicit LedEmotionDesire(std::string name, uint16_t intensity = 1);
+    ~LedEmotionDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(LedEmotionDesire)
+
+    const std::string& name() const;
+};
+
+inline const std::string& LedEmotionDesire::name() const
 {
     return m_name;
 }
@@ -216,6 +243,9 @@ class GestureDesire : public Desire
     std::string m_name;
 
 public:
+    /**
+     * Available gesture names : yes, no, maybe, origin_all, origin_head, origin_torso
+     */
     explicit GestureDesire(std::string name, uint16_t intensity = 1);
     ~GestureDesire() override = default;
 
@@ -267,6 +297,7 @@ public:
 
     DECLARE_DESIRE_METHODS(TelepresenceDesire);
 };
+
 
 class TeleoperationDesire : public Desire
 {

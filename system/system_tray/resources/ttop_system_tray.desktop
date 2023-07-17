@@ -1,0 +1,11 @@
+[Desktop Entry]
+Exec=/opt/t-top/bin/ttop-system-tray
+Version=1.0
+Type=Application
+Categories=HardwareSettings
+Name=T-Top System Tray
+Path=/opt/t-top/working_directory/system_tray
+Terminal=false
+X-GNOME-Autostart-enabled=true
+StartupNotify=false
+X-GNOME-Autostart-Delay=10

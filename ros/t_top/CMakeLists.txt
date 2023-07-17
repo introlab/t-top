@@ -9,6 +9,7 @@ project(t_top)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
     rospy
+    daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions
@@ -158,7 +159,6 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-    scripts/opencr_raw_data_interpreter.py
     scripts/robot_status.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

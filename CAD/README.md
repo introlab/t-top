@@ -8,7 +8,7 @@ This folder contains all mechanical-related files. The CAD have been done with S
 
 ## Folder Structure
 SolidWorks files:
- - [3d printed parts](3d%20printed%20parts) contains the SolidWorks files for the 3D printed parts.
+ - [3d printed parts](3d-printed-parts) contains the SolidWorks files for the 3D printed parts.
  - [assemblies](assemblies) contains the SolidWorks files for the assemblies. The robot assembly file is [robot.SLDASM](assemblies/robot.SLDASM).
  - [electronics](electronics) contains the SolidWorks files for all electronics parts.
  - [gazebo_meshes](gazebo%20meshes) contains the CAD files for the simulation.

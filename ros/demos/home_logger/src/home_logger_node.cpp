@@ -93,7 +93,7 @@ void startNode(
     strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
 
     auto solver = make_unique<GecodeSolver>();
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
+    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}, {"led", 1}}, move(solver));
 
     VolumeManager volumeManager(nodeHandle);
     SQLite::Database database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);

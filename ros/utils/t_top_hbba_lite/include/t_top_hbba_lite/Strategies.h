@@ -25,8 +25,23 @@ public:
     DECLARE_NOT_MOVABLE(FaceAnimationStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const FaceAnimationDesire& desire) override;
     void onDisabling() override;
+};
+
+class LedEmotionStrategy : public Strategy<LedEmotionDesire>
+{
+    ros::NodeHandle& m_nodeHandle;
+    ros::Publisher m_emotionPublisher;
+
+public:
+    LedEmotionStrategy(uint16_t utility, std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle);
+
+    DECLARE_NOT_COPYABLE(LedEmotionStrategy);
+    DECLARE_NOT_MOVABLE(LedEmotionStrategy);
+
+protected:
+    void onEnabling(const LedEmotionDesire& desire) override;
 };
 
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
@@ -44,7 +59,7 @@ public:
     DECLARE_NOT_MOVABLE(SpecificFaceFollowingStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const SpecificFaceFollowingDesire& desire) override;
 };
 
 class TalkStrategy : public Strategy<TalkDesire>
@@ -65,7 +80,7 @@ public:
     DECLARE_NOT_MOVABLE(TalkStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const TalkDesire& desire) override;
 
 private:
     void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
@@ -89,7 +104,7 @@ public:
     DECLARE_NOT_MOVABLE(GestureStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const GestureDesire& desire) override;
 
 private:
     void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
@@ -113,7 +128,7 @@ public:
     DECLARE_NOT_MOVABLE(PlaySoundStrategy);
 
 protected:
-    void onEnabling(const std::unique_ptr<Desire>& desire) override;
+    void onEnabling(const PlaySoundDesire& desire) override;
 
 private:
     void soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg);
@@ -144,6 +159,10 @@ std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterP
 
 std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createLedEmotionStrategy(
     std::shared_ptr<FilterPool> filterPool,
     ros::NodeHandle& nodeHandle,
     uint16_t utility = 1);

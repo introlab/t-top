@@ -1,8 +1,8 @@
-#include "battery/RrcUtils.h"
+#include "RrcUtils.h"
 
 void initRandom()
 {
-    randomSeed(analogRead(0));
+    randomSeed(analogRead(12));
 }
 
 void smBusRandomDelay()

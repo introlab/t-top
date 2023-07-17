@@ -1,4 +1,4 @@
-#include "utils/InterruptLock.h"
+#include "../utils/InterruptLock.h"
 
 #include <Arduino.h>
 

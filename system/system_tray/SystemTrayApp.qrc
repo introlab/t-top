@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>resources/green-robot-icon.png</file>
+        <file>resources/red-robot-icon.png</file>
+    </qresource>
+</RCC>

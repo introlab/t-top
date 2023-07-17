@@ -4,33 +4,34 @@ import threading
 
 import rospy
 from std_msgs.msg import Float32
+from daemon_ros_client.msg import MotorStatus
 
-from dance.lib_dance_node import DanceNode
+from dance.lib_pose_dance_node import PoseDanceNode
 
 
 P_CHANGE_MOVEMENT = 0.25
 
 
-class TorsoDanceNode(DanceNode):
+class TorsoDanceNode(PoseDanceNode):
     def __init__(self):
         self._current_torso_orientation_lock = threading.Lock()
         self._current_torso_orientation = 0.0
 
         self._torso_offset = 0.0
-        self._torso_orientation_pub = rospy.Publisher('opencr/torso_orientation', Float32, queue_size=5)
+        self._torso_orientation_pub = rospy.Publisher('daemon/set_torso_orientation', Float32, queue_size=5)
 
         super(TorsoDanceNode, self).__init__()
 
-        self._current_torso_orientation_sub = rospy.Subscriber('opencr/current_torso_orientation', Float32, self._current_torso_orientation_cb, queue_size=1)
+        self._motor_status_sub = rospy.Subscriber('daemon/motor_status', MotorStatus, self._motor_status_cb, queue_size=1)
 
     def _hbba_filter_state_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if previous_is_filtering_all_messages and not new_is_filtering_all_messages:
             with self._lock, self._current_torso_orientation_lock:
                 self._torso_offset = self._current_torso_orientation
 
-    def _current_torso_orientation_cb(self, msg):
+    def _motor_status_cb(self, msg):
         with self._current_torso_orientation_lock:
-            self._current_torso_orientation = msg.data
+            self._current_torso_orientation = msg.torso_orientation
 
     def _send_pose(self, pose):
         """ Called with self._lock locked """

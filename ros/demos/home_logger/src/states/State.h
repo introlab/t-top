@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 
 #include <std_msgs/Empty.h>
+#include <daemon_ros_client/BaseStatus.h>
 
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/utils/ClassMacros.h>
@@ -151,12 +152,7 @@ protected:
     virtual void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg);
     virtual void onAudioAnalysisReceived(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
     virtual void onPersonNamesDetected(const person_identification::PersonNames::ConstPtr& msg);
-    virtual void onBaseStatusChanged(
-        float stateOfCharge,
-        float voltage,
-        float current,
-        bool isPsuConnected,
-        bool isBatteryCharging);
+    virtual void onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg);
 
     virtual void onStateTimeout();
     virtual void onEveryMinuteTimeout();
