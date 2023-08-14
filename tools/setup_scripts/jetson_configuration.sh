@@ -589,6 +589,11 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
     cd vision
     sudo -H python3 setup.py install
+    mkdir -p build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=`python -c 'import torch;print(torch.utils.cmake_prefix_path)'`
+    cmake --build .
+    sudo cmake --install .
 
     cd ~/deps
     clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
