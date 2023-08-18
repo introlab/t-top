@@ -28,5 +28,4 @@ inline void invokeLater(std::function<void()> f)
     QCoreApplication::postEvent(qApp, new FunctionEvent(move(f)));
 }
 
-
 #endif
