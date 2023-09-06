@@ -32,6 +32,8 @@ int startNode(int argc, char* argv[])
     strategies.emplace_back(createTelepresenceStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
 
+    strategies.emplace_back(createCamera3dRecordingStrategy(filterPool));
+
 
     auto solver = make_unique<GecodeSolver>();
     HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}, {"led", 1}}, move(solver));

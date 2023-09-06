@@ -49,14 +49,18 @@ void Connect4Widget::startButtonPressedCallback(const std_msgs::EmptyConstPtr& m
 {
     m_enabled = true;
     setVolume(ENABLED_VOLUME);
+    auto transaction = m_desireSet->beginTransaction();
     m_desireSet->addDesire<NearestFaceFollowingDesire>();
+    m_desireSet->addDesire<Camera3dRecordingDesire>();
 }
 
 void Connect4Widget::stopButtonPressedCallback(const std_msgs::EmptyConstPtr& msg)
 {
     m_enabled = false;
     setVolume(DISABLED_VOLUME);
+    auto transaction = m_desireSet->beginTransaction();
     m_desireSet->removeAllDesiresOfType<NearestFaceFollowingDesire>();
+    m_desireSet->removeAllDesiresOfType<Camera3dRecordingDesire>();
     invokeLater([this]() { m_imageDisplay->setImage(QImage()); });
 }
 

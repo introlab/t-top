@@ -47,4 +47,9 @@
         <param name="fullscreen" value="$(arg fullscreen)"/>
     </node>
 
+    <!-- Video Recording -->
+    <include file="$(find t_top)/launch/recording.launch">
+        <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+    </include>
+
 </launch>
