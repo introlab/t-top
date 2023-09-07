@@ -42,5 +42,6 @@
     <node pkg="person_identification" type="capture_face_node.py" name="capture_face_node" output="screen">
         <param name="name" value="$(arg name)"/>
         <param name="mean_size" value="50"/>
+        <param name="face_sharpness_score_threshold" value="0.5"/>
     </node>
 </launch>

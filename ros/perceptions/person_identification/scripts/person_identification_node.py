@@ -41,6 +41,7 @@ class VoiceDescriptorData:
 
 class PersonIdentificationNode:
     def __init__(self):
+        self._face_sharpness_score_threshold = rospy.get_param('~face_sharpness_score_threshold')
         self._face_descriptor_threshold = rospy.get_param('~face_descriptor_threshold')
         self._voice_descriptor_threshold = rospy.get_param('~voice_descriptor_threshold')
         self._face_voice_descriptor_threshold = rospy.get_param('~face_voice_descriptor_threshold')
@@ -83,7 +84,8 @@ class PersonIdentificationNode:
             for object in msg.objects:
                 if len(object.face_descriptor) == 0 or len(object.person_pose_2d) == 0 or len(object.person_pose_3d) == 0 \
                         or len(object.person_pose_confidence) == 0 \
-                        or object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < self._nose_confidence_threshold:
+                        or object.person_pose_confidence[PERSON_POSE_NOSE_INDEX] < self._nose_confidence_threshold \
+                        or object.face_sharpness_score < self._face_sharpness_score_threshold:
                     continue
 
                 position_2d = object.person_pose_2d[PERSON_POSE_NOSE_INDEX]
