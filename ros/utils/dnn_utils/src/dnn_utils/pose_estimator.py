@@ -17,8 +17,8 @@ PRESENCE_SCALE = 2.0
 
 class PoseEstimator(DnnModel):
     def __init__(self, inference_type=None):
-        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator.ts.pth')
-        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator.trt.pth')
+        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator_efficientnet_b0.ts.pth')
+        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator_efficientnet_b0.trt.pth')
         sample_input = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
 
         super(PoseEstimator, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,

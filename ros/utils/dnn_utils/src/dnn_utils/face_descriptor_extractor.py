@@ -22,8 +22,8 @@ SHARPNESS_SCORE_SCALE = 2.0
 
 class FaceDescriptorExtractor(DnnModel):
     def __init__(self, inference_type=None):
-        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'face_descriptor_extractor.ts.pth')
-        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'face_descriptor_extractor.trt.pth')
+        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'face_descriptor_efficientnet_b0_e256.ts.pth')
+        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'face_descriptor_efficientnet_b0_e256.trt.pth')
         sample_input = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
 
         super(FaceDescriptorExtractor, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
