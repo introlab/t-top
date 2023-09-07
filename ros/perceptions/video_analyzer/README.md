@@ -13,6 +13,7 @@ This node uses RGB images, so the 3D positions are not set.
  - `nms_threshold` (double): The Non-Maximum Suppresion threshold.
  - `person_probability_threshold` (double): The person confidence threshold.
  - `pose_confidence_threshold` (double): The pose key point confidence threshold.
+ - `face_descriptor_model` (string): It indicates whick model to use for the face descriptor (open_face or efficientnet_b0).
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu).
  - `pose_enabled` (bool): Indicates to estimate the pose of the people.
  - `face_descriptor_enabled` (bool): Indicates to extract an embedding for each face. The pose estimation must be enabled when the face embedding is enabled.
@@ -43,6 +44,7 @@ This node uses RGB-D images, so the 3D positions are set.
  - `nms_threshold` (double): The Non-Maximum Suppresion threshold.
  - `person_probability_threshold` (double): The person confidence threshold.
  - `pose_confidence_threshold` (double): The pose key point confidence threshold.
+ - `face_descriptor_model` (string): It indicates whick model to use for the face descriptor (open_face or efficientnet_b0).
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu).
  - `pose_enabled` (bool): Indicates to estimate the pose of the people.
  - `face_descriptor_enabled` (bool): Indicates to extract an embedding for each face. The pose estimation must be enabled when the face embedding is enabled.

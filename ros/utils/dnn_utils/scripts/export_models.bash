@@ -50,6 +50,8 @@ python3 export_yolo.py --model_type yolo_v7 --output_dir $SCRIPT_PATH/../models 
 python3 export_yolo.py --model_type yolo_v7_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_tiny.ts.pth --trt_filename yolo_v7_tiny.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_tiny.pth --trt_fp16 $FORCE_EXPORT
 
 python3 export_pose_estimator.py --backbone_type efficientnet_b0 --output_dir $SCRIPT_PATH/../models --torch_script_filename pose_estimator_efficientnet_b0.ts.pth --trt_filename pose_estimator_efficientnet_b0.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/pose_estimator_efficientnet_b0.pth --trt_fp16 $FORCE_EXPORT
+
+python3 export_face_descriptor_extractor.py --backbone_type open_face --embedding_size 256 --output_dir $SCRIPT_PATH/../models --torch_script_filename face_descriptor_open_face_e256.ts.pth --trt_filename face_descriptor_efficientnet_b0_e256.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/face_descriptor_open_face_e256.pth --trt_fp16 $FORCE_EXPORT
 python3 export_face_descriptor_extractor.py --backbone_type efficientnet_b0 --embedding_size 256 --output_dir $SCRIPT_PATH/../models --torch_script_filename face_descriptor_efficientnet_b0_e256.ts.pth --trt_filename face_descriptor_efficientnet_b0_e256.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/face_descriptor_efficientnet_b0_e256.pth --trt_fp16 $FORCE_EXPORT
 
 python3 export_semantic_segmentation_network.py --dataset_type coco --backbone_type stdc1 --channel_scale 1 --output_dir $SCRIPT_PATH/../models --torch_script_filename semantic_segmentation_network_coco.ts.pth --trt_filename semantic_segmentation_network_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/semantic_segmentation_network_coco_stdc1_s1.pth --trt_fp16 $FORCE_EXPORT
