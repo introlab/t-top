@@ -46,13 +46,15 @@ class Yolo(DnnModel):
         self._confidence_threshold = confidence_threshold
         self._nms_threshold = nms_threshold
 
+        self._image_size = IMAGE_SIZE_BY_MODEL_NAME[model_name]
+
         torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', f'{model_name}.ts.pth')
         tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', f'{model_name}.trt.pth')
-        sample_input = torch.ones(1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1])
+        sample_input = torch.ones(1, 3, self._image_size[0], self._image_size[1])
 
-        super(YoloV4, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
+        super(Yolo, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
                                                inference_type=inference_type)
-        self._padded_image = torch.ones(1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]).to(self._device)
+        self._padded_image = torch.ones(1, 3, self._image_size[0], self._image_size[1]).to(self._device)
 
     def get_supported_image_size(self):
         return IMAGE_SIZE_BY_MODEL_NAME[self._model_name]
@@ -80,7 +82,7 @@ class Yolo(DnnModel):
 
     def forward_raw(self, image_tensor):
         scale, offset_x, offset_y = self._set_image(image_tensor.to(self._device).unsqueeze(0))
-        predictions = super(YoloV4, self).__call__(self._padded_image)
+        predictions = super(Yolo, self).__call__(self._padded_image)
         return scale, offset_x, offset_y, predictions
 
     def _set_image(self, image_tensor):

@@ -12,6 +12,7 @@ from pose_estimation.pose_estimator import get_coordinates
 
 
 IMAGE_SIZE = (256, 192)
+PRESENCE_SCALE = 2.0
 
 
 class PoseEstimator(DnnModel):
@@ -81,4 +82,4 @@ class PoseEstimator(DnnModel):
             scaled_coordinates[:, 0] = heatmap_coordinates[0, :, 0] / pose_heatmaps.size()[3] * width
             scaled_coordinates[:, 1] = heatmap_coordinates[0, :, 1] / pose_heatmaps.size()[2] * height
 
-            return scaled_coordinates.cpu().numpy(), presence.cpu().numpy()[0]
+            return scaled_coordinates.cpu().numpy(), presence.cpu().numpy()[0] * PRESENCE_SCALE
