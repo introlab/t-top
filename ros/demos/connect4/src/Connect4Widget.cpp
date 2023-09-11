@@ -74,8 +74,12 @@ void Connect4Widget::remoteImageCallback(const opentera_webrtc_ros_msgs::PeerIma
 
     if (m_enabled)
     {
-        QImage image(&msg->frame.data[0], msg->frame.width, msg->frame.height, QImage::Format_RGB888);
-        invokeLater([this, image]() { m_imageDisplay->setImage(image.rgbSwapped()); });
+	invokeLater(
+            [this, msg]()
+            {
+                QImage image(&msg->frame.data[0], msg->frame.width, msg->frame.height, QImage::Format_RGB888);
+                m_imageDisplay->setImage(image.rgbSwapped());
+            });
     }
 }
 
