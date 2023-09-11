@@ -12,7 +12,7 @@
                 width: 1280
                 height: 720
                 framerate: 15
-                codec: vp9
+                codec: h264
                 bitrate: 2000000
                 delay_s: 0.35
         </rosparam>
@@ -39,7 +39,7 @@
                 width: 1280
                 height: 720
                 framerate: 5
-                codec: vp9
+                codec: h264
                 bitrate: 2000000
                 delay_s: 0.0
         </rosparam>
