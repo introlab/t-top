@@ -29,18 +29,25 @@ string WeatherForecastState::generateEnglishText(const string& _)
 
     if (ok)
     {
-        ss << "Tomorrow morning, the temperature will be " << srv.response.temperature_morning_celsius << " °C and ";
-        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_morning_celsius << " °C. ";
+        ss << "Tomorrow morning, the temperature will be " << srv.response.temperature_morning_celsius
+           << " degree Celsius and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_morning_celsius
+           << " degree Celsius. ";
 
         ss << "During the day of tomorrow, the temperature will be " << srv.response.temperature_day_celsius
-           << " °C and ";
-        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_day_celsius << " °C. ";
+           << " degré Celsius and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_day_celsius
+           << " degree Celsius. ";
 
-        ss << "Tomorrow evening, the temperature will be " << srv.response.temperature_evening_celsius << " °C and ";
-        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_evening_celsius << " °C. ";
+        ss << "Tomorrow evening, the temperature will be " << srv.response.temperature_evening_celsius
+           << " degree Celsius and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_evening_celsius
+           << " degree Celsius. ";
 
-        ss << "Tomorrow night, the temperature will be " << srv.response.temperature_night_celsius << " °C and ";
-        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_night_celsius << " °C. ";
+        ss << "Tomorrow night, the temperature will be " << srv.response.temperature_night_celsius
+           << " degree Celsius and ";
+        ss << "the feels like temperature will be " << srv.response.feals_like_temperature_night_celsius
+           << " degree Celsius. ";
 
         ss << "Tomorrow, the humidity will be " << srv.response.humidity_percent << "%, ";
         ss << "the wind speed will be " << srv.response.wind_speed_kph << " kilometers per hour,";
@@ -64,17 +71,17 @@ string WeatherForecastState::generateFrenchText(const string& _)
 
     if (ok)
     {
-        ss << "Demain matin, la température sera de " << srv.response.temperature_morning_celsius << " °C et ";
-        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_morning_celsius << " °C. ";
+        ss << "Demain matin, la température sera de " << srv.response.temperature_morning_celsius << " degré Celsius et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_morning_celsius << " degré Celsius. ";
 
-        ss << "Demain en journée, la température sera de " << srv.response.temperature_day_celsius << " °C et ";
-        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_day_celsius << " °C. ";
+        ss << "Demain en journée, la température sera de " << srv.response.temperature_day_celsius << " degré Celsius et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_day_celsius << " degré Celsius. ";
 
-        ss << "Demain en soirée, la température sera de " << srv.response.temperature_evening_celsius << " °C et ";
-        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_evening_celsius << " °C. ";
+        ss << "Demain en soirée, la température sera de " << srv.response.temperature_evening_celsius << " degré Celsius et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_evening_celsius << " degré Celsius. ";
 
-        ss << "La nuit prochaine, la température sera de " << srv.response.temperature_night_celsius << " °C et ";
-        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_night_celsius << " °C. ";
+        ss << "La nuit prochaine, la température sera de " << srv.response.temperature_night_celsius << " degré Celsius et ";
+        ss << "la température ressentie sera de " << srv.response.feals_like_temperature_night_celsius << " degré Celsius. ";
 
         ss << "Demain, l'humidité sera de " << srv.response.humidity_percent << "%, ";
         ss << "la vitesse du vent sera de " << srv.response.wind_speed_kph << " kilomètres par heure, ";

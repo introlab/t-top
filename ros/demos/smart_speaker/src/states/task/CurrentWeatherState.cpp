@@ -29,8 +29,8 @@ string CurrentWeatherState::generateEnglishText(const string& _)
 
     if (ok)
     {
-        ss << "The current temperature is " << srv.response.temperature_celsius << "°C and ";
-        ss << " it feels like " << srv.response.feels_like_temperature_celsius << "°C. ";
+        ss << "The current temperature is " << srv.response.temperature_celsius << " degree Celsius and ";
+        ss << " it feels like " << srv.response.feels_like_temperature_celsius << " degree Celsius. ";
         ss << "Humidity is " << srv.response.humidity_percent << "% and ";
         ss << " wind speed is " << srv.response.wind_speed_kph << " kilometers per hour. ";
     }
@@ -53,8 +53,8 @@ string CurrentWeatherState::generateFrenchText(const string& _)
 
     if (ok)
     {
-        ss << "La température courante est de " << srv.response.temperature_celsius << "°C. ";
-        ss << "La température courante ressentie est de " << srv.response.feels_like_temperature_celsius << "°C. ";
+        ss << "La température courante est de " << srv.response.temperature_celsius << " degré Celsius. ";
+        ss << "La température courante ressentie est de " << srv.response.feels_like_temperature_celsius << " degré Celsius. ";
         ss << "L'humidité courante est de " << srv.response.humidity_percent << "%. ";
         ss << "La vitesse courante du vent est de " << srv.response.wind_speed_kph << " kilomètres par heure. ";
     }
