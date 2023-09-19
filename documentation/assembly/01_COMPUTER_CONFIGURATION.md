@@ -439,6 +439,13 @@ sudo apt install -y \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-libav \
     gstreamer1.0-tools
+
+cd ~/deps
+git clone https://github.com/microsoft/onnxruntime.git -b v1.14.1 --recurse-submodules
+cd onnxruntime
+./build.sh --config Release --update --build --parallel --build_wheel --build_shared_lib --use_tensorrt --cuda_home /usr/local/cuda --cudnn_home /usr/lib/aarch64-linux-gnu --tensorrt_home /usr/lib/aarch64-linux-gnu
+cd build/Linux/Release
+sudo make install
 ```
 
 ### M. Install Python Dependencies

@@ -610,6 +610,23 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install ONNX Runtime"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp onnxruntime) = "false" ] ; then
+    cd ~/deps
+    clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
+    cd onnxruntime
+    ./build.sh --config Release --update --build --parallel --build_wheel --build_shared_lib --use_tensorrt --cuda_home /usr/local/cuda --cudnn_home /usr/lib/aarch64-linux-gnu --tensorrt_home /usr/lib/aarch64-linux-gnu
+    cd build/Linux/Release
+    sudo make install
+
+    makestamp onnxruntime
+else
+    SKIP_SECTION "ONNX Runtime already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install OpenTera-WebRTC ROS Python dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp opentera_deps) = "false" ] ; then
