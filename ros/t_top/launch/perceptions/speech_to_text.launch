@@ -11,18 +11,4 @@
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
         <remap from="transcript" to="speech_to_text/transcript"/>
     </node>
-
-
-    <!--node pkg="speech_to_text_local" type="speech_to_text_local_node.py" name="speech_to_text_local_node">
-        <param name="sampling_frequency" value="16000"/>
-        <param name="frame_sample_count" value="480"/>
-        <param name="frame_duration_ms" value="30"/>
-        <param name="request_frame_count" value="4"/>
-        <param name="language" value="$(arg language)"/>
-
-        <remap from="audio_in" to="audio_input_signed_16_16000"/>
-        <remap from="audio_in/filter_state" to="speech_to_text_local/filter_state"/>
-        <remap from="transcript" to="speech_to_text_local/transcript"/>
-
-    </node-->
 </launch>
