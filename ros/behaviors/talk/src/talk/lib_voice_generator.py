@@ -29,8 +29,8 @@ class VoiceGenerator(ABC):
     
     def _get_voice_type(self, _language: str, voice_type: str) -> str:
         voice_dict = {
-            ('en', 'male'): VoiceType.MALE_UK.value,
-            ('en', 'female'): VoiceType.FEMALE_UK.value,
+            ('en', 'male'): VoiceType.MALE_US.value,
+            ('en', 'female'): VoiceType.FEMALE_US_.value,
             ('fr', 'female'): VoiceType.FEMALE_FR_GOOD.value,
             ('fr', 'male'): VoiceType.MALE_FR_NOSY.value
                     }
@@ -54,7 +54,7 @@ class VoiceType(Enum):
     FEMALE_UK = "en-GB-Standard-C"
     MALE_UK = "en-GB-Standard-D"
     FEMALE_US_= "en-US-Standard-G"
-    MALE_US = "en-US-Standard-I"
+    MALE_US = "en-US"
 
 
 
@@ -78,7 +78,12 @@ class GoogleVoiceGenerator(VoiceGenerator):
         client = texttospeech.TextToSpeechClient()
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
-        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name = GoogleVoiceGenerator.get_voice_type(self))        
+        name = GoogleVoiceGenerator.get_voice_type(self)
+        if name != "en-US":
+            voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name=name)
+        else:
+            voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, ssml_gender=texttospeech.SsmlVoiceGender.MALE)
+
         audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
                                                 speaking_rate=self._speaking_rate)  #LINEAR16 instead of MP3 to avoid warning PySoundFile failed. Trying audioread instead. 
 
