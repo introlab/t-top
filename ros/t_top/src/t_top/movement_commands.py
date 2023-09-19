@@ -100,9 +100,9 @@ class MovementCommands:
             self._read_torso = fmod_radian(msg.torso_orientation)
 
         head_angles = euler_from_quaternion([msg.head_pose.orientation.x,
-                                        msg.head_pose.orientation.y,
-                                        msg.head_pose.orientation.z,
-                                        msg.head_pose.orientation.w])
+                                             msg.head_pose.orientation.y,
+                                             msg.head_pose.orientation.z,
+                                             msg.head_pose.orientation.w])
 
         with self._read_head_lock:
             self._read_head[0] = msg.head_pose.position.x
