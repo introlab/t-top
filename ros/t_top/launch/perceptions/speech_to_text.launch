@@ -11,5 +11,4 @@
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
         <remap from="transcript" to="speech_to_text/transcript"/>
     </node>
-
 </launch>

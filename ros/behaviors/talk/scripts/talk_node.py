@@ -24,6 +24,7 @@ class TalkNode:
     def __init__(self):
         language = rospy.get_param('~language')
         speaking_rate = rospy.get_param('~speaking_rate')
+        voice_type = rospy.get_param('~voice_type')
         cache_size = rospy.get_param('~cache_size')
 
         self._mouth_signal_gain = rospy.get_param('~mouth_signal_gain')
@@ -34,8 +35,8 @@ class TalkNode:
         self._pkg_path = self._rospack.get_path('talk')
         audio_directory_path = os.path.join(self._pkg_path, 'audio_files')
 
-        google_voice_generator = GoogleVoiceGenerator(audio_directory_path, language, speaking_rate)
-        self._voice_generator = CachedVoiceGenerator(google_voice_generator, cache_size)
+        google_voice_generator = GoogleVoiceGenerator(audio_directory_path, language, speaking_rate, voice_type)
+        self._voice_generator = CachedVoiceGenerator(google_voice_generator, cache_size, voice_type)
 
         self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
