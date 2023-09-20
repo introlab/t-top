@@ -80,15 +80,13 @@ public:
         piper::initialize(m_piperConfig);
 
 
-        m_generateSpeechFromTextService = m_nodeHandle.advertiseService("piper/generate_speech_from_text",
+        m_generateSpeechFromTextService = m_nodeHandle.advertiseService(
+            "piper/generate_speech_from_text",
             &PiperNode::generateSpeechFromTextServiceCallback,
             this);
     }
 
-    void run()
-    {
-        ros::spin();
-    }
+    void run() { ros::spin(); }
 
 private:
     piper::Voice loadVoice(const char* filename)
@@ -116,12 +114,18 @@ private:
 #endif
 
         std::optional<piper::SpeakerId> speakerId;
-        piper::loadVoice(m_piperConfig, modelFolder + filename + ".onnx", modelFolder + filename + ".onnx.json", voice, speakerId);
+        piper::loadVoice(
+            m_piperConfig,
+            modelFolder + filename + ".onnx",
+            modelFolder + filename + ".onnx.json",
+            voice,
+            speakerId);
 
         return voice;
     }
 
-    bool generateSpeechFromTextServiceCallback(piper_ros::GenerateSpeechFromText::Request& request,
+    bool generateSpeechFromTextServiceCallback(
+        piper_ros::GenerateSpeechFromText::Request& request,
         piper_ros::GenerateSpeechFromText::Response& response)
     {
         std::optional<Language> language = languageFromString(request.language);
@@ -146,7 +150,8 @@ private:
         return true;
     }
 
-    void generateSpeechFromText(Language language,
+    void generateSpeechFromText(
+        Language language,
         Gender gender,
         float lengthScale,
         const std::string& text,
@@ -187,7 +192,7 @@ private:
 };
 
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     ros::init(argc, argv, "piper_node");
 
