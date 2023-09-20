@@ -1,7 +1,7 @@
 # talk
 
 This folder contains the node to generate speech files with [Piper](https://github.com/rhasspy/piper).
-The [models](models) folder contains models trained by [Piper](https://github.com/rhasspy/piper).
+The [models](models) folder contains models trained by [Piper](https://github.com/rhasspy/piper). The license of the models is [MIT](models/MODEL_LICENSE).
 
 ## Nodes
 
