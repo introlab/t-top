@@ -9,6 +9,10 @@ The [models](models) folder contains models trained by [Piper](https://github.co
 
 This node generates speech files with [Piper](https://github.com/rhasspy/piper).
 
+#### Parameters
+
+- `use_gpu_if_available` (bool): Indicates whether to use the GPU or not.
+
 #### Services
 
 - `piper/generate_speech_from_text` ([piper_ros/GenerateSpeechFromText](srv/GenerateSpeechFromText.srv)):

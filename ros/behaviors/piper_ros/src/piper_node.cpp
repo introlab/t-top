@@ -55,6 +55,8 @@ std::optional<Gender> genderFromString(const std::string& str)
 
 class PiperNode
 {
+    bool m_useGpuIfAvailable;
+
     ros::NodeHandle m_nodeHandle;
     ros::ServiceServer m_generateSpeechFromTextService;
 
@@ -65,15 +67,15 @@ class PiperNode
     piper::Voice m_frenchMaleVoice;
 
 public:
-    PiperNode()
+    explicit PiperNode(bool useGpuIfAvailable) : m_useGpuIfAvailable(useGpuIfAvailable)
     {
         m_piperConfig.useESpeak = true;
         m_piperConfig.eSpeakDataPath = ESPEAK_NG_DATA_PATH;
 
-        m_englishFemaleVoice = loadVoiceFromLanguageAndGender("en_US-amy-low");
-        m_englishMaleVoice = loadVoiceFromLanguageAndGender("en_US-ryan-low");
-        m_frenchFemaleVoice = loadVoiceFromLanguageAndGender("fr_FR-siwis-low");
-        m_frenchMaleVoice = loadVoiceFromLanguageAndGender("fr_FR-gilles-low");
+        m_englishFemaleVoice = loadVoice("en_US-amy-low");
+        m_englishMaleVoice = loadVoice("en_US-ryan-low");
+        m_frenchFemaleVoice = loadVoice("fr_FR-siwis-low");
+        m_frenchMaleVoice = loadVoice("fr_FR-gilles-low");
 
         piper::initialize(m_piperConfig);
 
@@ -89,7 +91,7 @@ public:
     }
 
 private:
-    piper::Voice loadVoiceFromLanguageAndGender(const char* filename)
+    piper::Voice loadVoice(const char* filename)
     {
         std::string modelFolder = ros::package::getPath("piper_ros") + "/models/";
 
@@ -100,13 +102,21 @@ private:
         voice.session.options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
 
 #ifdef ONNXRUNTIME_CUDA_PROVIDER_ENABLED
-        OrtCUDAProviderOptions cudaOptions;
-        cudaOptions.cudnn_conv_algo_search = OrtCudnnConvAlgoSearchHeuristic;
-        voice.session.options.AppendExecutionProvider_CUDA(cudaOptions);
+        if (m_useGpuIfAvailable)
+        {
+            OrtCUDAProviderOptions cudaOptions;
+            cudaOptions.cudnn_conv_algo_search = OrtCudnnConvAlgoSearchHeuristic;
+            voice.session.options.AppendExecutionProvider_CUDA(cudaOptions);
+        }
+#else
+        if (m_useGpuIfAvailable)
+        {
+            ROS_WARN("CUDA is not supported.");
+        }
 #endif
 
         std::optional<piper::SpeakerId> speakerId;
-        loadVoice(m_piperConfig, modelFolder + filename + ".onnx", modelFolder + filename + ".onnx.json", voice, speakerId);
+        piper::loadVoice(m_piperConfig, modelFolder + filename + ".onnx", modelFolder + filename + ".onnx.json", voice, speakerId);
 
         return voice;
     }
@@ -181,7 +191,16 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "piper_node");
 
-    PiperNode node;
+    ros::NodeHandle privateNodeHandle("~");
+
+    bool useGpuIfAvailable;
+    if (!privateNodeHandle.getParam("use_gpu_if_available", useGpuIfAvailable))
+    {
+        ROS_ERROR("The parameter use_gpu_if_available is required.");
+        return -1;
+    }
+
+    PiperNode node(useGpuIfAvailable);
     node.run();
 
     return 0;

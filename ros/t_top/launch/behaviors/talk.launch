@@ -18,6 +18,8 @@
         <remap from="audio_out/filter_state" to="talk/filter_state"/>
     </node>
 
-    <node if="$(eval arg('voice_generator_type') == 'piper')" pkg="piper_ros" type="piper_node" name="piper_node"/>
+    <node if="$(eval arg('voice_generator_type') == 'piper')" pkg="piper_ros" type="piper_node" name="piper_node">
+        <param name="use_gpu_if_available" value="true"/>
+    </node>
 
 </launch>
