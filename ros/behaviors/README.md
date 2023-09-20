@@ -12,4 +12,5 @@ This folder contains ROS packages for the behavior nodes.
 - The [sound_following](sound_following) folder contains the node to make T-Top follow the loudest sound.
 - The [sound_object_person_following](sound_object_person_following) folder contains the node to make T-Top follow the loudest sound, the biggest (nearest) person and some objects.
 - The [sound_player](sound_player) folder contains the node to play sound files.
-- The [talk](dance) folder contains the node to make T-Top talk.
+- The [talk](talk) folder contains the node to make T-Top talk.
+- The [piper_ros](piper_ros) folder contains the node to generate speech files with [Piper](https://github.com/rhasspy/piper).

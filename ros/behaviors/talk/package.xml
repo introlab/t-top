@@ -55,18 +55,21 @@
   <build_depend>audio_utils</build_depend>
   <build_depend>hbba_lite</build_depend>
   <build_depend>message_generation</build_depend>
+  <build_depend>piper_ros</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>audio_utils</build_export_depend>
   <build_export_depend>hbba_lite</build_export_depend>
   <build_export_depend>message_generation</build_export_depend>
+  <build_export_depend>piper_ros</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>audio_utils</exec_depend>
   <exec_depend>hbba_lite</exec_depend>
   <exec_depend>message_generation</exec_depend>
+  <exec_depend>piper_ros</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
