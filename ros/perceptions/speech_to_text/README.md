@@ -28,7 +28,7 @@ The node performs speech to text. It uses [Faster Whisper](https://github.com/gu
  - `model_size` (string): The [Whisper model size](https://github.com/openai/whisper#available-models-and-languages)
  (tiny, tiny.en, base, base.en, small, small.en, medium, medium.en, large or large.en).
  - `device` (string): The device that executes the model (cpu or cuda)
- - `compute_type` (string): The compute type (int8, float16, float32).
+ - `compute_type` (string): The compute type (int8, float16 or float32).
 
 #### Subscribed Topics
  - `voice_activity` ([audio_utils/VoiceActivity](https://github.com/introlab/audio_utils/blob/main/msg/VoiceActivity.msg)): The output of the voice activity detector.
