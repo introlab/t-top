@@ -27,7 +27,7 @@ The node performs speech to text. It uses [Faster Whisper](https://github.com/gu
  - `language` (string): The language (en or fr).
  - `model_size` (string): The [Whisper model size](https://github.com/openai/whisper#available-models-and-languages)
  (tiny, tiny.en, base, base.en, small, small.en, medium, medium.en, large or large.en).
- - `device` (string): The device that executes the model (cpu or gpu)
+ - `device` (string): The device that executes the model (cpu or cuda)
  - `compute_type` (string): The compute type (int8, float16, float32).
 
 #### Subscribed Topics

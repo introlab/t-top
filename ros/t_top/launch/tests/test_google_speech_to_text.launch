@@ -10,7 +10,7 @@
 
         <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
-        <remap from="text" to="speech_to_text/transcript"/>
+        <remap from="transcript" to="speech_to_text/transcript"/>
     </node>
 
     <node name="audio_capture" type="capture_node" pkg="audio_utils" output="screen">
