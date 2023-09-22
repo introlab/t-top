@@ -18,10 +18,10 @@
         <param if="$(eval arg('language') == 'en')" name="model_size" value="base.en"/>
         <param if="$(eval arg('language') == 'fr')" name="model_size" value="base"/>
         <param name="device" value="gpu"/>
-        <param name="compute_type" value="int32"/>
+        <param name="compute_type" value="int8"/>
 
         <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
-        <remap from="text" to="speech_to_text/transcript"/>
+        <remap from="transcript" to="speech_to_text/transcript"/>
     </node>
 </launch>

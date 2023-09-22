@@ -35,7 +35,7 @@
     <!-- Speech to Text -->
     <include file="$(find t_top)/launch/perceptions/speech_to_text.launch">
         <arg name="language" value="$(arg language)"/>
-        <arg name="speech_to_text_type" value="$(arg speech_to_text_type)"/>
+        <arg name="type" value="$(arg speech_to_text_type)"/>
     </include>
 
     <!-- Robot Name Detector -->

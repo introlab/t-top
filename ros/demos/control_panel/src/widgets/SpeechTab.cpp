@@ -90,7 +90,7 @@ void SpeechTab::vadSubscriberCallback(const audio_utils::VoiceActivity::ConstPtr
     invokeLater(
         [=]()
         {
-            if (!m_speechToTextDesireId.isValid())
+            if (!m_vadDesireId.isValid())
             {
                 return;
             }
