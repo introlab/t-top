@@ -35,7 +35,7 @@ string WeatherForecastState::generateEnglishText(const string& _)
            << " degree Celsius. ";
 
         ss << "During the day of tomorrow, the temperature will be " << srv.response.temperature_day_celsius
-           << " degré Celsius and ";
+           << " degree Celsius and ";
         ss << "the feels like temperature will be " << srv.response.feals_like_temperature_day_celsius
            << " degree Celsius. ";
 
