@@ -7,7 +7,7 @@
     <node name="vad_node" type="vad_node" pkg="audio_utils">
     	<param name="silence_to_voice_threshold" value="0.5"/>
     	<param name="voice_to_silence_threshold" value="0.4"/>
-    	<param name="min_silence_duration_ms" value="250"/>
+    	<param name="min_silence_duration_ms" value="500"/>
 
         <remap from="audio_in" to="vad/audio_input_signed_16_16000"/>
     </node>
