@@ -6,6 +6,7 @@
     <arg name="verify_ssl" default="true"/>
     <arg name="use_outgoing_face_cropping" default="false"/>
     <arg name="use_incoming_face_cropping" default="false"/>
+    <arg name="use_robot_gui" default="true"/>
 
     <!-- Signaling server (if stand_alone)-->
     <include if="$(arg is_stand_alone)" file="$(find opentera_webrtc_demos)/launch/opentera_signaling_server.launch">
@@ -42,6 +43,8 @@
         <arg name="input_audio_topic" value="/audio_webrtc_outgoing_signed_16_48000"/>
         <arg name="output_audio_mixed_topic" value="/audio_webrtc_incoming_signed_16_48000"/>
         <arg name="verify_ssl" value="$(arg verify_ssl)"/>
+
+        <arg name="forced_video_codecs" value="[vp8]"/>
     </include>
 
     <!-- Data Channel  -->
@@ -99,19 +102,21 @@
         <arg name="output" value="screen"/>
         <arg name="input_camera_topic" value="/camera_3d/color/image_raw"/>
         <arg name="output_camera_topic" value="/face_camera/image_raw"/>
+
+        <arg name="face_detection_model" value="small_yunet_0.5_320"/>
     </include>
 
     <!-- Face cropping webrtc -->
-    <include if="$(arg use_incoming_face_cropping)" file="$(find face_cropping)/launch/face_cropping.launch" >
-        <arg name="name" value="face_cropping_webrtc"/> -->
+    <include if="$(arg use_incoming_face_cropping)" file="$(find face_cropping)/launch/face_cropping_webrtc.launch" >
         <arg name="output" value="screen"/>
         <arg name="input_camera_topic" value="/webrtc_image"/>
         <arg name="output_camera_topic" value="/face_webrtc_image"/>
-        <arg name="is_peer_image" value="true"/>
+
+        <arg name="face_detection_model" value="small_yunet_0.5_320"/>
     </include>
 
     <!-- OpenTera Robot GUI -->
-    <node pkg="opentera_webrtc_robot_gui" type="opentera_webrtc_robot_gui_node" name="robot_gui" respawn="true">
+    <node if="$(arg use_robot_gui)" pkg="opentera_webrtc_robot_gui" type="opentera_webrtc_robot_gui_node" name="robot_gui" respawn="true">
         <remap if="$(arg use_outgoing_face_cropping)" from="/front_camera/image_raw" to="face_camera/image_raw"/>
         <remap unless="$(arg use_outgoing_face_cropping)" from="/front_camera/image_raw" to="/camera_3d/color/image_raw"/>
         <remap if="$(arg use_incoming_face_cropping)" from="/webrtc_image" to="/face_webrtc_image" />

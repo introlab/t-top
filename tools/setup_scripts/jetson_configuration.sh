@@ -588,6 +588,12 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
     cd vision
+    mkdir -p build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=`python3 -c 'import torch;print(torch.utils.cmake_prefix_path)'` -DWITH_CUDA=ON
+    cmake --build . -j4
+    sudo cmake --install .
+    cd ~/deps/vision
     sudo -H python3 setup.py install
 
     cd ~/deps
