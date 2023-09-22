@@ -44,7 +44,7 @@
         <arg name="output_audio_mixed_topic" value="/audio_webrtc_incoming_signed_16_48000"/>
         <arg name="verify_ssl" value="$(arg verify_ssl)"/>
 
-        <arg name="forced_video_codecs" value="[h264]"/>
+        <arg name="forced_video_codecs" value="[vp8]"/>
     </include>
 
     <!-- Data Channel  -->
