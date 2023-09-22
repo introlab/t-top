@@ -64,7 +64,6 @@ class TalkNode:
                 ok = True
             except Exception as e:
                 rospy.logerr(f'Unable to talk ({e})')
-                raise e
                 ok = False
 
             self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
