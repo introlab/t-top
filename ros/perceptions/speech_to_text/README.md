@@ -1,8 +1,8 @@
 # speech_to_text
-This folder contains the node performing speech to text.
+This folder contains the nodes performing speech to text.
 
 ## Nodes
-### `speech_to_text_node.py`
+### `google_speech_to_text_node.py`
 The node performs speech to text. It uses Google Cloud Speech-to-Text.
 
 #### Parameters
@@ -18,4 +18,24 @@ The node performs speech to text. It uses Google Cloud Speech-to-Text.
  - `transcript` ([speech_to_text/Transcript](msg/Transcript.msg)): The text said.
 
 #### Services
- - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)) :The HBBA filter state service to enable or disable the processing.
+ - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.
+
+### `whisper_speech_to_text_node.py`
+The node performs speech to text. It uses [Faster Whisper](https://github.com/guillaumekln/faster-whisper).
+
+#### Parameters
+ - `language` (string): The language (en or fr).
+ - `model_size` (string): The [Whisper model size](https://github.com/openai/whisper#available-models-and-languages)
+ (tiny, tiny.en, base, base.en, small, small.en, medium, medium.en, large or large.en).
+ - `device` (string): The device that executes the model (cpu or gpu)
+ - `compute_type` (string): The compute type (int8, float16, float32).
+
+#### Subscribed Topics
+ - `voice_activity` ([audio_utils/VoiceActivity](https://github.com/introlab/audio_utils/blob/main/msg/VoiceActivity.msg)): The output of the voice activity detector.
+ - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic processed.
+
+#### Published Topics
+ - `transcript` ([speech_to_text/Transcript](msg/Transcript.msg)): The text said.
+
+#### Services
+ - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.

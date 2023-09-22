@@ -250,7 +250,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Installing tools"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp install_tools) = "false" ] ; then
-    sudo apt install -y htop python3-pip perl rsync
+    sudo apt install -y htop python3-pip perl rsync scons
     sudo -H pip3 install -U jetson-stats
     makestamp install_tools
 else
@@ -550,6 +550,83 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install ONNX Runtime"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp onnxruntime) = "false" ] ; then
+    cd ~/deps
+    clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
+    cd onnxruntime
+    ./build.sh --config Release --update --build --parallel --build_wheel --build_shared_lib --use_tensorrt --cuda_home /usr/local/cuda --cudnn_home /usr/lib/aarch64-linux-gnu --tensorrt_home /usr/lib/aarch64-linux-gnu
+    cd build/Linux/Release
+    sudo make install
+
+    makestamp onnxruntime
+else
+    SKIP_SECTION "ONNX Runtime already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install ARM Compute Library "
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp armcomputelibrary) = "false" ] ; then
+    cd ~/deps
+    clone_git --depth 1 -b v22.11 https://github.com/ARM-software/ComputeLibrary.git
+    cd ComputeLibrary
+    scons Werror=1 -j8 debug=0 neon=1 opencl=0 os=linux arch=armv8a build=native
+    mv build lib
+
+    makestamp armcomputelibrary
+else
+    SKIP_SECTION "ARM Compute Library already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install oneDNN "
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp onednn) = "false" ] ; then
+    cd ~/deps
+    clone_git --depth 1 -b v3.2.1 https://github.com/oneapi-src/oneDNN.git
+    cd oneDNN
+    mkdir build
+    cd build
+    export ACL_ROOT_DIR=~/deps/ComputeLibrary
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math -DDNNL_AARCH64_USE_ACL=ON"
+    cmake --build . -j4
+    sudo cmake --install .
+
+    makestamp onednn
+else
+    SKIP_SECTION "oneDNN already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install CTranslate2 "
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp ctranslate2) = "false" ] ; then
+    cd ~/deps
+    clone_git --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
+    cd CTranslate2
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
+    cmake --build . -j4
+    sudo cmake --install .
+    sudo ldconfig
+    cd ../python
+    sudo -H pip3 install -r install_requirements.txt
+    python3 setup.py bdist_wheel
+    sudo -H pip3 install dist/*.whl
+
+    makestamp ctranslate2
+else
+    SKIP_SECTION "CTranslate2 already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install general Python dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_python_deps) = "false" ] ; then
@@ -606,23 +683,6 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     makestamp pytorch
 else
     SKIP_SECTION "PyTorch already installed, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Install ONNX Runtime"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp onnxruntime) = "false" ] ; then
-    cd ~/deps
-    clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
-    cd onnxruntime
-    ./build.sh --config Release --update --build --parallel --build_wheel --build_shared_lib --use_tensorrt --cuda_home /usr/local/cuda --cudnn_home /usr/lib/aarch64-linux-gnu --tensorrt_home /usr/lib/aarch64-linux-gnu
-    cd build/Linux/Release
-    sudo make install
-
-    makestamp onnxruntime
-else
-    SKIP_SECTION "ONNX Runtime already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 

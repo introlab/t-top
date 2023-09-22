@@ -161,7 +161,8 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/speech_to_text_node.py
+  scripts/google_speech_to_text_node.py
+  scripts/whisper_speech_to_text_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

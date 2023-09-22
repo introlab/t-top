@@ -72,7 +72,7 @@ static optional<Time> findTimeHourOnly(const string& lowerCaseText)
 optional<Time> findTime(const string& text)
 {
     string lowerCaseText = toLowerString(text);
-    size_t separatorPosition = lowerCaseText.find_first_of("h:");
+    size_t separatorPosition = lowerCaseText.find_first_of("h:.");
     if (separatorPosition == string::npos)
     {
         return findTimeHourOnly(lowerCaseText);

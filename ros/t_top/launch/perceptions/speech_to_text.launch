@@ -1,7 +1,8 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="type"/> <!-- Options: google or whisper -->
 
-    <node pkg="speech_to_text" type="speech_to_text_node.py" name="speech_to_text_node">
+    <node if="$(eval arg('type') == 'google')" pkg="speech_to_text" type="google_speech_to_text_node.py" name="google_speech_to_text_node">
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
         <param name="request_frame_count" value="4"/>
@@ -10,5 +11,17 @@
         <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
         <remap from="transcript" to="speech_to_text/transcript"/>
+    </node>
+
+    <node if="$(eval arg('type') == 'whisper')" pkg="speech_to_text" type="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen">
+        <param name="language" value="$(arg language)"/>
+        <param if="$(eval arg('language') == 'en')" name="model_size" value="base.en"/>
+        <param if="$(eval arg('language') == 'fr')" name="model_size" value="base"/>
+        <param name="device" value="gpu"/>
+        <param name="compute_type" value="int32"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+        <remap from="text" to="speech_to_text/transcript"/>
     </node>
 </launch>

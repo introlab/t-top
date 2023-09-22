@@ -9,6 +9,7 @@ project(control_panel)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   audio_analyzer
+  audio_utils
   gesture
   person_identification
   roscpp

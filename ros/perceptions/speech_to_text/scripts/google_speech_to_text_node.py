@@ -19,7 +19,7 @@ SUPPORTED_AUDIO_FORMAT = 'signed_16'
 SUPPORTED_CHANNEL_COUNT = 1
 
 
-class SpeechToTextNode:
+class GoogleSpeechToTextNode:
     def __init__(self):
         self._sampling_frequency = rospy.get_param('~sampling_frequency', 16000)
         self._frame_sample_count = rospy.get_param('~frame_sample_count', 92)
@@ -121,17 +121,17 @@ class SpeechToTextNode:
 
 
 def main():
-    rospy.init_node('speech_to_text_node')
-    speech_to_text_node = SpeechToTextNode()
+    rospy.init_node('google_speech_to_text_node')
+    google_speech_to_text_node = GoogleSpeechToTextNode()
 
     while not rospy.is_shutdown():
         try:
-            speech_to_text_node.run()
+            google_speech_to_text_node.run()
         except (core_exceptions.InvalidArgument,
                 core_exceptions.Unknown,
                 core_exceptions.DeadlineExceeded,
                 core_exceptions.OutOfRange) as e:
-            rospy.logerr(f'speech_to_text_node has failed ({e})')
+            rospy.logerr(f'google_speech_to_text_node has failed ({e})')
 
 
 if __name__ == '__main__':

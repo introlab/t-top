@@ -2,15 +2,24 @@
 
     <arg name="language" default="fr"/> <!-- Options: fr or en -->
 
-    <node pkg="speech_to_text" type="speech_to_text_node.py" name="speech_to_text_node">
-        <param name="sampling_frequency" value="16000"/>
-        <param name="frame_sample_count" value="1024"/>
-        <param name="request_frame_count" value="4"/>
+    <node pkg="speech_to_text" type="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen">
         <param name="language" value="$(arg language)"/>
+        <param if="$(eval arg('language') == 'en')" name="model_size" value="base.en"/>
+        <param if="$(eval arg('language') == 'fr')" name="model_size" value="base"/>
+        <param name="device" value="cpu"/>
+        <param name="compute_type" value="float32"/>
 
         <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
         <remap from="text" to="speech_to_text/transcript"/>
+    </node>
+
+    <node name="vad_node" type="vad_node" pkg="audio_utils" output="screen">
+    	<param name="silence_to_voice_threshold" value="0.5"/>
+    	<param name="voice_to_silence_threshold" value="0.4"/>
+    	<param name="min_silence_duration_ms" value="500"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
     </node>
 
     <node name="audio_capture" type="capture_node" pkg="audio_utils" output="screen">
