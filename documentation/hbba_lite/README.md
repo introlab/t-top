@@ -426,20 +426,21 @@ The following sections present T-Top specific information.
 - [`FastVideoAnalyzer2dWideDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L78): To enable the video analyzer node for the 2D wide camera at 5 Hz.
 - [`FastVideoAnalyzer2dWideWithAnalyzedImageDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L88): To enable the video analyzer node for the 2D wide camera at 5 Hz and to publish the analyzed image.
 - [`AudioAnalyzerDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L98): To enable the audio analyzer node.
-- [`SpeechToTextDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L108): To enable the speech to text node.
-- [`ExploreDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L118): To enable the explore node.
-- [`FaceAnimationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L128): To change the face animation.
-- [`LedEmotionDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L151): To enable the led emotion node.
-- [`SoundFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L173): To enable the node that makes T-Top follow the loudest sound.
-- [`NearestFaceFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L183): To enable the node that makes T-Top follow the nearest face.
-- [`SpecificFaceFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L193): To enable the node that makes T-Top follow a specific face.
-- [`SoundObjectPersonFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L212): To enable the node that makes T-Top follow the loudest sound, the people and the objects.
-- [`TalkDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L222): To make T-Top talk.
-- [`GestureDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L241): To make T-Top perform a head gesture.
-- [`DanceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L263): To make T-Top dance.
-- [`PlaySoundDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L273): To make T-Top play a sound file.
-- [`TelepresenceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L292): To make T-Top perform a video call
-- [`TeleoperationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L302): To enable remote control of T-Top.
+- [`VadDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L108): To enable to VAD node.
+- [`SpeechToTextDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L118): To enable the speech to text node.
+- [`ExploreDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L128): To enable the explore node.
+- [`FaceAnimationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L138): To change the face animation.
+- [`LedEmotionDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L161): To enable the led emotion node.
+- [`SoundFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L183): To enable the node that makes T-Top follow the loudest sound.
+- [`NearestFaceFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L193): To enable the node that makes T-Top follow the nearest face.
+- [`SpecificFaceFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L203): To enable the node that makes T-Top follow a specific face.
+- [`SoundObjectPersonFollowingDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L222): To enable the node that makes T-Top follow the loudest sound, the people and the objects.
+- [`TalkDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L232): To make T-Top talk.
+- [`GestureDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L251): To make T-Top perform a head gesture.
+- [`DanceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L273): To make T-Top dance.
+- [`PlaySoundDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L283): To make T-Top play a sound file.
+- [`TelepresenceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L302): To make T-Top perform a video call
+- [`TeleoperationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L312): To enable remote control of T-Top.
 
 ### Strategies
 The strategies are declared in the following files: [Strategies.h](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Strategies.h) and [Strategies.cpp](../../ros/utils/t_top_hbba_lite/src/Strategies.cpp).
