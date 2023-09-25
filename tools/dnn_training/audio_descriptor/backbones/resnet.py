@@ -48,3 +48,11 @@ class Resnet50(_Resnet):
 
     def last_channel_count(self):
         return 2048
+
+
+class Resnet101(_Resnet):
+    def __init__(self, pretrained=False):
+        super(Resnet101, self).__init__(models.resnet101(pretrained=pretrained))
+
+    def last_channel_count(self):
+        return 2048

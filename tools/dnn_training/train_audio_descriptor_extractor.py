@@ -5,10 +5,10 @@ import torch
 
 from common.program_arguments import save_arguments, print_arguments
 
-from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
-from audio_descriptor.backbones import ThinResnet34, EcapaTdnn, SmallEcapaTdnn
+from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, Resnet101
+from audio_descriptor.backbones import OpenFaceInception, ThinResnet34, EcapaTdnn, SmallEcapaTdnn
 from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP
+from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP, AudioDescriptorExtractorPSLA
 from audio_descriptor.trainers import AudioDescriptorExtractorTrainer
 
 
@@ -22,7 +22,7 @@ def main():
                                                     'open_face_inception', 'thin_resnet_34',
                                                     'ecapa_tdnn_512', 'ecapa_tdnn_1024',
                                                     'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
-                                                    'small_ecapa_tdnn_512'],
+                                                    'small_ecapa_tdnn_512', 'small_ecapa_tdnn_1024'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
@@ -107,6 +107,9 @@ def create_model(backbone_type, n_features, embedding_size,
     elif pooling_layer == 'sap':
         return AudioDescriptorExtractorSAP(backbone, embedding_size=embedding_size,
                                            class_count=class_count, normalized_linear=normalized_linear)
+    elif pooling_layer == 'psla':
+        return AudioDescriptorExtractorPSLA(backbone, embedding_size=embedding_size,
+                                           class_count=class_count, normalized_linear=normalized_linear)
     else:
         raise ValueError('Invalid pooling layer')
 
@@ -122,6 +125,8 @@ def create_backbone(backbone_type, n_features, pretrained, conv_bias=False):
         return Resnet34(pretrained=pretrained)
     elif backbone_type == 'resnet50':
         return Resnet50(pretrained=pretrained)
+    elif backbone_type == 'resnet101':
+        return Resnet101(pretrained=pretrained)
     elif backbone_type == 'open_face_inception':
         return OpenFaceInception(conv_bias)
     elif backbone_type == 'thin_resnet_34':
@@ -136,6 +141,8 @@ def create_backbone(backbone_type, n_features, pretrained, conv_bias=False):
         return SmallEcapaTdnn(n_features, channels=256)
     elif backbone_type == 'small_ecapa_tdnn_512':
         return SmallEcapaTdnn(n_features, channels=512)
+    elif backbone_type == 'small_ecapa_tdnn_1024':
+        return SmallEcapaTdnn(n_features, channels=1024)
     else:
         raise ValueError('Invalid backbone type')
 

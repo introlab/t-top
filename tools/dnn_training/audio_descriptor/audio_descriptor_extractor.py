@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 from common.modules import L2Normalization, GlobalAvgPool2d, GlobalHeightAvgPool2d, NormalizedLinear, NetVLAD
-from audio_descriptor.modules import SAP
+from audio_descriptor.modules import SAP, PSLAAttention
 
 
 class AudioDescriptorExtractor(nn.Module):
@@ -89,6 +89,38 @@ class AudioDescriptorExtractorSAP(nn.Module):
         features = self._backbone(x)
         features = self._frequency_pooling(features)
         features = self._sap(features)
+
+        descriptor = self._descriptor_layers(features)
+        if self._classifier is not None:
+            class_scores = self._classifier(descriptor)
+            return descriptor, class_scores
+        else:
+            return descriptor
+
+
+class AudioDescriptorExtractorPSLA(nn.Module):
+    def __init__(self, backbone, embedding_size=128, class_count=None, normalized_linear=False):
+        super(AudioDescriptorExtractorPSLA, self).__init__()
+
+        self._backbone = backbone
+        self._frequency_pooling = GlobalHeightAvgPool2d()
+        self._psla_attention = PSLAAttention(backbone.last_channel_count(), backbone.last_channel_count())
+
+        self._descriptor_layers = nn.Sequential(
+            nn.Linear(backbone.last_channel_count(), embedding_size),
+            L2Normalization()
+        )
+
+        self._classifier = _create_classifier(embedding_size, class_count, normalized_linear)
+        self._class_count = class_count
+
+    def class_count(self):
+        return self._class_count
+
+    def forward(self, x):
+        features = self._backbone(x)
+        features = self._frequency_pooling(features)
+        features = self._psla_attention(features)
 
         descriptor = self._descriptor_layers(features)
         if self._classifier is not None:

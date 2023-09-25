@@ -18,19 +18,19 @@ def main():
                         required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0',
-                                                    'resnet18', 'resnet34', 'resnet50',
+                                                    'resnet18', 'resnet34', 'resnet50', 'resnet101',
                                                     'open_face_inception', 'thin_resnet_34',
                                                     'ecapa_tdnn_512', 'ecapa_tdnn_1024',
                                                     'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
                                                     'small_ecapa_tdnn_512'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
-    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
+    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap', 'psla'], help='Set the pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
     parser.add_argument('--audio_transform_type',
-                        choices=['mfcc', 'log_mel_spectrogram', 'mel_spectrogram', 'spectrogram'],
+                        choices=['mfcc', 'log_mel_spectrogram', 'mel_spectrogram', 'spectrogram', 'psla'],
                         help='Choose the audio transform type', required=True)
     parser.add_argument('--enable_pitch_shifting', action='store_true', help='Use pitch shifting data augmentation')
     parser.add_argument('--enable_time_stretching', action='store_true', help='Use pitch shifting data augmentation')

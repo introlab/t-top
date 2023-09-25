@@ -12,6 +12,7 @@ def to_mono(waveform):
 
 
 def normalize(waveform):
+    waveform = waveform - waveform.mean()
     s = max(waveform.min().abs(), waveform.max().abs()) + 1e-6
     return waveform / s
 
@@ -73,7 +74,7 @@ class RandomPitchShift(nn.Module):
 
         if random.random() < self._p:
             n_steps = random.randint(self._min_steps, self._max_steps)
-            return torch.from_numpy(pitch_shift(x[0].numpy(), self._sample_rate, n_steps)).unsqueeze(0)
+            return torch.from_numpy(pitch_shift(x[0].numpy(), sr=self._sample_rate, n_steps=n_steps)).unsqueeze(0)
         else:
             return x
 
@@ -91,6 +92,6 @@ class RandomTimeStretch(nn.Module):
 
         if random.random() < self._p:
             rate = random.uniform(self._min_rate, self._max_rate)
-            return torch.from_numpy(time_stretch(x[0].numpy(), rate)).unsqueeze(0)
+            return torch.from_numpy(time_stretch(x[0].numpy(), rate=rate)).unsqueeze(0)
         else:
             return x
