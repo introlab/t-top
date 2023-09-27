@@ -541,7 +541,8 @@ if [ $(checkstamp ttop_system_deps) = "false" ] ; then
         gstreamer1.0-plugins-bad \
         gstreamer1.0-plugins-ugly \
         gstreamer1.0-libav \
-        gstreamer1.0-tools
+        gstreamer1.0-tools \
+        libspdlog-dev
 
     makestamp ttop_system_deps
 else
