@@ -439,6 +439,7 @@ sudo apt install -y \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-libav \
     gstreamer1.0-tools \
+    libspdlog-dev \
     scons
 
 # Install onnxruntime
