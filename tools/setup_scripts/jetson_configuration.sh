@@ -152,8 +152,7 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_repo) = "false" ] ; then
     mkdir -p ~/t-top_ws/src
     cd ~/t-top_ws/src
-    # TODO remove -b t-top-v4
-    clone_git --recurse-submodules https://github.com/introlab/t-top.git -b t-top-v4
+    clone_git --recurse-submodules https://github.com/introlab/t-top.git
     makestamp ttop_repo
 else
     SKIP_SECTION "T-Top repo already cloned, skipping"
