@@ -603,30 +603,6 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Install CTranslate2 "
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp ctranslate2) = "false" ] ; then
-    cd ~/deps
-    clone_git --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
-    cd CTranslate2
-    mkdir build
-    cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
-    cmake --build . -j4
-    sudo cmake --install .
-    sudo ldconfig
-    cd ../python
-    sudo -H pip3 install -r install_requirements.txt
-    python3 setup.py bdist_wheel
-    sudo -H pip3 install dist/*.whl
-
-    makestamp ctranslate2
-else
-    SKIP_SECTION "CTranslate2 already installed, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install general Python dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_python_deps) = "false" ] ; then
@@ -650,6 +626,30 @@ if [ $(checkstamp ttop_python_deps) = "false" ] ; then
     makestamp ttop_python_deps
 else
     SKIP_SECTION "T-Top Python dependencies already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Install CTranslate2 "
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp ctranslate2) = "false" ] ; then
+    cd ~/deps
+    clone_git --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
+    cd CTranslate2
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
+    cmake --build . -j4
+    sudo cmake --install .
+    sudo ldconfig
+    cd ../python
+    sudo -H pip3 install -r install_requirements.txt
+    python3 setup.py bdist_wheel
+    sudo -H pip3 install dist/*.whl
+
+    makestamp ctranslate2
+else
+    SKIP_SECTION "CTranslate2 already installed, skipping"
 fi
 ECHO_IN_BLUE "###############################################################\n"
 
