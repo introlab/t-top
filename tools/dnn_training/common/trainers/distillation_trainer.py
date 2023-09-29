@@ -35,11 +35,19 @@ class DistillationTrainer:
 
         self._student_model = student_model.to(device)
         self._teacher_model = teacher_model.to(device)
-        bias_parameters = [parameter for name, parameter in student_model.named_parameters() if name.endswith('.bias')]
-        other_parameters = [parameter for name, parameter in student_model.named_parameters() if not name.endswith('.bias')]
+
+        no_weight_decay_parameters = getattr(self._criterion, 'no_weight_decay_parameters', None)
+        if no_weight_decay_parameters is None:
+            no_weight_decay_parameters = {}
+        else:
+            no_weight_decay_parameters = no_weight_decay_parameters()
+        no_weight_decay_parameters = [parameter for name, parameter in student_model.named_parameters()
+                                      if name.endswith('.bias') or name in no_weight_decay_parameters]
+        other_parameters = [parameter for name, parameter in student_model.named_parameters()
+                            if not name.endswith('.bias') and name not in no_weight_decay_parameters]
         parameter_groups = [
             {'params': other_parameters},
-            {'params': bias_parameters, 'weight_decay': 0.0}
+            {'params': no_weight_decay_parameters, 'weight_decay': 0.0}
         ]
         self._optimizer = torch.optim.AdamW(parameter_groups, lr=learning_rate, weight_decay=weight_decay)
         self._scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self._optimizer, epoch_count)
