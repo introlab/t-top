@@ -2,6 +2,7 @@
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="camera_2d_wide_enabled"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+    <arg name="speech_to_text_type"/> <!-- Options: google or whisper -->
     <arg name="visualization" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="slam" default="true"/>
@@ -28,9 +29,13 @@
     <!-- Music Beat Detector -->
     <include file="$(find t_top)/launch/perceptions/music_beat_detector.launch"/>
 
+    <!-- VAD -->
+    <include file="$(find t_top)/launch/perceptions/vad.launch"/>
+
     <!-- Speech to Text -->
     <include file="$(find t_top)/launch/perceptions/speech_to_text.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="type" value="$(arg speech_to_text_type)"/>
     </include>
 
     <!-- Robot Name Detector -->

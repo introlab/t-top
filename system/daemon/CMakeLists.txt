@@ -37,13 +37,9 @@ set (daemon_srcs
     src/JetsonModelParser.cpp
 )
 
-set (daemon_other_files
-    README.md
-)
-
 qt5_wrap_cpp(daemon_headers_moc ${daemon_headers})
 
-add_executable(daemon ${daemon_srcs} ${daemon_headers} ${daemon_headers_moc} ${daemon_other_files})
+add_executable(daemon ${daemon_srcs} ${daemon_headers} ${daemon_headers_moc})
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(daemon Qt5::Core Qt5::Network Qt5::WebSockets Qt5::SerialPort serial_communication_common)
 

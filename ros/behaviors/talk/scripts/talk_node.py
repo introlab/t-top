@@ -17,13 +17,16 @@ from audio_utils.msg import AudioFrame
 
 import hbba_lite
 
-from talk.lib_voice_generator import GoogleVoiceGenerator, CachedVoiceGenerator
+from talk.lib_voice_generator import Language, Gender
+from talk.lib_voice_generator import GoogleVoiceGenerator, PiperVoiceGenerator, CachedVoiceGenerator
 
 
 class TalkNode:
     def __init__(self):
-        language = rospy.get_param('~language')
+        language = Language.from_name(rospy.get_param('~language'))
+        gender = Gender.from_name(rospy.get_param('~gender'))
         speaking_rate = rospy.get_param('~speaking_rate')
+        generator_type = rospy.get_param('~generator_type')
         cache_size = rospy.get_param('~cache_size')
 
         self._mouth_signal_gain = rospy.get_param('~mouth_signal_gain')
@@ -34,8 +37,13 @@ class TalkNode:
         self._pkg_path = self._rospack.get_path('talk')
         audio_directory_path = os.path.join(self._pkg_path, 'audio_files')
 
-        google_voice_generator = GoogleVoiceGenerator(audio_directory_path, language, speaking_rate)
-        self._voice_generator = CachedVoiceGenerator(google_voice_generator, cache_size)
+        if generator_type == 'google':
+            voice_generator = GoogleVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
+        elif generator_type == 'piper':
+            voice_generator = PiperVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
+        else:
+            raise ValueError(f'Invalid generator type ({generator_type})')
+        self._voice_generator = CachedVoiceGenerator(voice_generator, cache_size)
 
         self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
@@ -104,7 +112,7 @@ class TalkNode:
     def _load_frames(self, file_path):
         waveform, _ = librosa.load(file_path, sr=self._sampling_frequency, res_type='kaiser_fast')
         pad = (self._frame_sample_count - (waveform.shape[0] % self._frame_sample_count)) % self._frame_sample_count
-        waveform.resize(waveform.shape[0] + pad, refcheck=False)
+        waveform = np.pad(waveform, (0, pad), 'constant', constant_values=0)
         frames = np.split(waveform, np.arange(self._frame_sample_count, len(waveform), self._frame_sample_count))
         return frames
 

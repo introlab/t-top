@@ -385,9 +385,9 @@ git clone -b ros1 https://github.com/ros-planning/navigation_msgs.git
 git clone -b noetic https://github.com/ros-perception/vision_opencv.git
 git clone -b noetic-devel https://github.com/ros-perception/image_common.git
 
-clone_git -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
-clone_git -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
-clone_git -b noetic-devel https://github.com/ros-perception/image_transport_plugins.git
+git clone -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
+git clone -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
+git clone -b noetic-devel https://github.com/ros-perception/image_transport_plugins.git
 
 
 cd ~/ros_catkin_ws
@@ -438,7 +438,35 @@ sudo apt install -y \
     gstreamer1.0-plugins-bad \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-libav \
-    gstreamer1.0-tools
+    gstreamer1.0-tools \
+    libspdlog-dev \
+    scons
+
+# Install onnxruntime
+cd ~/deps
+git clone https://github.com/microsoft/onnxruntime.git -b v1.14.1 --recurse-submodules
+cd onnxruntime
+./build.sh --config Release --update --build --parallel --build_wheel --build_shared_lib --use_tensorrt --cuda_home /usr/local/cuda --cudnn_home /usr/lib/aarch64-linux-gnu --tensorrt_home /usr/lib/aarch64-linux-gnu
+cd build/Linux/Release
+sudo make install
+
+# Install ComputeLibrary
+cd ~/deps
+git clone --depth 1 -b v22.11 https://github.com/ARM-software/ComputeLibrary.git
+cd ComputeLibrary
+scons Werror=1 -j8 debug=0 neon=1 opencl=0 os=linux arch=armv8a build=native
+mv build lib
+
+# Install onDNN
+cd ~/deps
+git clone --depth 1 -b v3.2.1 https://github.com/oneapi-src/oneDNN.git
+cd oneDNN
+mkdir build
+cd build
+export ACL_ROOT_DIR=~/deps/ComputeLibrary
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math -DDNNL_AARCH64_USE_ACL=ON"
+cmake --build . -j4
+sudo cmake --install .
 ```
 
 ### M. Install Python Dependencies
@@ -463,6 +491,21 @@ sudo apt install -y \
 
 sudo -H pip3 install 'cython>=0.29.22,<0.30.0'
 sudo -H pip3 install -r ~/t-top_ws/src/t-top/tools/setup_scripts/files/requirements.txt
+
+#Install CTranslate2
+cd ~/deps
+git clone --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
+cd CTranslate2
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
+cmake --build . -j4
+sudo cmake --install .
+sudo ldconfig
+cd ../python
+sudo -H pip3 install -r install_requirements.txt
+python3 setup.py bdist_wheel
+sudo -H pip3 install dist/*.whl --no-deps --force-reinstall
 
 # Install PyTorch for Jetson
 cd ~/deps

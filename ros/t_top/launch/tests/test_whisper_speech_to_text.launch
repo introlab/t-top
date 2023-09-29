@@ -1,0 +1,41 @@
+<launch>
+
+    <arg name="language" default="en"/> <!-- Options: fr or en -->
+
+    <node pkg="speech_to_text" type="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen">
+        <param name="language" value="$(arg language)"/>
+        <param if="$(eval arg('language') == 'en')" name="model_size" value="base.en"/>
+        <param if="$(eval arg('language') == 'fr')" name="model_size" value="base"/>
+        <param name="device" value="cuda"/>
+        <param name="compute_type" value="int8"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+        <remap from="transcript" to="speech_to_text/transcript"/>
+
+        <env name="OPENBLAS_NUM_THREADS" value="1"/>
+    </node>
+
+    <node name="vad_node" type="vad_node" pkg="audio_utils" output="screen">
+    	<param name="silence_to_voice_threshold" value="0.5"/>
+    	<param name="voice_to_silence_threshold" value="0.4"/>
+    	<param name="min_silence_duration_ms" value="500"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+    </node>
+
+    <node name="audio_capture" type="capture_node" pkg="audio_utils" output="screen">
+        <param name="backend" value="alsa"/>
+        <param name="device" value="default"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="merge" value="false" />
+        <param name="gain" value="1.0" />
+        <param name="latency_us" value="40000" />
+
+        <remap from="audio_out" to="audio_input_signed_16_16000"/>
+    </node>
+
+</launch>

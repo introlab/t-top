@@ -19,6 +19,7 @@ SpeechTab::SpeechTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSe
 
     m_speechToTextSubscriber =
         nodeHandle.subscribe("speech_to_text/transcript", 1, &SpeechTab::speechToTextSubscriberCallback, this);
+    m_vadSubscriber = nodeHandle.subscribe("voice_activity", 1, &SpeechTab::vadSubscriberCallback, this);
 }
 
 SpeechTab::~SpeechTab()
@@ -63,9 +64,46 @@ void SpeechTab::onListenButtonToggled(bool checked)
     }
 }
 
+void SpeechTab::onVadButtonToggled(bool checked)
+{
+    if (checked)
+    {
+        auto desire = make_unique<VadDesire>();
+        m_vadDesireId = static_cast<qint64>(desire->id());
+        m_desireSet->addDesire(std::move(desire));
+    }
+    else if (m_vadDesireId.isValid())
+    {
+        m_desireSet->removeDesire(m_vadDesireId.toULongLong());
+        m_vadDesireId.clear();
+        m_vadLineEdit->setText("");
+    }
+}
+
 void SpeechTab::speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
 {
     invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->text)); });
+}
+
+void SpeechTab::vadSubscriberCallback(const audio_utils::VoiceActivity::ConstPtr& msg)
+{
+    invokeLater(
+        [=]()
+        {
+            if (!m_vadDesireId.isValid())
+            {
+                return;
+            }
+
+            if (msg->is_voice)
+            {
+                m_vadLineEdit->setText("Voice");
+            }
+            else
+            {
+                m_vadLineEdit->setText("Not voice");
+            }
+        });
 }
 
 void SpeechTab::createUi()
@@ -84,6 +122,17 @@ void SpeechTab::createUi()
     m_listenedTextTextEdit->setAcceptRichText(false);
     m_listenedTextTextEdit->setReadOnly(true);
 
+    m_vadButton = new QPushButton("VAD");
+    m_vadButton->setCheckable(true);
+    connect(m_vadButton, &QPushButton::toggled, this, &SpeechTab::onVadButtonToggled);
+
+    m_vadLineEdit = new QLineEdit;
+    m_vadLineEdit->setReadOnly(true);
+
+    auto vadLayout = new QHBoxLayout;
+    vadLayout->addWidget(m_vadButton, 1);
+    vadLayout->addWidget(m_vadLineEdit, 1);
+
     auto globalLayout = new QVBoxLayout;
     globalLayout->addWidget(new QLabel("Text to say :"));
     globalLayout->addWidget(m_textToSayTextEdit);
@@ -91,6 +140,7 @@ void SpeechTab::createUi()
     globalLayout->addWidget(m_listenButton);
     globalLayout->addWidget(new QLabel("Listened Text :"));
     globalLayout->addWidget(m_listenedTextTextEdit);
+    globalLayout->addLayout(vadLayout);
 
     setLayout(globalLayout);
 }

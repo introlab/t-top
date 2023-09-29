@@ -11,6 +11,9 @@ This node makes T-Top talk and move its lips accordingly. It uses Google Cloud T
 #### Parameters
 
 - `language` (string): The language (en or fr).
+- `gender` (string): The gender (female or male).
+- `speaking_rate` (doule): The speaking rate (range: [0.25, 4.0]).
+- `generator_type` (string): The generator type (google or piper). The Google generator uses the cloud and the Piper generator does not.
 - `mouth_signal_gain` (double): The gain to apply after the filter calculating the mouth signal.
 - `sampling_frequency` (int): The output sampling frequency.
 - `frame_sample_count` (double): The number of sample in each audio frame.

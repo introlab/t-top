@@ -295,12 +295,23 @@ unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(shared_ptr<FilterPool> filt
         move(filterPool));
 }
 
+unique_ptr<BaseStrategy> createVadStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<VadDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{{"vad/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
+}
+
 unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<SpeechToTextDesire>>(
         utility,
         unordered_map<string, uint16_t>{},
-        unordered_map<string, FilterConfiguration>{{"speech_to_text/filter_state", FilterConfiguration::onOff()}},
+        unordered_map<string, FilterConfiguration>{
+            {"speech_to_text/filter_state", FilterConfiguration::onOff()},
+            {"vad/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
 

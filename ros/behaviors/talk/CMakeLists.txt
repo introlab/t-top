@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
         message_generation
         audio_utils
         hbba_lite
+        piper_ros
         )
 
 ## System dependencies are found with CMake's conventions

@@ -105,6 +105,16 @@ public:
 };
 
 
+class VadDesire : public Desire
+{
+public:
+    explicit VadDesire(uint16_t intensity = 1);
+    ~VadDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(VadDesire)
+};
+
+
 class SpeechToTextDesire : public Desire
 {
 public:
