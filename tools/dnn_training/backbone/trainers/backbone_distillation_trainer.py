@@ -11,7 +11,7 @@ from common.modules import load_checkpoint
 from common.metrics import ClassificationAccuracyMetric, LossMetric, LossAccuracyLearningCurves, \
     TopNClassificationAccuracyMetric
 
-from backbone.datasets import ClassificationOpenImages, ClassificationImageNet
+from backbone.datasets import ClassificationOpenImages, ClassificationImageNet, MixupClassificationDataset
 from backbone.trainers.backbone_trainer import create_training_image_transform, create_validation_image_transform
 
 

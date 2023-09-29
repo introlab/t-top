@@ -62,6 +62,9 @@ class ClassificationImageNet(Dataset):
 
         return image, self._images[index]['class_index']
 
+    def class_count(self):
+        return CLASS_COUNT
+
 
 def _is_jpeg(filename):
     filename = filename.upper()
