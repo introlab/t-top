@@ -467,21 +467,6 @@ export ACL_ROOT_DIR=~/deps/ComputeLibrary
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math -DDNNL_AARCH64_USE_ACL=ON"
 cmake --build . -j4
 sudo cmake --install .
-
-#Install CTranslate2
-cd ~/deps
-git clone --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
-cd CTranslate2
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
-cmake --build . -j4
-sudo cmake --install .
-sudo ldconfig
-cd ../python
-sudo -H pip3 install -r install_requirements.txt
-python3 setup.py bdist_wheel
-sudo -H pip3 install dist/*.whl
 ```
 
 ### M. Install Python Dependencies
@@ -506,6 +491,21 @@ sudo apt install -y \
 
 sudo -H pip3 install 'cython>=0.29.22,<0.30.0'
 sudo -H pip3 install -r ~/t-top_ws/src/t-top/tools/setup_scripts/files/requirements.txt
+
+#Install CTranslate2
+cd ~/deps
+git clone --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
+cd CTranslate2
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
+cmake --build . -j4
+sudo cmake --install .
+sudo ldconfig
+cd ../python
+sudo -H pip3 install -r install_requirements.txt
+python3 setup.py bdist_wheel
+sudo -H pip3 install dist/*.whl --no-deps --force-reinstall
 
 # Install PyTorch for Jetson
 cd ~/deps
