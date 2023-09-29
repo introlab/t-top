@@ -553,6 +553,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install ONNX Runtime"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp onnxruntime) = "false" ] ; then
+    sudo -H pip3 install packaging==23.1
     cd ~/deps
     clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
     cd onnxruntime
@@ -589,7 +590,7 @@ if [ $(checkstamp onednn) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v3.2.1 https://github.com/oneapi-src/oneDNN.git
     cd oneDNN
-    mkdir build
+    mkdir -p build
     cd build
     export ACL_ROOT_DIR=~/deps/ComputeLibrary
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math -DDNNL_AARCH64_USE_ACL=ON"
@@ -636,7 +637,7 @@ if [ $(checkstamp ctranslate2) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
     cd CTranslate2
-    mkdir build
+    mkdir -p build
     cd build
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
     cmake --build . -j4
@@ -645,7 +646,7 @@ if [ $(checkstamp ctranslate2) = "false" ] ; then
     cd ../python
     sudo -H pip3 install -r install_requirements.txt
     python3 setup.py bdist_wheel
-    sudo -H pip3 install dist/*.whl
+    sudo -H pip3 install dist/*.whl --no-deps --force-reinstall
 
     makestamp ctranslate2
 else
