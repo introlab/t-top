@@ -66,11 +66,13 @@ class EncoderBlock(nn.Module):
 class Vit(nn.Module):
     def __init__(self, image_size, in_channels=3, patch_size=16, stride=16, embedding_size=768, head_count=12, depth=7,
                  class_count=1000, distilled=False, patchout_time=5, patchout_freq=5,
-                 dropout_rate=0.1, attention_dropout_rate=0.1):
+                 dropout_rate=0.1, attention_dropout_rate=0.1, output_embeddings=False):
         super(Vit, self).__init__()
 
         self._patchout_time = patchout_time
         self._patchout_freq = patchout_freq
+        self._class_count = class_count
+        self._output_embeddings = output_embeddings
 
         image_size = _pair(image_size)
         grid_size = (image_size[0] // stride, image_size[1] // stride)
@@ -99,6 +101,9 @@ class Vit(nn.Module):
         self._init_embeddings()
         for name, module in self.named_modules():
             self._init_module_weights(module, name)
+
+    def class_count(self):
+        return self._class_count
 
     def no_weight_decay_parameters(self):
         return {'_class_token', '_distillation_token', '_class_positional_embedding',
@@ -130,18 +135,26 @@ class Vit(nn.Module):
         if self._distillation_token is not None:
             y_distillation = self._head_distillation(all_features[:, 1])
             if self.training:
-                return y, y_distillation
+                if self._output_embeddings:
+                    return embedding, y, y_distillation
+                else:
+                    return y, y_distillation
             else:
-                return (x + y_distillation) / 2
+                if self._output_embeddings:
+                    return embedding, (x + y_distillation) / 2,
+                else:
+                    return (x + y_distillation) / 2
         else:
-            return y
+            if self._output_embeddings:
+                return embedding, y
+            else:
+                return y
 
     def _forward_embeddings(self, x):
         embedding = self._image_patch_embedding(x)
 
-        # TODO the same for freq
         if embedding.size(-1) < self._time_positional_embedding.size(-1):
-            time_positional_embedding = self._time_positional_embedding[:, :, :, :x.size(-1)]
+            time_positional_embedding = self._time_positional_embedding[:, :, :, :embedding.size(-1)]
         elif embedding.size(-1) > self._time_positional_embedding.size(-1):
             raise ValueError('The image is bigger than the positional embedding')
         else:

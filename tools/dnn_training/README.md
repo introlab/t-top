@@ -11,7 +11,8 @@ This folder contains the tools to train the neural networks used by T-Top.
     - The [train_backbone_distillation.py](train_backbone_distillation.py) script trains a student neural network that 
       classifies images from a teacher one.
     - The [train_descriptor_yolo_v4.py](train_descriptor_yolo_v4.py) script trains a neural network that detects
-      objects, classifies them and extracts embeddings. The network name is `descriptor_yolo_v4`.
+      objects, classifies them and extracts embeddings. The network name is `descriptor_yolo_v4`. 
+      The training is not working properly.
     - The [train_face_descriptor_extractor.py](train_face_descriptor_extractor.py) script trains a neural network that
       extracts an embedding for a face. The network name is `face_descriptor_extractor`.
     - The [train_keyword_spotter.py](train_keyword_spotter.py) script trains a neural network that detects a wake-up

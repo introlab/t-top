@@ -3,6 +3,7 @@ import argparse
 
 import torch
 
+from backbone.vit import Vit
 from common.program_arguments import save_arguments, print_arguments
 
 from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, Resnet101
@@ -22,10 +23,11 @@ def main():
                                                     'open_face_inception', 'thin_resnet_34',
                                                     'ecapa_tdnn_512', 'ecapa_tdnn_1024',
                                                     'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
-                                                    'small_ecapa_tdnn_512', 'small_ecapa_tdnn_1024'],
+                                                    'small_ecapa_tdnn_512', 'small_ecapa_tdnn_1024'
+                                                    'passt_s_n', 'passt_s_n_l'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
-    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
+    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap', 'psla'], help='Set the pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
@@ -96,6 +98,12 @@ def main():
 def create_model(backbone_type, n_features, embedding_size,
                  class_count=None, normalized_linear=False, pooling_layer='avg', conv_bias=False):
     pretrained = True
+    if backbone_type == 'passt_s_n':
+        return Vit((n_features, 1000), embedding_size=embedding_size, class_count=class_count,
+                   in_channels=1, depth=12, dropout_rate=0.0, attention_dropout_rate=0.0, output_embeddings=True)
+    elif backbone_type == 'passt_s_n_l':
+        return Vit((n_features, 1000), embedding_size=embedding_size, class_count=class_count,
+                   in_channels=1, depth=7, dropout_rate=0.0, attention_dropout_rate=0.0, output_embeddings=True)
 
     backbone = create_backbone(backbone_type, n_features, pretrained, conv_bias)
     if pooling_layer == 'avg':

@@ -22,7 +22,8 @@ def main():
                                                     'open_face_inception', 'thin_resnet_34',
                                                     'ecapa_tdnn_512', 'ecapa_tdnn_1024',
                                                     'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
-                                                    'small_ecapa_tdnn_512'],
+                                                    'small_ecapa_tdnn_512',
+                                                    'passt_s_n', 'passt_s_n_l'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap', 'psla'], help='Set the pooling layer')
