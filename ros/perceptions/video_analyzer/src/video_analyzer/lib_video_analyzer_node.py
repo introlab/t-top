@@ -83,7 +83,6 @@ class VideoAnalyzerNode:
         self._nms_threshold = rospy.get_param('~nms_threshold')
         self._person_probability_threshold = rospy.get_param('~person_probability_threshold')
         self._pose_confidence_threshold = rospy.get_param('~pose_confidence_threshold')
-        self._face_descriptor_model = rospy.get_param('~face_descriptor_model')
         self._inference_type = rospy.get_param('~inference_type', None)
 
         self._pose_enabled = rospy.get_param('~pose_enabled', True)
@@ -107,8 +106,7 @@ class VideoAnalyzerNode:
             self._pose_estimator = PoseEstimator(inference_type=self._inference_type)
             self._skeleton_pairs = self._pose_estimator.get_skeleton_pairs()
         if self._face_descriptor_enabled:
-            self._face_descriptor_extractor = FaceDescriptorExtractor(self._face_descriptor_model,
-                                                                      inference_type=self._inference_type)
+            self._face_descriptor_extractor = FaceDescriptorExtractor(inference_type=self._inference_type)
         if self._semantic_segmentation_enabled:
             self._semantic_segmentation_network = SemanticSegmentationNetwork(inference_type=self._inference_type,
                                                                               dataset=self._semantic_segmentation_dataset)
