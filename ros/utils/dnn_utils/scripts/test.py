@@ -97,12 +97,12 @@ def test_pose_estimator():
           mean_abs_diff(cpu_presence, trt_gpu_presence))
 
 
-def test_face_descriptor_extractor(model_name):
-    print(f'----------test_face_descriptor_extractor_{model_name}----------')
+def test_face_descriptor_extractor():
+    print(f'----------test_face_descriptor_extractor----------')
 
-    cpu_model = FaceDescriptorExtractor(model_name, inference_type='cpu')
-    torch_gpu_model = FaceDescriptorExtractor(model_name, inference_type='torch_gpu')
-    trt_gpu_model = FaceDescriptorExtractor(model_name, inference_type='trt_gpu')
+    cpu_model = FaceDescriptorExtractor(inference_type='cpu')
+    torch_gpu_model = FaceDescriptorExtractor(inference_type='torch_gpu')
+    trt_gpu_model = FaceDescriptorExtractor(inference_type='trt_gpu')
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.rand(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
@@ -212,8 +212,7 @@ def main():
     launch_test(test_yolo, 'yolo_v7_tiny_coco')
     launch_test(test_yolo, 'yolo_v7_objects365')
     launch_test(test_pose_estimator)
-    launch_test(test_face_descriptor_extractor, 'open_face')
-    launch_test(test_face_descriptor_extractor, 'efficientnet_b0')
+    launch_test(test_face_descriptor_extractor)
     launch_test(test_multiclass_audio_descriptor_extractor)
     launch_test(test_voice_descriptor_extractor)
     launch_test(test_ttop_keyword_spotter)
