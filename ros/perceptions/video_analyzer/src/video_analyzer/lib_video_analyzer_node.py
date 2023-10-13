@@ -13,7 +13,7 @@ from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
 
-from dnn_utils import DescriptorYoloV4, Yolo, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
+from dnn_utils import DescriptorYolo, Yolo, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
 import hbba_lite
 
 
@@ -77,7 +77,7 @@ class FaceAnalysis:
 
 class VideoAnalyzerNode:
     def __init__(self):
-        self._use_descriptor_yolo_v4 = rospy.get_param('~use_descriptor_yolo_v4')
+        self._use_descriptor_yolo = rospy.get_param('~use_descriptor_yolo')
         self._yolo_model = rospy.get_param('~yolo_model', None)
         self._confidence_threshold = rospy.get_param('~confidence_threshold')
         self._nms_threshold = rospy.get_param('~nms_threshold')
@@ -94,9 +94,9 @@ class VideoAnalyzerNode:
         if self._face_descriptor_enabled and not self._pose_enabled:
             raise ValueError('The pose estimation must be enabled when the face descriptor extraction is enabled.')
 
-        if self._use_descriptor_yolo_v4:
-            self._object_detector = DescriptorYoloV4(confidence_threshold=self._confidence_threshold,
-                                                     nms_threshold=self._nms_threshold, inference_type=self._inference_type)
+        if self._use_descriptor_yolo:
+            self._object_detector = DescriptorYolo(self._yolo_model, confidence_threshold=self._confidence_threshold,
+                                                   nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         else:
             self._object_detector = Yolo(self._yolo_model, confidence_threshold=self._confidence_threshold,
                                          nms_threshold=self._nms_threshold, inference_type=self._inference_type)

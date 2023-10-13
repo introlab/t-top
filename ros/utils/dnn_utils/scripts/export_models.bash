@@ -43,11 +43,16 @@ trap 'jobs -p | xargs -I '{}' kill '{}' &> /dev/null; wait' INT QUIT KILL TERM
 
 set -e
 
-python3 export_descriptor_yolo_v4.py --dataset_type coco --model_type yolo_v4_tiny --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v4.ts.pth --trt_filename descriptor_yolo_v4.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v4_tiny_3.pth --trt_fp16 $FORCE_EXPORT
-python3 export_yolo.py --model_type yolo_v4 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4.ts.pth --trt_filename yolo_v4.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4.pth --trt_fp16 $FORCE_EXPORT
-python3 export_yolo.py --model_type yolo_v4_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4_tiny.ts.pth --trt_filename yolo_v4_tiny.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_tiny.pth --trt_fp16 $FORCE_EXPORT
-python3 export_yolo.py --model_type yolo_v7 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7.ts.pth --trt_filename yolo_v7.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7.pth --trt_fp16 $FORCE_EXPORT
-python3 export_yolo.py --model_type yolo_v7_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_tiny.ts.pth --trt_filename yolo_v7_tiny.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_tiny.pth --trt_fp16 $FORCE_EXPORT
+python3 export_descriptor_yolo.py --dataset_type coco --model_type yolo_v4_tiny --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v4_tiny_coco.ts.pth --trt_filename descriptor_yolo_v4_tiny_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v4_tiny_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_descriptor_yolo.py --dataset_type coco --model_type yolo_v7 --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v7_coco.ts.pth --trt_filename descriptor_yolo_v7_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v7_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_descriptor_yolo.py --dataset_type objects365 --model_type yolo_v7 --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v7_objects365.ts.pth --trt_filename descriptor_yolo_v7_objects365.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v7_objects365.pth --trt_fp16 $FORCE_EXPORT
+
+python3 export_yolo.py --dataset_type coco --model_type yolo_v4 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4_coco.ts.pth --trt_filename yolo_v4_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v4_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4_tiny_coco.ts.pth --trt_filename yolo_v4_tiny_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_tiny_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v7 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_coco.ts.pth --trt_filename yolo_v7_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v7_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_tiny_coco.ts.pth --trt_filename yolo_v7_tiny_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_tiny_coco.pth --trt_fp16 $FORCE_EXPORT
+
+python3 export_yolo.py --dataset_type objects365 --model_type yolo_v7 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_objects365.ts.pth --trt_filename yolo_v7_objects365.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_objects365.pth --trt_fp16 $FORCE_EXPORT
 
 python3 export_pose_estimator.py --backbone_type efficientnet_b0 --output_dir $SCRIPT_PATH/../models --torch_script_filename pose_estimator_efficientnet_b0.ts.pth --trt_filename pose_estimator_efficientnet_b0.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/pose_estimator_efficientnet_b0.pth --trt_fp16 $FORCE_EXPORT
 

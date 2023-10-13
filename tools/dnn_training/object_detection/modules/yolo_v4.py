@@ -13,7 +13,7 @@ IN_CHANNELS = 3
 
 # Generated from: yolov4.cfg:
 class YoloV4(nn.Module):
-    def __init__(self, class_probs=False):
+    def __init__(self, class_count, class_probs=False):
         super(YoloV4, self).__init__()
         self._anchors = []
         self._output_strides = []
@@ -528,11 +528,11 @@ class YoloV4(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv138 = nn.Sequential(
-            nn.Conv2d(256, 255, 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(256, 3 * (class_count + 5), 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(12, 16), (19, 36), (40, 28)]))
         self._output_strides.append(8)
-        self._yolo139 = YoloV4Layer(IMAGE_SIZE, 8, self._anchors[-1].tolist(), 80, scale_x_y=1.2)
+        self._yolo139 = YoloV4Layer(IMAGE_SIZE, 8, self._anchors[-1].tolist(), class_count, scale_x_y=1.2, class_probs=class_probs)
 
         self._conv141 = nn.Sequential(
             nn.Conv2d(128, 256, 3, stride=2, padding=1, bias=False),
@@ -571,11 +571,11 @@ class YoloV4(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv149 = nn.Sequential(
-            nn.Conv2d(512, 255, 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(512, 3 * (class_count + 5), 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(36, 75), (76, 55), (72, 146)]))
         self._output_strides.append(16)
-        self._yolo150 = YoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, scale_x_y=1.1)
+        self._yolo150 = YoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, scale_x_y=1.1, class_probs=class_probs)
 
         self._conv152 = nn.Sequential(
             nn.Conv2d(256, 512, 3, stride=2, padding=1, bias=False),
@@ -614,11 +614,11 @@ class YoloV4(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv160 = nn.Sequential(
-            nn.Conv2d(1024, 255, 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(1024, 3 * (class_count + 5), 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
         self._output_strides.append(32)
-        self._yolo161 = YoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, scale_x_y=1.05, class_probs=class_probs)
+        self._yolo161 = YoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, scale_x_y=1.05, class_probs=class_probs)
 
     def get_class_count(self):
         return 80

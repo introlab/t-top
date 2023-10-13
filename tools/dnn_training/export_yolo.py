@@ -9,6 +9,7 @@ from common.file_presence_checker import terminate_if_already_exported
 
 def main():
     parser = argparse.ArgumentParser(description='Export yolo')
+    parser.add_argument('--dataset_type', choices=['coco', 'objects365'], help='Choose the dataset type', required=True)
     parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
                         help='Choose the model type', required=True)
 
@@ -31,7 +32,7 @@ def main():
 
     from object_detection.modules.test_converted_yolo import create_model
 
-    model = create_model(args.model_type, class_probs=True)
+    model = create_model(args.model_type, args.model_type, class_probs=True)
     x = torch.ones((1, 3, model.get_image_size()[0], model.get_image_size()[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16)

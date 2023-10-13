@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw
 
 import torch
 
+from common.modules import load_checkpoint # TODO remove
 from object_detection.modules.yolo_v4 import YoloV4
 from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
 from object_detection.modules.yolo_v7 import YoloV7
@@ -12,6 +13,8 @@ from object_detection.modules.yolo_v7_tiny import YoloV7Tiny
 from object_detection.datasets.coco_detection_transforms import CocoDetectionValidationTransforms
 from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions_by_classes
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CLASSES_INDEX
+
+from train_descriptor_yolo import _get_class_count
 
 COCO_CLASSES = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
                 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
@@ -23,9 +26,61 @@ COCO_CLASSES = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'tr
                 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book',
                 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
 
+OBJECTS365_CLASS_NAMES = ['person', 'sneakers', 'chair', 'other shoes', 'hat', 'car', 'lamp', 'glasses', 'bottle',
+                          'desk', 'cup', 'street lights', 'cabinet/shelf', 'handbag', 'bracelet', 'plate',
+                          'picture/frame', 'helmet', 'book', 'gloves', 'storage box', 'boat', 'leather shoes',
+                          'flower', 'bench', 'pottedplant', 'bowl', 'flag', 'pillow', 'boots', 'vase',
+                          'microphone', 'necklace', 'ring', 'suv', 'wine glass', 'belt', 'tvmonitor', 'backpack',
+                          'umbrella', 'traffic light', 'speaker', 'watch', 'tie', 'trash bin can', 'slippers',
+                          'bicycle', 'stool', 'barrel/bucket', 'van', 'couch', 'sandals', 'basket', 'drum',
+                          'pen/pencil', 'bus', 'bird', 'high heels', 'motorbike', 'guitar', 'carpet',
+                          'cell phone', 'bread', 'camera', 'canned', 'truck', 'traffic cone', 'cymbal', 'lifesaver',
+                          'towel', 'stuffed toy', 'candle', 'sailboat', 'laptop', 'awning', 'bed', 'faucet', 'tent',
+                          'horse', 'mirror', 'power outlet', 'sink', 'apple', 'air conditioner', 'knife',
+                          'hockey stick', 'paddle', 'pickup truck', 'fork', 'traffic sign', 'balloon', 'tripod', 'dog',
+                          'spoon', 'clock', 'pot', 'cow', 'cake', 'dining table', 'sheep', 'hanger',
+                          'blackboard/whiteboard', 'napkin', 'other fish', 'orange', 'toiletry', 'keyboard',
+                          'tomato', 'lantern', 'machinery vehicle', 'fan', 'green vegetables', 'banana',
+                          'baseball glove', 'aeroplane', 'mouse', 'train', 'pumpkin', 'soccer', 'skis', 'luggage',
+                          'nightstand', 'tea pot', 'telephone', 'trolley', 'head phone', 'sports car', 'stop sign',
+                          'dessert', 'scooter', 'stroller', 'crane', 'remote', 'refrigerator', 'oven', 'lemon', 'duck',
+                          'baseball bat', 'surveillance camera', 'cat', 'jug', 'broccoli', 'piano', 'pizza',
+                          'elephant', 'skateboard', 'surfboard', 'gun', 'skating and skiing shoes', 'gas stove',
+                          'donut', 'bow tie', 'carrot', 'toilet', 'kite', 'strawberry', 'other balls', 'shovel',
+                          'pepper', 'computer box', 'toilet paper', 'cleaning products', 'chopsticks', 'microwave',
+                          'pigeon', 'baseball', 'cutting/chopping board', 'coffee table', 'side table', 'scissors',
+                          'marker', 'pie', 'ladder', 'snowboard', 'cookies', 'radiator', 'fire hydrant', 'basketball',
+                          'zebra', 'grape', 'giraffe', 'potato', 'sausage', 'tricycle', 'violin', 'egg',
+                          'fire extinguisher', 'candy', 'fire truck', 'billiards', 'converter', 'bathtub',
+                          'wheelchair', 'golf club', 'suitcase', 'cucumber', 'cigar/cigarette', 'paint brush', 'pear',
+                          'heavy truck', 'hamburger', 'extractor', 'extension cord', 'tong', 'tennis racket',
+                          'folder', 'american football', 'earphone', 'mask', 'kettle', 'tennis', 'ship', 'swing',
+                          'coffee machine', 'slide', 'carriage', 'onion', 'green beans', 'projector', 'frisbee',
+                          'washing machine/drying machine', 'chicken', 'printer', 'watermelon', 'saxophone', 'tissue',
+                          'toothbrush', 'ice cream', 'hot-air balloon', 'cello', 'french fries', 'scale', 'trophy',
+                          'cabbage', 'hot dog', 'blender', 'peach', 'rice', 'wallet/purse', 'volleyball', 'deer',
+                          'goose', 'tape', 'tablet', 'cosmetics', 'trumpet', 'pineapple', 'golf ball', 'ambulance',
+                          'parking meter', 'mango', 'key', 'hurdle', 'fishing rod', 'medal', 'flute', 'brush',
+                          'penguin', 'megaphone', 'corn', 'lettuce', 'garlic', 'swan', 'helicopter', 'green onion',
+                          'sandwich', 'nuts', 'speed limit sign', 'induction cooker', 'broom', 'trombone', 'plum',
+                          'rickshaw', 'goldfish', 'kiwi fruit', 'router/modem', 'poker card', 'toaster', 'shrimp',
+                          'sushi', 'cheese', 'notepaper', 'cherry', 'pliers', 'cd', 'pasta', 'hammer', 'cue',
+                          'avocado', 'hamimelon', 'flask', 'mushroom', 'screwdriver', 'soap', 'recorder', 'bear',
+                          'eggplant', 'board eraser', 'coconut', 'tape measure/ruler', 'pig', 'showerhead', 'globe',
+                          'chips', 'steak', 'crosswalk sign', 'stapler', 'camel', 'formula 1', 'pomegranate',
+                          'dishwasher', 'crab', 'hoverboard', 'meat ball', 'rice cooker', 'tuba', 'calculator',
+                          'papaya', 'antelope', 'parrot', 'seal', 'butterfly', 'dumbbell', 'donkey', 'lion', 'urinal',
+                          'dolphin', 'electric drill', 'hair dryer', 'egg tart', 'jellyfish', 'treadmill', 'lighter',
+                          'grapefruit', 'game board', 'mop', 'radish', 'baozi', 'target', 'french', 'spring rolls',
+                          'monkey', 'rabbit', 'pencil case', 'yak', 'red cabbage', 'binoculars', 'asparagus', 'barbell',
+                          'scallop', 'noddles', 'comb', 'dumpling', 'oyster', 'table tennis paddle',
+                          'cosmetics brush/eyeliner pencil', 'chainsaw', 'eraser', 'lobster', 'durian', 'okra',
+                          'lipstick', 'cosmetics mirror', 'curling', 'table tennis']
+
 
 def main():
     parser = argparse.ArgumentParser(description='Test the specified converted model')
+    parser.add_argument('--dataset_type', choices=['coco', 'objects365'], help='Choose the dataset type', required=True)
     parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
                         help='Choose the mode', required=True)
     parser.add_argument('--weights_path', type=str, help='Choose the weights file path', required=True)
@@ -33,8 +88,9 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.model_type)
-    model.load_weights(args.weights_path)
+    model = create_model(args.model_type, args.dataset_type)
+    load_checkpoint(model, args.weights_path) # TODO remove
+    #model.load_weights(args.weights_path)
     model.eval()
 
     image = Image.open(args.image_path)
@@ -43,15 +99,16 @@ def main():
     display_predictions(predictions, scale, offset_x, offset_y, image)
 
 
-def create_model(model_type, class_probs=False):
+def create_model(model_type, dataset_type, class_probs=False):
+    class_count = _get_class_count(dataset_type)
     if model_type == 'yolo_v4':
-        model = YoloV4(class_probs=class_probs)
+        model = YoloV4(class_count, class_probs=class_probs)
     elif model_type == 'yolo_v4_tiny':
-        model = YoloV4Tiny(class_probs=class_probs)
+        model = YoloV4Tiny(class_count, class_probs=class_probs)
     elif model_type == 'yolo_v7':
-        model = YoloV7(class_probs=class_probs)
+        model = YoloV7(class_count, class_probs=class_probs)
     elif model_type == 'yolo_v7_tiny':
-        model = YoloV7Tiny(class_probs=class_probs)
+        model = YoloV7Tiny(class_count, class_probs=class_probs)
     else:
         raise ValueError('Invalid model type')
 

@@ -8,10 +8,10 @@ from common.file_presence_checker import terminate_if_already_exported
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Export descriptor yolo v4')
-    parser.add_argument('--dataset_type', choices=['coco', 'open_images'], help='Choose the database type',
-                        required=True)
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny'],
+    parser = argparse.ArgumentParser(description='Export descriptor yolo')
+    parser.add_argument('--dataset_type', choices=['coco', 'open_images', 'objects365'],
+                        help='Choose the database type', required=True)
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7'],
                         help='Choose the model type', required=True)
     parser.add_argument('--descriptor_size', type=int, help='Choose the descriptor size', required=True)
 
@@ -32,7 +32,7 @@ def main():
 
     from common.model_exporter import export_model
 
-    from train_descriptor_yolo_v4 import create_model
+    from train_descriptor_yolo import create_model
 
     model = create_model(args.model_type, args.descriptor_size, args.dataset_type)
     x = torch.ones((1, 3, model.get_image_size()[0], model.get_image_size()[1]))

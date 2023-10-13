@@ -13,14 +13,14 @@ IN_CHANNELS = 3
 
 # Generated from: yolov7-tiny.yaml:
 class YoloV7Tiny(nn.Module):
-    def __init__(self, class_probs=False):
+    def __init__(self, class_count, class_probs=False):
         super(YoloV7Tiny, self).__init__()
 
         self._anchors = []
         self._output_strides = [8, 16, 32]
-        self._anchors.append(np.array([(10, 13), (16, 30), (33, 23)]))
-        self._anchors.append(np.array([(30, 61), (62, 45), (59, 119)]))
-        self._anchors.append(np.array([(116, 90), (156, 198), (373, 326)]))
+        self._anchors.append(np.array([(12, 16), (19, 36), (40, 28)]))
+        self._anchors.append(np.array([(36, 75), (76, 55), (72, 146)]))
+        self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
 
         self._conv0 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=2, padding=1, groups=1, bias=False),
@@ -321,16 +321,16 @@ class YoloV7Tiny(nn.Module):
         )
 
         self._yolo0 = nn.Sequential(
-            nn.Conv2d(in_channels=128, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], 80, class_probs=class_probs)
+            nn.Conv2d(in_channels=128, out_channels=self._anchors[0].shape[0] * (class_count + 5), kernel_size=1),
+            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], class_count, class_probs=class_probs)
         )
         self._yolo1 = nn.Sequential(
-            nn.Conv2d(in_channels=256, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], 80, class_probs=class_probs)
+            nn.Conv2d(in_channels=256, out_channels=self._anchors[1].shape[0] * (class_count + 5), kernel_size=1),
+            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], class_count, class_probs=class_probs)
         )
         self._yolo2 = nn.Sequential(
-            nn.Conv2d(in_channels=512, out_channels=255, kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], 80, class_probs=class_probs)
+            nn.Conv2d(in_channels=512, out_channels=self._anchors[2].shape[0] * (class_count + 5), kernel_size=1),
+            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], class_count, class_probs=class_probs)
         )
 
     def get_image_size(self):

@@ -3,7 +3,6 @@ import sys
 
 import torch
 import torch.nn.functional as F
-import torchaudio
 
 from dnn_utils.dnn_model import PACKAGE_PATH, DnnModel
 
@@ -13,24 +12,94 @@ from object_detection.filter_yolo_predictions import group_predictions, filter_y
 
 
 IMAGE_SIZE_BY_MODEL_NAME = {
-    'yolo_v4' : (608, 608),
-    'yolo_v4_tiny' : (416, 416),
-    'yolo_v7' : (640, 640),
-    'yolo_v7_tiny' : (640, 640),
+    'yolo_v4_coco' : (608, 608),
+    'yolo_v4_tiny_coco' : (416, 416),
+    'yolo_v7_coco' : (640, 640),
+    'yolo_v7_tiny_coco' : (640, 640),
+    'yolo_v7_objects365' : (640, 640),
 }
 IN_CHANNELS = 3
-CLASS_COUNT = 80
+
+COCO_CLASS_NAMES = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'train', 'truck', 'boat',
+                    'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+                    'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag',
+                    'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+                    'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
+                    'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
+                    'hot dog', 'pizza', 'donut', 'cake', 'chair', 'sofa', 'pottedplant', 'bed', 'dining table',
+                    'toilet', 'tvmonitor', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
+                    'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair dryer',
+                    'toothbrush']
+
+OBJECTS365_CLASS_NAMES = ['person', 'sneakers', 'chair', 'other shoes', 'hat', 'car', 'lamp', 'glasses', 'bottle',
+                          'desk', 'cup', 'street lights', 'cabinet/shelf', 'handbag', 'bracelet', 'plate',
+                          'picture/frame', 'helmet', 'book', 'gloves', 'storage box', 'boat', 'leather shoes',
+                          'flower', 'bench', 'pottedplant', 'bowl', 'flag', 'pillow', 'boots', 'vase',
+                          'microphone', 'necklace', 'ring', 'suv', 'wine glass', 'belt', 'tvmonitor', 'backpack',
+                          'umbrella', 'traffic light', 'speaker', 'watch', 'tie', 'trash bin can', 'slippers',
+                          'bicycle', 'stool', 'barrel/bucket', 'van', 'couch', 'sandals', 'basket', 'drum',
+                          'pen/pencil', 'bus', 'bird', 'high heels', 'motorbike', 'guitar', 'carpet',
+                          'cell phone', 'bread', 'camera', 'canned', 'truck', 'traffic cone', 'cymbal', 'lifesaver',
+                          'towel', 'stuffed toy', 'candle', 'sailboat', 'laptop', 'awning', 'bed', 'faucet', 'tent',
+                          'horse', 'mirror', 'power outlet', 'sink', 'apple', 'air conditioner', 'knife',
+                          'hockey stick', 'paddle', 'pickup truck', 'fork', 'traffic sign', 'balloon', 'tripod', 'dog',
+                          'spoon', 'clock', 'pot', 'cow', 'cake', 'dining table', 'sheep', 'hanger',
+                          'blackboard/whiteboard', 'napkin', 'other fish', 'orange', 'toiletry', 'keyboard',
+                          'tomato', 'lantern', 'machinery vehicle', 'fan', 'green vegetables', 'banana',
+                          'baseball glove', 'aeroplane', 'mouse', 'train', 'pumpkin', 'soccer', 'skis', 'luggage',
+                          'nightstand', 'tea pot', 'telephone', 'trolley', 'head phone', 'sports car', 'stop sign',
+                          'dessert', 'scooter', 'stroller', 'crane', 'remote', 'refrigerator', 'oven', 'lemon', 'duck',
+                          'baseball bat', 'surveillance camera', 'cat', 'jug', 'broccoli', 'piano', 'pizza',
+                          'elephant', 'skateboard', 'surfboard', 'gun', 'skating and skiing shoes', 'gas stove',
+                          'donut', 'bow tie', 'carrot', 'toilet', 'kite', 'strawberry', 'other balls', 'shovel',
+                          'pepper', 'computer box', 'toilet paper', 'cleaning products', 'chopsticks', 'microwave',
+                          'pigeon', 'baseball', 'cutting/chopping board', 'coffee table', 'side table', 'scissors',
+                          'marker', 'pie', 'ladder', 'snowboard', 'cookies', 'radiator', 'fire hydrant', 'basketball',
+                          'zebra', 'grape', 'giraffe', 'potato', 'sausage', 'tricycle', 'violin', 'egg',
+                          'fire extinguisher', 'candy', 'fire truck', 'billiards', 'converter', 'bathtub',
+                          'wheelchair', 'golf club', 'suitcase', 'cucumber', 'cigar/cigarette', 'paint brush', 'pear',
+                          'heavy truck', 'hamburger', 'extractor', 'extension cord', 'tong', 'tennis racket',
+                          'folder', 'american football', 'earphone', 'mask', 'kettle', 'tennis', 'ship', 'swing',
+                          'coffee machine', 'slide', 'carriage', 'onion', 'green beans', 'projector', 'frisbee',
+                          'washing machine/drying machine', 'chicken', 'printer', 'watermelon', 'saxophone', 'tissue',
+                          'toothbrush', 'ice cream', 'hot-air balloon', 'cello', 'french fries', 'scale', 'trophy',
+                          'cabbage', 'hot dog', 'blender', 'peach', 'rice', 'wallet/purse', 'volleyball', 'deer',
+                          'goose', 'tape', 'tablet', 'cosmetics', 'trumpet', 'pineapple', 'golf ball', 'ambulance',
+                          'parking meter', 'mango', 'key', 'hurdle', 'fishing rod', 'medal', 'flute', 'brush',
+                          'penguin', 'megaphone', 'corn', 'lettuce', 'garlic', 'swan', 'helicopter', 'green onion',
+                          'sandwich', 'nuts', 'speed limit sign', 'induction cooker', 'broom', 'trombone', 'plum',
+                          'rickshaw', 'goldfish', 'kiwi fruit', 'router/modem', 'poker card', 'toaster', 'shrimp',
+                          'sushi', 'cheese', 'notepaper', 'cherry', 'pliers', 'cd', 'pasta', 'hammer', 'cue',
+                          'avocado', 'hamimelon', 'flask', 'mushroom', 'screwdriver', 'soap', 'recorder', 'bear',
+                          'eggplant', 'board eraser', 'coconut', 'tape measure/ruler', 'pig', 'showerhead', 'globe',
+                          'chips', 'steak', 'crosswalk sign', 'stapler', 'camel', 'formula 1', 'pomegranate',
+                          'dishwasher', 'crab', 'hoverboard', 'meat ball', 'rice cooker', 'tuba', 'calculator',
+                          'papaya', 'antelope', 'parrot', 'seal', 'butterfly', 'dumbbell', 'donkey', 'lion', 'urinal',
+                          'dolphin', 'electric drill', 'hair dryer', 'egg tart', 'jellyfish', 'treadmill', 'lighter',
+                          'grapefruit', 'game board', 'mop', 'radish', 'baozi', 'target', 'french', 'spring rolls',
+                          'monkey', 'rabbit', 'pencil case', 'yak', 'red cabbage', 'binoculars', 'asparagus', 'barbell',
+                          'scallop', 'noddles', 'comb', 'dumpling', 'oyster', 'table tennis paddle',
+                          'cosmetics brush/eyeliner pencil', 'chainsaw', 'eraser', 'lobster', 'durian', 'okra',
+                          'lipstick', 'cosmetics mirror', 'curling', 'table tennis']
+
+CLASS_NAMES_BY_MODEL_NAME = {
+    'yolo_v4_coco' : COCO_CLASS_NAMES,
+    'yolo_v4_tiny_coco' : COCO_CLASS_NAMES,
+    'yolo_v7_coco' : COCO_CLASS_NAMES,
+    'yolo_v7_tiny_coco' : COCO_CLASS_NAMES,
+    'yolo_v7_objects365' : OBJECTS365_CLASS_NAMES,
+}
 
 
 class YoloPrediction:
-    def __init__(self, prediction_tensor, scale, offset_x, offset_y):
+    def __init__(self, prediction_tensor, scale, offset_x, offset_y, class_count):
         self.center_x = ((prediction_tensor[X_INDEX] - offset_x) / scale).item()
         self.center_y = ((prediction_tensor[Y_INDEX] - offset_y) / scale).item()
         self.width = (prediction_tensor[W_INDEX] / scale).item()
         self.height = (prediction_tensor[H_INDEX] / scale).item()
         self.confidence = prediction_tensor[CONFIDENCE_INDEX].item()
 
-        class_probabilities =  prediction_tensor[CLASSES_INDEX:CLASSES_INDEX + CLASS_COUNT]
+        class_probabilities =  prediction_tensor[CLASSES_INDEX:CLASSES_INDEX + class_count]
         self.class_index = torch.argmax(class_probabilities, dim=0).item()
         self.class_probabilities = class_probabilities.tolist()
 
@@ -60,15 +129,7 @@ class Yolo(DnnModel):
         return IMAGE_SIZE_BY_MODEL_NAME[self._model_name]
 
     def get_class_names(self):
-        return ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
-                'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
-                'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase',
-                'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard',
-                'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
-                'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake',
-                'chair', 'sofa', 'pottedplant', 'bed', 'diningtable', 'toilet', 'tvmonitor', 'laptop', 'mouse',
-                'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book',
-                'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+        return CLASS_NAMES_BY_MODEL_NAME[self._model_name]
 
     def __call__(self, image_tensor):
         with torch.no_grad():
@@ -78,7 +139,8 @@ class Yolo(DnnModel):
                                                              confidence_threshold=self._confidence_threshold,
                                                              nms_threshold=self._nms_threshold)
 
-            return [YoloPrediction(prediction.cpu(), scale, offset_x, offset_y) for prediction in predictions]
+            class_count = len(CLASS_NAMES_BY_MODEL_NAME[self._model_name])
+            return [YoloPrediction(prediction.cpu(), scale, offset_x, offset_y, class_count) for prediction in predictions]
 
     def forward_raw(self, image_tensor):
         scale, offset_x, offset_y = self._set_image(image_tensor.to(self._device).unsqueeze(0))

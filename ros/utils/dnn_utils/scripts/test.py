@@ -31,8 +31,8 @@ def launch_test(function, *args):
     print()
 
 
-def test_descriptor_yolo_v4():
-    print('----------test_descriptor_yolo_v4----------')
+def test_descriptor_yolo(model_name):
+    print(f'----------test_descriptor_{model_name}----------')
 
     cpu_model = DescriptorYoloV4(inference_type='cpu')
     torch_gpu_model = DescriptorYoloV4(inference_type='torch_gpu')
@@ -203,11 +203,14 @@ def test_semantic_segmentation_network(dataset):
 def main():
     rospy.init_node('dnn_utils_test', disable_signals=True)
 
-    launch_test(test_descriptor_yolo_v4)
-    launch_test(test_yolo, 'yolo_v4')
-    launch_test(test_yolo, 'yolo_v4_tiny')
-    launch_test(test_yolo, 'yolo_v7')
-    launch_test(test_yolo, 'yolo_v7_tiny')
+    launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
+    launch_test(test_descriptor_yolo, 'yolo_v7_coco')
+    launch_test(test_descriptor_yolo, 'yolo_v7_objects365')
+    launch_test(test_yolo, 'yolo_v4_coco')
+    launch_test(test_yolo, 'yolo_v4_tiny_coco')
+    launch_test(test_yolo, 'yolo_v7_coco')
+    launch_test(test_yolo, 'yolo_v7_tiny_coco')
+    launch_test(test_yolo, 'yolo_v7_objects365')
     launch_test(test_pose_estimator)
     launch_test(test_face_descriptor_extractor, 'open_face')
     launch_test(test_face_descriptor_extractor, 'efficientnet_b0')

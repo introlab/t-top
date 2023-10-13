@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from object_detection.modules.yolo_layer import YoloV7Layer
+from object_detection.modules.descriptor_yolo_layer import DescriptorYoloV7Layer
 from object_detection.modules.yolo_v7_modules import YoloV7SPPCSPC, RepConv
 
 
@@ -14,9 +14,9 @@ IN_CHANNELS = 3
 
 
 # Generated from: yolov7.yaml:
-class YoloV7(nn.Module):
-    def __init__(self, class_count=80, class_probs=False):
-        super(YoloV7, self).__init__()
+class DescriptorYoloV7(nn.Module):
+    def __init__(self, class_count=80, embedding_size=128, class_probs=False):
+        super(DescriptorYoloV7, self).__init__()
 
         self._anchors = []
         self._output_strides = [8, 16, 32]
@@ -447,18 +447,17 @@ class YoloV7(nn.Module):
         self._rep_conv104 = RepConv(in_channels=512, out_channels=1024, kernel_size=3, stride=1, padding=1, groups=1, activation=nn.SiLU())
 
         self._yolo0 = nn.Sequential(
-            nn.Conv2d(in_channels=256, out_channels=self._anchors[0].shape[0] * (class_count + 5), kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], class_count, class_probs=class_probs)
+            nn.Conv2d(in_channels=256, out_channels=self._anchors[0].shape[0] * (embedding_size + 5), kernel_size=1),
+            DescriptorYoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], embedding_size, class_count, class_probs=class_probs)
         )
         self._yolo1 = nn.Sequential(
-            nn.Conv2d(in_channels=512, out_channels=self._anchors[1].shape[0] * (class_count + 5), kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], class_count, class_probs=class_probs)
+            nn.Conv2d(in_channels=512, out_channels=self._anchors[1].shape[0] * (embedding_size + 5), kernel_size=1),
+            DescriptorYoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], embedding_size, class_count, class_probs=class_probs)
         )
         self._yolo2 = nn.Sequential(
-            nn.Conv2d(in_channels=1024, out_channels=self._anchors[2].shape[0] * (class_count + 5), kernel_size=1),
-            YoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], class_count, class_probs=class_probs)
+            nn.Conv2d(in_channels=1024, out_channels=self._anchors[2].shape[0] * (embedding_size + 5), kernel_size=1),
+            DescriptorYoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], embedding_size, class_count, class_probs=class_probs)
         )
-
 
     def get_image_size(self):
         return IMAGE_SIZE

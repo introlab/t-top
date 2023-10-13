@@ -1,6 +1,6 @@
 from dnn_utils.dnn_model import DnnModel
 
-from dnn_utils.descriptor_yolo_v4 import DescriptorYoloV4, DescriptorYoloV4Prediction
+from dnn_utils.descriptor_yolo import DescriptorYolo, DescriptorYoloPrediction
 from dnn_utils.face_descriptor_extractor import FaceDescriptorExtractor
 from dnn_utils.pose_estimator import PoseEstimator
 from dnn_utils.ttop_keyword_spotter import TTopKeywordSpotter
