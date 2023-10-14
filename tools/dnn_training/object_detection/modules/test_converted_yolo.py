@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw
 
 import torch
 
-from common.modules import load_checkpoint # TODO remove
+from object_detection.descriptor_yolo_v7 import DescriptorYoloV7
 from object_detection.modules.yolo_v4 import YoloV4
 from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
 from object_detection.modules.yolo_v7 import YoloV7
@@ -81,16 +81,17 @@ OBJECTS365_CLASS_NAMES = ['person', 'sneakers', 'chair', 'other shoes', 'hat', '
 def main():
     parser = argparse.ArgumentParser(description='Test the specified converted model')
     parser.add_argument('--dataset_type', choices=['coco', 'objects365'], help='Choose the dataset type', required=True)
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny',
+                                                 'descriptor_yolo_v7'],
                         help='Choose the mode', required=True)
+    parser.add_argument('--embedding_size', type=str, help='Choose the embedding size for descriptor_yolo_v7')
     parser.add_argument('--weights_path', type=str, help='Choose the weights file path', required=True)
     parser.add_argument('--image_path', type=str, help='Choose the image file', required=True)
 
     args = parser.parse_args()
 
-    model = create_model(args.model_type, args.dataset_type)
-    load_checkpoint(model, args.weights_path) # TODO remove
-    #model.load_weights(args.weights_path)
+    model = create_model(args.model_type, args.dataset_type, embedding_size=args.embedding_size)
+    model.load_weights(args.weights_path)
     model.eval()
 
     image = Image.open(args.image_path)
@@ -99,7 +100,7 @@ def main():
     display_predictions(predictions, scale, offset_x, offset_y, image)
 
 
-def create_model(model_type, dataset_type, class_probs=False):
+def create_model(model_type, dataset_type, embedding_size=None, class_probs=False):
     class_count = _get_class_count(dataset_type)
     if model_type == 'yolo_v4':
         model = YoloV4(class_count, class_probs=class_probs)
@@ -109,6 +110,8 @@ def create_model(model_type, dataset_type, class_probs=False):
         model = YoloV7(class_count, class_probs=class_probs)
     elif model_type == 'yolo_v7_tiny':
         model = YoloV7Tiny(class_count, class_probs=class_probs)
+    elif model_type == 'descriptor_yolo_v7':
+        model = DescriptorYoloV7(class_count, embedding_size=embedding_size, class_probs=class_probs)
     else:
         raise ValueError('Invalid model type')
 

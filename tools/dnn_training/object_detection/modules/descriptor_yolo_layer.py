@@ -101,10 +101,8 @@ class DescriptorYoloV4Layer(nn.Module):
 
 
 class DescriptorYoloV7Layer(nn.Module):
-    def __init__(self, image_size, stride, anchors, embedding_size, class_count, class_probs=False):
+    def __init__(self, image_size, stride, anchors, embedding_size, class_count):
         super(DescriptorYoloV7Layer, self).__init__()
-        self._class_probs = class_probs
-
         self._grid_size = (image_size[1] // stride, image_size[0] // stride)
         self._stride = stride
 
@@ -117,8 +115,6 @@ class DescriptorYoloV7Layer(nn.Module):
         y_offset, x_offset = torch.meshgrid(y, x, indexing='ij')
         self.register_buffer('_x_offset', x_offset.float().clone())
         self.register_buffer('_y_offset', y_offset.float().clone())
-
-        self._classifier = nn.Linear(self._embedding_size, self._class_count, bias=False)
 
         # Fix scripting errors
         self._x_index = X_INDEX
@@ -164,8 +160,5 @@ class DescriptorYoloV7Layer(nn.Module):
         confidence = torch.sigmoid(t[:, :, :, :, self._confidence_index:self._confidence_index + 1])
 
         embedding = F.normalize(t[:, :, :, :, self._classes_index:], dim=4, p=2.0)
-        classes = self._classifier(embedding)
-        if self._class_probs:
-            classes = torch.softmax(classes, dim=4)
 
-        return torch.cat([x, y, w, h, confidence, classes, embedding], dim=4)
+        return torch.cat([x, y, w, h, confidence], dim=4), embedding

@@ -448,16 +448,19 @@ class DescriptorYoloV7(nn.Module):
 
         self._yolo0 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=self._anchors[0].shape[0] * (embedding_size + 5), kernel_size=1),
-            DescriptorYoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], embedding_size, class_count, class_probs=class_probs)
+            DescriptorYoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], embedding_size, class_count)
         )
         self._yolo1 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=self._anchors[1].shape[0] * (embedding_size + 5), kernel_size=1),
-            DescriptorYoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], embedding_size, class_count, class_probs=class_probs)
+            DescriptorYoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], embedding_size, class_count)
         )
         self._yolo2 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=self._anchors[2].shape[0] * (embedding_size + 5), kernel_size=1),
-            DescriptorYoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], embedding_size, class_count, class_probs=class_probs)
+            DescriptorYoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], embedding_size, class_count)
         )
+
+        self._classifier = nn.Linear(self._embedding_size, self._class_count, bias=False)
+        self._class_probs = class_probs
 
     def get_image_size(self):
         return IMAGE_SIZE
@@ -590,10 +593,22 @@ class DescriptorYoloV7(nn.Module):
         y103 = self._rep_conv103(y88)
         y104 = self._rep_conv104(y101)
 
-        d0 = self._yolo0(y102)
-        d1 = self._yolo1(y103)
-        d2 = self._yolo2(y104)
+        box0, embedding0 = self._yolo0(y102)
+        box1, embedding1 = self._yolo1(y103)
+        box2, embedding2 = self._yolo2(y104)
+
+        d0 = self._classify_embeddings(box0, embedding0)
+        d1 = self._classify_embeddings(box1, embedding1)
+        d2 = self._classify_embeddings(box2, embedding2)
+
         return [d0, d1, d2]
+
+    def _classify_embeddings(self, box, embedding):
+        classes = self._classifier(embedding)
+        if self._class_probs:
+            classes = torch.softmax(classes, dim=4)
+
+        return torch.cat([box, classes, embedding], dim=4)
 
     def load_weights(self, weights_path):
         loaded_state_dict = self._filter_static_dict(torch.load(weights_path), 'anchor')
