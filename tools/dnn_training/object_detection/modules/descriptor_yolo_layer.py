@@ -101,14 +101,13 @@ class DescriptorYoloV4Layer(nn.Module):
 
 
 class DescriptorYoloV7Layer(nn.Module):
-    def __init__(self, image_size, stride, anchors, embedding_size, class_count):
+    def __init__(self, image_size, stride, anchors, embedding_size):
         super(DescriptorYoloV7Layer, self).__init__()
         self._grid_size = (image_size[1] // stride, image_size[0] // stride)
         self._stride = stride
 
         self._anchors = [(a[0] / stride, a[1] / stride) for a in anchors]
         self._embedding_size = embedding_size
-        self._class_count = class_count
 
         x = torch.arange(self._grid_size[1])
         y = torch.arange(self._grid_size[0])
@@ -129,7 +128,7 @@ class DescriptorYoloV7Layer(nn.Module):
         N_ANCHORS = len(self._anchors)
         H = self._grid_size[1]
         W = self._grid_size[0]
-        N_PREDICTION = 5 + self._class_count
+        N_PREDICTION = 5 + self._embedding_size
 
         # Transform x
         t = t.view(N, N_ANCHORS, N_PREDICTION, H, W).permute(0, 1, 3, 4, 2).contiguous()

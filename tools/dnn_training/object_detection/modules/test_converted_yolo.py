@@ -11,7 +11,7 @@ from object_detection.modules.yolo_v4_tiny import YoloV4Tiny
 from object_detection.modules.yolo_v7 import YoloV7
 from object_detection.modules.yolo_v7_tiny import YoloV7Tiny
 from object_detection.datasets.coco_detection_transforms import CocoDetectionValidationTransforms
-from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions_by_classes
+from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CLASSES_INDEX
 
 from train_descriptor_yolo import _get_class_count
@@ -77,6 +77,8 @@ OBJECTS365_CLASS_NAMES = ['person', 'sneakers', 'chair', 'other shoes', 'hat', '
                           'cosmetics brush/eyeliner pencil', 'chainsaw', 'eraser', 'lobster', 'durian', 'okra',
                           'lipstick', 'cosmetics mirror', 'curling', 'table tennis']
 
+CLASSES_BY_DATASET_TYPE = {'coco': COCO_CLASSES, 'objects365': OBJECTS365_CLASS_NAMES}
+
 
 def main():
     parser = argparse.ArgumentParser(description='Test the specified converted model')
@@ -84,7 +86,7 @@ def main():
     parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny',
                                                  'descriptor_yolo_v7'],
                         help='Choose the mode', required=True)
-    parser.add_argument('--embedding_size', type=str, help='Choose the embedding size for descriptor_yolo_v7')
+    parser.add_argument('--embedding_size', type=int, help='Choose the embedding size for descriptor_yolo_v7')
     parser.add_argument('--weights_path', type=str, help='Choose the weights file path', required=True)
     parser.add_argument('--image_path', type=str, help='Choose the image file', required=True)
 
@@ -97,7 +99,7 @@ def main():
     image = Image.open(args.image_path)
 
     predictions, scale, offset_x, offset_y = get_predictions(model, image)
-    display_predictions(predictions, scale, offset_x, offset_y, image)
+    display_predictions(predictions, scale, offset_x, offset_y, image, CLASSES_BY_DATASET_TYPE[args.dataset_type])
 
 
 def create_model(model_type, dataset_type, embedding_size=None, class_probs=False):
@@ -129,13 +131,13 @@ def get_predictions(model, image):
 
         start = time.time()
         predictions = group_predictions(predictions)[0]
-        predictions = filter_yolo_predictions_by_classes(predictions, confidence_threshold=0.5, nms_threshold=0.45)
+        predictions = filter_yolo_predictions(predictions, confidence_threshold=0.5, nms_threshold=0.45)
         print('Postprocessing time: ', time.time() - start, 's')
 
         return predictions, metadata['scale'], metadata['offset_x'], metadata['offset_y']
 
 
-def display_predictions(predictions, scale, offset_x, offset_y, image):
+def display_predictions(predictions, scale, offset_x, offset_y, image, classses):
     draw = ImageDraw.Draw(image)
 
     for prediction in predictions:
@@ -151,7 +153,7 @@ def display_predictions(predictions, scale, offset_x, offset_y, image):
         y1 = center_y + h / 2
 
         draw.rectangle([x0, y0, x1, y1], outline='red')
-        draw.text((x0, y0), COCO_CLASSES[class_index], fill='red')
+        draw.text((x0, y0), classses[class_index], fill='red')
 
     del draw
     image.show()

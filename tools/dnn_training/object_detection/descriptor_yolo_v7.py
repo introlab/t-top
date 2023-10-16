@@ -448,18 +448,18 @@ class DescriptorYoloV7(nn.Module):
 
         self._yolo0 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=self._anchors[0].shape[0] * (embedding_size + 5), kernel_size=1),
-            DescriptorYoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], embedding_size, class_count)
+            DescriptorYoloV7Layer(IMAGE_SIZE, 8, self._anchors[0], embedding_size)
         )
         self._yolo1 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=self._anchors[1].shape[0] * (embedding_size + 5), kernel_size=1),
-            DescriptorYoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], embedding_size, class_count)
+            DescriptorYoloV7Layer(IMAGE_SIZE, 16, self._anchors[1], embedding_size)
         )
         self._yolo2 = nn.Sequential(
             nn.Conv2d(in_channels=1024, out_channels=self._anchors[2].shape[0] * (embedding_size + 5), kernel_size=1),
-            DescriptorYoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], embedding_size, class_count)
+            DescriptorYoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], embedding_size)
         )
 
-        self._classifier = nn.Linear(self._embedding_size, self._class_count, bias=False)
+        self._classifier = nn.Linear(embedding_size, class_count, bias=False)
         self._class_probs = class_probs
 
     def get_image_size(self):
