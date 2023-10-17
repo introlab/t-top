@@ -302,8 +302,8 @@ In order to assemble the robot, you need to 3D print the following parts that ar
 | [torso bottom external 1](../../CAD/STL/torso%20bottom%20external%201.STL)           | X      | X    | 1.2 mm         | 25 %              | 1        |
 | [torso bottom external 2](../../CAD/STL/torso%20bottom%20external%202.STL)           | X      | X    | 1.2 mm         | 25 %              | 1        |
 | [torso bottom external 3](../../CAD/STL/torso%20bottom%20external%203.STL)           | X      | X    | 1.2 mm         | 25 %              | 1        |
-| [torso bottom internal xavier](../../CAD/STL/torso%20bottom%20internal%20xavier.STL) | X      |      | 1.2 mm         | 25 %              | 1        |
-| [torso bottom internal orin](../../CAD/STL/torso%20bottom%20internal%20orin.STL)     |        | X    | 1.2 mm         | 25 %              | 1        |
+| [torso bottom internal xavier](../../CAD/STL/torso%20bottom%20internal%20xavier.STL) | X      |      | 2.0 mm         | 35 %              | 1        |
+| [torso bottom internal orin](../../CAD/STL/torso%20bottom%20internal%20orin.STL)     |        | X    | 2.0 mm         | 35 %              | 1        |
 | [torso bottom holder](../../CAD/STL/torso%20bottom%20holder.STL)                     | X      | X    | 1.2 mm         | 25 %              | 3        |
 | [limit switch bracket](../../CAD/STL/limit%20switch%20bracket.STL)                   | X      | X    | 1.2 mm         | 25 %              | 1        |
 | [stewart stand](../../CAD/STL/stewart%20stand.STL)                                   | X      | X    | 1.2 mm         | 25 %              | 3        |
