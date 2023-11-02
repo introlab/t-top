@@ -109,9 +109,9 @@ def create_model(model_type, dataset_type, embedding_size=None, class_probs=Fals
     elif model_type == 'yolo_v4_tiny':
         model = YoloV4Tiny(class_count, class_probs=class_probs)
     elif model_type == 'yolo_v7':
-        model = YoloV7(class_count, class_probs=class_probs)
+        model = YoloV7(dataset_type, class_probs=class_probs)
     elif model_type == 'yolo_v7_tiny':
-        model = YoloV7Tiny(class_count, class_probs=class_probs)
+        model = YoloV7Tiny(dataset_type, class_probs=class_probs)
     elif model_type == 'descriptor_yolo_v7':
         model = DescriptorYoloV7(class_count, embedding_size=embedding_size, class_probs=class_probs)
     else:

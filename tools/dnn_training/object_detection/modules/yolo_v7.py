@@ -8,6 +8,8 @@ import torch.nn as nn
 from object_detection.modules.yolo_layer import YoloV7Layer
 from object_detection.modules.yolo_v7_modules import YoloV7SPPCSPC, RepConv
 
+from object_detection.datasets.object_detection_coco import CLASS_COUNT as COCO_CLASS_COUNT
+
 
 IMAGE_SIZE = (640, 640)
 IN_CHANNELS = 3
@@ -15,14 +17,22 @@ IN_CHANNELS = 3
 
 # Generated from: yolov7.yaml:
 class YoloV7(nn.Module):
-    def __init__(self, class_count=80, class_probs=False):
+    def __init__(self, dataset_type='coco', class_probs=False):
         super(YoloV7, self).__init__()
 
         self._anchors = []
         self._output_strides = [8, 16, 32]
-        self._anchors.append(np.array([(12, 16), (19, 36), (40, 28)]))
-        self._anchors.append(np.array([(36, 75), (76, 55), (72, 146)]))
-        self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
+
+        if dataset_type == 'coco':
+            class_count = COCO_CLASS_COUNT
+            self._anchors.append(np.array([(12, 16), (19, 36), (40, 28)]))
+            self._anchors.append(np.array([(36, 75), (76, 55), (72, 146)]))
+            self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
+        elif dataset_type == 'objects365':
+            class_count = 365
+            self._anchors.append(np.array([(8, 7), (15, 14), (17, 36)]))
+            self._anchors.append(np.array([(38, 22), (39, 53), (93, 59)]))
+            self._anchors.append(np.array([(55, 122), (126, 179), (257, 324)]))
 
         self._conv0 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1, groups=1, bias=False),

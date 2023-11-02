@@ -89,12 +89,10 @@ class Vit(nn.Module):
         self._encoders = nn.Sequential(*[EncoderBlock(embedding_size, head_count, dropout_rate, attention_dropout_rate)
                                          for _ in range(depth)],
                                        nn.LayerNorm(embedding_size))
-        self._head = nn.Sequential(nn.LayerNorm(embedding_size),
-                                   nn.Linear(in_features=embedding_size, out_features=class_count))
+        self._head = nn.Linear(in_features=embedding_size, out_features=class_count, bias=False)
 
         if distilled:
-            self._head_distillation = nn.Sequential(nn.LayerNorm(embedding_size),
-                                                    nn.Linear(in_features=embedding_size, out_features=class_count))
+            self._head_distillation = nn.Linear(in_features=embedding_size, out_features=class_count, bias=False)
 
         self._embedding_dropout = nn.Dropout(dropout_rate)
 
@@ -122,7 +120,8 @@ class Vit(nn.Module):
         if isinstance(module, nn.Linear):
             if 'head' in name:
                 nn.init.zeros_(module.weight)
-                nn.init.constant_(module.bias, 0.0)
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0.0)
             else:
                 nn.init.trunc_normal_(module.weight, std=.02)
                 nn.init.zeros_(module.bias)
@@ -130,23 +129,24 @@ class Vit(nn.Module):
     def forward(self, x):
         embedding = self._forward_embeddings(x)
         all_features = self._encoders(embedding)
-        y = self._head(all_features[:, 0])
+        class_token_embedding = F.normalize(all_features[:, 0], p=2.0, dim=1)
+        y = self._head(class_token_embedding)
 
         if self._distillation_token is not None:
-            y_distillation = self._head_distillation(all_features[:, 1])
+            y_distillation = self._head_distillation(F.normalize(all_features[:, 1], p=2.0, dim=1))
             if self.training:
                 if self._output_embeddings:
-                    return embedding, y, y_distillation
+                    return class_token_embedding, y, y_distillation
                 else:
                     return y, y_distillation
             else:
                 if self._output_embeddings:
-                    return embedding, (x + y_distillation) / 2,
+                    return class_token_embedding, (x + y_distillation) / 2,
                 else:
                     return (x + y_distillation) / 2
         else:
             if self._output_embeddings:
-                return embedding, y
+                return class_token_embedding, y
             else:
                 return y
 
