@@ -17,6 +17,9 @@
         <arg name="visualization" value="$(arg visualization)"/>
     </include>
 
+    <!-- Pose Classifier -->
+    <include file="$(find t_top)/launch/perceptions/pose_classifier.launch"/>
+
     <!-- Ego Noise Reduction -->
     <include file="$(find t_top)/launch/perceptions/ego_noise_reduction.launch"/>
 

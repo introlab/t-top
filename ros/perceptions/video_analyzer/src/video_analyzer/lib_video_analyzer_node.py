@@ -16,7 +16,8 @@ from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
 from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
 import hbba_lite
 
-
+BOX_COLOR = (255, 0, 0)
+BOX_TEXT_COLOR = (0, 255, 0)
 PERSON_POSE_KEYPOINT_COLORS = [(0, 255, 0),
                                (255, 0, 0),
                                (0, 0, 255),
@@ -34,6 +35,7 @@ PERSON_POSE_KEYPOINT_COLORS = [(0, 255, 0),
                                (0, 0, 255),
                                (255, 0, 0),
                                (0, 0, 255)]
+
 
 
 class ObjectAnalysis:
@@ -197,8 +199,9 @@ class VideoAnalyzerNode:
 
     def _draw_object_analysis(self, image, object_analysis):
         x0, y0, x1, y1 = self._get_bbox(object_analysis, image.shape[1], image.shape[0])
-        color = (255, 0, 0)
-        cv2.rectangle(image, (x0, y0), (x1, y1), color, thickness=4)
+        cv2.rectangle(image, (x0, y0), (x1, y1), BOX_COLOR, thickness=4)
+        text = f'{object_analysis.object_class}({object_analysis.object_confidence:.2f})' # TODO add object_class_probability
+        cv2.putText(image, text, (x0, y0), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.0, color=BOX_TEXT_COLOR, thickness=3)
 
         if object_analysis.pose_analysis is not None:
             self._draw_person_pose(image,
