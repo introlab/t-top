@@ -28,6 +28,8 @@ FastVideoAnalyzer2dWideWithAnalyzedImageDesire::FastVideoAnalyzer2dWideWithAnaly
 
 AudioAnalyzerDesire::AudioAnalyzerDesire(uint16_t intensity) : Desire(intensity) {}
 
+VadDesire::VadDesire(uint16_t intensity) : Desire(intensity) {}
+
 SpeechToTextDesire::SpeechToTextDesire(uint16_t intensity) : Desire(intensity) {}
 
 

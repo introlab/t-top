@@ -250,5 +250,7 @@
 2. Connect the `ground loop noise isolators` to the `Adafruit MAX9744`.
 
 3. Cut the LED diffusers according to the groove dimensions.
-4. Send the back of the LED diffusers.
+    - 16 mm x 48 mm (2x)
+    - 13 mm x 530 mm (2x)
+4. Sand the back of the LED diffusers.
 5. Install the LED diffusers with super glue.

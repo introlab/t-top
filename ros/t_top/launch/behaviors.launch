@@ -1,7 +1,9 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
-    <arg name="camera_2d_wide_enabled"/>
+    <arg name="gender"/> <!-- Options: female or male -->
+    <arg name="voice_generator_type"/> <!-- Options: google or piper -->
     <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="camera_2d_wide_enabled"/>
     <arg name="simulation"/>
     <arg name="open_browser" default="true"/>
     <arg name="fullscreen_face" default="false"/>
@@ -20,6 +22,8 @@
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">
         <arg name="language" value="$(arg language)"/>
+        <arg name="gender" value="$(arg gender)"/>
+        <arg name="voice_generator_type" value="$(arg voice_generator_type)"/>
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
     </include>
 

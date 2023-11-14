@@ -140,7 +140,7 @@
 
 ![Spring Screw](images/assemblies/09/small-spring-M2.5x8.jpg)
 
-10. Install a `M3x12 plastic screw` and the `small spring` into the Stewart Bottom near the `Assembled Dynamixel XL430-W250-T with the ID 5`, as as shown in the following picture.
+10. Install a `M2.5x12 plastic screw` and the `small spring` into the Stewart Bottom near the `Assembled Dynamixel XL430-W250-T with the ID 5`, as as shown in the following picture.
 
 ![Spring Screw](images/assemblies/09/small-spring-M2.5x12.jpg)
 
@@ -152,7 +152,7 @@
 15. Connect the `Dynamixel with the ID 1` and the `Dynamixel with the ID 6` together with a `Dynamixel cable`.
 16. Connect a `Dynamixel cable` into the `Dynamixel with the ID 5`.
 17. Connect a `Dynamixel cable` into the `Dynamixel with the ID 6`.
-18. Connect a `Dynamixel cable` into the `Dynamixel with the ID 4`.
+18. Connect a `Dynamixel cable` into the `Dynamixel with the ID 3`.
 19. Install the `Dynamixel XL430-W250-T cable covers` onto all `Dynamixel`.
 20. Install the `USB hub stands` with `M3x12 plastic screws`, as shown in the following picture.
 

@@ -34,6 +34,7 @@ int startNode(int argc, char* argv[])
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));
     strategies.emplace_back(createFastVideoAnalyzer3dWithAnalyzedImageStrategy(filterPool));
     strategies.emplace_back(createAudioAnalyzerStrategy(filterPool));
+    strategies.emplace_back(createVadStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
     strategies.emplace_back(createExploreStrategy(filterPool));

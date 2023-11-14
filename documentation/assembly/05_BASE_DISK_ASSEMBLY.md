@@ -41,8 +41,8 @@
 3. Install the `M3x10mm plastic standoffs` with `M3x5mm socket screws` onto the `base disk`, as shown in the following
    pictures.
 
-![Base Disk Bottom M3 Plastic](images/assemblies/05/base-disk-bottom-M3-plastic)
-![Base Disk Bottom M3 Plastic](images/assemblies/05/base-disk-top-M3-plastic)
+![Base Disk Bottom M3 Plastic](images/assemblies/05/base-disk-bottom-M3-plastic.jpg)
+![Base Disk Bottom M3 Plastic](images/assemblies/05/base-disk-top-M3-plastic.jpg)
 
 4. Install the `battery holder` with `M3x8mm plastic screws` onto the `base disk`, as shown in the following pictures.
 

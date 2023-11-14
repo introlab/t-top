@@ -1,17 +1,51 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, Tuple
 import uuid
 import os
 import json
 import random
+from enum import Enum
 
 from google.cloud import texttospeech
 
+import rospy
+from piper_ros.srv import GenerateSpeechFromText, GenerateSpeechFromTextRequest
+
+
+class Language(Enum):
+    ENGLISH = 'en'
+    FRENCH = 'fr'
+
+    @staticmethod
+    def from_name(name: str) -> 'Language':
+        if name == Language.ENGLISH.value:
+            return Language.ENGLISH
+        elif name == Language.FRENCH.value:
+            return Language.FRENCH
+        else:
+            raise ValueError(f'Invalid language name ({name})')
+
+
+class Gender(Enum):
+    FEMALE = 'female'
+    MALE = 'male'
+
+    @staticmethod
+    def from_name(name: str) -> 'Gender':
+        if name == Gender.FEMALE.value:
+            return Gender.FEMALE
+        elif name == Gender.MALE.value:
+            return Gender.MALE
+        else:
+            raise ValueError(f'Invalid gender name ({name})')
+
 
 class VoiceGenerator(ABC):
-    def __init__(self, directory: str, language: str):
+    def __init__(self, directory: str, language: Language, gender: Gender, speaking_rate: float):
         self._directory = directory
         self._language = language
+        self._gender = gender
+        self._speaking_rate = speaking_rate
 
         os.makedirs(directory, exist_ok=True)
 
@@ -24,17 +58,33 @@ class VoiceGenerator(ABC):
 
 
 class GoogleVoiceGenerator(VoiceGenerator):
-    def __init__(self, directory: str, language: str, speaking_rate: float):
-        super().__init__(directory, language)
-        self._speaking_rate = speaking_rate
-        self._language_code = self._get_language_code()
+    def __init__(self, directory: str, language: Language, gender: Gender, speaking_rate: float):
+        super().__init__(directory, language, gender, speaking_rate)
+        self._language_code, self._voice_name = self._get_language_code_and_name(language, gender)
+
+    @staticmethod
+    def _get_language_code_and_name(language: Language, gender: Gender) -> Tuple[str, str]:
+        if language == Language.ENGLISH and gender == Gender.MALE:
+            return 'en-US', None
+        elif language == Language.ENGLISH and gender == Gender.FEMALE:
+            return 'en-US', 'en-US-Standard-G'
+        elif language == Language.FRENCH and gender == Gender.MALE:
+            return 'fr-CA', 'fr-CA-Standard-B'
+        elif language == Language.FRENCH and gender == Gender.FEMALE:
+            return 'fr-CA', 'fr-CA-Standard-C'
+        else:
+            raise ValueError(f'Invalid language and/or gender ({language.value}, {gender.value})')
 
     def generate(self, text: str) -> str:
         client = texttospeech.TextToSpeechClient()
 
         synthesis_input = texttospeech.SynthesisInput(text=text)
-        voice = texttospeech.VoiceSelectionParams(language_code=self._language_code,
-                                                  ssml_gender=texttospeech.SsmlVoiceGender.MALE)
+        if self._voice_name is not None:
+            voice = texttospeech.VoiceSelectionParams(language_code=self._language_code, name=self._voice_name)
+        else:
+            voice = texttospeech.VoiceSelectionParams(language_code=self._language_code,
+                                                      ssml_gender=texttospeech.SsmlVoiceGender.MALE)
+
         audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3,
                                                 speaking_rate=self._speaking_rate)
 
@@ -46,18 +96,32 @@ class GoogleVoiceGenerator(VoiceGenerator):
 
         return file_path
 
-    def _get_language_code(self) -> str:
-        if self._language == 'en':
-            return 'en-US'
-        elif self._language == 'fr':
-            return 'fr-CA'
-        else:
-            raise ValueError(f'Not supported language ({self._language})')
+
+class PiperVoiceGenerator(VoiceGenerator):
+    def __init__(self, directory: str, language: Language, gender: Gender, speaking_rate: float):
+        super().__init__(directory, language, gender, speaking_rate)
+
+        self._piper_service = rospy.ServiceProxy('piper/generate_speech_from_text', GenerateSpeechFromText)
+
+    def generate(self, text: str) -> str:
+        request = GenerateSpeechFromTextRequest()
+        request.language = self._language.value
+        request.gender = self._gender.value
+        request.length_scale = 1.0 / self._speaking_rate
+        request.text = text
+        request.path = self._generate_random_path('.wav')
+
+        response = self._piper_service(request)
+        if not response.ok:
+            raise RuntimeError(response.message)
+
+        return request.path
 
 
 class CachedVoiceGenerator(VoiceGenerator):
     def __init__(self, voice_generator: VoiceGenerator, cache_size: int):
-        super().__init__(voice_generator._directory, voice_generator._language)
+        super().__init__(voice_generator._directory, voice_generator._language, voice_generator._gender, voice_generator._speaking_rate)
+
         if cache_size < 1:
             raise ValueError('The cache size must be at least 1.')
 
@@ -100,14 +164,20 @@ class CachedVoiceGenerator(VoiceGenerator):
         self._save_index(self._index)
 
     def generate(self, text: str) -> str:
-        if text in self._index:
-            return self._index[text]
+        key = self._get_cache_key(text)
+
+        if key in self._index:
+            return self._index[key]
 
         if len(self._index) + 1 > self._cache_size:
             self._remove_one_cache_item()
 
         file_path = self._voice_generator.generate(text)
-        self._index[text] = file_path
+        self._index[key] = file_path
         self._save_index(self._index)
 
         return file_path
+
+    def _get_cache_key(self, text: str) -> str:
+        return (f'{type(self._voice_generator).__name__}__{self._language.value}__{self._gender.value}__'
+                f'{self._speaking_rate}__{text}')
