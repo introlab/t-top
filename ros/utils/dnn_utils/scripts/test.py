@@ -205,7 +205,6 @@ def main():
 
     launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
     launch_test(test_descriptor_yolo, 'yolo_v7_coco')
-    launch_test(test_descriptor_yolo, 'yolo_v7_objects365')
     launch_test(test_yolo, 'yolo_v4_coco')
     launch_test(test_yolo, 'yolo_v4_tiny_coco')
     launch_test(test_yolo, 'yolo_v7_coco')

@@ -3,13 +3,10 @@ import argparse
 
 import torch
 
-from backbone.vit import Vit
+from export_audio_descriptor_extractor import create_model
+
 from common.program_arguments import save_arguments, print_arguments
 
-from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, Resnet101
-from audio_descriptor.backbones import OpenFaceInception, ThinResnet34, EcapaTdnn, SmallEcapaTdnn
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP, AudioDescriptorExtractorPSLA
 from audio_descriptor.trainers import AudioDescriptorExtractorTrainer
 
 
@@ -93,66 +90,6 @@ def main():
                                               margin=args.margin,
                                               model_checkpoint=args.model_checkpoint)
     trainer.train()
-
-
-def create_model(backbone_type, n_features, embedding_size,
-                 class_count=None, normalized_linear=False, pooling_layer='avg', conv_bias=False):
-    pretrained = True
-    if backbone_type == 'passt_s_n':
-        return Vit((n_features, 1000), embedding_size=embedding_size, class_count=class_count,
-                   in_channels=1, depth=12, dropout_rate=0.0, attention_dropout_rate=0.0, output_embeddings=True)
-    elif backbone_type == 'passt_s_n_l':
-        return Vit((n_features, 1000), embedding_size=embedding_size, class_count=class_count,
-                   in_channels=1, depth=7, dropout_rate=0.0, attention_dropout_rate=0.0, output_embeddings=True)
-
-    backbone = create_backbone(backbone_type, n_features, pretrained, conv_bias)
-    if pooling_layer == 'avg':
-        return AudioDescriptorExtractor(backbone, embedding_size=embedding_size,
-                                        class_count=class_count, normalized_linear=normalized_linear)
-    elif pooling_layer == 'vlad':
-        return AudioDescriptorExtractorVLAD(backbone, embedding_size=embedding_size,
-                                            class_count=class_count, normalized_linear=normalized_linear)
-    elif pooling_layer == 'sap':
-        return AudioDescriptorExtractorSAP(backbone, embedding_size=embedding_size,
-                                           class_count=class_count, normalized_linear=normalized_linear)
-    elif pooling_layer == 'psla':
-        return AudioDescriptorExtractorPSLA(backbone, embedding_size=embedding_size,
-                                           class_count=class_count, normalized_linear=normalized_linear)
-    else:
-        raise ValueError('Invalid pooling layer')
-
-
-def create_backbone(backbone_type, n_features, pretrained, conv_bias=False):
-    if backbone_type == 'mnasnet0.5':
-        return Mnasnet0_5(pretrained=pretrained)
-    elif backbone_type == 'mnasnet1.0':
-        return Mnasnet1_0(pretrained=pretrained)
-    elif backbone_type == 'resnet18':
-        return Resnet18(pretrained=pretrained)
-    elif backbone_type == 'resnet34':
-        return Resnet34(pretrained=pretrained)
-    elif backbone_type == 'resnet50':
-        return Resnet50(pretrained=pretrained)
-    elif backbone_type == 'resnet101':
-        return Resnet101(pretrained=pretrained)
-    elif backbone_type == 'open_face_inception':
-        return OpenFaceInception(conv_bias)
-    elif backbone_type == 'thin_resnet_34':
-        return ThinResnet34()
-    elif backbone_type == 'ecapa_tdnn_512':
-        return EcapaTdnn(n_features, channels=512)
-    elif backbone_type == 'ecapa_tdnn_1024':
-        return EcapaTdnn(n_features, channels=1024)
-    elif backbone_type == 'small_ecapa_tdnn_128':
-        return SmallEcapaTdnn(n_features, channels=128)
-    elif backbone_type == 'small_ecapa_tdnn_256':
-        return SmallEcapaTdnn(n_features, channels=256)
-    elif backbone_type == 'small_ecapa_tdnn_512':
-        return SmallEcapaTdnn(n_features, channels=512)
-    elif backbone_type == 'small_ecapa_tdnn_1024':
-        return SmallEcapaTdnn(n_features, channels=1024)
-    else:
-        raise ValueError('Invalid backbone type')
 
 
 if __name__ == '__main__':

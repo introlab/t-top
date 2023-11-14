@@ -7,7 +7,7 @@ from common.program_arguments import save_arguments, print_arguments
 
 from audio_descriptor.trainers import MulticlassAudioDescriptorExtractorTrainer
 
-from train_audio_descriptor_extractor import create_model
+from export_audio_descriptor_extractor import create_model
 
 
 def main():

@@ -12,7 +12,7 @@ from pose_estimation.pose_estimator import get_coordinates
 
 
 IMAGE_SIZE = (256, 192)
-PRESENCE_SCALE = 2.0
+PRESENCE_SCALE = 4.0
 
 
 class PoseEstimator(DnnModel):

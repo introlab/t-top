@@ -32,7 +32,7 @@ def main():
 
     from object_detection.modules.test_converted_yolo import create_model
 
-    model = create_model(args.model_type, args.model_type, class_probs=True)
+    model = create_model(args.model_type, args.dataset_type, class_probs=True)
     x = torch.ones((1, 3, model.get_image_size()[0], model.get_image_size()[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16)
