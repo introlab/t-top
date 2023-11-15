@@ -13,8 +13,9 @@ from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
 
-from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
+from dnn_utils import DescriptorYolo, Yolo, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
 import hbba_lite
+
 
 BOX_COLOR = (255, 0, 0)
 BOX_TEXT_COLOR = (0, 255, 0)
@@ -40,7 +41,7 @@ PERSON_POSE_KEYPOINT_COLORS = [(0, 255, 0),
 
 class ObjectAnalysis:
     def __init__(self, center_x, center_y, width, height,
-                 object_class, object_confidence,
+                 object_class, object_confidence, object_class_probability,
                  object_descriptor=None, object_image=None,
                  pose_analysis=None, face_analysis=None):
         self.center_x = center_x
@@ -49,6 +50,7 @@ class ObjectAnalysis:
         self.height = height
         self.object_class = object_class
         self.object_confidence = object_confidence
+        self.object_class_probability = object_class_probability
         self.object_descriptor = object_descriptor
         self.object_image = object_image
 
@@ -59,7 +61,7 @@ class ObjectAnalysis:
     def from_yoloV4_prediction(prediction, object_class_names):
         return ObjectAnalysis(prediction.center_x, prediction.center_y, prediction.width, prediction.height,
                               object_class_names[prediction.class_index], prediction.confidence,
-                              prediction.descriptor)
+                              prediction.class_probabilities[prediction.class_index], prediction.descriptor)
 
 class PoseAnalysis:
     def __init__(self, pose_coordinates, pose_confidence, pose_image):
@@ -69,14 +71,17 @@ class PoseAnalysis:
 
 
 class FaceAnalysis:
-    def __init__(self, descriptor, face_image=None):
+    def __init__(self, descriptor, alignment_keypoint_count, sharpness_score, face_image=None):
         self.descriptor = descriptor
+        self.alignment_keypoint_count = alignment_keypoint_count
+        self.sharpness_score = sharpness_score
         self.face_image = face_image
 
 
 class VideoAnalyzerNode:
     def __init__(self):
-        self._use_descriptor_yolo_v4 = rospy.get_param('~use_descriptor_yolo_v4')
+        self._use_descriptor_yolo = rospy.get_param('~use_descriptor_yolo')
+        self._yolo_model = rospy.get_param('~yolo_model', None)
         self._confidence_threshold = rospy.get_param('~confidence_threshold')
         self._nms_threshold = rospy.get_param('~nms_threshold')
         self._person_probability_threshold = rospy.get_param('~person_probability_threshold')
@@ -92,12 +97,12 @@ class VideoAnalyzerNode:
         if self._face_descriptor_enabled and not self._pose_enabled:
             raise ValueError('The pose estimation must be enabled when the face descriptor extraction is enabled.')
 
-        if self._use_descriptor_yolo_v4:
-            self._object_detector = DescriptorYoloV4(confidence_threshold=self._confidence_threshold,
-                                                     nms_threshold=self._nms_threshold, inference_type=self._inference_type)
+        if self._use_descriptor_yolo:
+            self._object_detector = DescriptorYolo(self._yolo_model, confidence_threshold=self._confidence_threshold,
+                                                   nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         else:
-            self._object_detector = YoloV4(confidence_threshold=self._confidence_threshold,
-                                           nms_threshold=self._nms_threshold, inference_type=self._inference_type)
+            self._object_detector = Yolo(self._yolo_model, confidence_threshold=self._confidence_threshold,
+                                         nms_threshold=self._nms_threshold, inference_type=self._inference_type)
         self._object_class_names = self._object_detector.get_class_names()
 
         if self._pose_enabled:
@@ -158,13 +163,15 @@ class VideoAnalyzerNode:
         face_analysis = None
         if self._face_descriptor_enabled:
             try:
-                face_descriptor, face_image = self._face_descriptor_extractor(color_image_tensor,
-                                                                              pose_coordinates, pose_confidence)
+                face_descriptor, face_image, face_alignment_keypoint_count, face_sharpness_score = self._face_descriptor_extractor(
+                    color_image_tensor, pose_coordinates, pose_confidence, self._pose_confidence_threshold)
             except ValueError:
                 face_descriptor = torch.tensor([])
+                face_sharpness_score = -1.0
                 face_image = None
+                face_alignment_keypoint_count = 0
 
-            face_analysis = FaceAnalysis(face_descriptor.tolist())
+            face_analysis = FaceAnalysis(face_descriptor.tolist(), face_alignment_keypoint_count, face_sharpness_score)
             if self._cropped_image_enabled:
                 face_analysis.face_image = face_image
 
@@ -200,7 +207,7 @@ class VideoAnalyzerNode:
     def _draw_object_analysis(self, image, object_analysis):
         x0, y0, x1, y1 = self._get_bbox(object_analysis, image.shape[1], image.shape[0])
         cv2.rectangle(image, (x0, y0), (x1, y1), BOX_COLOR, thickness=4)
-        text = f'{object_analysis.object_class}({object_analysis.object_confidence:.2f})' # TODO add object_class_probability
+        text = f'{object_analysis.object_class}({object_analysis.object_confidence:.2f}, {object_analysis.object_class_probability:.2f})'
         cv2.putText(image, text, (x0, y0), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.0, color=BOX_TEXT_COLOR, thickness=3)
 
         if object_analysis.pose_analysis is not None:

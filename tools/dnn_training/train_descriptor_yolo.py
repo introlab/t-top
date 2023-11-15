@@ -11,6 +11,7 @@ from object_detection.datasets.object_detection_open_images \
 from object_detection.trainers.descriptor_yolo_v4_trainer import DescriptorYoloV4Trainer
 from object_detection.descriptor_yolo_v4 import DescriptorYoloV4
 from object_detection.descriptor_yolo_v4_tiny import DescriptorYoloV4Tiny
+from object_detection.descriptor_yolo_v7 import DescriptorYoloV7
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
     parser.add_argument('--dataset_type', choices=['coco', 'open_images'], help='Choose the database type',
                         required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny'],
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7'],
                         help='Choose the model type', required=True)
     parser.add_argument('--descriptor_size', type=int, help='Choose the descriptor size', required=True)
     parser.add_argument('--class_criterion_type', choices=['cross_entropy_loss', 'bce_loss', 'sigmoid_focal_loss'],
@@ -61,6 +62,8 @@ def create_model(model_type, descriptor_size, dataset_type):
         model = DescriptorYoloV4(class_count, descriptor_size)
     elif model_type == 'yolo_v4_tiny':
         model = DescriptorYoloV4Tiny(class_count, descriptor_size)
+    elif model_type == 'yolo_v7':
+        model = DescriptorYoloV7(class_count, descriptor_size)
     else:
         raise ValueError('Invalid model type')
 
@@ -72,6 +75,8 @@ def _get_class_count(dataset_type):
         return COCO_CLASS_COUNT
     elif dataset_type == 'open_images':
         return OPEN_IMAGES_CLASS_COUNT
+    elif dataset_type == 'objects365':
+        return 365
     else:
         raise ValueError('Invalid dataset type')
 

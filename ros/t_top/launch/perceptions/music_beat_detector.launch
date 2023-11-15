@@ -6,7 +6,6 @@
         <remap from="filter_state" to="beat_detector/filter_state"/>
     </node>
     <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
-        <param name="enable" value="false"/>
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="64"/>
         <param name="oss_fft_window_size" value="1024"/>

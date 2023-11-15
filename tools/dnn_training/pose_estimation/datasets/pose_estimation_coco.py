@@ -18,13 +18,12 @@ RANDOM_CROP_RATIO = 0.2
 RANDOM_KEYPOINT_MASK_P = 1.0
 RANDOM_KEYPOINT_MASK_RATIO = 0.2
 
-HEATMAP_SIGMA = 10
-
 
 class PoseEstimationCoco(Dataset):
-    def __init__(self, root, train=True, data_augmentation=False, image_transforms=None):
+    def __init__(self, root, train=True, data_augmentation=False, image_transforms=None, heatmap_sigma=10):
         self._data_augmentation = data_augmentation
         self._image_transforms = image_transforms
+        self._heatmap_sigma = heatmap_sigma
 
         if train:
             self._image_root = os.path.join(root, 'train2017')
@@ -156,7 +155,7 @@ class PoseEstimationCoco(Dataset):
         heatmap_grid_y, heatmap_grid_x = torch.meshgrid(heatmap_y, heatmap_x, indexing='ij')
 
         return torch.exp(-(torch.pow(heatmap_grid_x - keypoint_x, 2) + torch.pow(heatmap_grid_y - keypoint_y, 2)) /
-                         (2 * HEATMAP_SIGMA ** 2))
+                         (2 * self._heatmap_sigma ** 2))
 
     def evaluate(self, result_file):
         coco_gt = COCO(self._annotation_file_path)

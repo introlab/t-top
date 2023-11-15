@@ -15,7 +15,7 @@
     <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_frame_tf_publisher" args="0.0015 0 0 0 0 0 camera_2d_wide_link camera_2d_wide_frame 100"/>
     <node pkg="tf" type="static_transform_publisher" name="camera_2d_wide_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_2d_wide_frame camera_2d_wide_optical_frame 100"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.41317 0 0 0 base_link odas 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.12282 0 0 0 base_link odas 100"/>
 
 
     <!-- IMU filter launch -->

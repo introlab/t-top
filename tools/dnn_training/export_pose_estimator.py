@@ -6,11 +6,13 @@ import argparse
 
 from common.file_presence_checker import terminate_if_already_exported
 
+BACKBONE_TYPES = ['efficientnet_b0', 'efficientnet_b1', 'efficientnet_b2', 'efficientnet_b3', 'efficientnet_b4',
+                  'efficientnet_b5', 'efficientnet_b6', 'efficientnet_b7']
+
+
 def main():
     parser = argparse.ArgumentParser(description='Export pose estimator')
-    parser.add_argument('--backbone_type', choices=['mnasnet0.5', 'mnasnet1.0', 'resnet18', 'resnet34', 'resnet50'],
-                        help='Choose the backbone type', required=True)
-    parser.add_argument('--upsampling_count', type=int, help='Set the upsamping layer count', required=True)
+    parser.add_argument('--backbone_type', choices=BACKBONE_TYPES, help='Choose the backbone type', required=True)
 
     parser.add_argument('--output_dir', type=str, help='Choose the output directory', required=True)
     parser.add_argument('--torch_script_filename', type=str, help='Choose the TorchScript filename', required=True)
@@ -32,7 +34,7 @@ def main():
     from pose_estimation.trainers.pose_estimator_trainer import IMAGE_SIZE
     from train_pose_estimator import create_model
 
-    model = create_model(args.backbone_type, args.upsampling_count)
+    model = create_model(args.backbone_type)
     x = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16)

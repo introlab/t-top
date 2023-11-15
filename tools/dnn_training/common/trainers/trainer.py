@@ -1,5 +1,4 @@
 import os
-import time
 
 import torch
 import torch.nn as nn
@@ -30,13 +29,20 @@ class Trainer:
             model = nn.DataParallel(model)
 
         self._model = model.to(device)
-        bias_parameters = [parameter for name, parameter in model.named_parameters() if name.endswith('.bias')]
-        other_parameters = [parameter for name, parameter in model.named_parameters() if not name.endswith('.bias')]
+        no_weight_decay_parameters = getattr(self._criterion, 'no_weight_decay_parameters', None)
+        if no_weight_decay_parameters is None:
+            no_weight_decay_parameters = {}
+        else:
+            no_weight_decay_parameters = no_weight_decay_parameters()
+        no_weight_decay_parameters = [parameter for name, parameter in model.named_parameters()
+                                      if name.endswith('.bias') or name in no_weight_decay_parameters]
+        other_parameters = [parameter for name, parameter in model.named_parameters()
+                            if not name.endswith('.bias') and name not in no_weight_decay_parameters]
         parameter_groups = [
             {'params': other_parameters},
-            {'params': bias_parameters, 'weight_decay': 0.0}
+            {'params': no_weight_decay_parameters, 'weight_decay': 0.0}
         ]
-        self._optimizer = torch.optim.Adam(parameter_groups, lr=learning_rate, weight_decay=weight_decay)
+        self._optimizer = torch.optim.AdamW(parameter_groups, lr=learning_rate, weight_decay=weight_decay)
         self._scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self._optimizer, epoch_count)
 
         self._training_dataset_loader = self._create_training_dataset_loader(dataset_root,
@@ -73,10 +79,14 @@ class Trainer:
             print('\nValidation - Epoch [{}/{}]'.format(epoch + 1, self._epoch_count), flush=True)
             self._validate()
             self._scheduler.step()
+            next_epoch_method = getattr(self._criterion, 'next_epoch', None)
+            if next_epoch_method is not None:
+                next_epoch_method()
 
             self._print_performances()
             self._save_learning_curves()
             self._save_states(epoch + 1)
+
 
         with torch.no_grad():
             self._model.eval()

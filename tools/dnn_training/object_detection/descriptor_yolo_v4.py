@@ -5,7 +5,7 @@ import torch.nn as nn
 
 from common.modules import Mish
 
-from object_detection.modules.descriptor_yolo_layer import DescriptorYoloLayer
+from object_detection.modules.descriptor_yolo_layer import DescriptorYoloV4Layer
 
 IMAGE_SIZE = (608, 608)
 IN_CHANNELS = 3
@@ -535,8 +535,8 @@ class DescriptorYoloV4(nn.Module):
         )
         self._anchors.append(np.array([(12, 16), (19, 36), (40, 28)]))
         self._output_strides.append(8)
-        self._yolo139 = DescriptorYoloLayer(IMAGE_SIZE, 8, self._anchors[-1].tolist(), class_count, descriptor_size,
-                                            1.2)
+        self._yolo139 = DescriptorYoloV4Layer(IMAGE_SIZE, 8, self._anchors[-1].tolist(), class_count, descriptor_size,
+                                              1.2)
 
         self._conv141 = nn.Sequential(
             nn.Conv2d(128, 256, 3, stride=2, padding=1, bias=False),
@@ -579,8 +579,8 @@ class DescriptorYoloV4(nn.Module):
         )
         self._anchors.append(np.array([(36, 75), (76, 55), (72, 146)]))
         self._output_strides.append(16)
-        self._yolo150 = DescriptorYoloLayer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, descriptor_size,
-                                            1.1)
+        self._yolo150 = DescriptorYoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, descriptor_size,
+                                              1.1)
 
         self._conv152 = nn.Sequential(
             nn.Conv2d(256, 512, 3, stride=2, padding=1, bias=False),
@@ -623,8 +623,8 @@ class DescriptorYoloV4(nn.Module):
         )
         self._anchors.append(np.array([(142, 110), (192, 243), (459, 401)]))
         self._output_strides.append(32)
-        self._yolo161 = DescriptorYoloLayer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, descriptor_size,
-                                            1.05)
+        self._yolo161 = DescriptorYoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, descriptor_size,
+                                              1.05)
 
     def get_image_size(self):
         return IMAGE_SIZE

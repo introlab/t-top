@@ -18,8 +18,7 @@ BOTTOM_MICROPHONE_WALL_HEIGHT = 0.01862439578
 TOP_MICROPHONE_WALL_HEIGHT = 0.0599928907
 MIDDLE_HEIGHT = (BOTTOM_MICROPHONE_WALL_HEIGHT + TOP_MICROPHONE_WALL_HEIGHT) / 2
 
-# Allow to specify the height of the desired odas frame relative to the robot base, or use the default value (classic T-Top)
-Z_OFFSET = (MIDDLE_HEIGHT + float(argv[1])) if len(argv) >= 2 else -0.30753835046
+Z_OFFSET = -MIDDLE_HEIGHT * math.sin(WALL_ANGLE)
 
 
 #Position and direction calculation
@@ -89,9 +88,9 @@ ax.set_zlabel('Z (m)')
 ax.mouse_init()
 
 axis_length = BOTTOM_RADIUS / 2
-ax.plot([0, axis_length], [0, 0], [Z_OFFSET, Z_OFFSET], color='red')
-ax.plot([0, 0], [0, axis_length], [Z_OFFSET, Z_OFFSET], color='green')
-ax.plot([0, 0], [0, 0], [Z_OFFSET, Z_OFFSET + axis_length], color='blue')
+ax.plot([0, axis_length], [0, 0], [0, 0], color='red')
+ax.plot([0, 0], [0, axis_length], [0, 0], color='green')
+ax.plot([0, 0], [0, 0], [0, axis_length], color='blue')
 
 direction_length = BOTTOM_RADIUS / 4
 for i in range(MICROPHONE_COUNT):

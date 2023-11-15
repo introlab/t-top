@@ -12,12 +12,13 @@ from pose_estimation.pose_estimator import get_coordinates
 
 
 IMAGE_SIZE = (256, 192)
+PRESENCE_SCALE = 4.0
 
 
 class PoseEstimator(DnnModel):
     def __init__(self, inference_type=None):
-        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator.ts.pth')
-        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator.trt.pth')
+        torch_script_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator_efficientnet_b0.ts.pth')
+        tensor_rt_model_path = os.path.join(PACKAGE_PATH, 'models', 'pose_estimator_efficientnet_b0.trt.pth')
         sample_input = torch.ones((1, 3, IMAGE_SIZE[0], IMAGE_SIZE[1]))
 
         super(PoseEstimator, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
@@ -81,4 +82,4 @@ class PoseEstimator(DnnModel):
             scaled_coordinates[:, 0] = heatmap_coordinates[0, :, 0] / pose_heatmaps.size()[3] * width
             scaled_coordinates[:, 1] = heatmap_coordinates[0, :, 1] / pose_heatmaps.size()[2] * height
 
-            return scaled_coordinates.cpu().numpy(), presence.cpu().numpy()[0]
+            return scaled_coordinates.cpu().numpy(), presence.cpu().numpy()[0] * PRESENCE_SCALE

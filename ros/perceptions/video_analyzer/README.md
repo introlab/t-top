@@ -7,7 +7,9 @@ This node detects objects. If the audio contains a person, it estimates the pose
 This node uses RGB images, so the 3D positions are not set.
 
 #### Parameters
- - `use_descriptor_yolo_v4` (bool): Indicates to use the network extracting a object embedding or not.
+ - `use_descriptor_yolo` (bool): Indicates to use the network extracting an object embedding or not.
+ - `yolo_model` (string): If descriptor_yolo_v4 is not used, it indicates which model to use for YOLO (yolo_v4_coco, yolo_v4_tiny_coco, yolo_v7_coco, yolo_v7_tiny_coco or yolo_v7_objects365).
+ If descriptor_yolo is used, it indicates which model to use for Descriptor-YOLO (yolo_v4_tiny_coco, yolo_v7_coco or yolo_v7_objects365).
  - `confidence_threshold` (double): The object confidence threshold.
  - `nms_threshold` (double): The Non-Maximum Suppresion threshold.
  - `person_probability_threshold` (double): The person confidence threshold.
@@ -36,7 +38,9 @@ This node detects objects. If the audio contains a person, it estimates the pose
 This node uses RGB-D images, so the 3D positions are set.
 
 #### Parameters
- - `use_descriptor_yolo_v4` (bool): Indicates to use the network extracting a object embedding or not.
+ - `use_descriptor_yolo` (bool): Indicates to use the network extracting an object embedding or not.
+ - `yolo_model` (string): If descriptor_yolo_v4 is not used, it indicates which model to use for YOLO (yolo_v4_coco, yolo_v4_tiny_coco, yolo_v7_coco, yolo_v7_tiny_coco or yolo_v7_objects365).
+ If descriptor_yolo is used, it indicates which model to use for Descriptor-YOLO (yolo_v4_tiny_coco, yolo_v7_coco or yolo_v7_objects365).
  - `confidence_threshold` (double): The object confidence threshold.
  - `nms_threshold` (double): The Non-Maximum Suppresion threshold.
  - `person_probability_threshold` (double): The person confidence threshold.

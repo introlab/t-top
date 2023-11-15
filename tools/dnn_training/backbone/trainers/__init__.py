@@ -1,2 +1,2 @@
-from backbone.trainers.backbone_trainer import BackboneTrainer
+from backbone.trainers.backbone_trainer import BackboneTrainer, IMAGE_SIZE
 from backbone.trainers.backbone_distillation_trainer import BackboneDistillationTrainer

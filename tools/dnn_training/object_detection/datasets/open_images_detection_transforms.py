@@ -59,13 +59,15 @@ class OpenImagesDetectionTrainingTransforms:
     def __call__(self, image, target):
         image = self._image_only_transform(image)
 
-        resized_image, scale = _resize_image(image, self._image_size)
+        resized_image, scale, offset_x, offset_y = _resize_image(image, self._image_size)
         target = _convert_bbox_to_yolo(target, scale, self._image_size, self._one_hot_class, self._class_count)
 
         resized_image_tensor = F.to_tensor(resized_image)
 
         metadata = {
-            'scale': scale
+            'scale': scale,
+            'offset_x': offset_x,
+            'offset_y': offset_y
         }
         return resized_image_tensor, target, metadata
 
@@ -77,13 +79,15 @@ class OpenImagesDetectionValidationTransforms:
         self._class_count = class_count
 
     def __call__(self, image, target):
-        resized_image, scale = _resize_image(image, self._image_size)
+        resized_image, scale, offset_x, offset_y = _resize_image(image, self._image_size)
         resized_image_tensor = F.to_tensor(resized_image)
 
         if target is not None:
             target = _convert_bbox_to_yolo(target, scale, self._image_size, self._one_hot_class, self._class_count)
 
         metadata = {
-            'scale': scale
+            'scale': scale,
+            'offset_x': offset_x,
+            'offset_y': offset_y
         }
         return resized_image_tensor, target, metadata

@@ -57,6 +57,7 @@ class LfwEvaluation(RocDistancesThresholdsEvaluation):
         fold_size = int(p[1])
 
         lines = lines[1:]
+        not_available_pairs = 0
         for line in lines:
             p = line.strip().split()
             if len(p) == 3:
@@ -72,7 +73,10 @@ class LfwEvaluation(RocDistancesThresholdsEvaluation):
 
             if os.path.exists(image_path1) and os.path.exists(image_path2):
                 image_pairs.append((image_path1, image_path2, is_same_person))
+            else:
+                not_available_pairs += 1
 
+        print('Not available pairs:', not_available_pairs)
         return fold_count, fold_size, image_pairs
 
     def _calculate_distances(self):

@@ -8,7 +8,7 @@ import torch
 
 import rospy
 
-from dnn_utils import DescriptorYoloV4, YoloV4, PoseEstimator, FaceDescriptorExtractor
+from dnn_utils import DescriptorYolo, Yolo, PoseEstimator, FaceDescriptorExtractor
 from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
 from dnn_utils import SemanticSegmentationNetwork
 
@@ -31,12 +31,12 @@ def launch_test(function, *args):
     print()
 
 
-def test_descriptor_yolo_v4():
-    print('----------test_descriptor_yolo_v4----------')
+def test_descriptor_yolo(model_name):
+    print(f'----------test_descriptor_{model_name}----------')
 
-    cpu_model = DescriptorYoloV4(inference_type='cpu')
-    torch_gpu_model = DescriptorYoloV4(inference_type='torch_gpu')
-    trt_gpu_model = DescriptorYoloV4(inference_type='trt_gpu')
+    cpu_model = DescriptorYolo(model_name, inference_type='cpu')
+    torch_gpu_model = DescriptorYolo(model_name, inference_type='torch_gpu')
+    trt_gpu_model = DescriptorYolo(model_name, inference_type='trt_gpu')
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.rand(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
@@ -52,19 +52,19 @@ def test_descriptor_yolo_v4():
             mean_abs_diff(cpu_predictions[i], trt_gpu_predictions[i]))
 
 
-def test_yolo_v4():
-    print('----------test_yolo_v4----------')
+def test_yolo(model_name):
+    print(f'----------test_{model_name}----------')
 
-    cpu_model = YoloV4(inference_type='cpu')
-    torch_gpu_model = YoloV4(inference_type='torch_gpu')
-    trt_gpu_model = YoloV4(inference_type='trt_gpu')
+    cpu_model = Yolo(model_name, inference_type='cpu')
+    torch_gpu_model = Yolo(model_name, inference_type='torch_gpu')
+    trt_gpu_model = Yolo(model_name, inference_type='trt_gpu')
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.rand(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
 
-    _, cpu_predictions =  cpu_model.forward_raw(x)
-    _, torch_gpu_predictions = torch_gpu_model.forward_raw(x)
-    _, trt_gpu_predictions = trt_gpu_model.forward_raw(x)
+    _, _, _, cpu_predictions =  cpu_model.forward_raw(x)
+    _, _, _, torch_gpu_predictions = torch_gpu_model.forward_raw(x)
+    _, _, _, trt_gpu_predictions = trt_gpu_model.forward_raw(x)
 
     for i in range(len(cpu_predictions)):
         print('mean(abs(cpu_predictions[{}] - torch_gpu_predictions[{}])) ='.format(i, i),
@@ -98,7 +98,7 @@ def test_pose_estimator():
 
 
 def test_face_descriptor_extractor():
-    print('----------test_face_descriptor_extractor----------')
+    print(f'----------test_face_descriptor_extractor----------')
 
     cpu_model = FaceDescriptorExtractor(inference_type='cpu')
     torch_gpu_model = FaceDescriptorExtractor(inference_type='torch_gpu')
@@ -111,10 +111,11 @@ def test_face_descriptor_extractor():
                                  [0.75 * IMAGE_SIZE[1], 0.25 * IMAGE_SIZE[0]],
                                  [0.25 * IMAGE_SIZE[1], 0.25 * IMAGE_SIZE[0]]])
     pose_presence = np.array([1.0, 1.0, 1.0, 0.0, 0.0])
+    pose_confidence_threshold = 0.4
 
-    cpu_descriptor = cpu_model(x, pose_coordinates, pose_presence)[0]
-    torch_gpu_descriptor = torch_gpu_model(x, pose_coordinates, pose_presence)[0]
-    trt_gpu_descriptor = trt_gpu_model(x, pose_coordinates, pose_presence)[0]
+    cpu_descriptor = cpu_model(x, pose_coordinates, pose_presence, pose_confidence_threshold)[0]
+    torch_gpu_descriptor = torch_gpu_model(x, pose_coordinates, pose_presence, pose_confidence_threshold)[0]
+    trt_gpu_descriptor = trt_gpu_model(x, pose_coordinates, pose_presence, pose_confidence_threshold)[0]
 
     print('mean(abs(cpu_descriptor - torch_gpu_descriptor)) =',
           mean_abs_diff(cpu_descriptor, torch_gpu_descriptor))
@@ -202,8 +203,13 @@ def test_semantic_segmentation_network(dataset):
 def main():
     rospy.init_node('dnn_utils_test', disable_signals=True)
 
-    launch_test(test_descriptor_yolo_v4)
-    launch_test(test_yolo_v4)
+    launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
+    launch_test(test_descriptor_yolo, 'yolo_v7_coco')
+    launch_test(test_yolo, 'yolo_v4_coco')
+    launch_test(test_yolo, 'yolo_v4_tiny_coco')
+    launch_test(test_yolo, 'yolo_v7_coco')
+    launch_test(test_yolo, 'yolo_v7_tiny_coco')
+    launch_test(test_yolo, 'yolo_v7_objects365')
     launch_test(test_pose_estimator)
     launch_test(test_face_descriptor_extractor)
     launch_test(test_multiclass_audio_descriptor_extractor)

@@ -6,7 +6,8 @@ import torch
 from common.program_arguments import save_arguments, print_arguments
 
 from backbone.stdc import Stdc1, Stdc2
-from backbone.trainers import BackboneTrainer
+from backbone.vit import Vit
+from backbone.trainers import BackboneTrainer, IMAGE_SIZE
 from backbone.datasets.classification_image_net import CLASS_COUNT as IMAGE_NET_CLASS_COUNT
 from backbone.datasets.classification_open_images import CLASS_COUNT as OPEN_IMAGES_CLASS_COUNT
 
@@ -18,7 +19,10 @@ def main():
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
     parser.add_argument('--dataset_type', choices=['image_net', 'open_images'],
                         help='Choose the dataset type', required=True)
-    parser.add_argument('--model_type', choices=['stdc1', 'stdc2'], help='Choose the model type', required=True)
+    parser.add_argument('--model_type', choices=['stdc1', 'stdc2', 'passt_s_n', 'passt_s_n_l'],
+                        help='Choose the model type', required=True)
+    parser.add_argument('--dropout_rate', type=float, help='Choose the dropout rate for passt_s_n and passt_s_n_l',
+                        default=0.0)
 
     parser.add_argument('--learning_rate', type=float, help='Choose the learning rate', required=True)
     parser.add_argument('--weight_decay', type=float, help='Choose the weight decay', required=True)
@@ -32,7 +36,7 @@ def main():
 
     args = parser.parse_args()
 
-    model = create_model(args.model_type, args.dataset_type)
+    model = create_model(args.model_type, args.dataset_type, args.dropout_rate)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.model_type + '_' + args.criterion_type + '_' +
@@ -53,7 +57,7 @@ def main():
     trainer.train()
 
 
-def create_model(model_type, dataset_type):
+def create_model(model_type, dataset_type, dropout_rate):
     if dataset_type == 'image_net':
         class_count = IMAGE_NET_CLASS_COUNT
     elif dataset_type == 'open_images':
@@ -65,6 +69,12 @@ def create_model(model_type, dataset_type):
         return Stdc1(class_count=class_count, dropout=0.0)
     elif model_type == 'stdc2':
         return Stdc2(class_count=class_count, dropout=0.0)
+    elif model_type == 'passt_s_n':
+        return Vit(IMAGE_SIZE, class_count=class_count, depth=12,
+                   dropout_rate=dropout_rate, attention_dropout_rate=dropout_rate)
+    elif model_type == 'passt_s_n_l':
+        return Vit(IMAGE_SIZE, class_count=class_count, depth=7,
+                   dropout_rate=dropout_rate, attention_dropout_rate=dropout_rate)
     else:
         raise ValueError('Invalid backbone type')
 

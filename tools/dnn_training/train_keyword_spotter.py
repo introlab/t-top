@@ -5,7 +5,7 @@ import torch
 
 from common.program_arguments import save_arguments, print_arguments
 
-from keyword_spotting.keyword_spotter import KeywordSpotter
+from export_keyword_spotter import create_model
 from keyword_spotting.trainers import KeywordSpotterTrainer
 
 
@@ -49,15 +49,6 @@ def main():
                                     batch_size_division=args.batch_size_division,
                                     model_checkpoint=args.model_checkpoint)
     trainer.train()
-
-
-def create_model(dataset_type):
-    if dataset_type == 'google_speech_commands':
-        return KeywordSpotter(class_count=36, use_softmax=False)
-    elif dataset_type == 'ttop_keyword':
-        return KeywordSpotter(class_count=2, use_softmax=False)
-    else:
-        raise ValueError('Invalid database type')
 
 
 if __name__ == '__main__':

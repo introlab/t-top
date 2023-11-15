@@ -14,7 +14,7 @@ if [ -f Weights.zip ]; then
     OLD_TIME=$(stat Weights.zip -c %Y)
 fi
 
-if OUT=$(wget -N https://introlab.3it.usherbrooke.ca/mediawiki-introlab/images/4/4e/Weights.zip 2>&1); then
+if OUT=$(wget -N https://github.com/introlab/t-top/releases/download/DNN_Weights_v4.0.0/Weights.zip 2>&1); then
     # Output to stdout on success
     echo $OUT
 else
@@ -43,11 +43,19 @@ trap 'jobs -p | xargs -I '{}' kill '{}' &> /dev/null; wait' INT QUIT KILL TERM
 
 set -e
 
-python3 export_descriptor_yolo_v4.py --dataset_type coco --model_type yolo_v4_tiny --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v4.ts.pth --trt_filename descriptor_yolo_v4.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v4_tiny_3.pth --trt_fp16 $FORCE_EXPORT
-python3 export_yolo_v4.py --model_type yolo_v4_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4.ts.pth --trt_filename yolo_v4.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_tiny.pth --trt_fp16 $FORCE_EXPORT
+python3 export_descriptor_yolo.py --dataset_type coco --model_type yolo_v4_tiny --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v4_tiny_coco.ts.pth --trt_filename descriptor_yolo_v4_tiny_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v4_tiny_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_descriptor_yolo.py --dataset_type coco --model_type yolo_v7 --descriptor_size 128 --output_dir $SCRIPT_PATH/../models --torch_script_filename descriptor_yolo_v7_coco.ts.pth --trt_filename descriptor_yolo_v7_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/descriptor_yolo_v7_coco.pth --trt_fp16 $FORCE_EXPORT
 
-python3 export_pose_estimator.py --backbone_type resnet18 --upsampling_count 3 --output_dir $SCRIPT_PATH/../models --torch_script_filename pose_estimator.ts.pth --trt_filename pose_estimator.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/pose_estimator_resnet18_upsampling_count_3.pth --trt_fp16 $FORCE_EXPORT
-python3 export_face_descriptor_extractor.py --embedding_size 256 --output_dir $SCRIPT_PATH/../models --torch_script_filename face_descriptor_extractor.ts.pth --trt_filename face_descriptor_extractor.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/face_descriptor_extractor_embedding_size_256.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v4 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4_coco.ts.pth --trt_filename yolo_v4_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v4_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v4_tiny_coco.ts.pth --trt_filename yolo_v4_tiny_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v4_tiny_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v7 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_coco.ts.pth --trt_filename yolo_v7_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_coco.pth --trt_fp16 $FORCE_EXPORT
+python3 export_yolo.py --dataset_type coco --model_type yolo_v7_tiny --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_tiny_coco.ts.pth --trt_filename yolo_v7_tiny_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_tiny_coco.pth --trt_fp16 $FORCE_EXPORT
+
+python3 export_yolo.py --dataset_type objects365 --model_type yolo_v7 --output_dir $SCRIPT_PATH/../models --torch_script_filename yolo_v7_objects365.ts.pth --trt_filename yolo_v7_objects365.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/yolo_v7_objects365.pth --trt_fp16 $FORCE_EXPORT
+
+python3 export_pose_estimator.py --backbone_type efficientnet_b0 --output_dir $SCRIPT_PATH/../models --torch_script_filename pose_estimator_efficientnet_b0.ts.pth --trt_filename pose_estimator_efficientnet_b0.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/pose_estimator_efficientnet_b0.pth --trt_fp16 $FORCE_EXPORT
+
+python3 export_face_descriptor_extractor.py --backbone_type open_face --embedding_size 256 --output_dir $SCRIPT_PATH/../models --torch_script_filename face_descriptor_open_face_e256.ts.pth --trt_filename face_descriptor_open_face_e256.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/face_descriptor_open_face_e256.pth --trt_fp16 $FORCE_EXPORT
 
 python3 export_semantic_segmentation_network.py --dataset_type coco --backbone_type stdc1 --channel_scale 1 --output_dir $SCRIPT_PATH/../models --torch_script_filename semantic_segmentation_network_coco.ts.pth --trt_filename semantic_segmentation_network_coco.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/semantic_segmentation_network_coco_stdc1_s1.pth --trt_fp16 $FORCE_EXPORT
 python3 export_semantic_segmentation_network.py --dataset_type kitchen_open_images --backbone_type stdc1 --channel_scale 1 --output_dir $SCRIPT_PATH/../models --torch_script_filename semantic_segmentation_network_kitchen_open_images.ts.pth --trt_filename semantic_segmentation_network_kitchen_open_images.trt.pth --model_checkpoint $SCRIPT_PATH/../weights/semantic_segmentation_network_kitchen_open_images_stdc1_s1.pth --trt_fp16 $FORCE_EXPORT

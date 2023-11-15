@@ -17,6 +17,11 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1);
 }
 
+StrategyType FaceAnimationStrategy::strategyType()
+{
+    return StrategyType::get<FaceAnimationStrategy>();
+}
+
 void FaceAnimationStrategy::onEnabling(const FaceAnimationDesire& desire)
 {
     Strategy<FaceAnimationDesire>::onEnabling(desire);
@@ -46,6 +51,11 @@ LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> 
     m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1);
 }
 
+StrategyType LedEmotionStrategy::strategyType()
+{
+    return StrategyType::get<LedEmotionStrategy>();
+}
+
 void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
 {
     Strategy<LedEmotionDesire>::onEnabling(desire);
@@ -68,6 +78,11 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
       m_nodeHandle(nodeHandle)
 {
     m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
+}
+
+StrategyType SpecificFaceFollowingStrategy::strategyType()
+{
+    return StrategyType::get<SpecificFaceFollowingStrategy>();
 }
 
 void SpecificFaceFollowingStrategy::onEnabling(const SpecificFaceFollowingDesire& desire)
@@ -94,6 +109,11 @@ TalkStrategy::TalkStrategy(
 {
     m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1);
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
+}
+
+StrategyType TalkStrategy::strategyType()
+{
+    return StrategyType::get<TalkStrategy>();
 }
 
 void TalkStrategy::onEnabling(const TalkDesire& desire)
@@ -132,6 +152,11 @@ GestureStrategy::GestureStrategy(
         nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
 }
 
+StrategyType GestureStrategy::strategyType()
+{
+    return StrategyType::get<GestureStrategy>();
+}
+
 void GestureStrategy::onEnabling(const GestureDesire& desire)
 {
     Strategy<GestureDesire>::onEnabling(desire);
@@ -166,6 +191,11 @@ PlaySoundStrategy::PlaySoundStrategy(
     m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1);
     m_soundDoneSubscriber =
         nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
+}
+
+StrategyType PlaySoundStrategy::strategyType()
+{
+    return StrategyType::get<GestureStrategy>();
 }
 
 void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)

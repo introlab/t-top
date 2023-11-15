@@ -3,14 +3,15 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from object_detection.modules.yolo_layer import YoloLayer
+from object_detection.modules.yolo_layer import YoloV4Layer
 
 IMAGE_SIZE = (416, 416)
 IN_CHANNELS = 3
 
-# Genereated from: yolov4-tiny.cfg:
+
+# Generated from: yolov4-tiny.cfg:
 class YoloV4Tiny(nn.Module):
-    def __init__(self):
+    def __init__(self, class_count, class_probs=False):
         super(YoloV4Tiny, self).__init__()
 
         self._anchors = []
@@ -113,11 +114,11 @@ class YoloV4Tiny(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv29 = nn.Sequential(
-            nn.Conv2d(512, 255, 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(512, 3 * (class_count + 5), 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(81, 82), (135, 169), (344, 319)]))
         self._output_strides.append(32)
-        self._yolo30 = YoloLayer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), 80, 1.05)
+        self._yolo30 = YoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, scale_x_y=1.05, class_probs=class_probs)
 
         self._conv32 = nn.Sequential(
             nn.Conv2d(256, 128, 1, stride=1, padding=0, bias=False),
@@ -132,11 +133,11 @@ class YoloV4Tiny(nn.Module):
             nn.LeakyReLU(0.1, inplace=True)
         )
         self._conv36 = nn.Sequential(
-            nn.Conv2d(256, 255, 1, stride=1, padding=0, bias=True),
+            nn.Conv2d(256, 3 * (class_count + 5), 1, stride=1, padding=0, bias=True),
         )
         self._anchors.append(np.array([(23, 27), (37, 58), (81, 82)]))
         self._output_strides.append(16)
-        self._yolo37 = YoloLayer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), 80, 1.05)
+        self._yolo37 = YoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, scale_x_y=1.05, class_probs=class_probs)
 
     def get_image_size(self):
         return IMAGE_SIZE
