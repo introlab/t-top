@@ -1,0 +1,33 @@
+<launch>
+
+    <node name="audio_capture" type="capture_node" pkg="audio_utils" output="screen">
+        <param name="backend" value="alsa"/>
+        <param name="device" value="default"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="merge" value="false" />
+        <param name="gain" value="1.0" />
+        <param name="latency_us" value="40000" />
+
+        <remap from="audio_out" to="audio_input_signed_16_16000"/>
+    </node>
+
+    <node pkg="robot_name_detector" type="robot_name_detector_node.py" name="robot_name_detector_node">
+        <param name="message_rate" value="10"/>
+        <param name="sound_rms_attack" value="0.05"/>
+        <param name="sound_rms_release" value="0.95"/>
+        <param name="sound_rms_presence_threshold" value="0.03"/>
+
+        <param name="inference_type" value="cpu"/>
+        <param name="robot_name_model_probability_threshold" value="0.1"/>
+        <param name="robot_name_model_interval" value="1600"/>
+        <param name="robot_name_model_analysis_delay" value="10000"/>
+        <param name="robot_name_model_analysis_count" value="3"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="robot_name_detector/filter_state"/>
+    </node>
+
+</launch>

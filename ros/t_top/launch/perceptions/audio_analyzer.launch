@@ -3,7 +3,7 @@
 
     <node pkg="audio_analyzer" type="audio_analyzer_node.py" name="audio_analyzer_node">
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
-        <param name="interval" value="32000"/>
+        <param name="interval" value="8000"/>
         <param name="voice_probability_threshold" value="0.5"/>
         <param name="class_probability_threshold" value="0.5"/>
 

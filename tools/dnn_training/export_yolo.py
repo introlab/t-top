@@ -8,12 +8,10 @@ from common.file_presence_checker import terminate_if_already_exported
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Export descriptor yolo v4')
-    parser.add_argument('--dataset_type', choices=['coco', 'open_images'], help='Choose the database type',
-                        required=True)
-    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny'],
+    parser = argparse.ArgumentParser(description='Export yolo')
+    parser.add_argument('--dataset_type', choices=['coco', 'objects365'], help='Choose the dataset type', required=True)
+    parser.add_argument('--model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
                         help='Choose the model type', required=True)
-    parser.add_argument('--descriptor_size', type=int, help='Choose the descriptor size', required=True)
 
     parser.add_argument('--output_dir', type=str, help='Choose the output directory', required=True)
     parser.add_argument('--torch_script_filename', type=str, help='Choose the TorchScript filename', required=True)
@@ -32,9 +30,9 @@ def main():
 
     from common.model_exporter import export_model
 
-    from train_descriptor_yolo_v4 import create_model
+    from object_detection.modules.test_converted_yolo import create_model
 
-    model = create_model(args.model_type, args.descriptor_size, args.dataset_type)
+    model = create_model(args.model_type, args.dataset_type, class_probs=True)
     x = torch.ones((1, 3, model.get_image_size()[0], model.get_image_size()[1]))
     export_model(model, args.model_checkpoint, x, args.output_dir, args.torch_script_filename, args.trt_filename,
                  trt_fp16=args.trt_fp16)

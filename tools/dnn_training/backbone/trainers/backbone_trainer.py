@@ -14,7 +14,7 @@ from common.trainers import Trainer
 from common.metrics import ClassificationAccuracyMetric, LossMetric, LossAccuracyLearningCurves, \
     TopNClassificationAccuracyMetric
 
-from backbone.datasets import ClassificationOpenImages, ClassificationImageNet
+from backbone.datasets import ClassificationOpenImages, ClassificationImageNet, MixupClassificationDataset
 
 
 IMAGE_SIZE = (224, 224)
@@ -80,7 +80,9 @@ class BackboneTrainer(Trainer):
         else:
             raise ValueError('Invalid dataset type')
 
-        return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=shuffle,
+        return torch.utils.data.DataLoader(MixupClassificationDataset(dataset),
+                                           batch_size=batch_size // batch_size_division,
+                                           shuffle=shuffle,
                                            num_workers=4)
 
     def _clear_between_training(self):

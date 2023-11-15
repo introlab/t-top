@@ -18,22 +18,23 @@ class CaptureFaceNode:
     def __init__(self):
         self._name = rospy.get_param('~name')
         self._mean_size = rospy.get_param('~mean_size')
+        self._face_sharpness_score_threshold = rospy.get_param('~face_sharpness_score_threshold')
 
         self._descriptors_lock = threading.Lock()
         self._descriptors = []
         self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
 
     def _video_analysis_cb(self, msg):
-        face_descriptor = None
+        face_object = None
         for object in msg.objects:
-            if len(object.face_descriptor) > 0 and face_descriptor is not None:
+            if len(object.face_descriptor) > 0 and face_object is not None:
                 rospy.logwarn('Only one face must be present in the image.')
             elif len(object.face_descriptor) > 0:
-                face_descriptor = object.face_descriptor
+                face_object = object
 
-        if face_descriptor is not None:
+        if face_object is not None and face_object.face_sharpness_score >= self._face_sharpness_score_threshold:
             with self._descriptors_lock:
-                self._descriptors.append(face_descriptor)
+                self._descriptors.append(face_object.face_descriptor)
 
     def run(self):
         self.enable_video_analyzer()

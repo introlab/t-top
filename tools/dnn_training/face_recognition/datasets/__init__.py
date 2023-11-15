@@ -1,2 +1,4 @@
 from face_recognition.datasets.align_faces import ALIGNED_IMAGE_SIZE as IMAGE_SIZE
-from face_recognition.datasets.vggface2_dataset import Vggface2Dataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
+from face_recognition.datasets.face_dataset import FaceDataset, FaceConcatDataset, LFW_OVERLAPPED_VGGFACE2_CLASS_NAMES
+from face_recognition.datasets.face_dataset import LFW_OVERLAPPED_MSCELEB1M_CLASS_NAMES
+from face_recognition.datasets.imbalanced_face_dataset_sampler import ImbalancedFaceDatasetSampler

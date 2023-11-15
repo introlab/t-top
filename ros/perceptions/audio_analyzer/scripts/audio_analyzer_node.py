@@ -86,7 +86,7 @@ class AudioAnalyzerNode:
                 self._audio_analysis_count += audio_frame.shape[0]
 
     def _analyse(self):
-        audio_buffer = self._get_audio_buffer()
+        audio_buffer, sst_id = self._get_audio_buffer_and_sst_id()
         audio_descriptor_buffer = audio_buffer[-self._audio_descriptor_extractor.get_supported_duration():]
         audio_descriptor, audio_class_probabilities = self._audio_descriptor_extractor(audio_descriptor_buffer)
         audio_descriptor = audio_descriptor.tolist()
@@ -99,21 +99,22 @@ class AudioAnalyzerNode:
             voice_descriptor = []
 
         audio_classes = self._get_audio_classes(audio_class_probabilities)
-        self._publish_audio_analysis(audio_buffer, audio_classes, audio_descriptor, voice_descriptor)
+        self._publish_audio_analysis(sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor)
 
-    def _get_audio_buffer(self):
+    def _get_audio_buffer_and_sst_id(self):
         with self._audio_frames_lock:
+            sst_id = self._sst_id
             audio_buffer = torch.cat(self._audio_frames, dim=0)
         if audio_buffer.size()[0] < self._audio_buffer_duration:
-            return torch.cat([torch.zeros(self._audio_buffer_duration - audio_buffer.size()[0]), audio_buffer], dim=0)
+            return torch.cat([torch.zeros(self._audio_buffer_duration - audio_buffer.size()[0]), audio_buffer], dim=0), sst_id
         else:
-            return audio_buffer[-self._audio_buffer_duration:]
+            return audio_buffer[-self._audio_buffer_duration:], sst_id
 
     def _get_audio_classes(self, audio_class_probabilities):
         return [self._class_names[i] for i in range(len(self._class_names))
                 if audio_class_probabilities[i].item() >= self._class_probability_threshold]
 
-    def _publish_audio_analysis(self, audio_buffer, audio_classes, audio_descriptor, voice_descriptor):
+    def _publish_audio_analysis(self, sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor):
         with self._audio_direction_lock:
             frame_id, direction_x, direction_y, direction_z = self._audio_direction
 
@@ -121,6 +122,8 @@ class AudioAnalyzerNode:
         msg.header.seq = self._audio_analysis_seq
         msg.header.stamp = rospy.Time.now()
         msg.header.frame_id = frame_id
+
+        msg.tracking_id = sst_id
 
         msg.audio_frame.format = 'float'
         msg.audio_frame.channel_count = SUPPORTED_CHANNEL_COUNT

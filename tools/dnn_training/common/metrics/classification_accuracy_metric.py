@@ -10,6 +10,11 @@ class ClassificationAccuracyMetric:
     def add(self, predicted_class_scores, target_classes):
         predicted_classes = predicted_class_scores.argmax(dim=1)
 
+        if len(target_classes.size()) == 2:
+            target_classes = target_classes.argmax(dim=1)
+        elif len(target_classes.size()) > 2:
+            raise ValueError('Invalid target_classes size')
+
         self._good += (predicted_classes == target_classes).sum().item()
         self._total += target_classes.size()[0]
 
@@ -31,6 +36,11 @@ class TopNClassificationAccuracyMetric:
 
     def add(self, predicted_class_scores, target_classes):
         top_n_predicted_classes = predicted_class_scores.argsort(dim=1, descending=True)[:, :self._n]
+
+        if len(target_classes.size()) == 2:
+            target_classes = target_classes.argmax(dim=1)
+        elif len(target_classes.size()) > 2:
+            raise ValueError('Invalid target_classes size')
 
         for i in range(self._n):
             self._good += (top_n_predicted_classes[:, i] == target_classes).sum().item()

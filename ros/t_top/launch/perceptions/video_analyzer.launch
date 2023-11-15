@@ -4,7 +4,8 @@
     <arg name="visualization" default="false"/>
 
     <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_3d_node">
-        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="use_descriptor_yolo" value="false"/>
+        <param name="yolo_model" value="yolo_v7_tiny_coco"/>
         <param name="confidence_threshold" value="0.5"/>
         <param name="nms_threshold" value="0.5"/>
         <param name="person_probability_threshold" value="0.75"/>
@@ -33,7 +34,8 @@
     </node>
 
     <node if="$(arg camera_2d_wide_enabled)" pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node">
-        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="use_descriptor_yolo" value="false"/>
+        <param name="yolo_model" value="yolo_v7_coco"/>
         <param name="confidence_threshold" value="0.5"/>
         <param name="nms_threshold" value="0.5"/>
         <param name="person_probability_threshold" value="0.75"/>
@@ -42,7 +44,7 @@
 
         <param name="pose_enabled" value="false"/>
         <param name="face_descriptor_enabled" value="false"/>
-        <param name="semantic_segmentation_enabled" value="true"/>
+        <param name="semantic_segmentation_enabled" value="false"/>
         <param name="semantic_segmentation_dataset" value="coco"/> <!-- coco, kitchen_open_images or person_other_open_images -->
         <param name="cropped_image_enabled" value="false"/>
 

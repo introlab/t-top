@@ -16,15 +16,15 @@ import torchvision.transforms.functional as TF
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-from export_yolo_v4 import create_model as create_yolo_v4_model
-from train_pose_estimator import create_model as create_pose_estimator_model
+from train_pose_estimator import create_model as create_pose_estimator_model, BACKBONE_TYPES as POSE_BACKBONE_TYPES
 
 from common.modules import load_checkpoint
 
 from object_detection.datasets import ObjectDetectionCoco, CocoDetectionValidationTransforms
-from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
+from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions_by_classes
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CONFIDENCE_INDEX
 from object_detection.modules.yolo_layer import CLASSES_INDEX
+from object_detection.modules.test_converted_yolo import create_model as create_yolo_model
 
 from pose_estimation.trainers.pose_estimator_trainer import IMAGE_SIZE as POSE_ESTIMATOR_IMAGE_SIZE
 from pose_estimation.datasets.pose_estimation_coco import COCO_PERSON_CATEGORY_ID
@@ -57,7 +57,9 @@ class ObjectDetectionFolder(Dataset):
             'image_id': image_id,
             'initial_width': initial_width,
             'initial_height': initial_height,
-            'scale': transforms_metadata['scale']
+            'scale': transforms_metadata['scale'],
+            'offset_x': transforms_metadata['offset_x'],
+            'offset_y': transforms_metadata['offset_y']
         }
         return image, target, metadata
 
@@ -66,11 +68,12 @@ class ObjectDetectionFolder(Dataset):
 
 
 # TODO Refactor to reduce code duplication
-class CocoPoseEvaluationWithYoloV4():
-    def __init__(self, yolo_model, pose_estimator_model, dataset_root, dataset_split, output_path,
+class CocoPoseEvaluationWithYolo():
+    def __init__(self, yolo_model, pose_estimator_model, device, dataset_root, dataset_split, output_path,
                  confidence_threshold=0.01, nms_threshold=0.5, presence_threshold=0.0):
-        self._yolo_model = yolo_model
-        self._pose_estimator_model = pose_estimator_model
+        self._device = device
+        self._yolo_model = yolo_model.to(device)
+        self._pose_estimator_model = pose_estimator_model.to(device)
 
         transforms = CocoDetectionValidationTransforms(yolo_model.get_image_size(), one_hot_class=False)
 
@@ -110,33 +113,37 @@ class CocoPoseEvaluationWithYoloV4():
         return self._evaluate_coco()
 
     def _get_results(self):
-        results = []
-        for image, _, metadata in tqdm(self._dataset):
-            yolo_predictions = self._yolo_model.forward(image.unsqueeze(0))
-            yolo_predictions = group_predictions(yolo_predictions)[0]
-            yolo_predictions = filter_yolo_predictions(yolo_predictions,
-                                                       confidence_threshold=self._confidence_threshold,
-                                                       nms_threshold=self._nms_threshold)
+        with torch.no_grad():
+            results = []
+            for image, _, metadata in tqdm(self._dataset):
+                yolo_predictions = self._yolo_model.forward(image.unsqueeze(0).to(self._device))
+                yolo_predictions = group_predictions(yolo_predictions)[0]
+                yolo_predictions = filter_yolo_predictions_by_classes(yolo_predictions,
+                                                                      confidence_threshold=self._confidence_threshold,
+                                                                      nms_threshold=self._nms_threshold)
 
-            results.extend(self._get_image_results(yolo_predictions, metadata))
+                results.extend(self._get_image_results(yolo_predictions, metadata))
 
-        return results
+            return results
 
     def _get_image_results(self, yolo_predictions, metadata):
         image_id = metadata['image_id']
         scale = metadata['scale']
+        offset_x = metadata['offset_x']
+        offset_y = metadata['offset_y']
         initial_width = metadata['initial_width']
         initial_height = metadata['initial_height']
 
         results = []
         for yolo_prediction in yolo_predictions:
-            class_index = torch.argmax(yolo_prediction[CLASSES_INDEX:], dim=0).item()
+            class_probs = yolo_prediction[CLASSES_INDEX:]
+            class_index = torch.argmax(class_probs, dim=0).item()
             confidence = yolo_prediction[CONFIDENCE_INDEX].item()
             if class_index != PERSON_CLASS_INDEX or confidence < self._confidence_threshold:
                 continue
 
-            center_x = (yolo_prediction[X_INDEX] / scale).item()
-            center_y = (yolo_prediction[Y_INDEX] / scale).item()
+            center_x = ((yolo_prediction[X_INDEX] - offset_x) / scale).item()
+            center_y = ((yolo_prediction[Y_INDEX] - offset_y) / scale).item()
             width = (yolo_prediction[W_INDEX] / scale).item() * BBOX_SCALE
             height = (yolo_prediction[H_INDEX] / scale).item() * BBOX_SCALE
 
@@ -155,7 +162,7 @@ class CocoPoseEvaluationWithYoloV4():
     def _get_heatmap_prediction(self, image_id, x0, y0, x1, y1):
         file = '{:012d}.jpg'.format(image_id)
         image_tensor = TF.to_tensor(Image.open(os.path.join(self._image_root_path, file)).convert('RGB'))
-        image_tensor = image_tensor[:, y0:y1, x0:x1]
+        image_tensor = image_tensor[:, y0:y1, x0:x1].to(self._device)
 
         image_tensor = F.interpolate(image_tensor.unsqueeze(0), size=POSE_ESTIMATOR_IMAGE_SIZE, mode='bilinear')
         image_tensor = self._pose_estimator_normalization(image_tensor.squeeze(0))
@@ -208,30 +215,32 @@ class CocoPoseEvaluationWithYoloV4():
 
 def main():
     parser = argparse.ArgumentParser(description='Test pose estimator with detected person')
+    parser.add_argument('--use_gpu', action='store_true', help='Use the GPU')
     parser.add_argument('--dataset_root', type=str, help='Choose the dataset root path', required=True)
     parser.add_argument('--dataset_split', choices=['validation', 'test'], required=True)
     parser.add_argument('--output_path', type=str, help='Choose the output path', required=True)
 
-    parser.add_argument('--yolo_model_type', choices=['yolo_v4', 'yolo_v4_tiny'],
+    parser.add_argument('--yolo_model_type', choices=['yolo_v4', 'yolo_v4_tiny', 'yolo_v7', 'yolo_v7_tiny'],
                         help='Choose the model type', required=True)
-    parser.add_argument('--yolo_model_checkpoint', type=str, help='Choose the model checkpoint file', required=True)
+    parser.add_argument('--yolo_model_checkpoint', type=str, help='Choose the model checkpoint file for YOLO',
+                        required=True)
 
-    parser.add_argument('--pose_backbone_type',
-                        choices=['mnasnet0.5', 'mnasnet1.0', 'resnet18', 'resnet34', 'resnet50'],
+    parser.add_argument('--pose_backbone_type', choices=POSE_BACKBONE_TYPES,
                         help='Choose the backbone type', required=True)
-    parser.add_argument('--pose_upsampling_count', type=int, help='Set the upsamping layer count', required=True)
-    parser.add_argument('--pose_model_checkpoint', type=str, help='Choose the model checkpoint file', required=True)
+    parser.add_argument('--pose_model_checkpoint', type=str, help='Choose the model checkpoint file for the pose',
+                        required=True)
 
     args = parser.parse_args()
 
-    yolo_model = create_yolo_v4_model(args.yolo_model_type)
+    device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
+    yolo_model = create_yolo_model(args.yolo_model_type, class_probs=True)
     load_checkpoint(yolo_model, args.yolo_model_checkpoint)
 
-    pose_estimator_model = create_pose_estimator_model(args.pose_backbone_type, args.pose_upsampling_count)
+    pose_estimator_model = create_pose_estimator_model(args.pose_backbone_type)
     load_checkpoint(pose_estimator_model, args.pose_model_checkpoint)
 
-    evaluation = CocoPoseEvaluationWithYoloV4(yolo_model, pose_estimator_model,
-                                              args.dataset_root, args.dataset_split, args.output_path)
+    evaluation = CocoPoseEvaluationWithYolo(yolo_model, pose_estimator_model, device,
+                                            args.dataset_root, args.dataset_split, args.output_path)
     evaluation.evaluate()
 
 

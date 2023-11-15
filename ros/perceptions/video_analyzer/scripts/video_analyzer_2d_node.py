@@ -52,6 +52,7 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
         o.height_2d = object_analysis.height / image_height
         o.object_class = object_analysis.object_class
         o.object_confidence = object_analysis.object_confidence
+        o.object_class_probability = object_analysis.object_class_probability
         if object_analysis.object_image is not None:
             o.object_image = self._cv_bridge.cv2_to_imgmsg(object_analysis.object_image, encoding='rgb8')
         o.object_descriptor = object_analysis.object_descriptor
@@ -65,6 +66,8 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
 
         if object_analysis.face_analysis is not None:
             o.face_descriptor = object_analysis.face_analysis.descriptor
+            o.face_alignment_keypoint_count = object_analysis.face_analysis.alignment_keypoint_count
+            o.face_sharpness_score = object_analysis.face_analysis.sharpness_score
             if object_analysis.face_analysis.face_image is not None:
                 o.face_image = self._cv_bridge.cv2_to_imgmsg(object_analysis.face_analysis.face_image, encoding='rgb8')
 

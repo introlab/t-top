@@ -1,1 +1,3 @@
 from face_recognition.trainers.face_descriptor_extractor_trainer import FaceDescriptorExtractorTrainer
+from face_recognition.trainers.face_descriptor_extractor_distillation_trainer import \
+    FaceDescriptorExtractorDistillationTrainer

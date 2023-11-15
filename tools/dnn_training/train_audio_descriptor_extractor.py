@@ -3,12 +3,10 @@ import argparse
 
 import torch
 
+from export_audio_descriptor_extractor import create_model
+
 from common.program_arguments import save_arguments, print_arguments
 
-from audio_descriptor.backbones import Mnasnet0_5, Mnasnet1_0, Resnet18, Resnet34, Resnet50, OpenFaceInception
-from audio_descriptor.backbones import ThinResnet34, EcapaTdnn, SmallEcapaTdnn
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractor, AudioDescriptorExtractorVLAD
-from audio_descriptor.audio_descriptor_extractor import AudioDescriptorExtractorSAP
 from audio_descriptor.trainers import AudioDescriptorExtractorTrainer
 
 
@@ -22,10 +20,11 @@ def main():
                                                     'open_face_inception', 'thin_resnet_34',
                                                     'ecapa_tdnn_512', 'ecapa_tdnn_1024',
                                                     'small_ecapa_tdnn_128', 'small_ecapa_tdnn_256',
-                                                    'small_ecapa_tdnn_512'],
+                                                    'small_ecapa_tdnn_512', 'small_ecapa_tdnn_1024'
+                                                    'passt_s_n', 'passt_s_n_l'],
                         help='Choose the backbone type', required=True)
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
-    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap'], help='Set the pooling layer')
+    parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap', 'psla'], help='Set the pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
     parser.add_argument('--n_features', type=int, help='Set n_features', required=True)
     parser.add_argument('--n_fft', type=int, help='Set n_fft', required=True)
@@ -59,7 +58,7 @@ def main():
                              pooling_layer=args.pooling_layer)
     elif args.criterion_type == 'am_softmax_loss' and args.dataset_class_count is not None:
         model = create_model(args.backbone_type, args.n_features, args.embedding_size, args.dataset_class_count,
-                             am_softmax_linear=True, pooling_layer=args.pooling_layer)
+                             normalized_linear=True, pooling_layer=args.pooling_layer)
     else:
         raise ValueError('--dataset_class_count must be used with "cross_entropy_loss" and "am_softmax_loss" criterion '
                          'types')
@@ -91,53 +90,6 @@ def main():
                                               margin=args.margin,
                                               model_checkpoint=args.model_checkpoint)
     trainer.train()
-
-
-def create_model(backbone_type, n_features, embedding_size,
-                 class_count=None, am_softmax_linear=False, pooling_layer='avg', conv_bias=False):
-    pretrained = True
-
-    backbone = create_backbone(backbone_type, n_features, pretrained, conv_bias)
-    if pooling_layer == 'avg':
-        return AudioDescriptorExtractor(backbone, embedding_size=embedding_size,
-                                        class_count=class_count, am_softmax_linear=am_softmax_linear)
-    elif pooling_layer == 'vlad':
-        return AudioDescriptorExtractorVLAD(backbone, embedding_size=embedding_size,
-                                            class_count=class_count, am_softmax_linear=am_softmax_linear)
-    elif pooling_layer == 'sap':
-        return AudioDescriptorExtractorSAP(backbone, embedding_size=embedding_size,
-                                           class_count=class_count, am_softmax_linear=am_softmax_linear)
-    else:
-        raise ValueError('Invalid pooling layer')
-
-
-def create_backbone(backbone_type, n_features, pretrained, conv_bias=False):
-    if backbone_type == 'mnasnet0.5':
-        return Mnasnet0_5(pretrained=pretrained)
-    elif backbone_type == 'mnasnet1.0':
-        return Mnasnet1_0(pretrained=pretrained)
-    elif backbone_type == 'resnet18':
-        return Resnet18(pretrained=pretrained)
-    elif backbone_type == 'resnet34':
-        return Resnet34(pretrained=pretrained)
-    elif backbone_type == 'resnet50':
-        return Resnet50(pretrained=pretrained)
-    elif backbone_type == 'open_face_inception':
-        return OpenFaceInception(conv_bias)
-    elif backbone_type == 'thin_resnet_34':
-        return ThinResnet34()
-    elif backbone_type == 'ecapa_tdnn_512':
-        return EcapaTdnn(n_features, channels=512)
-    elif backbone_type == 'ecapa_tdnn_1024':
-        return EcapaTdnn(n_features, channels=1024)
-    elif backbone_type == 'small_ecapa_tdnn_128':
-        return SmallEcapaTdnn(n_features, channels=128)
-    elif backbone_type == 'small_ecapa_tdnn_256':
-        return SmallEcapaTdnn(n_features, channels=256)
-    elif backbone_type == 'small_ecapa_tdnn_512':
-        return SmallEcapaTdnn(n_features, channels=512)
-    else:
-        raise ValueError('Invalid backbone type')
 
 
 if __name__ == '__main__':

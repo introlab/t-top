@@ -29,7 +29,9 @@ class ObjectDetectionCoco(datasets.CocoDetection):
             'image_id': image_id,
             'initial_width': initial_width,
             'initial_height': initial_height,
-            'scale': transforms_metadata['scale']
+            'scale': transforms_metadata['scale'],
+            'offset_x': transforms_metadata['offset_x'],
+            'offset_y': transforms_metadata['offset_y']
         }
         return image, target, metadata
 

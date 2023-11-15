@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from object_detection.modules.descriptor_yolo_layer import DescriptorYoloLayer
+from object_detection.modules.descriptor_yolo_layer import DescriptorYoloV4Layer
 
 IMAGE_SIZE = (416, 416)
 IN_CHANNELS = 3
@@ -120,8 +120,8 @@ class DescriptorYoloV4Tiny(nn.Module):
         )
         self._anchors.append(np.array([(81, 82), (135, 169), (344, 319)]))
         self._output_strides.append(32)
-        self._yolo30 = DescriptorYoloLayer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, descriptor_size,
-                                           1.05)
+        self._yolo30 = DescriptorYoloV4Layer(IMAGE_SIZE, 32, self._anchors[-1].tolist(), class_count, descriptor_size,
+                                             1.05)
 
         self._conv32 = nn.Sequential(
             nn.Conv2d(256, 128, 1, stride=1, padding=0, bias=False),
@@ -140,8 +140,8 @@ class DescriptorYoloV4Tiny(nn.Module):
         )
         self._anchors.append(np.array([(23, 27), (37, 58), (81, 82)]))
         self._output_strides.append(16)
-        self._yolo37 = DescriptorYoloLayer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, descriptor_size,
-                                           1.05)
+        self._yolo37 = DescriptorYoloV4Layer(IMAGE_SIZE, 16, self._anchors[-1].tolist(), class_count, descriptor_size,
+                                             1.05)
 
     def get_image_size(self):
         return IMAGE_SIZE

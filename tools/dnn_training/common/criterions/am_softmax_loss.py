@@ -18,7 +18,7 @@ class AmSoftmaxLoss(nn.Module):
         scores = scores.clone()
 
         numerator = self._s * (scores[range(scores.size(0)), target] - self._m)
-        scores[range(scores.size(0)), target] = 0.0
+        scores[range(scores.size(0)), target] = -float('inf')
         denominator = torch.exp(numerator) + torch.sum(torch.exp(self._s * scores), dim=1)
         loss = numerator - torch.log(denominator)
         return -loss.mean()

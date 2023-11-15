@@ -1,1 +1,2 @@
 from pose_estimation.trainers.pose_estimator_trainer import PoseEstimatorTrainer
+from pose_estimation.trainers.pose_estimator_distillation_trainer import PoseEstimatorDistillationTrainer

@@ -13,6 +13,7 @@ roslaunch person_identification capture_face.launch name:=<person_name> neural_n
 #### Parameters
  - `name` (string): The person name.
  - `mean_size` (int): How many descriptor to average.
+ - `face_sharpness_score_threshold` (double): The threshold to consider the face sharp enough.
 
 #### Subscribed Topics
  - `video_analysis` ([video_analyzer/VideoAnalysis](../video_analyzer/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
@@ -38,6 +39,7 @@ roslaunch person_identification capture_voice.launch name:=<person_name> neural_
 This node performs person identification. The people must be already added to `people.json` with the previous nodes.
 
 #### Parameters
+ - `face_sharpness_score_threshold` (double): The threshold to consider the face sharp enough.
  - `face_descriptor_threshold` (double): The maximum distance between two face descriptors to be considered the same person.
  - `voice_descriptor_threshold` (double): The maximum distance between two voice descriptors to be considered the same person.
  - `face_voice_descriptor_threshold` (double): The maximum distance between two merged descriptors to be considered the same person.

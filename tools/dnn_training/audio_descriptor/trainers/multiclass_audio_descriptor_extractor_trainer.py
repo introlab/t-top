@@ -11,18 +11,20 @@ from common.criterions import SigmoidFocalLossWithLogits
 from common.metrics import MulticlassClassificationAccuracyMetric, MulticlassClassificationPrecisionRecallMetric, \
     LossMetric, LossAccuracyMeanAveragePrecisionLearningCurves, MulticlassClassificationMeanAveragePrecisionMetric
 
-from audio_descriptor.datasets import Fsd50kDataset, FSDK50k_POS_WEIGHT, AudioDescriptorTrainingTransforms, \
-    AudioDescriptorValidationTransforms, AudioDescriptorTestTransforms
+from audio_descriptor.datasets import Fsd50kDataset, AudioSetDataset, AudioDescriptorTrainingTransforms, \
+    ImbalancedMulticlassAudioDescriptorDatasetSampler, AudioDescriptorValidationTransforms, \
+    AudioDescriptorTestTransforms
 from audio_descriptor.metrics import AudioDescriptorEvaluation
 
 
 class MulticlassAudioDescriptorExtractorTrainer(Trainer):
-    def __init__(self, device, model, dataset_root='', output_path='',
+    def __init__(self, device, model, dataset_root='', dataset_type='fsd50k', output_path='',
                  epoch_count=10, learning_rate=0.01, weight_decay=0, batch_size=128, criterion_type='bce_loss',
                  waveform_size=64000, n_features=128, n_fft=400, audio_transform_type='mel_spectrogram',
                  enable_pitch_shifting=False, enable_time_stretching=False,
                  enable_time_masking=False, enable_frequency_masking=False,
-                 enable_pos_weight=False, enable_mixup=True, model_checkpoint=None):
+                 enhanced_targets=False, model_checkpoint=None):
+        self._dataset_type = dataset_type
         self._criterion_type = criterion_type
         self._waveform_size = waveform_size
         self._n_features = n_features
@@ -32,8 +34,7 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._enable_time_stretching = enable_time_stretching
         self._enable_time_masking = enable_time_masking
         self._enable_frequency_masking = enable_frequency_masking
-        self._enable_pos_weight = enable_pos_weight
-        self._enable_mixup = enable_mixup
+        self._enhanced_targets = enhanced_targets
         self._class_count = model.class_count()
         super(MulticlassAudioDescriptorExtractorTrainer, self).__init__(device, model,
                                                                         dataset_root=dataset_root,
@@ -59,13 +60,11 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
         self._validation_map_metric = MulticlassClassificationMeanAveragePrecisionMetric(self._class_count)
 
     def _create_criterion(self, model):
-        pos_weight = FSDK50k_POS_WEIGHT.to(self._device) if self._enable_pos_weight else None
-
         if self._criterion_type == 'bce_loss':
-            criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+            criterion = nn.BCEWithLogitsLoss()
             return lambda model_output, target: criterion(model_output[1], target)
         elif self._criterion_type == 'sigmoid_focal_loss':
-            criterion = SigmoidFocalLossWithLogits(pos_weight=pos_weight)
+            criterion = SigmoidFocalLossWithLogits()
             return lambda model_output, target: criterion(model_output[1], target)
         else:
             raise ValueError('Invalid criterion type')
@@ -82,27 +81,33 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                                                        enable_time_stretching=self._enable_time_stretching,
                                                        enable_time_masking=self._enable_time_masking,
                                                        enable_frequency_masking=self._enable_frequency_masking)
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms,
-                                           enable_mixup=self._enable_mixup)
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'training', transforms)
 
     def _create_validation_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         transforms = AudioDescriptorValidationTransforms(waveform_size=self._waveform_size,
                                                          n_features=self._n_features,
                                                          n_fft=self._n_fft,
                                                          audio_transform_type=self._audio_transform_type)
-        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms,
-                                           enable_mixup=False)
+        return self._create_dataset_loader(dataset_root, batch_size, batch_size_division, 'validation', transforms)
 
     def _create_testing_dataset_loader(self, dataset_root, batch_size, batch_size_division):
         transforms = AudioDescriptorTestTransforms(waveform_size=self._waveform_size,
                                                    n_features=self._n_features,
                                                    n_fft=self._n_fft,
                                                    audio_transform_type=self._audio_transform_type)
-        return self._create_dataset_loader(dataset_root, 1, 1, 'validation', transforms, enable_mixup=False)
+        return self._create_dataset_loader(dataset_root, 1, 1, 'testing', transforms)
 
-    def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms, enable_mixup):
-        dataset = Fsd50kDataset(dataset_root, split=split, transforms=transforms, enable_mixup=enable_mixup)
-        return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, shuffle=True,
+    def _create_dataset_loader(self, dataset_root, batch_size, batch_size_division, split, transforms):
+        if self._dataset_type == 'audio_set':
+            dataset = AudioSetDataset(dataset_root, split=split, transforms=transforms,
+                                      enhanced_targets=self._enhanced_targets)
+        elif self._dataset_type == 'fsd50k':
+            dataset = Fsd50kDataset(dataset_root, split=split, transforms=transforms,
+                                    enhanced_targets=self._enhanced_targets)
+        else:
+            raise ValueError('Invalid dataset type')
+        sampler = ImbalancedMulticlassAudioDescriptorDatasetSampler(dataset) if split == 'training' else None
+        return torch.utils.data.DataLoader(dataset, batch_size=batch_size // batch_size_division, sampler=sampler,
                                            num_workers=4)
 
     def _clear_between_training(self):
