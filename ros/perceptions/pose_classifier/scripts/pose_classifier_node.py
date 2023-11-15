@@ -99,8 +99,6 @@ class PoseClassifierNode:
                                                      LEFT_SHOULDER_INDEX, RIGHT_SHOULDER_INDEX,
                                                      RIGHT_ELBOW_INDEX, RIGHT_WRIST_INDEX, sign=-1)
 
-            print(msg.head_vertical_class, msg.head_horizontal_class)
-
         return msg
 
     def _detect_facing_camera(self, person_pose_2d, person_pose_confidence):
@@ -144,7 +142,6 @@ class PoseClassifierNode:
             return ''
 
         diff = (ear_mean_y - eye_mean_y) / eye_distance
-        print(diff)
         ear_eye_diffs = np.array([DOWN_EAR_EYE_DIFF, NORMAL_EAR_EYE_DIFF, UP_EAR_EYE_DIFF])
         index = np.abs(ear_eye_diffs - diff).argmin()
         if index == 0:
