@@ -8,7 +8,7 @@ import torch
 
 import rospy
 
-from dnn_utils import DescriptorYoloV4, Yolo, PoseEstimator, FaceDescriptorExtractor
+from dnn_utils import DescriptorYolo, Yolo, PoseEstimator, FaceDescriptorExtractor
 from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
 from dnn_utils import SemanticSegmentationNetwork
 
@@ -34,9 +34,9 @@ def launch_test(function, *args):
 def test_descriptor_yolo(model_name):
     print(f'----------test_descriptor_{model_name}----------')
 
-    cpu_model = DescriptorYoloV4(inference_type='cpu')
-    torch_gpu_model = DescriptorYoloV4(inference_type='torch_gpu')
-    trt_gpu_model = DescriptorYoloV4(inference_type='trt_gpu')
+    cpu_model = DescriptorYolo(model_name, inference_type='cpu')
+    torch_gpu_model = DescriptorYolo(model_name, inference_type='torch_gpu')
+    trt_gpu_model = DescriptorYolo(model_name, inference_type='trt_gpu')
 
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.rand(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
