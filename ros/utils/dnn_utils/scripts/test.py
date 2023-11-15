@@ -62,9 +62,9 @@ def test_yolo(model_name):
     IMAGE_SIZE = cpu_model.get_supported_image_size()
     x = torch.rand(3, IMAGE_SIZE[0], IMAGE_SIZE[1])
 
-    _, cpu_predictions =  cpu_model.forward_raw(x)
-    _, torch_gpu_predictions = torch_gpu_model.forward_raw(x)
-    _, trt_gpu_predictions = trt_gpu_model.forward_raw(x)
+    _, _, _, cpu_predictions =  cpu_model.forward_raw(x)
+    _, _, _, torch_gpu_predictions = torch_gpu_model.forward_raw(x)
+    _, _, _, trt_gpu_predictions = trt_gpu_model.forward_raw(x)
 
     for i in range(len(cpu_predictions)):
         print('mean(abs(cpu_predictions[{}] - torch_gpu_predictions[{}])) ='.format(i, i),
