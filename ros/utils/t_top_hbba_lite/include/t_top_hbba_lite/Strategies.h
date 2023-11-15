@@ -42,6 +42,8 @@ public:
     DECLARE_NOT_COPYABLE(LedEmotionStrategy);
     DECLARE_NOT_MOVABLE(LedEmotionStrategy);
 
+    StrategyType strategyType() override;
+
 protected:
     void onEnabling(const LedEmotionDesire& desire) override;
 };

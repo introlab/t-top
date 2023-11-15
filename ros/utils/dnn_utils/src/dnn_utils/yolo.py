@@ -122,7 +122,7 @@ class Yolo(DnnModel):
         sample_input = torch.ones(1, 3, self._image_size[0], self._image_size[1])
 
         super(Yolo, self).__init__(torch_script_model_path, tensor_rt_model_path, sample_input,
-                                               inference_type=inference_type)
+                                   inference_type=inference_type)
         self._padded_image = torch.ones(1, 3, self._image_size[0], self._image_size[1]).to(self._device)
 
     def get_supported_image_size(self):
