@@ -40,7 +40,7 @@
 
     <node pkg="cloud_data" type="cloud_data_node.py" name="cloud_data_node">
         <param name="language" value="$(arg language)"/>
-        <param name="timeout_s" value="2"/>
+        <param name="timeout_s" value="20"/>
     </node>
 
     <include if="$(arg record_session)" file="$(find t_top)/launch/recording.launch">
