@@ -5,7 +5,7 @@
         <param name="message_rate" value="10"/>
         <param name="sound_rms_attack" value="0.05"/>
         <param name="sound_rms_release" value="0.95"/>
-        <param name="sound_rms_presence_threshold" value="0.03"/>
+        <param name="sound_rms_presence_threshold" value="0.015"/>
 
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="robot_name_model_probability_threshold" value="0.1"/>
