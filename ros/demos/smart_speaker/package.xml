@@ -63,6 +63,8 @@
   <build_depend>tf</build_depend>
   <build_depend>speech_to_text</build_depend>
   <build_depend>sound_player</build_depend>
+  <build_depend>led_animations</build_depend>
+  <build_depend>daemon_ros_client</build_depend>
   <build_export_depend>audio_analyzer</build_export_depend>
   <build_export_depend>cloud_data</build_export_depend>
   <build_export_depend>gesture</build_export_depend>
@@ -77,6 +79,8 @@
   <build_export_depend>tf</build_export_depend>
   <build_export_depend>speech_to_text</build_export_depend>
   <build_export_depend>sound_player</build_export_depend>
+  <build_export_depend>led_animations</build_export_depend>
+  <build_export_depend>daemon_ros_client</build_export_depend>
   <exec_depend>audio_analyzer</exec_depend>
   <exec_depend>cloud_data</exec_depend>
   <exec_depend>gesture</exec_depend>
@@ -91,6 +95,8 @@
   <exec_depend>tf</exec_depend>
   <exec_depend>speech_to_text</exec_depend>
   <exec_depend>sound_player</exec_depend>
+  <exec_depend>led_animations</exec_depend>
+  <exec_depend>daemon_ros_client</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

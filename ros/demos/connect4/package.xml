@@ -55,18 +55,24 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>t_top_hbba_lite</build_depend>
   <build_depend>opentera_webrtc_ros_msgs</build_depend>
+  <build_depend>led_animations</build_depend>
+  <build_depend>daemon_ros_client</build_depend>
   <build_export_depend>daemon_ros_client</build_export_depend>
   <build_export_depend>hbba_lite</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
   <build_export_depend>t_top_hbba_lite</build_export_depend>
   <build_export_depend>opentera_webrtc_ros_msgs</build_export_depend>
+  <build_export_depend>led_animations</build_export_depend>
+  <build_export_depend>daemon_ros_client</build_export_depend>
   <exec_depend>daemon_ros_client</exec_depend>
   <exec_depend>hbba_lite</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>t_top_hbba_lite</exec_depend>
   <exec_depend>opentera_webrtc_ros_msgs</exec_depend>
+  <exec_depend>led_animations</exec_depend>
+  <exec_depend>daemon_ros_client</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

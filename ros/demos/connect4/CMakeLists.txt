@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   t_top_hbba_lite
   opentera_webrtc_ros_msgs
+  led_animations
+  daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions
