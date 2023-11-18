@@ -179,12 +179,12 @@ void LedTab::createUi()
     connect(m_constantAnimationButton, &QPushButton::toggled, this, &LedTab::onConstantAnimationButtonToggled);
 
     m_rotatingSinAnimationButton = new QPushButton("Rotating Sin");
-    m_constantAnimationButton->setCheckable(true);
-    connect(m_constantAnimationButton, &QPushButton::toggled, this, &LedTab::onRotatingSinAnimationButtonToggled);
+    m_rotatingSinAnimationButton->setCheckable(true);
+    connect(m_rotatingSinAnimationButton, &QPushButton::toggled, this, &LedTab::onRotatingSinAnimationButtonToggled);
 
     m_randomAnimationButton = new QPushButton("Random");
-    m_constantAnimationButton->setCheckable(true);
-    connect(m_constantAnimationButton, &QPushButton::toggled, this, &LedTab::onRandomAnimationButtonToggled);
+    m_randomAnimationButton->setCheckable(true);
+    connect(m_randomAnimationButton, &QPushButton::toggled, this, &LedTab::onRandomAnimationButtonToggled);
 
     vLayout = new QVBoxLayout;
     vLayout->addWidget(m_constantAnimationButton);
