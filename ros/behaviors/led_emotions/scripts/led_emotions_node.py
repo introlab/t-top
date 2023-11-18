@@ -25,7 +25,7 @@ class LedPattern:
         self.ratio = ratio
 
 
-class LedDanceNode:
+class LedEmotionsNode:
     def __init__(self):
         self._period_s = rospy.get_param('~period_s', 0.0333)
         with open(rospy.get_param('~led_patterns_file'), 'r') as f:
@@ -111,9 +111,9 @@ class LedDanceNode:
 
 
 def main():
-    rospy.init_node('led_dance_node')
-    led_dance_node = LedDanceNode()
-    led_dance_node.run()
+    rospy.init_node('led_emotions_node')
+    led_emotions_node = LedEmotionsNode()
+    led_emotions_node.run()
 
 
 if __name__ == '__main__':

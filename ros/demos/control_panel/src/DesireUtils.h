@@ -20,6 +20,7 @@ inline void removeAllLedDesires(DesireSet& desireSet)
 {
     desireSet.removeAllDesiresOfType<DanceDesire>();
     desireSet.removeAllDesiresOfType<LedEmotionDesire>();
+    desireSet.removeAllDesiresOfType<LedAnimationDesire>();
 }
 
 #endif

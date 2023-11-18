@@ -29,6 +29,9 @@ public:
 
 private slots:
     void onLedEmotionButtonToggled(QPushButton* button, bool checked, const QString& name);
+    void onConstantAnimationButtonToggled(bool checked);
+    void onRotatingSinAnimationButtonToggled(bool checked);
+    void onRandomAnimationButtonToggled(bool checked);
 
 private:
     void createUi();
@@ -40,6 +43,10 @@ private:
     QPushButton* m_sadnessEmotionButton;
     QPushButton* m_fearEmotionButton;
     QPushButton* m_angerEmotionButton;
+
+    QPushButton* m_constantAnimationButton;
+    QPushButton* m_rotatingSinAnimationButton;
+    QPushButton* m_randomAnimationButton;
 };
 
 #endif

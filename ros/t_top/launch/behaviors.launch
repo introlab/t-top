@@ -19,6 +19,9 @@
     </include>
     <include file="$(find t_top)/launch/behaviors/led_emotions.launch"/>
 
+    <!-- Led Animation -->
+    <include file="$(find t_top)/launch/behaviors/led_animations.launch"/>
+
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">
         <arg name="language" value="$(arg language)"/>

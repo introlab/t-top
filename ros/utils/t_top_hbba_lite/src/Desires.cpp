@@ -39,6 +39,20 @@ FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desi
 
 LedEmotionDesire::LedEmotionDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
 
+LedAnimationDesire::LedAnimationDesire(
+    string name,
+    vector<daemon_ros_client::LedColor> colors,
+    double speed,
+    double durationS,
+    uint16_t intensity)
+    : Desire(intensity),
+      m_name(move(name)),
+      m_colors(move(colors)),
+      m_speed(speed),
+      m_durationS(durationS)
+{
+}
+
 SoundFollowingDesire::SoundFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
 NearestFaceFollowingDesire::NearestFaceFollowingDesire(uint16_t intensity) : Desire(intensity) {}

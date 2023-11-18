@@ -1,0 +1,7 @@
+<launch>
+
+    <node pkg="led_animations" type="led_animations_node.py" name="led_animations_node">
+        <remap from="set_led_colors/filter_state" to="led_animations/filter_state"/>
+    </node>
+
+</launch>

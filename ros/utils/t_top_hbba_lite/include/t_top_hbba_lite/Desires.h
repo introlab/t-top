@@ -3,7 +3,11 @@
 
 #include <hbba_lite/core/Desire.h>
 #include <hbba_lite/core/DesireSet.h>
+
+#include <daemon_ros_client/LedColor.h>
+
 #include <string>
+#include <limits>
 
 class Camera3dRecordingDesire : public Desire
 {
@@ -177,6 +181,54 @@ public:
 inline const std::string& LedEmotionDesire::name() const
 {
     return m_name;
+}
+
+
+class LedAnimationDesire : public Desire
+{
+    std::string m_name;
+    double m_durationS;
+    double m_speed;
+    std::vector<daemon_ros_client::LedColor> m_colors;
+
+public:
+    /**
+     * Available animation names: constant, rotating_sin, random
+     */
+    explicit LedAnimationDesire(
+        std::string name,
+        std::vector<daemon_ros_client::LedColor> colors = {},
+        double speed = 1.0,
+        double durationS = std::numeric_limits<double>::infinity(),
+        uint16_t intensity = 1);
+    ~LedAnimationDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(LedAnimationDesire)
+
+    const std::string& name() const;
+    double durationS() const;
+    double speed() const;
+    const std::vector<daemon_ros_client::LedColor>& colors() const;
+};
+
+inline const std::string& LedAnimationDesire::name() const
+{
+    return m_name;
+}
+
+inline double LedAnimationDesire::durationS() const
+{
+    return m_durationS;
+}
+
+inline double LedAnimationDesire::speed() const
+{
+    return m_speed;
+}
+
+inline const std::vector<daemon_ros_client::LedColor>& LedAnimationDesire::colors() const
+{
+    return m_colors;
 }
 
 

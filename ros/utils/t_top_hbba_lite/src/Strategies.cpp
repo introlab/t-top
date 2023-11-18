@@ -1,6 +1,7 @@
 #include <t_top_hbba_lite/Strategies.h>
 
 #include <std_msgs/String.h>
+#include <led_animations/Animation.h>
 #include <talk/Text.h>
 #include <gesture/GestureName.h>
 #include <sound_player/SoundFile.h>
@@ -63,6 +64,50 @@ void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
     std_msgs::String msg;
     msg.data = desire.name();
     m_emotionPublisher.publish(msg);
+}
+
+LedAnimationStrategy::LedAnimationStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle)
+    : Strategy<LedAnimationDesire>(
+          utility,
+          {{"led", 1}},
+          {{"led_animations/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_desireSet(desireSet),
+      m_nodeHandle(nodeHandle)
+{
+    m_animationPublisher = nodeHandle.advertise<led_animations::Animation>("led_animations/animation", 1);
+    m_animationDoneSubscriber =
+        nodeHandle.subscribe("led_animations/done", 1, &LedAnimationStrategy::animationDoneSubscriberCallback, this);
+}
+
+StrategyType LedAnimationStrategy::strategyType()
+{
+    return StrategyType::get<LedAnimationStrategy>();
+}
+
+void LedAnimationStrategy::onEnabling(const LedAnimationDesire& desire)
+{
+    Strategy<LedAnimationDesire>::onEnabling(desire);
+
+    led_animations::Animation msg;
+    msg.id = desire.id();
+    msg.duration_s = desire.durationS();
+    msg.name = desire.name();
+    msg.speed = desire.speed();
+    msg.colors = desire.colors();
+    m_animationPublisher.publish(msg);
+}
+
+void LedAnimationStrategy::animationDoneSubscriberCallback(const led_animations::Done::ConstPtr& msg)
+{
+    if (msg->id == desireId())
+    {
+        m_desireSet->removeDesire(msg->id);
+    }
 }
 
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
@@ -195,7 +240,7 @@ PlaySoundStrategy::PlaySoundStrategy(
 
 StrategyType PlaySoundStrategy::strategyType()
 {
-    return StrategyType::get<GestureStrategy>();
+    return StrategyType::get<PlaySoundStrategy>();
 }
 
 void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)
@@ -365,6 +410,15 @@ unique_ptr<BaseStrategy>
     createLedEmotionStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
 {
     return make_unique<LedEmotionStrategy>(utility, move(filterPool), nodeHandle);
+}
+
+unique_ptr<BaseStrategy> createLedAnimationStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility)
+{
+    return make_unique<LedAnimationStrategy>(utility, filterPool, desireSet, nodeHandle);
 }
 
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)

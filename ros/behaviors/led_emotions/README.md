@@ -6,7 +6,7 @@ This folder contains the node to make T-Top express emotions with its LED strip.
 
 ### `led_emotions_node.py`
 
-This node to make T-Top express emotions with it LED strip.
+This node makes T-Top express emotions with it LED strip.
 
 #### Parameters
 

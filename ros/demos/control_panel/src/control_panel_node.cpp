@@ -40,6 +40,7 @@ int startNode(int argc, char* argv[])
     strategies.emplace_back(createExploreStrategy(filterPool));
     strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
     strategies.emplace_back(createLedEmotionStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createLedAnimationStrategy(filterPool, desireSet, nodeHandle));
     strategies.emplace_back(createSoundFollowingStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createSpecificFaceFollowingStrategy(filterPool, nodeHandle));
@@ -55,11 +56,16 @@ int startNode(int argc, char* argv[])
 
     auto solver = make_unique<GecodeSolver>();
     auto strategyStateLogger = make_unique<RosStrategyStateLogger>(nodeHandle);
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}, {"led", 1}}, move(solver), move(strategyStateLogger));
+    HbbaLite hbba(
+        desireSet,
+        move(strategies),
+        {{"motor", 1}, {"sound", 1}, {"led", 1}},
+        move(solver),
+        move(strategyStateLogger));
 
     QApplication application(argc, argv);
     ControlPanel controlPanel(nodeHandle, desireSet, camera2dWideEnabled);
-    //controlPanel.setFixedSize(600, 900);
+    // controlPanel.setFixedSize(600, 900);
     controlPanel.show();
 
     ros::AsyncSpinner spinner(1);

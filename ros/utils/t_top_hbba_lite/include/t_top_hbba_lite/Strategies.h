@@ -7,6 +7,7 @@
 
 #include <hbba_lite/core/Strategy.h>
 
+#include <led_animations/Done.h>
 #include <talk/Done.h>
 #include <gesture/Done.h>
 #include <sound_player/Done.h>
@@ -46,6 +47,32 @@ public:
 
 protected:
     void onEnabling(const LedEmotionDesire& desire) override;
+};
+
+class LedAnimationStrategy : public Strategy<LedAnimationDesire>
+{
+    std::shared_ptr<DesireSet> m_desireSet;
+    ros::NodeHandle& m_nodeHandle;
+    ros::Publisher m_animationPublisher;
+    ros::Subscriber m_animationDoneSubscriber;
+
+public:
+    LedAnimationStrategy(
+        uint16_t utility,
+        std::shared_ptr<FilterPool> filterPool,
+        std::shared_ptr<DesireSet> desireSet,
+        ros::NodeHandle& nodeHandle);
+
+    DECLARE_NOT_COPYABLE(LedAnimationStrategy);
+    DECLARE_NOT_MOVABLE(LedAnimationStrategy);
+
+    StrategyType strategyType() override;
+
+protected:
+    void onEnabling(const LedAnimationDesire& desire) override;
+
+private:
+    void animationDoneSubscriberCallback(const led_animations::Done::ConstPtr& msg);
 };
 
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
@@ -177,6 +204,11 @@ std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createLedEmotionStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createLedAnimationStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    std::shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createSoundFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
