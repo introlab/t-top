@@ -294,7 +294,7 @@ unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> 
 unique_ptr<BaseStrategy>
     createRobotNameDetectorWithLedStatusDesireStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
-    return make_unique<Strategy<RobotNameDetectorDesire>>(
+    return make_unique<Strategy<RobotNameDetectorWithLedStatusDesire>>(
         utility,
         unordered_map<string, uint16_t>{{"led", 1}},
         unordered_map<string, FilterConfiguration>{
