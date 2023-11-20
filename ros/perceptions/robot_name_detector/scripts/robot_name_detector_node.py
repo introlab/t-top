@@ -179,7 +179,6 @@ class RobotNameDetectorNode:
 
             self._publish_led_colors(int(255 * level), int(255 * level), int(255 * level))
 
-
     def _publish_led_colors(self, red, green, blue):
         msg = LedColors()
         for led_color in msg.colors:
