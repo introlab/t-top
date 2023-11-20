@@ -81,7 +81,6 @@ class RobotNameDetectorNode:
     def _led_colors_hbba_filter_state_cb(self, publish_forced,
                                          previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
-            self._stop_timer()
             publish_forced(NONE_LED_COLORS)
 
     def _audio_cb(self, msg):
