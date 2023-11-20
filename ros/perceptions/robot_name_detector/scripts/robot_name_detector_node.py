@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import threading
-
 import numpy as np
 
 import torch
@@ -18,34 +16,47 @@ SUPPORTED_AUDIO_FORMAT = 'signed_16'
 SUPPORTED_CHANNEL_COUNT = 1
 
 
+class SoundRmsFilter:
+    def __init__(self, attack, release, initial_sound_rms=0.0):
+        self._attack = attack
+        self._release = release
+        self._sound_rms = initial_sound_rms
+
+    def update(self, frame_rms):
+        if frame_rms > self._sound_rms:
+            self._sound_rms = self._attack * self._sound_rms + (1 - self._attack) * frame_rms
+        else:
+            self._sound_rms = self._release * self._sound_rms + (1 - self._release) * frame_rms
+
+        return self._sound_rms
+
+
 class RobotNameDetectorNode:
     def __init__(self):
-        self._lock = threading.Lock()
-
-        self._message_rate_value = rospy.get_param('~message_rate', 10)
-        self._sound_rms_attack = rospy.get_param('~sound_rms_attack', 0.05)
-        self._sound_rms_release = rospy.get_param('~sound_rms_release', 0.99)
-        self._sound_rms_presence_threshold = rospy.get_param('~sound_rms_presence_threshold', 0.05)
-
-        self._inference_type = rospy.get_param('~inference_type', None)
+        self._sound_presence_relative_threshold = rospy.get_param('~sound_presence_relative_threshold', 1.05)
 
         self._robot_name_model_probability_threshold = rospy.get_param('~robot_name_model_probability_threshold')
         self._robot_name_model_interval = rospy.get_param('~robot_name_model_interval')
         self._robot_name_model_analysis_delay = rospy.get_param('~robot_name_model_analysis_delay')
         self._robot_name_model_analysis_count = rospy.get_param('~robot_name_model_analysis_count')
 
-        self._robot_name_model = TTopKeywordSpotter(inference_type=self._inference_type)
+        self._fast_sound_rms_filter = SoundRmsFilter(rospy.get_param('~fast_sound_rms_attack', 0.05),
+                                                     rospy.get_param('~fast_sound_rms_release', 0.99))
+        self._slow_sound_rms_filter = SoundRmsFilter(rospy.get_param('~slow_sound_rms_attack', 0.9),
+                                                     rospy.get_param('~slow_sound_rms_release', 0.9),
+                                                     initial_sound_rms=0.1)
+
+        self._robot_name_model = TTopKeywordSpotter(inference_type=rospy.get_param('~inference_type', None))
         self._robot_name_model_output_index = self._robot_name_model.get_class_names().index('T-Top')
 
-        self._sound_rms = 0
         self._robot_name_model_buffer = torch.zeros(self._robot_name_model.get_supported_duration(), dtype=torch.float32)
         self._robot_name_model_interval_count = self._robot_name_model_interval - self._robot_name_model_analysis_delay
         self._robot_name_model_analysis_enabled = False
         self._robot_name_model_analysis_waiting = False
         self._robot_name_model_probabilities = []
 
-        self._message_rate = rospy.Rate(self._message_rate_value)
-        self._sound_rms_pub = rospy.Publisher('sound_rms', Float32, queue_size=10)
+        self._fast_sound_rms_pub = rospy.Publisher('fast_sound_rms', Float32, queue_size=10)
+        self._slow_sound_rms_pub = rospy.Publisher('slow_sound_rms', Float32, queue_size=10)
         self._sound_presence_pub = rospy.Publisher('sound_presence', Bool, queue_size=10)
         self._robot_name_detected_pub = rospy.Publisher('robot_name_detected', Empty, queue_size=10)
 
@@ -61,25 +72,33 @@ class RobotNameDetectorNode:
             return
 
         audio_frame = np.frombuffer(msg.data, dtype=np.int16).astype(np.float32) / -np.iinfo(np.int16).min
-        new_sound_rms = self._calculate_sound_rms(audio_frame)
+        frame_rms = np.sqrt(np.mean(audio_frame**2))
+        fast_sound_rms = self._fast_sound_rms_filter.update(frame_rms)
+        slow_sound_rms = self._slow_sound_rms_filter.update(frame_rms)
+        presence = fast_sound_rms > slow_sound_rms * self._sound_presence_relative_threshold
+
+        self._publish_sound_rms_messages(fast_sound_rms, slow_sound_rms, presence)
 
         if not self._hbba_filter_state.is_filtering_all_messages:
-            self._detect_robot_name(audio_frame, new_sound_rms)
+            self._detect_robot_name(audio_frame, presence)
 
-        with self._lock:
-            self._sound_rms = new_sound_rms
+    def _publish_sound_rms_messages(self, fast_sound_rms, slow_sound_rms, presence):
+        sound_rms_msg = Float32()
 
-    def _calculate_sound_rms(self, audio_frame):
-        frame_rms = np.sqrt(np.mean(audio_frame**2))
-        if frame_rms > self._sound_rms:
-            return self._sound_rms_attack * self._sound_rms + (1 - self._sound_rms_attack) * frame_rms
-        else:
-            return self._sound_rms_release * self._sound_rms + (1 - self._sound_rms_release) * frame_rms
+        sound_rms_msg.data = fast_sound_rms
+        self._fast_sound_rms_pub.publish(sound_rms_msg)
 
-    def _detect_robot_name(self, audio_frame, sound_rms):
+        sound_rms_msg.data = slow_sound_rms
+        self._slow_sound_rms_pub.publish(sound_rms_msg)
+
+        sound_presence_msg = Bool()
+        sound_presence_msg.data = presence
+        self._sound_presence_pub.publish(sound_presence_msg)
+
+    def _detect_robot_name(self, audio_frame, presence):
         self._update_robot_name_buffer(audio_frame)
 
-        if sound_rms > self._sound_rms_presence_threshold and not self._robot_name_model_analysis_enabled:
+        if presence and not self._robot_name_model_analysis_enabled:
             self._robot_name_model_analysis_enabled = True
             self._robot_name_model_analysis_waiting = False
 
@@ -91,7 +110,7 @@ class RobotNameDetectorNode:
         elif self._robot_name_model_analysis_enabled and not self._robot_name_model_analysis_waiting:
             self._robot_name_model_interval_count += audio_frame.shape[0]
             self._detect_robot_name_if_needed()
-        elif self._robot_name_model_analysis_waiting and sound_rms < self._sound_rms_presence_threshold:
+        elif self._robot_name_model_analysis_waiting and not presence:
             self._robot_name_model_analysis_waiting = False
             self._robot_name_model_analysis_enabled = False
 
@@ -101,6 +120,7 @@ class RobotNameDetectorNode:
 
     def _publish_robot_name_detected_if_needed(self):
         joint_probability = np.prod(np.array(self._robot_name_model_probabilities))
+        print(self._robot_name_model_probabilities, joint_probability)
         if joint_probability > self._robot_name_model_probability_threshold:
             self._robot_name_detected_pub.publish(Empty())
 
@@ -112,22 +132,7 @@ class RobotNameDetectorNode:
             self._robot_name_model_probabilities.append(probabilities[self._robot_name_model_output_index].item())
 
     def run(self):
-        while not rospy.is_shutdown():
-            with self._lock:
-                sound_rms = self._sound_rms
-
-            self._publish_sound_rms_messages(sound_rms)
-
-            self._message_rate.sleep()
-
-    def _publish_sound_rms_messages(self, sound_rms):
-        sound_rms_msg = Float32()
-        sound_rms_msg.data = sound_rms
-        self._sound_rms_pub.publish(sound_rms_msg)
-
-        sound_presence_msg = Bool()
-        sound_presence_msg.data = sound_rms > self._sound_rms_presence_threshold
-        self._sound_presence_pub.publish(sound_presence_msg)
+        rospy.spin()
 
 
 def main():
