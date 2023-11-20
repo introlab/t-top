@@ -8,7 +8,7 @@
         <param name="slow_sound_rms_release" value="0.975"/>
         <param name="sound_presence_relative_threshold" value="3.0"/>
 
-        <param name="inference_type" value="cpu"/>
+        <param name="inference_type" value="$(arg neural_network_inference_type)"/>
         <param name="robot_name_model_probability_threshold" value="0.05"/>
         <param name="robot_name_model_interval" value="800"/>
         <param name="robot_name_model_analysis_delay" value="10400"/>
