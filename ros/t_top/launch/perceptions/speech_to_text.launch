@@ -20,6 +20,8 @@
         <param name="device" value="cuda"/>
         <param name="compute_type" value="int8"/>
 
+        <param name="prebuffering_frame_count" value="4"/>
+
         <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
         <remap from="transcript" to="speech_to_text/transcript"/>
