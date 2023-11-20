@@ -79,13 +79,16 @@ class RobotNameDetectorNode:
         self._led_colors_pub.on_filter_state_changing(self._led_colors_hbba_filter_state_cb)
 
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('audio_in/filter_state')
+        self._hbba_filter_state.on_changed(self._robot_name_detector_hbba_state_changed_cb)
         self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
-        self._audio_sub.on_filter_state_changed(self._audio_filter_state_changed_cb)
 
     def _led_colors_hbba_filter_state_cb(self, publish_forced,
                                          previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
             publish_forced(NONE_LED_COLORS)
+
+    def _robot_name_detector_hbba_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
+        self._slow_sound_rms_filter.reset()
 
     def _audio_cb(self, msg):
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
@@ -107,9 +110,6 @@ class RobotNameDetectorNode:
             self._detect_robot_name(audio_frame, presence)
         if not self._led_colors_pub.is_filtering_all_messages:
             self._publish_led_status(fast_sound_rms, slow_sound_rms)
-
-    def _audio_filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        self._slow_sound_rms_filter.reset()
 
     def _publish_sound_rms_messages(self, fast_sound_rms, slow_sound_rms, presence):
         sound_rms_msg = Float32()
