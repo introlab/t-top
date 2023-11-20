@@ -88,7 +88,7 @@ class RobotNameDetectorNode:
             publish_forced(NONE_LED_COLORS)
 
     def _robot_name_detector_hbba_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        self._slow_sound_rms_filter.reset()
+        self._fast_sound_rms_filter.reset()
 
     def _audio_cb(self, msg):
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
@@ -165,7 +165,7 @@ class RobotNameDetectorNode:
             self._robot_name_model_interval_count = 0
             self._robot_name_model_probabilities.append(probabilities[self._robot_name_model_output_index].item())
 
-    def _publish_led_status(self, fast_sound_rms, slow_sound_rms):
+    def _publish_led_status(self, fast_sound_rms, slow_sound_rms, eps=1e-6):
         if rospy.get_time() - self._detection_time_s < self._led_status_duration_s and self._detection_status is not None:
             if self._detection_status:
                 self._publish_led_colors(0, 255, 0)
@@ -175,7 +175,7 @@ class RobotNameDetectorNode:
             one_level = slow_sound_rms * self._sound_presence_relative_threshold
             zero_level = slow_sound_rms
             one_zero_diff = one_level - zero_level
-            level = np.clip((fast_sound_rms - zero_level) / one_zero_diff, a_min=0.0, a_max=1.0)
+            level = np.clip((fast_sound_rms - zero_level) / (one_zero_diff + eps), a_min=0.0, a_max=1.0)
 
             self._publish_led_colors(int(255 * level), int(255 * level), int(255 * level))
 
