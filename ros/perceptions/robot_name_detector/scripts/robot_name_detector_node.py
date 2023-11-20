@@ -16,6 +16,12 @@ import hbba_lite
 SUPPORTED_AUDIO_FORMAT = 'signed_16'
 SUPPORTED_CHANNEL_COUNT = 1
 
+NONE_LED_COLORS = LedColors()
+for led_color in NONE_LED_COLORS.colors:
+    led_color.red = 0
+    led_color.green = 0
+    led_color.blue = 0
+
 
 class SoundRmsFilter:
     def __init__(self, attack, release, initial_sound_rms=0.0):
@@ -67,9 +73,16 @@ class RobotNameDetectorNode:
         self._robot_name_detected_pub = rospy.Publisher('robot_name_detected', Empty, queue_size=10)
         self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
                                                             state_service_name='led_status/filter_state')
+        self._led_colors_pub.on_filter_state_changing(self._led_colors_hbba_filter_state_cb)
 
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('audio_in/filter_state')
         self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
+
+    def _led_colors_hbba_filter_state_cb(self, publish_forced,
+                                         previous_is_filtering_all_messages, new_is_filtering_all_messages):
+        if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
+            self._stop_timer()
+            publish_forced(NONE_LED_COLORS)
 
     def _audio_cb(self, msg):
         if msg.format != SUPPORTED_AUDIO_FORMAT or \
