@@ -39,6 +39,16 @@ public:
 };
 
 
+class RobotNameDetectorWithLedStatusDesire : public Desire
+{
+public:
+    explicit RobotNameDetectorWithLedStatusDesire(uint16_t intensity = 1);
+    ~RobotNameDetectorWithLedStatusDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(RobotNameDetectorWithLedStatusDesire)
+};
+
+
 class SlowVideoAnalyzer3dDesire : public Desire
 {
 public:

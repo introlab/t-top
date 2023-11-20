@@ -291,6 +291,18 @@ unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> 
         move(filterPool));
 }
 
+unique_ptr<BaseStrategy>
+    createRobotNameDetectorWithLedStatusDesireStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<RobotNameDetectorDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{{"led", 1}},
+        unordered_map<string, FilterConfiguration>{
+            {"robot_name_detector/filter_state", FilterConfiguration::onOff()},
+            {"robot_name_detector/led_status/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
+}
+
 unique_ptr<BaseStrategy> createSlowVideoAnalyzer3dStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<SlowVideoAnalyzer3dDesire>>(

@@ -7,6 +7,7 @@ import torch
 import rospy
 from std_msgs.msg import Float32, Bool, Empty
 from audio_utils.msg import AudioFrame
+from daemon_ros_client.msg import LedColors
 
 from dnn_utils import TTopKeywordSpotter
 import hbba_lite
@@ -33,6 +34,8 @@ class SoundRmsFilter:
 
 class RobotNameDetectorNode:
     def __init__(self):
+        self._led_status_duration_s = rospy.get_param('~led_status_duration_s', 1.0)
+
         self._sound_presence_relative_threshold = rospy.get_param('~sound_presence_relative_threshold', 1.05)
 
         self._robot_name_model_probability_threshold = rospy.get_param('~robot_name_model_probability_threshold')
@@ -55,10 +58,15 @@ class RobotNameDetectorNode:
         self._robot_name_model_analysis_waiting = False
         self._robot_name_model_probabilities = []
 
+        self._detection_status = None
+        self._detection_time_s = 0.0
+
         self._fast_sound_rms_pub = rospy.Publisher('fast_sound_rms', Float32, queue_size=10)
         self._slow_sound_rms_pub = rospy.Publisher('slow_sound_rms', Float32, queue_size=10)
         self._sound_presence_pub = rospy.Publisher('sound_presence', Bool, queue_size=10)
         self._robot_name_detected_pub = rospy.Publisher('robot_name_detected', Empty, queue_size=10)
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+                                                            state_service_name='led_status/filter_state')
 
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('audio_in/filter_state')
         self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
@@ -81,6 +89,8 @@ class RobotNameDetectorNode:
 
         if not self._hbba_filter_state.is_filtering_all_messages:
             self._detect_robot_name(audio_frame, presence)
+        if not self._led_colors_pub.is_filtering_all_messages:
+            self._publish_led_status(fast_sound_rms, slow_sound_rms)
 
     def _publish_sound_rms_messages(self, fast_sound_rms, slow_sound_rms, presence):
         sound_rms_msg = Float32()
@@ -120,9 +130,14 @@ class RobotNameDetectorNode:
 
     def _publish_robot_name_detected_if_needed(self):
         joint_probability = np.prod(np.array(self._robot_name_model_probabilities))
-        print(self._robot_name_model_probabilities, joint_probability)
+
         if joint_probability > self._robot_name_model_probability_threshold:
             self._robot_name_detected_pub.publish(Empty())
+            self._detection_status = True
+        else:
+            self._detection_status = False
+
+        self._detection_time_s = rospy.get_time()
 
     def _detect_robot_name_if_needed(self):
         if self._robot_name_model_interval_count >= self._robot_name_model_interval:
@@ -130,6 +145,30 @@ class RobotNameDetectorNode:
 
             self._robot_name_model_interval_count = 0
             self._robot_name_model_probabilities.append(probabilities[self._robot_name_model_output_index].item())
+
+    def _publish_led_status(self, fast_sound_rms, slow_sound_rms):
+        if rospy.get_time() - self._detection_time_s < self._led_status_duration_s and self._detection_status is not None:
+            if self._detection_status:
+                self._publish_led_colors(0, 255, 0)
+            else:
+                self._publish_led_colors(255, 0, 0)
+        else:
+            one_level = slow_sound_rms * self._sound_presence_relative_threshold
+            zero_level = slow_sound_rms
+            one_zero_diff = one_level - zero_level
+            level = np.clip((fast_sound_rms - zero_level) / one_zero_diff, a_min=0.0, a_max=1.0)
+
+            self._publish_led_colors(int(255 * level), int(255 * level), int(255 * level))
+
+
+    def _publish_led_colors(self, red, green, blue):
+        msg = LedColors()
+        for led_color in msg.colors:
+            led_color.red = red
+            led_color.green = green
+            led_color.blue = blue
+
+        self._led_colors_pub.publish(msg)
 
     def run(self):
         rospy.spin()

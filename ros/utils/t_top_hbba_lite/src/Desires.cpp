@@ -8,6 +8,8 @@ Camera2dWideRecordingDesire::Camera2dWideRecordingDesire(uint16_t intensity) : D
 
 RobotNameDetectorDesire::RobotNameDetectorDesire(uint16_t intensity) : Desire(intensity) {}
 
+RobotNameDetectorWithLedStatusDesire::RobotNameDetectorWithLedStatusDesire(uint16_t intensity) : Desire(intensity) {}
+
 SlowVideoAnalyzer3dDesire::SlowVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}
 
 FastVideoAnalyzer3dDesire::FastVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}

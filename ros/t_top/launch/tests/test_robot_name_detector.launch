@@ -27,8 +27,11 @@
         <param name="robot_name_model_analysis_delay" value="5600"/>
         <param name="robot_name_model_analysis_count" value="3"/>
 
+        <param name="led_status_duration_s" value="1.0"/>
+
         <remap from="audio_in" to="audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="robot_name_detector/filter_state"/>
+        <remap from="led_status/filter_state" to="robot_name_detector/led_status/filter_state"/>
     </node>
 
 </launch>

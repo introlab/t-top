@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   audio_utils
   rospy
   hbba_lite
+  daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions
