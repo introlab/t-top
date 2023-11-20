@@ -37,6 +37,9 @@ class SoundRmsFilter:
 
         return self._sound_rms
 
+    def reset(self):
+        self._sound_rms = 0.0
+
 
 class RobotNameDetectorNode:
     def __init__(self):
@@ -77,6 +80,7 @@ class RobotNameDetectorNode:
 
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState('audio_in/filter_state')
         self._audio_sub = rospy.Subscriber('audio_in', AudioFrame, self._audio_cb, queue_size=100)
+        self._audio_sub.on_filter_state_changed(self._audio_filter_state_changed_cb)
 
     def _led_colors_hbba_filter_state_cb(self, publish_forced,
                                          previous_is_filtering_all_messages, new_is_filtering_all_messages):
@@ -103,6 +107,9 @@ class RobotNameDetectorNode:
             self._detect_robot_name(audio_frame, presence)
         if not self._led_colors_pub.is_filtering_all_messages:
             self._publish_led_status(fast_sound_rms, slow_sound_rms)
+
+    def _audio_filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
+        self._slow_sound_rms_filter.reset()
 
     def _publish_sound_rms_messages(self, fast_sound_rms, slow_sound_rms, presence):
         sound_rms_msg = Float32()
