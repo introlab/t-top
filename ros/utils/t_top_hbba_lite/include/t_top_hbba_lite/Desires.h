@@ -316,7 +316,7 @@ class GestureDesire : public Desire
 
 public:
     /**
-     * Available gesture names : yes, no, maybe, origin_all, origin_head, origin_torso
+     * Available gesture names : yes, no, maybe, origin_all, origin_head, slow_origin_head, origin_torso, thinking
      */
     explicit GestureDesire(std::string name, uint16_t intensity = 1);
     ~GestureDesire() override = default;

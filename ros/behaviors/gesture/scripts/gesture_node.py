@@ -11,8 +11,9 @@ from t_top import MovementCommands
 MOVE_YES_TIMEOUT = 10
 MOVE_NO_TIMEOUT = 10
 MOVE_MAYBE_TIMEOUT = 10
-MOVE_HEAD_TO_ORIGIN = 5
-MOVE_TORSO_TO_ORIGIN = 30
+MOVE_HEAD_TO_ORIGIN_TIMEOUT = 5
+MOVE_TORSO_TO_ORIGIN_TIMEOUT = 30
+MOVE_THINKING_TIMEOUT = 5
 
 
 class GestureNode:
@@ -46,12 +47,16 @@ class GestureNode:
         elif name == 'maybe':
             self._movement_commands.move_maybe(count=1, timeout=MOVE_MAYBE_TIMEOUT)
         elif name == 'origin_all':
-            self._movement_commands.move_head_to_origin(should_wait=True, timeout=MOVE_HEAD_TO_ORIGIN)
-            self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN)
+            self._movement_commands.move_head_to_origin(should_wait=True, timeout=MOVE_HEAD_TO_ORIGIN_TIMEOUT)
+            self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN_TIMEOUT)
         elif name == 'origin_head':
-            self._movement_commands.move_head_to_origin(should_wait=True, timeout=MOVE_HEAD_TO_ORIGIN)
+            self._movement_commands.move_head_to_origin(should_wait=True, timeout=MOVE_HEAD_TO_ORIGIN_TIMEOUT)
+        elif name == 'slow_origin_head':
+            self._movement_commands.move_head_to_origin(should_wait=True, speed_rad_sec=0.5, timeout=MOVE_HEAD_TO_ORIGIN_TIMEOUT)
         elif name == 'origin_torso':
-            self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN)
+            self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN_TIMEOUT)
+        elif name == 'thinking':
+            self._movement_commands.move_head_to_thinking(timeout=MOVE_THINKING_TIMEOUT)
         else:
             rospy.logerr(f'Invalid gesture name ({name})')
             return False
