@@ -15,7 +15,7 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     : Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1);
+    m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1, true);
 }
 
 StrategyType FaceAnimationStrategy::strategyType()
@@ -49,7 +49,7 @@ LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> 
           move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1);
+    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1, true);
 }
 
 StrategyType LedEmotionStrategy::strategyType()
@@ -79,7 +79,7 @@ LedAnimationStrategy::LedAnimationStrategy(
       m_desireSet(desireSet),
       m_nodeHandle(nodeHandle)
 {
-    m_animationPublisher = nodeHandle.advertise<led_animations::Animation>("led_animations/animation", 1);
+    m_animationPublisher = nodeHandle.advertise<led_animations::Animation>("led_animations/animation", 1, true);
     m_animationDoneSubscriber =
         nodeHandle.subscribe("led_animations/done", 1, &LedAnimationStrategy::animationDoneSubscriberCallback, this);
 }
@@ -122,7 +122,7 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
           move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
+    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1, true);
 }
 
 StrategyType SpecificFaceFollowingStrategy::strategyType()
@@ -152,7 +152,7 @@ TalkStrategy::TalkStrategy(
       m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
-    m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1);
+    m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1, true);
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
 }
 
@@ -192,7 +192,7 @@ GestureStrategy::GestureStrategy(
       m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
-    m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1);
+    m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1, true);
     m_gestureDoneSubscriber =
         nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
 }
@@ -233,7 +233,7 @@ PlaySoundStrategy::PlaySoundStrategy(
       m_desireSet(desireSet),
       m_nodeHandle(nodeHandle)
 {
-    m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1);
+    m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1, true);
     m_soundDoneSubscriber =
         nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
 }

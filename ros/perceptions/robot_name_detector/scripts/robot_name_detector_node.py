@@ -70,6 +70,9 @@ class RobotNameDetectorNode:
         self._detection_status = None
         self._detection_time_s = 0.0
 
+        # Warm up, to avoid inference delays
+        self._robot_name_model(self._robot_name_model_buffer)
+
         self._fast_sound_rms_pub = rospy.Publisher('fast_sound_rms', Float32, queue_size=10)
         self._slow_sound_rms_pub = rospy.Publisher('slow_sound_rms', Float32, queue_size=10)
         self._sound_presence_pub = rospy.Publisher('sound_presence', Bool, queue_size=10)

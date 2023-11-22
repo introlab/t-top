@@ -51,6 +51,8 @@ int main(int argc, char** argv)
     DaemonRosClientNode app(argc, argv, nodeHandle, configuration);
     app.exec();
 
+    app.cleanup();
+
     // Stop ROS spinner
     spinner.stop();
 }

@@ -9,7 +9,7 @@
         <param name="gender" value="$(arg gender)"/>
         <param name="generator_type" value="$(arg voice_generator_type)"/>
         <param name="speaking_rate" value="$(arg speaking_rate)"/>
-        <param name="cache_size" value="1000"/>
+        <param name="cache_size" value="2000"/>
         <param name="mouth_signal_gain" value="0.04"/>
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
