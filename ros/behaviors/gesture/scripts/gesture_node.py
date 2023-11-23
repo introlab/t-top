@@ -14,6 +14,7 @@ MOVE_MAYBE_TIMEOUT = 10
 MOVE_HEAD_TO_ORIGIN_TIMEOUT = 5
 MOVE_TORSO_TO_ORIGIN_TIMEOUT = 30
 MOVE_THINKING_TIMEOUT = 5
+MOVE_SAD_TIMEOUT = 5
 
 
 class GestureNode:
@@ -57,6 +58,8 @@ class GestureNode:
             self._movement_commands.move_torso_to_origin(should_wait=True, timeout=MOVE_TORSO_TO_ORIGIN_TIMEOUT)
         elif name == 'thinking':
             self._movement_commands.move_head_to_thinking(timeout=MOVE_THINKING_TIMEOUT)
+        elif name == 'sad':
+            self._movement_commands.move_head_to_sad(timeout=MOVE_SAD_TIMEOUT)
         else:
             rospy.logerr(f'Invalid gesture name ({name})')
             return False
