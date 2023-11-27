@@ -29,6 +29,10 @@
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+        <arg name="video_analyzer_3d_pose_enabled" value="true"/>
+        <arg name="video_analyzer_3d_face_descriptor_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_pose_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="false"/>
     </include>
 
 
