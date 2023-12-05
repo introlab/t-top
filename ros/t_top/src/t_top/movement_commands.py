@@ -49,7 +49,7 @@ def abs_diff_torso_angle(a, b):
 
 
 class MovementCommands:
-    def __init__(self, simulation=False):
+    def __init__(self, simulation=False, namespace='daemon'):
         self._read_torso_lock = threading.Lock()
         self._read_head_lock = threading.Lock()
 
@@ -67,9 +67,9 @@ class MovementCommands:
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState(
             'pose/filter_state')
         self._torso_orientation_pub = rospy.Publisher(
-            'daemon/set_torso_orientation', Float32, queue_size=5)
+            f'{namespace}/set_torso_orientation', Float32, queue_size=5)
         self._head_pose_pub = rospy.Publisher(
-            'daemon/set_head_pose', PoseStamped, queue_size=5)
+            f'{namespace}/set_head_pose', PoseStamped, queue_size=5)
 
         self._motor_status_sub = rospy.Subscriber('daemon/motor_status', MotorStatus, self._motor_status_cb, queue_size=1)
 

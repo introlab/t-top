@@ -61,7 +61,7 @@ void startNode(
 
     auto solver = make_unique<GecodeSolver>();
     auto strategyStateLogger = make_unique<RosStrategyStateLogger>(nodeHandle);
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver), move(strategyStateLogger));
+    HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
     StateManager stateManager;
     type_index idleStateType(typeid(RssIdleState));

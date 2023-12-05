@@ -18,7 +18,7 @@ class TorsoDanceNode(PoseDanceNode):
         self._current_torso_orientation = 0.0
 
         self._torso_offset = 0.0
-        self._torso_orientation_pub = rospy.Publisher('daemon/set_torso_orientation', Float32, queue_size=5)
+        self._torso_orientation_pub = rospy.Publisher('dance/set_torso_orientation', Float32, queue_size=5)
 
         super(TorsoDanceNode, self).__init__()
 

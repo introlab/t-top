@@ -1,8 +1,6 @@
 #ifndef CONTROL_PANEL_BEHAVIORS_TAB_H
 #define CONTROL_PANEL_BEHAVIORS_TAB_H
 
-#include "../DesireUtils.h"
-
 #include <QWidget>
 #include <QPushButton>
 #include <QLineEdit>
@@ -13,20 +11,24 @@
 #include <memory>
 #include <utility>
 
-class BehaviorsTab : public QWidget, public DesireSetObserver
+class BehaviorsTab : public QWidget
 {
     Q_OBJECT
 
     std::shared_ptr<DesireSet> m_desireSet;
-    QVariant m_desireId;
+
+    QVariant m_nearestFaceFollowingDesireId;
+    QVariant m_specificFaceFollowingDesireId;
+    QVariant m_soundFollowingDesireId;
+    QVariant m_soundObjectPersonFollowingDesireId;
+    QVariant m_danceDesireId;
+    QVariant m_exploreDesireId;
 
     bool m_camera2dWideEnabled;
 
 public:
     BehaviorsTab(std::shared_ptr<DesireSet> desireSet, bool camera2dWideEnabled, QWidget* parent = nullptr);
     ~BehaviorsTab() override;
-
-    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
 
 private slots:
     void onNearestFaceFollowingButtonToggled(bool checked);
@@ -38,10 +40,9 @@ private slots:
 
 private:
     void createUi();
-    void uncheckOtherButtons(QPushButton* current);
 
     template<class D, class... DesireArgs>
-    void onButtonToggled(bool checked, QPushButton* button, DesireArgs... desireArgs);
+    void onButtonToggled(bool checked, QPushButton* button, QVariant& desireId, DesireArgs... desireArgs);
 
     // UI members
     QPushButton* m_nearestFaceFollowingButton;
@@ -55,23 +56,18 @@ private:
 };
 
 template<class D, class... DesireArgs>
-void BehaviorsTab::onButtonToggled(bool checked, QPushButton* button, DesireArgs... desireArgs)
+void BehaviorsTab::onButtonToggled(bool checked, QPushButton* button, QVariant& desireId, DesireArgs... desireArgs)
 {
     if (checked)
     {
-        uncheckOtherButtons(button);
-
-        auto transaction = m_desireSet->beginTransaction();
-        removeAllMovementDesires(*m_desireSet);
-
         auto desire = std::make_unique<D>(desireArgs...);
-        m_desireId = static_cast<qint64>(desire->id());
+        desireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
-    else if (m_desireId.isValid())
+    else if (desireId.isValid())
     {
-        m_desireSet->removeDesire(m_desireId.toULongLong());
-        m_desireId.clear();
+        m_desireSet->removeDesire(desireId.toULongLong());
+        desireId.clear();
     }
 }
 

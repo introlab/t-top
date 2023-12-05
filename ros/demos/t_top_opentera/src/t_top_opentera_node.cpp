@@ -61,7 +61,7 @@ Node::Node(ros::NodeHandle& nodeHandle)
     m_hbbaLite = make_unique<HbbaLite>(
         m_desireSet,
         move(strategies),
-        std::unordered_map<std::string, uint16_t>{{"motor", 1}, {"sound", 1}},
+        std::unordered_map<std::string, uint16_t>{{"sound", 1}},
         make_unique<GecodeSolver>());
 
     auto telepresenceDesire = make_unique<TelepresenceDesire>();

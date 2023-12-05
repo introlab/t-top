@@ -15,7 +15,7 @@ PERSON_POSE_NOSE_INDEX = 0
 
 class NearestFaceFollowingNode(FaceFollowingNode):
     def __init__(self):
-        super().__init__()
+        super().__init__(namespace='nearest_face_following')
         self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
 
         self._tf_listener = tf.TransformListener()

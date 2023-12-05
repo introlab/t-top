@@ -28,11 +28,12 @@
         <remap from="imu/data" to="imu/data"/>
     </node>
 
-    <!--Dynamic tf broadcast and odom launch -->
+    <!-- Dynamic tf broadcast and odom launch -->
     <node pkg="daemon_ros_client" type="daemon_ros_client_node" name="daemon_ros_client_node">
         <param name="base_link_torso_base_delta_z" value="0.184"/>
     </node>
 
+    <!-- Arbitration nodes -->
     <node pkg="hbba_lite" type="arbitration_node" name="led_arbitration_node" output="screen">
         <rosparam param="topics">
             - name: led_emotions/set_led_colors
@@ -51,5 +52,68 @@
         <param name="latch" value="false"/>
 
         <remap from="out" to="daemon/set_led_colors"/>
+    </node>
+
+    <node pkg="hbba_lite" type="arbitration_node" name="torso_arbitration_node" output="screen">
+        <rosparam param="topics">
+            - name: teleoperation/set_torso_orientation
+              priority: 1
+              timeout_s: 0.5
+            - name: gesture/set_torso_orientation
+              priority: 2
+              timeout_s: 0.5
+            - name: dance/set_torso_orientation
+              priority: 3
+              timeout_s: 0.5
+            - name: explore/set_torso_orientation
+              priority: 4
+              timeout_s: 0.5
+            - name: sound_object_person_following/set_torso_orientation
+              priority: 5
+              timeout_s: 0.5
+            - name: specific_face_following/set_torso_orientation
+              priority: 6
+              timeout_s: 0.5
+            - name: nearest_face_following/set_torso_orientation
+              priority: 7
+              timeout_s: 0.5
+            - name: sound_following/set_torso_orientation
+              priority: 8
+              timeout_s: 0.5
+        </rosparam>
+        <param name="latch" value="false"/>
+
+        <remap from="out" to="daemon/set_torso_orientation"/>
+    </node>
+
+    <node pkg="t_top_hbba_lite" type="set_head_pose_arbitration_node" name="head_arbitration_node" output="screen">
+        <rosparam param="topics">
+            - name: teleoperation/set_head_pose
+              priority: 1
+              timeout_s: 0.5
+            - name: gesture/set_head_pose
+              priority: 2
+              timeout_s: 0.5
+            - name: dance/set_head_pose
+              priority: 3
+              timeout_s: 0.5
+            - name: explore/set_head_pose
+              priority: 4
+              timeout_s: 0.5
+            - name: sound_object_person_following/set_head_pose
+              priority: 5
+              timeout_s: 0.5
+            - name: specific_face_following/set_head_pose
+              priority: 6
+              timeout_s: 0.5
+            - name: nearest_face_following/set_head_pose
+              priority: 7
+              timeout_s: 0.5
+            - name: sound_following/set_head_pose
+              priority: 8
+              timeout_s: 0.5
+        </rosparam>
+        <rosparam param="offset_topics">[]</rosparam>
+        <param name="latch" value="false"/>
     </node>
 </launch>

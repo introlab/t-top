@@ -36,7 +36,7 @@ class TeleoperationNode:
     def __init__(self):
         self._simulation = rospy.get_param('~simulation', False)
 
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace='teleoperation')
         self._state = TeleopState()
 
         self._twist_sub = rospy.Subscriber(

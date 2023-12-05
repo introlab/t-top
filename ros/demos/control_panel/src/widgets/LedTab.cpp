@@ -1,6 +1,5 @@
 #include "LedTab.h"
 #include "../QtUtils.h"
-#include "../DesireUtils.h"
 
 #include <QVBoxLayout>
 #include <QGroupBox>
@@ -28,9 +27,7 @@ LedTab::LedTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWi
     createUi();
 }
 
-LedTab::~LedTab()
-{
-}
+LedTab::~LedTab() {}
 
 void LedTab::onLedEmotionButtonToggled(QPushButton* button, bool checked, const QString& name)
 {

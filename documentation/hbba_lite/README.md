@@ -285,7 +285,7 @@ vector<unique_ptr<BaseStrategy>> strategies;
 auto solver = make_unique<GecodeSolver>(); // Create the solver.
 HbbaLite hbba(desireSet,
     move(strategies),
-    {{"motor", 1}, {"sound", 1}, {"led", 1}}, // The resource available on the robot.
+    {{"sound", 1}}, // The resource available on the robot.
     move(solver)); // The constructor starts a thread for the solver.
 
 

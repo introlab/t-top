@@ -258,7 +258,7 @@ class SoundObjectPersonFollowingNode:
         self._object_person_follower_type = rospy.get_param('~object_person_follower_type')
         self._camera_3d_calibration = Camera3dCalibration.load_json_file()
 
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace='sound_object_person_following')
         self._sound_follower = SoundFollower(self._movement_commands)
         if self._object_person_follower_type == 'bounding_box':
             self._object_person_follower = BoundingBoxObjectPersonFollower(self._camera_3d_calibration, self._movement_commands)

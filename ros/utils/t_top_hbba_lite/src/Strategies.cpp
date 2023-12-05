@@ -116,7 +116,7 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     ros::NodeHandle& nodeHandle)
     : Strategy<SpecificFaceFollowingDesire>(
           utility,
-          {{"motor", 1}},
+          {},
           {{"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
            {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
@@ -184,11 +184,7 @@ GestureStrategy::GestureStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
-    : Strategy<GestureDesire>(
-          utility,
-          {{"motor", 1}},
-          {{"gesture/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
+    : Strategy<GestureDesire>(utility, {}, {{"gesture/filter_state", FilterConfiguration::onOff()}}, move(filterPool)),
       m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
@@ -407,7 +403,7 @@ unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool
 {
     return make_unique<Strategy<ExploreDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"explore/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
@@ -437,7 +433,7 @@ unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> fil
 {
     return make_unique<Strategy<SoundFollowingDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"sound_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
@@ -446,7 +442,7 @@ unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPoo
 {
     return make_unique<Strategy<NearestFaceFollowingDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
@@ -465,7 +461,7 @@ unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<Fil
 {
     return make_unique<Strategy<SoundObjectPersonFollowingDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
             {"sound_object_person_following/filter_state", FilterConfiguration::onOff()}},
@@ -494,7 +490,7 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
 {
     return make_unique<Strategy<DanceDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"beat_detector/filter_state", FilterConfiguration::onOff()},
             {"head_dance/filter_state", FilterConfiguration::onOff()},
@@ -526,7 +522,7 @@ unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filt
 {
     return make_unique<Strategy<TeleoperationDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"teleoperation/filter_state", FilterConfiguration::onOff()},
         },

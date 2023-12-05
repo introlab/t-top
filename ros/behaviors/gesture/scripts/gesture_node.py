@@ -22,7 +22,7 @@ class GestureNode:
         self._simulation = rospy.get_param('~simulation')
 
         self._gesture_lock = threading.Lock()
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace='gesture')
 
         self._done_pub = rospy.Publisher('gesture/done', Done, queue_size=5)
         self._gesture_sub = rospy.Subscriber('gesture/name', GestureName, self._on_gesture_cb)

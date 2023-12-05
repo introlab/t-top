@@ -36,7 +36,7 @@ int startNode(int argc, char* argv[])
 
 
     auto solver = make_unique<GecodeSolver>();
-    HbbaLite hbba(desireSet, move(strategies), {{"motor", 1}, {"sound", 1}}, move(solver));
+    HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver));
 
     QApplication application(argc, argv);
     Connect4Widget connect4Widget(nodeHandle, desireSet);

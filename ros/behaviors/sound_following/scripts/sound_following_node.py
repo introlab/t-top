@@ -27,7 +27,7 @@ class SoundFollowingNode:
         self._target_torso_yaw = None
         self._target_head_pitch = None
 
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace='sound_following')
         self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
     def _sst_cb(self, sst):
