@@ -1,0 +1,11 @@
+<launch>
+    <node pkg="watchdog" type="test_node.py" name="test_node" respawn="true" output="screen">
+        <param name="startup_delay_s" value="1.0"/>
+        <param name="freeze_delay_s" value="5.0"/>
+        <param name="message_frequency" value="5.0"/>
+    </node>
+    <node pkg="watchdog" type="watchdog_node" name="watchdog_node" output="screen">
+        <param name="node_name" value="test_node"/>
+        <param name="timeout_duration_s" value="0.5"/>
+    </node>
+</launch>

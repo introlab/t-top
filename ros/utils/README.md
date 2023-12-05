@@ -10,5 +10,4 @@ This folder contains the ROS packages for utilities.
 - The [hbba_lite](https://github.com/introlab/hbba_lite) folder contains nodes and utilities to use the HBBA Lite architecture.
 - The [recorders](recorders) folder contains nodes to record data.
 - The [t_top_hbba_lite](t_top_hbba_lite) folder contains the HBBA Lite strategies and desires.
-
-TODO move dnn_utils after the merge of sound-object-person-following-segmentation.
+- The [watchdog](watchdog) folder contains a watchdog node.
