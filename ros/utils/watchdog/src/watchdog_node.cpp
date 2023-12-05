@@ -72,10 +72,7 @@ class WatchdogNode
     ros::Timer m_messageTimer;
 
 public:
-    WatchdogNode(
-        ros::NodeHandle& nodeHandle,
-        string nodeName,
-        ros::Duration timeoutDuration)
+    WatchdogNode(ros::NodeHandle& nodeHandle, string nodeName, ros::Duration timeoutDuration)
         : m_nodeHandle(nodeHandle),
           m_nodeName(move(nodeName)),
           m_timeoutDuration(timeoutDuration)
@@ -95,11 +92,8 @@ private:
             m_messageTimer.stop();
         }
 
-        m_messageTimer = m_nodeHandle.createTimer(
-            m_timeoutDuration,
-            &WatchdogNode::messageTimerCallback,
-            this,
-            ONE_SHOT);
+        m_messageTimer =
+            m_nodeHandle.createTimer(m_timeoutDuration, &WatchdogNode::messageTimerCallback, this, ONE_SHOT);
     }
 
     void messageTimerCallback(const ros::TimerEvent&)

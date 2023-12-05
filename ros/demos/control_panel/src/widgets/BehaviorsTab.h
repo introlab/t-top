@@ -63,10 +63,6 @@ void BehaviorsTab::onButtonToggled(bool checked, QPushButton* button, DesireArgs
 
         auto transaction = m_desireSet->beginTransaction();
         removeAllMovementDesires(*m_desireSet);
-        if (button == m_danceButton)
-        {
-            removeAllLedDesires(*m_desireSet);
-        }
 
         auto desire = std::make_unique<D>(desireArgs...);
         m_desireId = static_cast<qint64>(desire->id());

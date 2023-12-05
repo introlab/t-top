@@ -14,7 +14,7 @@ This node performs animations with the LED strip.
 
 #### Published Topics
 
-- `daemon/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)): The LED colors.
+- `led_animations/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)): The LED colors.
 - `led_animations/done` ([led_animations/Done](msg/Done.msg)): Indicates that the animation is finished.
 
 #### Services

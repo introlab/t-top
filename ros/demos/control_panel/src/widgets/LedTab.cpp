@@ -26,25 +26,10 @@ LedTab::LedTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWi
       m_desireSet(std::move(desireSet))
 {
     createUi();
-    m_desireSet->addObserver(this);
 }
 
 LedTab::~LedTab()
 {
-    m_desireSet->removeObserver(this);
-}
-
-void LedTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
-{
-    invokeLater(
-        [=]()
-        {
-            if (m_desireId.isValid() && !m_desireSet->contains(m_desireId.toULongLong()))
-            {
-                m_desireId.clear();
-                uncheckOtherButtons(nullptr);
-            }
-        });
 }
 
 void LedTab::onLedEmotionButtonToggled(QPushButton* button, bool checked, const QString& name)
@@ -52,16 +37,15 @@ void LedTab::onLedEmotionButtonToggled(QPushButton* button, bool checked, const 
     if (checked)
     {
         auto transaction = m_desireSet->beginTransaction();
-        removeAllLedDesires(*m_desireSet);
-        uncheckOtherButtons(button);
+        uncheckOtherEmotionButtons(button);
 
         auto desire = make_unique<LedEmotionDesire>(name.toStdString());
-        m_desireId = static_cast<qint64>(desire->id());
+        m_ledEmotionDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
-    else if (m_desireId.isValid())
+    else if (m_ledEmotionDesireId.isValid())
     {
-        m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireSet->removeDesire(m_ledEmotionDesireId.toULongLong());
     }
 }
 
@@ -70,17 +54,16 @@ void LedTab::onConstantAnimationButtonToggled(bool checked)
     if (checked)
     {
         auto transaction = m_desireSet->beginTransaction();
-        removeAllLedDesires(*m_desireSet);
-        uncheckOtherButtons(m_constantAnimationButton);
+        uncheckOtherAnimationButtons(m_constantAnimationButton);
 
         auto desire =
             make_unique<LedAnimationDesire>("constant", vector<daemon_ros_client::LedColor>{color(255, 255, 255)});
-        m_desireId = static_cast<qint64>(desire->id());
+        m_ledAnimationDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
-    else if (m_desireId.isValid())
+    else if (m_ledAnimationDesireId.isValid())
     {
-        m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireSet->removeDesire(m_ledAnimationDesireId.toULongLong());
     }
 }
 
@@ -89,17 +72,16 @@ void LedTab::onRotatingSinAnimationButtonToggled(bool checked)
     if (checked)
     {
         auto transaction = m_desireSet->beginTransaction();
-        removeAllLedDesires(*m_desireSet);
-        uncheckOtherButtons(m_rotatingSinAnimationButton);
+        uncheckOtherAnimationButtons(m_rotatingSinAnimationButton);
 
         auto desire =
             make_unique<LedAnimationDesire>("rotating_sin", vector<daemon_ros_client::LedColor>{color(0, 255, 0)});
-        m_desireId = static_cast<qint64>(desire->id());
+        m_ledAnimationDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
-    else if (m_desireId.isValid())
+    else if (m_ledAnimationDesireId.isValid())
     {
-        m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireSet->removeDesire(m_ledAnimationDesireId.toULongLong());
     }
 }
 
@@ -108,16 +90,15 @@ void LedTab::onRandomAnimationButtonToggled(bool checked)
     if (checked)
     {
         auto transaction = m_desireSet->beginTransaction();
-        removeAllLedDesires(*m_desireSet);
-        uncheckOtherButtons(m_randomAnimationButton);
+        uncheckOtherAnimationButtons(m_randomAnimationButton);
 
         auto desire = make_unique<LedAnimationDesire>("random");
-        m_desireId = static_cast<qint64>(desire->id());
+        m_ledAnimationDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
-    else if (m_desireId.isValid())
+    else if (m_ledAnimationDesireId.isValid())
     {
-        m_desireSet->removeDesire(m_desireId.toULongLong());
+        m_desireSet->removeDesire(m_ledAnimationDesireId.toULongLong());
     }
 }
 
@@ -203,7 +184,7 @@ void LedTab::createUi()
     setLayout(globalLayout);
 }
 
-void LedTab::uncheckOtherButtons(QPushButton* current)
+void LedTab::uncheckOtherEmotionButtons(QPushButton* current)
 {
     if (m_joyEmotionButton != current)
     {
@@ -225,6 +206,10 @@ void LedTab::uncheckOtherButtons(QPushButton* current)
     {
         m_angerEmotionButton->setChecked(false);
     }
+}
+
+void LedTab::uncheckOtherAnimationButtons(QPushButton* current)
+{
     if (m_constantAnimationButton != current)
     {
         m_constantAnimationButton->setChecked(false);

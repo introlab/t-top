@@ -76,7 +76,7 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Published Topics
 
-- `daemon/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)):
+- `dance/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)):
   The LED colors.
 
 #### Services

@@ -28,7 +28,7 @@ class LedAnimationsNode:
         self._timer_duration_s = 0.0
         self._timer_animation = None
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('led_animations/set_led_colors', LedColors, queue_size=1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 

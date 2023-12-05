@@ -77,7 +77,7 @@ class RobotNameDetectorNode:
         self._slow_sound_rms_pub = rospy.Publisher('slow_sound_rms', Float32, queue_size=10)
         self._sound_presence_pub = rospy.Publisher('sound_presence', Bool, queue_size=10)
         self._robot_name_detected_pub = rospy.Publisher('robot_name_detected', Empty, queue_size=10)
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('robot_name_detector/set_led_colors', LedColors, queue_size=1,
                                                             state_service_name='led_status/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._led_colors_hbba_filter_state_cb)
 

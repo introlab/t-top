@@ -35,7 +35,7 @@ class LedEmotionsNode:
         self._timer_time_s = 0
         self._timer_pattern = None
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('led_emotions/set_led_colors', LedColors, queue_size=1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 

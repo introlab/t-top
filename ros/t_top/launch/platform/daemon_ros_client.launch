@@ -32,4 +32,24 @@
     <node pkg="daemon_ros_client" type="daemon_ros_client_node" name="daemon_ros_client_node">
         <param name="base_link_torso_base_delta_z" value="0.184"/>
     </node>
+
+    <node pkg="hbba_lite" type="arbitration_node" name="led_arbitration_node" output="screen">
+        <rosparam param="topics">
+            - name: led_emotions/set_led_colors
+              priority: 1
+              timeout_s: 0.1
+            - name: dance/set_led_colors
+              priority: 2
+              timeout_s: 2.0
+            - name: led_animations/set_led_colors
+              priority: 3
+              timeout_s: 0.1
+            - name: robot_name_detector/set_led_colors
+              priority: 4
+              timeout_s: 0.2
+        </rosparam>
+        <param name="latch" value="false"/>
+
+        <remap from="out" to="daemon/set_led_colors"/>
+    </node>
 </launch>

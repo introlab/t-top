@@ -44,7 +44,7 @@ void FaceAnimationStrategy::onDisabling()
 LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
     : Strategy<LedEmotionDesire>(
           utility,
-          {{"led", 1}},
+          {},
           {{"led_emotions/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_nodeHandle(nodeHandle)
@@ -73,7 +73,7 @@ LedAnimationStrategy::LedAnimationStrategy(
     ros::NodeHandle& nodeHandle)
     : Strategy<LedAnimationDesire>(
           utility,
-          {{"led", 1}},
+          {},
           {{"led_animations/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_desireSet(desireSet),
@@ -296,7 +296,7 @@ unique_ptr<BaseStrategy>
 {
     return make_unique<Strategy<RobotNameDetectorWithLedStatusDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"led", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"robot_name_detector/filter_state", FilterConfiguration::onOff()},
             {"robot_name_detector/led_status/filter_state", FilterConfiguration::onOff()}},
@@ -494,7 +494,7 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
 {
     return make_unique<Strategy<DanceDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}, {"led", 1}},
+        unordered_map<string, uint16_t>{{"motor", 1}},
         unordered_map<string, FilterConfiguration>{
             {"beat_detector/filter_state", FilterConfiguration::onOff()},
             {"head_dance/filter_state", FilterConfiguration::onOff()},

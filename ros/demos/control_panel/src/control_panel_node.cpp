@@ -59,7 +59,7 @@ int startNode(int argc, char* argv[])
     HbbaLite hbba(
         desireSet,
         move(strategies),
-        {{"motor", 1}, {"sound", 1}, {"led", 1}},
+        {{"motor", 1}, {"sound", 1}},
         move(solver),
         move(strategyStateLogger));
 
