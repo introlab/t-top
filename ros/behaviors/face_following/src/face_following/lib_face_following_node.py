@@ -27,9 +27,9 @@ class FaceFollowingNode:
 
     def _update(self, yaw, head_image_y):
         with self._target_lock:
-            if math.isfinite(yaw):
+            if yaw is None or math.isfinite(yaw):
                 self._target_torso_yaw = yaw
-            if math.isfinite(head_image_y):
+            if head_image_y is None or math.isfinite(head_image_y):
                 self._current_head_image_y = head_image_y
 
     def run(self):
