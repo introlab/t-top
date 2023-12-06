@@ -60,7 +60,7 @@
     </include>
 
     <!-- Too Near Reaction -->
-    <include file="$(find t_top)/launch/behaviors/too_near_reaction.launch"/>
+    <include file="$(find t_top)/launch/behaviors/too_close_reaction.launch"/>
 
     <!-- Sound Player -->
     <include file="$(find t_top)/launch/behaviors/sound_player.launch"/>

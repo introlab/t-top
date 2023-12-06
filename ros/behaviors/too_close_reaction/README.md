@@ -1,10 +1,10 @@
-# too_near_reaction
+# too_close_reaction
 
 This folder contains the node to move back the head when someone is too close to T-Top.
 
 ## Nodes
 
-### `too_near_reaction_node.py`
+### `too_close_reaction_node.py`
 
 This node makes T-Top move back its head when someone is too close to T-Top.
 
@@ -21,7 +21,7 @@ This node makes T-Top move back its head when someone is too close to T-Top.
 
 #### Published Topics
 
-- `too_near_reaction/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `too_close_reaction/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
   The head pose offset.
 
 #### Services

@@ -79,4 +79,4 @@ TelepresenceDesire::TelepresenceDesire(uint16_t intensity) : Desire(intensity) {
 
 TeleoperationDesire::TeleoperationDesire(uint16_t intensity) : Desire(intensity) {}
 
-TooNearReactionDesire::TooNearReactionDesire(uint16_t intensity) : Desire(intensity) {}
+TooCloseReactionDesire::TooCloseReactionDesire(uint16_t intensity) : Desire(intensity) {}

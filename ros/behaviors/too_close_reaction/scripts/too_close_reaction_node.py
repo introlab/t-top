@@ -11,7 +11,7 @@ from sensor_msgs.msg import Image
 import hbba_lite
 
 
-class TooNearReactionNode:
+class TooCloseReactionNode:
     def __init__(self):
         self._max_offset_m = rospy.get_param('~max_offset_m', 0.01)
         self._too_near_start_distance_m = rospy.get_param('~too_near_start_distance_m', 0.5)
@@ -22,7 +22,7 @@ class TooNearReactionNode:
 
         self._current_offset_m = 0.0
 
-        self._head_pose_pub = rospy.Publisher('too_near_reaction/set_head_pose', PoseStamped, queue_size=1)
+        self._head_pose_pub = rospy.Publisher('too_close_reaction/set_head_pose', PoseStamped, queue_size=1)
         self._depth_image_sub = hbba_lite.OnOffHbbaSubscriber('depth_image_raw', Image, self._image_cb, queue_size=1)
         self._depth_image_sub.on_filter_state_changed(self._hbba_filter_state_cb)
 
@@ -79,9 +79,9 @@ class TooNearReactionNode:
 
 
 def main():
-    rospy.init_node('too_near_reaction_node')
-    too_near_reaction_node = TooNearReactionNode()
-    too_near_reaction_node.run()
+    rospy.init_node('too_close_reaction_node')
+    too_close_reaction_node = TooCloseReactionNode()
+    too_close_reaction_node.run()
 
 
 if __name__ == '__main__':

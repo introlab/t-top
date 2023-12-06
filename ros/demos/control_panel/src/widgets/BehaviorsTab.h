@@ -23,7 +23,7 @@ class BehaviorsTab : public QWidget
     QVariant m_soundObjectPersonFollowingDesireId;
     QVariant m_danceDesireId;
     QVariant m_exploreDesireId;
-    QVariant m_tooNearReactionDesireId;
+    QVariant m_tooCloseReactionDesireId;
 
     bool m_camera2dWideEnabled;
 
@@ -38,7 +38,7 @@ private slots:
     void onSoundObjectPersonFollowingButtonToggled(bool checked);
     void onDanceButtonToggled(bool checked);
     void onExploreButtonToggled(bool checked);
-    void onTooNearReactionButtonToggled(bool checked);
+    void onTooCloseReactionButtonToggled(bool checked);
 
 private:
     void createUi();
@@ -55,7 +55,7 @@ private:
     QPushButton* m_soundObjectPersonFollowingButton;
     QPushButton* m_danceButton;
     QPushButton* m_exploreButton;
-    QPushButton* m_tooNearReactionButton;
+    QPushButton* m_tooCloseReactionButton;
 };
 
 template<class D, class... DesireArgs>

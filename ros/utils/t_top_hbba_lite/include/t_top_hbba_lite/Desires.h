@@ -381,13 +381,13 @@ public:
 };
 
 
-class TooNearReactionDesire : public Desire
+class TooCloseReactionDesire : public Desire
 {
 public:
-    explicit TooNearReactionDesire(uint16_t intensity = 1);
-    ~TooNearReactionDesire() override = default;
+    explicit TooCloseReactionDesire(uint16_t intensity = 1);
+    ~TooCloseReactionDesire() override = default;
 
-    DECLARE_DESIRE_METHODS(TooNearReactionDesire);
+    DECLARE_DESIRE_METHODS(TooCloseReactionDesire);
 };
 
 

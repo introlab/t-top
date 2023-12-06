@@ -56,9 +56,9 @@ void BehaviorsTab::onExploreButtonToggled(bool checked)
     onButtonToggled<ExploreDesire>(checked, m_exploreButton, m_exploreDesireId);
 }
 
-void BehaviorsTab::onTooNearReactionButtonToggled(bool checked)
+void BehaviorsTab::onTooCloseReactionButtonToggled(bool checked)
 {
-    onButtonToggled<TooNearReactionDesire>(checked, m_tooNearReactionButton, m_tooNearReactionDesireId);
+    onButtonToggled<TooCloseReactionDesire>(checked, m_tooCloseReactionButton, m_tooCloseReactionDesireId);
 }
 
 void BehaviorsTab::createUi()
@@ -106,9 +106,9 @@ void BehaviorsTab::createUi()
     m_exploreButton->setCheckable(true);
     connect(m_exploreButton, &QPushButton::toggled, this, &BehaviorsTab::onExploreButtonToggled);
 
-    m_tooNearReactionButton = new QPushButton("Too Near Reaction");
-    m_tooNearReactionButton->setCheckable(true);
-    connect(m_tooNearReactionButton, &QPushButton::toggled, this, &BehaviorsTab::onTooNearReactionButtonToggled);
+    m_tooCloseReactionButton = new QPushButton("Too Close Reaction");
+    m_tooCloseReactionButton->setCheckable(true);
+    connect(m_tooCloseReactionButton, &QPushButton::toggled, this, &BehaviorsTab::onTooCloseReactionButtonToggled);
 
     m_personNameLineEdit = new QLineEdit();
     auto personNameLayout = new QHBoxLayout;
@@ -127,7 +127,7 @@ void BehaviorsTab::createUi()
     }
     globalLayout->addWidget(m_danceButton);
     globalLayout->addWidget(m_exploreButton);
-    globalLayout->addWidget(m_tooNearReactionButton);
+    globalLayout->addWidget(m_tooCloseReactionButton);
     globalLayout->addStretch();
 
 
