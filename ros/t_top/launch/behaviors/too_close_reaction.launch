@@ -2,8 +2,8 @@
 
     <node pkg="too_close_reaction" type="too_close_reaction_node.py" name="too_close_reaction_node">
         <param name="max_offset_m" value="0.015"/>
-        <param name="too_near_start_distance_m" value="0.5"/>
-        <param name="too_near_end_distance_m" value="0.4"/>
+        <param name="too_close_start_distance_m" value="0.5"/>
+        <param name="too_close_end_distance_m" value="0.4"/>
         <param name="pixel_ratio" value="0.001"/>
 
         <remap from="depth_image_raw" to="camera_3d/aligned_depth_to_color/image_raw"/>

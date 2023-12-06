@@ -14,8 +14,8 @@ import hbba_lite
 class TooCloseReactionNode:
     def __init__(self):
         self._max_offset_m = rospy.get_param('~max_offset_m', 0.01)
-        self._too_near_start_distance_m = rospy.get_param('~too_near_start_distance_m', 0.5)
-        self._too_near_end_distance_m = rospy.get_param('~too_near_end_distance_m', 0.25)
+        self._too_close_start_distance_m = rospy.get_param('~too_close_start_distance_m', 0.5)
+        self._too_close_end_distance_m = rospy.get_param('~too_close_end_distance_m', 0.25)
         self._pixel_ratio = rospy.get_param('~pixel_ratio', 0.01)
 
         self._cv_bridge = CvBridge()
@@ -33,10 +33,10 @@ class TooCloseReactionNode:
         depth_image = self._cv_bridge.imgmsg_to_cv2(msg, '16UC1')
         distance_m = self._compute_distance(depth_image) - self._current_offset_m
 
-        if distance_m > self._too_near_start_distance_m:
+        if distance_m > self._too_close_start_distance_m:
             self._current_offset_m = 0.0
         else:
-            ratio = 1.0 - max(0.0, distance_m - self._too_near_end_distance_m) / (self._too_near_start_distance_m - self._too_near_end_distance_m)
+            ratio = 1.0 - max(0.0, distance_m - self._too_close_end_distance_m) / (self._too_close_start_distance_m - self._too_close_end_distance_m)
             self._current_offset_m = self._max_offset_m * ratio
 
         self._send_pose(self._current_offset_m)

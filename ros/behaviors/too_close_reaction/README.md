@@ -11,8 +11,8 @@ This node makes T-Top move back its head when someone is too close to T-Top.
 #### Parameters
 
 - `max_offset_m` (double): The maximum distance in meter to move back the head.
-- `too_near_start_distance_m` (double): The start distance to move back the head.
-- `too_near_end_distance_m` (double): The end distance to move back the head.
+- `too_close_start_distance_m` (double): The start distance to move back the head.
+- `too_close_end_distance_m` (double): The end distance to move back the head.
 - `pixel_ratio` (double): The pixel ratio to measure de distance.
 
 #### Subscribed Topics
