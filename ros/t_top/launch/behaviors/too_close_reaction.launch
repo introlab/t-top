@@ -1,6 +1,6 @@
 <launch>
 
-    <node pkg="too_near_reaction" type="too_near_reaction_node.py" name="too_near_reaction_node">
+    <node pkg="too_close_reaction" type="too_close_reaction_node.py" name="too_close_reaction_node">
         <param name="max_offset_m" value="0.015"/>
         <param name="too_near_start_distance_m" value="0.5"/>
         <param name="too_near_end_distance_m" value="0.4"/>
@@ -8,7 +8,7 @@
 
         <remap from="depth_image_raw" to="camera_3d/aligned_depth_to_color/image_raw"/>
 
-        <remap from="depth_image_raw/filter_state" to="too_near_reaction/filter_state"/>
+        <remap from="depth_image_raw/filter_state" to="too_close_reaction/filter_state"/>
     </node>
 
 </launch>
