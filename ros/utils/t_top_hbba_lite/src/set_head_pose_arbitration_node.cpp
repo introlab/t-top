@@ -3,6 +3,8 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <tf/transform_broadcaster.h>
 
+#include <daemon_ros_client/MotorStatus.h>
+
 #include <unordered_set>
 #include <optional>
 
@@ -48,6 +50,9 @@ class ArbitrationNode
 
     vector<geometry_msgs::Pose> m_offsets;
 
+    ros::Subscriber m_motorStatusSubscriber;
+    optional<geometry_msgs::PoseStamped> m_lastPose;
+
 public:
     ArbitrationNode(ros::NodeHandle& nodeHandle, vector<Topic> topics, vector<string> offsetTopics, bool latch)
         : m_nodeHandle(nodeHandle),
@@ -73,6 +78,9 @@ public:
         }
 
         m_publisher = m_nodeHandle.advertise<geometry_msgs::PoseStamped>("daemon/set_head_pose", 1, latch);
+
+        m_motorStatusSubscriber =
+            m_nodeHandle.subscribe("daemon/motor_status", 1, &ArbitrationNode::motorStatusCallback, this);
     }
 
     void run() { ros::spin(); }
@@ -91,7 +99,8 @@ private:
         {
             m_currentTopicIndex = i;
             m_lastMessageTime = ros::Time::now();
-            m_publisher.publish(applyOffsets(msg));
+            m_publisher.publish(applyOffsets(*msg));
+            m_lastPose = *msg;
         }
     }
 
@@ -104,19 +113,23 @@ private:
         }
 
         m_offsets[i] = msg->pose;
+        if (m_lastPose.has_value())
+        {
+            m_publisher.publish(applyOffsets(*m_lastPose));
+        }
     }
 
-    geometry_msgs::PoseStamped applyOffsets(const geometry_msgs::PoseStamped::ConstPtr& inputMsg)
+    geometry_msgs::PoseStamped applyOffsets(const geometry_msgs::PoseStamped& inputMsg)
     {
-        double x = inputMsg->pose.position.x;
-        double y = inputMsg->pose.position.y;
-        double z = inputMsg->pose.position.z;
+        double x = inputMsg.pose.position.x;
+        double y = inputMsg.pose.position.y;
+        double z = inputMsg.pose.position.z;
 
         tf::Quaternion rotation(
-            inputMsg->pose.orientation.x,
-            inputMsg->pose.orientation.y,
-            inputMsg->pose.orientation.z,
-            inputMsg->pose.orientation.w);
+            inputMsg.pose.orientation.x,
+            inputMsg.pose.orientation.y,
+            inputMsg.pose.orientation.z,
+            inputMsg.pose.orientation.w);
 
         for (auto& offset : m_offsets)
         {
@@ -129,7 +142,7 @@ private:
         }
 
         geometry_msgs::PoseStamped outputMsg;
-        outputMsg.header = inputMsg->header;
+        outputMsg.header = inputMsg.header;
         outputMsg.pose.position.x = x;
         outputMsg.pose.position.y = y;
         outputMsg.pose.position.z = z;
@@ -138,6 +151,16 @@ private:
         outputMsg.pose.orientation.z = rotation.getZ();
         outputMsg.pose.orientation.w = rotation.getW();
         return outputMsg;
+    }
+
+    void motorStatusCallback(const daemon_ros_client::MotorStatus::ConstPtr& msg)
+    {
+        if (m_lastPose == nullopt)
+        {
+            m_lastPose = geometry_msgs::PoseStamped();
+            m_lastPose->header.frame_id = msg->head_pose_frame_id;
+            m_lastPose->pose = msg->head_pose;
+        }
     }
 };
 

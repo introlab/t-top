@@ -47,7 +47,7 @@
         <remap from="cv_camera_node/camera_info" to="camera_2d_wide_full_hd/camera_info"/>
         <remap from="cv_camera_node/set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>
     </node>
-    <node pkg="watchdog" type="watchdog_node" name="cv_camera_watchdog_node" output="screen">
+    <node if="$(arg camera_2d_wide_enabled)" pkg="watchdog" type="watchdog_node" name="cv_camera_watchdog_node" output="screen">
         <param name="node_name" value="cv_camera_node"/>
         <param name="timeout_duration_s" value="0.5"/>
 

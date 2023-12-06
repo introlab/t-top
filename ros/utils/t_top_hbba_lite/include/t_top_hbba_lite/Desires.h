@@ -381,4 +381,14 @@ public:
 };
 
 
+class TooNearReactionDesire : public Desire
+{
+public:
+    explicit TooNearReactionDesire(uint16_t intensity = 1);
+    ~TooNearReactionDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(TooNearReactionDesire);
+};
+
+
 #endif

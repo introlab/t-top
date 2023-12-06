@@ -48,6 +48,7 @@ int startNode(int argc, char* argv[])
     strategies.emplace_back(createTalkStrategy(filterPool, desireSet, nodeHandle));
     strategies.emplace_back(createGestureStrategy(filterPool, desireSet, nodeHandle));
     strategies.emplace_back(createDanceStrategy(filterPool));
+    strategies.emplace_back(createTooNearReactionStrategy(filterPool));
 
     if (camera2dWideEnabled)
     {

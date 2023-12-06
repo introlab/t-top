@@ -59,6 +59,9 @@
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
 
+    <!-- Too Near Reaction -->
+    <include file="$(find t_top)/launch/behaviors/too_near_reaction.launch"/>
+
     <!-- Sound Player -->
     <include file="$(find t_top)/launch/behaviors/sound_player.launch"/>
 

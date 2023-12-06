@@ -1,0 +1,14 @@
+<launch>
+
+    <node pkg="too_near_reaction" type="too_near_reaction_node.py" name="too_near_reaction_node">
+        <param name="max_offset_m" value="0.01"/>
+        <param name="too_near_start_distance_m" value="0.5"/>
+        <param name="too_near_end_distance_m" value="0.25"/>
+        <param name="pixel_ratio" value="0.005"/>
+
+        <remap from="depth_camera_info" to="camera_3d/aligned_depth_to_color/camera_info"/>
+
+        <remap from="depth_camera_info/filter_state" to="too_near_reaction/filter_state"/>
+    </node>
+
+</launch>

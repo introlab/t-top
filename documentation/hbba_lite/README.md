@@ -443,6 +443,7 @@ The following sections present T-Top specific information.
 - [`PlaySoundDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L345): To make T-Top play a sound file.
 - [`TelepresenceDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L364): To make T-Top perform a video call
 - [`TeleoperationDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L374): To enable remote control of T-Top.
+- [`TooNearReactionDesire`](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Desires.h#L384): To enable the too near reaction behavior.
 
 ### Strategies
 The strategies are declared in the following files: [Strategies.h](../../ros/utils/t_top_hbba_lite/include/t_top_hbba_lite/Strategies.h) and [Strategies.cpp](../../ros/utils/t_top_hbba_lite/src/Strategies.cpp).

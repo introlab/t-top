@@ -528,3 +528,14 @@ unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filt
         },
         move(filterPool));
 }
+
+unique_ptr<BaseStrategy> createTooNearReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<TooNearReactionDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"too_near_reaction/filter_state", FilterConfiguration::throttling(3)},
+        },
+        move(filterPool));
+}

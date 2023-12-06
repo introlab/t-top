@@ -15,3 +15,4 @@ This folder contains ROS packages for the behavior nodes.
 - The [sound_player](sound_player) folder contains the node to play sound files.
 - The [talk](talk) folder contains the node to make T-Top talk.
 - The [piper_ros](piper_ros) folder contains the node to generate speech files with [Piper](https://github.com/rhasspy/piper).
+- The [too_near_reaction](too_near_reaction) folder contains the node to move back the head when someone is too close to T-Top.
