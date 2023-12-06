@@ -70,7 +70,7 @@ class SoundFollowingNode:
             return
 
         distance = target_torso_yaw - self._movement_commands.current_torso_pose
-        if math.abs(distance) < TARGET_TOLERANCE:
+        if abs(distance) < TARGET_TOLERANCE:
             return
 
         if distance < -math.pi:
@@ -88,7 +88,7 @@ class SoundFollowingNode:
             return
 
         current_pitch = self._movement_commands.current_head_pose[HEAD_POSE_PITCH_INDEX]
-        if math.abs(target_head_pitch - current_pitch) < TARGET_TOLERANCE:
+        if abs(target_head_pitch - current_pitch) < TARGET_TOLERANCE:
             return
 
         pitch = self._head_control_alpha * target_head_pitch + (1 - self._head_control_alpha) * current_pitch
