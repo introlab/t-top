@@ -24,6 +24,7 @@ class TooNearReactionNode:
 
         self._head_pose_pub = rospy.Publisher('too_near_reaction/set_head_pose', PoseStamped, queue_size=1)
         self._depth_image_sub = hbba_lite.OnOffHbbaSubscriber('depth_image_raw', Image, self._image_cb, queue_size=1)
+        self._depth_image_sub.on_filter_state_changed(self._hbba_filter_state_cb)
 
     def _image_cb(self, msg):
         if msg.encoding != '16UC1':
@@ -39,6 +40,11 @@ class TooNearReactionNode:
             self._current_offset_m = self._max_offset_m * ratio
 
         self._send_pose(self._current_offset_m)
+
+    def _hbba_filter_state_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
+        if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
+            self._current_offset_m = 0.0
+            self._send_pose(self._current_offset_m)
 
     def _compute_distance(self, img):
         iu16 = np.iinfo(np.uint16)
