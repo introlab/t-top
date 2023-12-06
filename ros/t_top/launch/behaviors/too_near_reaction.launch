@@ -6,9 +6,9 @@
         <param name="too_near_end_distance_m" value="0.25"/>
         <param name="pixel_ratio" value="0.005"/>
 
-        <remap from="depth_camera_info" to="camera_3d/aligned_depth_to_color/camera_info"/>
+        <remap from="depth_image_raw" to="camera_3d/aligned_depth_to_color/camera_info"/>
 
-        <remap from="depth_camera_info/filter_state" to="too_near_reaction/filter_state"/>
+        <remap from="depth_image_raw/filter_state" to="too_near_reaction/filter_state"/>
     </node>
 
 </launch>
