@@ -535,7 +535,7 @@ unique_ptr<BaseStrategy> createTooNearReactionStrategy(shared_ptr<FilterPool> fi
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
-            {"too_near_reaction/filter_state", FilterConfiguration::throttling(3)},
+            {"too_near_reaction/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));
 }

@@ -23,7 +23,7 @@ class TooNearReactionNode:
         self._current_offset_m = 0.0
 
         self._head_pose_pub = rospy.Publisher('too_near_reaction/set_head_pose', PoseStamped, queue_size=1)
-        self._depth_image_sub = hbba_lite.ThrottlingHbbaSubscriber('depth_image_raw', Image, self._image_cb, queue_size=1)
+        self._depth_image_sub = hbba_lite.OnOffHbbaSubscriber('depth_image_raw', Image, self._image_cb, queue_size=1)
 
     def _image_cb(self, msg):
         if msg.encoding != '16UC1':
