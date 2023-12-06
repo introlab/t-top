@@ -27,8 +27,10 @@ class FaceFollowingNode:
 
     def _update(self, yaw, head_image_y):
         with self._target_lock:
-            self._target_torso_yaw = yaw
-            self._current_head_image_y = head_image_y
+            if math.isfinite(yaw):
+                self._target_torso_yaw = yaw
+            if math.isfinite(head_image_y):
+                self._current_head_image_y = head_image_y
 
     def run(self):
         while not rospy.is_shutdown():
