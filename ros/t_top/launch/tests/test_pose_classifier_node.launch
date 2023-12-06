@@ -9,7 +9,8 @@
     </node>
 
     <node pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_node">
-        <param name="use_descriptor_yolo_v4" value="false"/>
+        <param name="use_descriptor_yolo" value="false"/>
+        <param name="yolo_model" value="yolo_v7_tiny_coco"/>
         <param name="confidence_threshold" value="0.50"/>
         <param name="nms_threshold" value="0.5"/>
         <param name="person_probability_threshold" value="0.5"/>

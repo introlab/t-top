@@ -12,6 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   video_analyzer
   std_msgs
+  geometry_msgs
+  sensor_msgs
+  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -72,6 +75,10 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs  # Or other packages containing msgs
+  video_analyzer
+  geometry_msgs
+  sensor_msgs
+  visualization_msgs
 )
 
 ################################################

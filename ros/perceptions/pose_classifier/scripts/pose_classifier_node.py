@@ -74,19 +74,18 @@ class PoseClassifierNode:
         pose_classifications_msg = PoseClassifications()
         pose_classifications_msg.header = video_analysis_msg.header
 
-        for i, object in enumerate(video_analysis_msg.objects):
+        for object in video_analysis_msg.objects:
             if len(object.person_pose_2d) == 0 or len(object.person_pose_confidence) == 0:
                 continue
 
-            pose_classifications_msg.poses.append(
-                self._classify_pose(i, object.person_pose_2d, object.person_pose_confidence)
-            )
+            pose = self._classify_pose(object.person_pose_2d, object.person_pose_confidence)
+            pose.object = object
+            pose_classifications_msg.poses.append(pose)
 
         self._pose_classification_pub.publish(pose_classifications_msg)
 
-    def _classify_pose(self, object_index, person_pose_2d, person_pose_confidence):
+    def _classify_pose(self, person_pose_2d, person_pose_confidence):
         msg = PoseClassification()
-        msg.object_index = object_index
         msg.is_facing_camera = self._detect_facing_camera(person_pose_2d, person_pose_confidence)
 
         if msg.is_facing_camera:
