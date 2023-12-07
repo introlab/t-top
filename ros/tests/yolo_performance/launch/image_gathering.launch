@@ -82,22 +82,16 @@
         <param name="output_path" value="$(arg output_path)"/>
         <param name="image_count" value="$(arg image_count)"/>
 
+        <rosparam param="setups">
+            [1m, 2m, 3m]
+        </rosparam>
+
         <rosparam if="$(eval arg('dataset') == 'coco')" param="classes">
-            - name: Person - 1 m
-              class: person
-            - name: Person - 2 m
-              class: person
-            - name: Person - 3 m
-              class: person
+            [person, bowl, bottle]
         </rosparam>
 
         <rosparam if="$(eval arg('dataset') == 'objects365')" param="classes">
-            - name: Person - 1 m
-              class: person
-            - name: Person - 2 m
-              class: person
-            - name: Person - 3 m
-              class: person
+            [person, bowl, bottle, tong]
         </rosparam>
 
         <remap if="$(eval arg('camera_type') == 'realsense')" from="image_raw" to="camera_3d/color/image_raw"/>

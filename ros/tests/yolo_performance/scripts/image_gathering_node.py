@@ -20,10 +20,12 @@ class ImageGatheringNode:
     def __init__(self):
         self._output_path = os.path.expanduser(rospy.get_param('~output_path'))
         self._image_count = rospy.get_param('~image_count')
+        self._setups = rospy.get_param('~setups')
         self._classes = rospy.get_param('~classes')
 
         self._current_image_index = 0
         self._current_class_index = 0
+        self._current_setup_index = 0
         self._is_waiting = True
         self._print_current_class()
 
@@ -33,12 +35,10 @@ class ImageGatheringNode:
         self._image_sub = rospy.Subscriber('image_raw', Image, self._image_cb, queue_size=1)
 
     def _create_output_directories(self):
-        for c in self._classes:
-            directory_path = os.path.join(self._output_path, c['name'])
-            os.makedirs(directory_path, exist_ok=True)
-
-            with open(os.path.join(directory_path, 'config.json'), 'w') as f:
-                json.dump(c, f)
+        for s in self._setups:
+            for c in self._classes:
+                directory_path = os.path.join(self._output_path, s, c)
+                os.makedirs(directory_path, exist_ok=True)
 
     def _image_cb(self, color_image_msg):
         color_image = self._cv_bridge.imgmsg_to_cv2(color_image_msg, 'bgr8')
@@ -52,8 +52,12 @@ class ImageGatheringNode:
             self._current_image_index += 1
         elif not self._is_waiting and self._current_class_index < len(self._classes):
             self._current_image_index = 0
-            self._current_class_index += 1
+            self._current_setup_index += 1
+            if self._current_setup_index >= len(self._setups):
+                self._current_setup_index = 0
+                self._current_class_index += 1
             self._is_waiting = True
+
             if self._current_class_index < len(self._classes):
                 self._print_current_class()
             else:
@@ -66,13 +70,15 @@ class ImageGatheringNode:
 
     def _save_image(self, color_image):
         path = os.path.join(self._output_path,
-                            self._classes[self._current_class_index]["name"],
+                            self._setups[self._current_setup_index],
+                            self._classes[self._current_class_index],
                             f'{self._current_image_index}.jpg')
         cv2.imwrite(path, color_image)
 
     def _print_current_class(self):
         print()
-        print(f'Waiting for {self._classes[self._current_class_index]["name"]}')
+        print(f'Waiting for {self._classes[self._current_class_index]} - {self._setups[self._current_setup_index]}')
+        print(f'Make sure only the object and at most one person are visible.')
         print(f'Press enter to continue')
 
     def run(self):
