@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import json
+import uuid
 
 import cv2
 
@@ -72,7 +72,7 @@ class ImageGatheringNode:
         path = os.path.join(self._output_path,
                             self._setups[self._current_setup_index],
                             self._classes[self._current_class_index],
-                            f'{self._current_image_index}.jpg')
+                            f'{uuid.uuid4()}.jpg')
         cv2.imwrite(path, color_image)
 
     def _print_current_class(self):
