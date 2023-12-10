@@ -23,6 +23,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   speech_to_text
   sound_player
+  led_animations
+  daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions

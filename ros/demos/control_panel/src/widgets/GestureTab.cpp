@@ -1,6 +1,5 @@
 #include "GestureTab.h"
 #include "../QtUtils.h"
-#include "../DesireUtils.h"
 
 #include <QVBoxLayout>
 
@@ -37,8 +36,6 @@ void GestureTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& 
 
 void GestureTab::onGestureButtonClicked(const QString& name)
 {
-    auto transaction = m_desireSet->beginTransaction();
-    removeAllMovementDesires(*m_desireSet);
     setEnabledAllButtons(false);
 
     auto desire = make_unique<GestureDesire>(name.toStdString());

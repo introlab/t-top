@@ -13,8 +13,7 @@ from cloud_data.srv import Location, LocationResponse
 from cloud_data.srv import CurrentLocalWeather, CurrentLocalWeatherResponse
 from cloud_data.srv import LocalWeatherForecast, LocalWeatherForecastResponse
 
-
-OPEN_WEATHER_MAP_API_URL = 'https://api.openweathermap.org/data/2.5/onecall'
+OPEN_WEATHER_MAP_API_URL = 'https://us-central1-ttop-316419.cloudfunctions.net/weather'
 
 
 class CloudDataNode:

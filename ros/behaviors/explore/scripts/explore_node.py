@@ -16,7 +16,7 @@ class ExploreNode:
         self._torso_speed = rospy.get_param('~torso_speed_rad_sec')
         self._head_speed = rospy.get_param('~head_speed_rad_sec')
 
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace='explore')
         self._done_pub = rospy.Publisher('explore/done', Empty, queue_size=5)
 
     def run(self):

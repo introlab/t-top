@@ -28,6 +28,8 @@ class WhisperSpeechToTextNode:
         self._device = rospy.get_param('~device')
         self._compute_type = rospy.get_param('~compute_type')
 
+        self._prebuffering_frame_count = rospy.get_param('~prebuffering_frame_count', 4)
+
         if self._language not in SUPPORTED_LANGUAGES:
             raise ValueError(f'Invalid language ({self._language})')
 
@@ -58,14 +60,17 @@ class WhisperSpeechToTextNode:
                          .format(msg.channel_count, msg.sampling_frequency))
             return
 
-        if self._is_voice:
-            with self._frames_lock:
-                input_format_information = get_format_information(msg.format)
-                frame = convert_audio_data_to_numpy_frames(input_format_information, msg.channel_count, msg.data)[0]
-                self._frames.append(frame.astype(np.float32))
+        input_format_information = get_format_information(msg.format)
+        frame = convert_audio_data_to_numpy_frames(input_format_information, msg.channel_count, msg.data)[0]
+
+        with self._frames_lock:
+            self._frames.append(frame.astype(np.float32))
+            if not self._is_voice and len(self._frames) > self._prebuffering_frame_count:
+                self._frames = self._frames[-self._prebuffering_frame_count:]
 
     def _filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        if previous_is_filtering_all_messages and not new_is_filtering_all_messages:
+        if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
+            self._is_voice = False
             self._put_frames_in_voice_sequence_queue()
 
     def _put_frames_in_voice_sequence_queue(self):

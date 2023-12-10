@@ -58,6 +58,8 @@
   <build_depend>talk</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>gesture</build_depend>
+  <build_depend>led_animations</build_depend>
+  <build_depend>daemon_ros_client</build_depend>
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>hbba_lite</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
@@ -67,6 +69,8 @@
   <build_export_depend>talk</build_export_depend>
   <build_export_depend>tf</build_export_depend>
   <build_export_depend>gesture</build_export_depend>
+  <build_export_depend>led_animations</build_export_depend>
+  <build_export_depend>daemon_ros_client</build_export_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>hbba_lite</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
@@ -76,6 +80,8 @@
   <exec_depend>talk</exec_depend>
   <exec_depend>tf</exec_depend>
   <exec_depend>gesture</exec_depend>
+  <exec_depend>led_animations</exec_depend>
+  <exec_depend>daemon_ros_client</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

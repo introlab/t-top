@@ -2,6 +2,10 @@
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="camera_2d_wide_enabled"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+    <arg name="video_analyzer_3d_pose_enabled"/>
+    <arg name="video_analyzer_3d_face_descriptor_enabled"/>
+    <arg name="video_analyzer_2d_wide_pose_enabled"/>
+    <arg name="video_analyzer_2d_wide_face_descriptor_enabled"/>
     <arg name="speech_to_text_type"/> <!-- Options: google or whisper -->
     <arg name="visualization" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
@@ -14,8 +18,15 @@
     <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+        <arg name="video_analyzer_3d_pose_enabled" value="$(arg video_analyzer_3d_pose_enabled)"/>
+        <arg name="video_analyzer_3d_face_descriptor_enabled" value="$(arg video_analyzer_3d_face_descriptor_enabled)"/>
+        <arg name="video_analyzer_2d_wide_pose_enabled" value="$(arg video_analyzer_2d_wide_pose_enabled)"/>
+        <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="$(arg video_analyzer_2d_wide_face_descriptor_enabled)"/>
         <arg name="visualization" value="$(arg visualization)"/>
     </include>
+
+    <!-- Pose Classifier -->
+    <include file="$(find t_top)/launch/perceptions/pose_classifier.launch"/>
 
     <!-- Ego Noise Reduction -->
     <include file="$(find t_top)/launch/perceptions/ego_noise_reduction.launch"/>

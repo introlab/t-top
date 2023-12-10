@@ -25,7 +25,7 @@ class LedPattern:
         self.ratio = ratio
 
 
-class LedDanceNode:
+class LedEmotionsNode:
     def __init__(self):
         self._period_s = rospy.get_param('~period_s', 0.0333)
         with open(rospy.get_param('~led_patterns_file'), 'r') as f:
@@ -35,7 +35,7 @@ class LedDanceNode:
         self._timer_time_s = 0
         self._timer_pattern = None
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('led_emotions/set_led_colors', LedColors, queue_size=1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 
@@ -111,9 +111,9 @@ class LedDanceNode:
 
 
 def main():
-    rospy.init_node('led_dance_node')
-    led_dance_node = LedDanceNode()
-    led_dance_node.run()
+    rospy.init_node('led_emotions_node')
+    led_emotions_node = LedEmotionsNode()
+    led_emotions_node.run()
 
 
 if __name__ == '__main__':

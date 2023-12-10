@@ -49,7 +49,7 @@ def abs_diff_torso_angle(a, b):
 
 
 class MovementCommands:
-    def __init__(self, simulation=False):
+    def __init__(self, simulation=False, namespace='daemon'):
         self._read_torso_lock = threading.Lock()
         self._read_head_lock = threading.Lock()
 
@@ -67,9 +67,9 @@ class MovementCommands:
         self._hbba_filter_state = hbba_lite.OnOffHbbaFilterState(
             'pose/filter_state')
         self._torso_orientation_pub = rospy.Publisher(
-            'daemon/set_torso_orientation', Float32, queue_size=5)
+            f'{namespace}/set_torso_orientation', Float32, queue_size=5)
         self._head_pose_pub = rospy.Publisher(
-            'daemon/set_head_pose', PoseStamped, queue_size=5)
+            f'{namespace}/set_head_pose', PoseStamped, queue_size=5)
 
         self._motor_status_sub = rospy.Subscriber('daemon/motor_status', MotorStatus, self._motor_status_cb, queue_size=1)
 
@@ -365,8 +365,16 @@ class MovementCommands:
             return False
         return True
 
-    def move_head_to_origin(self, should_wait=True, timeout=float('inf')):
-        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait, timeout=timeout)
+    def move_head_to_thinking(self, speed_rad_sec=0.5, timeout=float('inf')):
+        self.move_head([0, 0, HEAD_ZERO_Z, 0.25, 0, 0], should_wait=True, speed_rad_sec=speed_rad_sec, timeout=timeout)
+
+    def move_head_to_sad(self, speed_rad_sec=0.5, timeout=float('inf')):
+        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0.25, 0], should_wait=True, speed_rad_sec=speed_rad_sec, timeout=timeout)
+
+    def move_head_to_origin(self, should_wait=True, speed_meters_sec=1.0e10,
+                            speed_rad_sec=1.0e10, timeout=float('inf')):
+        self.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait, speed_meters_sec,
+                       speed_rad_sec, timeout=timeout)
 
     def move_torso_to_origin(self, should_wait=True, timeout=float('inf')):
         self.move_torso(0, should_wait, timeout=timeout)

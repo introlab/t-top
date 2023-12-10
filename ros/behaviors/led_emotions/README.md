@@ -6,7 +6,7 @@ This folder contains the node to make T-Top express emotions with its LED strip.
 
 ### `led_emotions_node.py`
 
-This node to make T-Top express emotions with it LED strip.
+This node makes T-Top express emotions with it LED strip.
 
 #### Parameters
 
@@ -18,7 +18,7 @@ This node to make T-Top express emotions with it LED strip.
 
 #### Published Topics
 
-- `daemon/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)): The LED colors.
+- `led_emotions/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)): The LED colors.
 
 #### Services
 

@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   video_analyzer
   recorders
+  led_animations
   daemon_ros_client
 )
 

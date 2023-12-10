@@ -3,7 +3,11 @@
 
 #include <hbba_lite/core/Desire.h>
 #include <hbba_lite/core/DesireSet.h>
+
+#include <daemon_ros_client/LedColor.h>
+
 #include <string>
+#include <limits>
 
 class Camera3dRecordingDesire : public Desire
 {
@@ -32,6 +36,16 @@ public:
     ~RobotNameDetectorDesire() override = default;
 
     DECLARE_DESIRE_METHODS(RobotNameDetectorDesire)
+};
+
+
+class RobotNameDetectorWithLedStatusDesire : public Desire
+{
+public:
+    explicit RobotNameDetectorWithLedStatusDesire(uint16_t intensity = 1);
+    ~RobotNameDetectorWithLedStatusDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(RobotNameDetectorWithLedStatusDesire)
 };
 
 
@@ -180,6 +194,54 @@ inline const std::string& LedEmotionDesire::name() const
 }
 
 
+class LedAnimationDesire : public Desire
+{
+    std::string m_name;
+    double m_durationS;
+    double m_speed;
+    std::vector<daemon_ros_client::LedColor> m_colors;
+
+public:
+    /**
+     * Available animation names: constant, rotating_sin, random
+     */
+    explicit LedAnimationDesire(
+        std::string name,
+        std::vector<daemon_ros_client::LedColor> colors = {},
+        double speed = 1.0,
+        double durationS = std::numeric_limits<double>::infinity(),
+        uint16_t intensity = 1);
+    ~LedAnimationDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(LedAnimationDesire)
+
+    const std::string& name() const;
+    double durationS() const;
+    double speed() const;
+    const std::vector<daemon_ros_client::LedColor>& colors() const;
+};
+
+inline const std::string& LedAnimationDesire::name() const
+{
+    return m_name;
+}
+
+inline double LedAnimationDesire::durationS() const
+{
+    return m_durationS;
+}
+
+inline double LedAnimationDesire::speed() const
+{
+    return m_speed;
+}
+
+inline const std::vector<daemon_ros_client::LedColor>& LedAnimationDesire::colors() const
+{
+    return m_colors;
+}
+
+
 class SoundFollowingDesire : public Desire
 {
 public:
@@ -254,7 +316,7 @@ class GestureDesire : public Desire
 
 public:
     /**
-     * Available gesture names : yes, no, maybe, origin_all, origin_head, origin_torso
+     * Available gesture names : yes, no, maybe, origin_all, origin_head, slow_origin_head, origin_torso, thinking, sad
      */
     explicit GestureDesire(std::string name, uint16_t intensity = 1);
     ~GestureDesire() override = default;
@@ -316,6 +378,16 @@ public:
     ~TeleoperationDesire() override = default;
 
     DECLARE_DESIRE_METHODS(TeleoperationDesire);
+};
+
+
+class TooCloseReactionDesire : public Desire
+{
+public:
+    explicit TooCloseReactionDesire(uint16_t intensity = 1);
+    ~TooCloseReactionDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(TooCloseReactionDesire);
 };
 
 

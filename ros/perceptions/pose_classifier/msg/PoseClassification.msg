@@ -1,0 +1,8 @@
+bool is_facing_camera
+
+string head_vertical_class
+string head_horizontal_class
+string left_arm_class
+string right_arm_class
+
+video_analyzer/VideoAnalysisObject object

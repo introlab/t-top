@@ -8,7 +8,7 @@ from dance.lib_pose_dance_node import PoseDanceNode
 
 class HeadDanceNode(PoseDanceNode):
     def __init__(self):
-        self._head_pose_pub = rospy.Publisher('daemon/set_head_pose', PoseStamped, queue_size=5)
+        self._head_pose_pub = rospy.Publisher('dance/set_head_pose', PoseStamped, queue_size=5)
         super(HeadDanceNode, self).__init__()
 
     def _send_pose(self, pose):

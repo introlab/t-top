@@ -9,6 +9,9 @@ from odas_ros.msg import OdasSstArrayStamped
 from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_PITCH_INDEX
 
 
+TARGET_TOLERANCE = 0.02
+
+
 class SoundFollowingNode:
     def __init__(self):
         self._simulation = rospy.get_param('~simulation')
@@ -27,7 +30,7 @@ class SoundFollowingNode:
         self._target_torso_yaw = None
         self._target_head_pitch = None
 
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace='sound_following')
         self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=10)
 
     def _sst_cb(self, sst):
@@ -67,6 +70,9 @@ class SoundFollowingNode:
             return
 
         distance = target_torso_yaw - self._movement_commands.current_torso_pose
+        if abs(distance) < TARGET_TOLERANCE:
+            return
+
         if distance < -math.pi:
             distance = 2 * math.pi + distance
         elif distance > math.pi:
@@ -82,6 +88,9 @@ class SoundFollowingNode:
             return
 
         current_pitch = self._movement_commands.current_head_pose[HEAD_POSE_PITCH_INDEX]
+        if abs(target_head_pitch - current_pitch) < TARGET_TOLERANCE:
+            return
+
         pitch = self._head_control_alpha * target_head_pitch + (1 - self._head_control_alpha) * current_pitch
         self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, pitch, 0])
 
