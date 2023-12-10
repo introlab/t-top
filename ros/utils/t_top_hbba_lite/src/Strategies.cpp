@@ -1,6 +1,7 @@
 #include <t_top_hbba_lite/Strategies.h>
 
 #include <std_msgs/String.h>
+#include <led_animations/Animation.h>
 #include <talk/Text.h>
 #include <gesture/GestureName.h>
 #include <sound_player/SoundFile.h>
@@ -14,7 +15,7 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     : Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1);
+    m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1, true);
 }
 
 StrategyType FaceAnimationStrategy::strategyType()
@@ -43,12 +44,12 @@ void FaceAnimationStrategy::onDisabling()
 LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
     : Strategy<LedEmotionDesire>(
           utility,
-          {{"led", 1}},
+          {},
           {{"led_emotions/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1);
+    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1, true);
 }
 
 StrategyType LedEmotionStrategy::strategyType()
@@ -65,19 +66,63 @@ void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
     m_emotionPublisher.publish(msg);
 }
 
+LedAnimationStrategy::LedAnimationStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle)
+    : Strategy<LedAnimationDesire>(
+          utility,
+          {},
+          {{"led_animations/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_desireSet(desireSet),
+      m_nodeHandle(nodeHandle)
+{
+    m_animationPublisher = nodeHandle.advertise<led_animations::Animation>("led_animations/animation", 1, true);
+    m_animationDoneSubscriber =
+        nodeHandle.subscribe("led_animations/done", 1, &LedAnimationStrategy::animationDoneSubscriberCallback, this);
+}
+
+StrategyType LedAnimationStrategy::strategyType()
+{
+    return StrategyType::get<LedAnimationStrategy>();
+}
+
+void LedAnimationStrategy::onEnabling(const LedAnimationDesire& desire)
+{
+    Strategy<LedAnimationDesire>::onEnabling(desire);
+
+    led_animations::Animation msg;
+    msg.id = desire.id();
+    msg.duration_s = desire.durationS();
+    msg.name = desire.name();
+    msg.speed = desire.speed();
+    msg.colors = desire.colors();
+    m_animationPublisher.publish(msg);
+}
+
+void LedAnimationStrategy::animationDoneSubscriberCallback(const led_animations::Done::ConstPtr& msg)
+{
+    if (msg->id == desireId())
+    {
+        m_desireSet->removeDesire(msg->id);
+    }
+}
+
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     ros::NodeHandle& nodeHandle)
     : Strategy<SpecificFaceFollowingDesire>(
           utility,
-          {{"motor", 1}},
+          {},
           {{"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
            {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_nodeHandle(nodeHandle)
 {
-    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1);
+    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1, true);
 }
 
 StrategyType SpecificFaceFollowingStrategy::strategyType()
@@ -107,7 +152,7 @@ TalkStrategy::TalkStrategy(
       m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
-    m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1);
+    m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1, true);
     m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
 }
 
@@ -139,15 +184,11 @@ GestureStrategy::GestureStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
     ros::NodeHandle& nodeHandle)
-    : Strategy<GestureDesire>(
-          utility,
-          {{"motor", 1}},
-          {{"gesture/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
+    : Strategy<GestureDesire>(utility, {}, {{"gesture/filter_state", FilterConfiguration::onOff()}}, move(filterPool)),
       m_desireSet(move(desireSet)),
       m_nodeHandle(nodeHandle)
 {
-    m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1);
+    m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1, true);
     m_gestureDoneSubscriber =
         nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
 }
@@ -188,14 +229,14 @@ PlaySoundStrategy::PlaySoundStrategy(
       m_desireSet(desireSet),
       m_nodeHandle(nodeHandle)
 {
-    m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1);
+    m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1, true);
     m_soundDoneSubscriber =
         nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
 }
 
 StrategyType PlaySoundStrategy::strategyType()
 {
-    return StrategyType::get<GestureStrategy>();
+    return StrategyType::get<PlaySoundStrategy>();
 }
 
 void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)
@@ -243,6 +284,18 @@ unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> 
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"robot_name_detector/filter_state", FilterConfiguration::onOff()}},
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy>
+    createRobotNameDetectorWithLedStatusDesireStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<RobotNameDetectorWithLedStatusDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"robot_name_detector/filter_state", FilterConfiguration::onOff()},
+            {"robot_name_detector/led_status/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
 
@@ -350,7 +403,7 @@ unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool
 {
     return make_unique<Strategy<ExploreDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"explore/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
@@ -367,11 +420,20 @@ unique_ptr<BaseStrategy>
     return make_unique<LedEmotionStrategy>(utility, move(filterPool), nodeHandle);
 }
 
+unique_ptr<BaseStrategy> createLedAnimationStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    ros::NodeHandle& nodeHandle,
+    uint16_t utility)
+{
+    return make_unique<LedAnimationStrategy>(utility, filterPool, desireSet, nodeHandle);
+}
+
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
     return make_unique<Strategy<SoundFollowingDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"sound_following/filter_state", FilterConfiguration::onOff()}},
         move(filterPool));
 }
@@ -380,7 +442,7 @@ unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPoo
 {
     return make_unique<Strategy<NearestFaceFollowingDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
@@ -399,7 +461,7 @@ unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<Fil
 {
     return make_unique<Strategy<SoundObjectPersonFollowingDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
             {"sound_object_person_following/filter_state", FilterConfiguration::onOff()}},
@@ -428,7 +490,7 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
 {
     return make_unique<Strategy<DanceDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}, {"led", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"beat_detector/filter_state", FilterConfiguration::onOff()},
             {"head_dance/filter_state", FilterConfiguration::onOff()},
@@ -460,9 +522,20 @@ unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filt
 {
     return make_unique<Strategy<TeleoperationDesire>>(
         utility,
-        unordered_map<string, uint16_t>{{"motor", 1}},
+        unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"teleoperation/filter_state", FilterConfiguration::onOff()},
+        },
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<TooCloseReactionDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
         },
         move(filterPool));
 }

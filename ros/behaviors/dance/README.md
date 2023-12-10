@@ -21,10 +21,8 @@ This node makes T-Top head dance on the beat. The moves are randomly chosen.
 
 #### Published Topics
 
-- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `dance/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
   The head pose.
-- `daemon/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
-  torso orientation.
 
 #### Services
 
@@ -50,9 +48,7 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Published Topics
 
-- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
-  The head pose.
-- `daemon/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `dance/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
   torso orientation.
 
 #### Services
@@ -76,7 +72,7 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Published Topics
 
-- `daemon/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)):
+- `dance/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)):
   The LED colors.
 
 #### Services

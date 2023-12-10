@@ -38,6 +38,7 @@ PERSON_POSE_KEYPOINT_COLORS = [(0, 255, 0),
                                (0, 0, 255)]
 
 
+
 class ObjectAnalysis:
     def __init__(self, center_x, center_y, width, height,
                  object_class, object_confidence, object_class_probability,

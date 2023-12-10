@@ -14,7 +14,7 @@ class LedDanceNode:
         with open(rospy.get_param('~led_colors_file'), 'r') as f:
             self._none_led_colors, self._dance_led_colors = self._load_led_colors(json.load(f))
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('daemon/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('dance/set_led_colors', LedColors, queue_size=1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 

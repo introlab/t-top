@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   opentera_webrtc_ros_msgs
   opentera_webrtc_ros
   map_image_generator
+  led_animations
+  daemon_ros_client
 )
 
 ## System dependencies are found with CMake's conventions

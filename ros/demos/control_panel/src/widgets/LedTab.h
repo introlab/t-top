@@ -12,27 +12,30 @@
 #include <memory>
 #include <utility>
 
-class LedTab : public QWidget, public DesireSetObserver
+class LedTab : public QWidget
 {
     Q_OBJECT
 
     ros::NodeHandle& m_nodeHandle;
 
     std::shared_ptr<DesireSet> m_desireSet;
-    QVariant m_desireId;
+    QVariant m_ledEmotionDesireId;
+    QVariant m_ledAnimationDesireId;
 
 public:
     LedTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
     ~LedTab() override;
 
-    void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
-
 private slots:
     void onLedEmotionButtonToggled(QPushButton* button, bool checked, const QString& name);
+    void onConstantAnimationButtonToggled(bool checked);
+    void onRotatingSinAnimationButtonToggled(bool checked);
+    void onRandomAnimationButtonToggled(bool checked);
 
 private:
     void createUi();
-    void uncheckOtherButtons(QPushButton* current);
+    void uncheckOtherEmotionButtons(QPushButton* current);
+    void uncheckOtherAnimationButtons(QPushButton* current);
 
     // UI members
     QPushButton* m_joyEmotionButton;
@@ -40,6 +43,10 @@ private:
     QPushButton* m_sadnessEmotionButton;
     QPushButton* m_fearEmotionButton;
     QPushButton* m_angerEmotionButton;
+
+    QPushButton* m_constantAnimationButton;
+    QPushButton* m_rotatingSinAnimationButton;
+    QPushButton* m_randomAnimationButton;
 };
 
 #endif

@@ -10,7 +10,7 @@ TARGET_HEAD_IMAGE_Y = 0.5
 
 
 class FaceFollowingNode:
-    def __init__(self):
+    def __init__(self, namespace):
         self._simulation = rospy.get_param('~simulation')
         self._rate = rospy.Rate(rospy.get_param('~control_frequency'))
         self._torso_control_alpha = rospy.get_param('~torso_control_alpha')
@@ -23,12 +23,14 @@ class FaceFollowingNode:
         self._target_torso_yaw = None
         self._current_head_image_y = None
 
-        self._movement_commands = MovementCommands(self._simulation)
+        self._movement_commands = MovementCommands(self._simulation, namespace)
 
     def _update(self, yaw, head_image_y):
         with self._target_lock:
-            self._target_torso_yaw = yaw
-            self._current_head_image_y = head_image_y
+            if yaw is None or math.isfinite(yaw):
+                self._target_torso_yaw = yaw
+            if head_image_y is None or math.isfinite(head_image_y):
+                self._current_head_image_y = head_image_y
 
     def run(self):
         while not rospy.is_shutdown():

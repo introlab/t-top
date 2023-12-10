@@ -43,7 +43,7 @@ void DaemonRosClientNode::setVolumeCallback(const std_msgs::UInt8::ConstPtr& msg
 
     invokeLater(
         [=]()
-        { 
+        {
             if (m_websocketProtocolWrapper)
             {
                 m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
@@ -63,7 +63,7 @@ void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::LedColor
 
     invokeLater(
         [=]()
-        { 
+        {
             if (m_websocketProtocolWrapper)
             {
                 m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
@@ -105,7 +105,7 @@ void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::PoseStamped::
 
     invokeLater(
         [=]()
-        { 
+        {
             if (m_websocketProtocolWrapper)
             {
                 m_websocketProtocolWrapper->send(Device::COMPUTER, Device::DYNAMIXEL_CONTROL, payload);
@@ -251,4 +251,20 @@ void DaemonRosClientNode::sendHeadTf(const ros::Time& stamp, const geometry_msgs
     transformStamped.transform.rotation.w = pose.orientation.w;
 
     m_tfBroadcaster.sendTransform(transformStamped);
+}
+
+void DaemonRosClientNode::cleanup()
+{
+    SetLedColorsPayload payload;
+    for (size_t i  = 0; i < SetLedColorsPayload::LED_COUNT; i++)
+    {
+        payload.colors[i].red = 0;
+        payload.colors[i].green = 0;
+        payload.colors[i].blue = 0;
+    }
+
+    if (m_websocketProtocolWrapper)
+    {
+        m_websocketProtocolWrapper->send(Device::COMPUTER, Device::PSU_CONTROL, payload);
+    }
 }

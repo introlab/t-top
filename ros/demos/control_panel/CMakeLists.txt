@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   hbba_lite
   t_top_hbba_lite
   speech_to_text
+  led_animations
   daemon_ros_client
 )
 

@@ -32,7 +32,7 @@
 
 
     <!-- Camera 2d -->
-    <node if="$(arg camera_2d_wide_enabled)" pkg="cv_camera" type="cv_camera_node" name="cv_camera_node">
+    <node if="$(arg camera_2d_wide_enabled)" pkg="cv_camera" type="cv_camera_node" name="cv_camera_node" respawn="true">
         <param name="rate" value="5"/>
         <param name="device_path" value="/dev/camera_2d_wide"/>
         <param name="image_width" value="1920"/>
@@ -46,6 +46,12 @@
         <remap from="cv_camera_node/image_raw" to="camera_2d_wide_full_hd/image"/>
         <remap from="cv_camera_node/camera_info" to="camera_2d_wide_full_hd/camera_info"/>
         <remap from="cv_camera_node/set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>
+    </node>
+    <node if="$(arg camera_2d_wide_enabled)" pkg="watchdog" type="watchdog_node" name="cv_camera_watchdog_node" output="screen">
+        <param name="node_name" value="cv_camera_node"/>
+        <param name="timeout_duration_s" value="0.5"/>
+
+        <remap from="topic" to="camera_2d_wide_full_hd/image"/>
     </node>
 
     <node if="$(arg camera_2d_wide_enabled)" pkg="nodelet" type="nodelet" args="manager" name="camera_2d_nodelet_manager"/>
@@ -72,7 +78,7 @@
     <!-- Sound -->
     <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="echocancel.sh" name="echocancel" args="$(arg pulse_audio_source) $(arg pulse_audio_sink) $(arg echo_cancellation_dest) $(arg ec_volume_percent)" />
 
-    <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen">
+    <node pkg="audio_utils" type="capture_node" name="capture_node" output="screen" respawn="true">
         <param name="backend" value="pulse_audio"/>
         <param unless="$(arg use_echo_cancellation)" name="device" value="$(arg pulse_audio_source)"/>
         <param if="$(arg use_echo_cancellation)" name="device" value="$(arg echo_cancellation_dest)_ec"/>

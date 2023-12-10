@@ -8,6 +8,8 @@ Camera2dWideRecordingDesire::Camera2dWideRecordingDesire(uint16_t intensity) : D
 
 RobotNameDetectorDesire::RobotNameDetectorDesire(uint16_t intensity) : Desire(intensity) {}
 
+RobotNameDetectorWithLedStatusDesire::RobotNameDetectorWithLedStatusDesire(uint16_t intensity) : Desire(intensity) {}
+
 SlowVideoAnalyzer3dDesire::SlowVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}
 
 FastVideoAnalyzer3dDesire::FastVideoAnalyzer3dDesire(uint16_t intensity) : Desire(intensity) {}
@@ -39,6 +41,20 @@ FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desi
 
 LedEmotionDesire::LedEmotionDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
 
+LedAnimationDesire::LedAnimationDesire(
+    string name,
+    vector<daemon_ros_client::LedColor> colors,
+    double speed,
+    double durationS,
+    uint16_t intensity)
+    : Desire(intensity),
+      m_name(move(name)),
+      m_colors(move(colors)),
+      m_speed(speed),
+      m_durationS(durationS)
+{
+}
+
 SoundFollowingDesire::SoundFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
 NearestFaceFollowingDesire::NearestFaceFollowingDesire(uint16_t intensity) : Desire(intensity) {}
@@ -62,3 +78,5 @@ PlaySoundDesire::PlaySoundDesire(string path, uint16_t intensity) : Desire(inten
 TelepresenceDesire::TelepresenceDesire(uint16_t intensity) : Desire(intensity) {}
 
 TeleoperationDesire::TeleoperationDesire(uint16_t intensity) : Desire(intensity) {}
+
+TooCloseReactionDesire::TooCloseReactionDesire(uint16_t intensity) : Desire(intensity) {}

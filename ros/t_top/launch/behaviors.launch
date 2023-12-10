@@ -19,6 +19,9 @@
     </include>
     <include file="$(find t_top)/launch/behaviors/led_emotions.launch"/>
 
+    <!-- Led Animation -->
+    <include file="$(find t_top)/launch/behaviors/led_animations.launch"/>
+
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">
         <arg name="language" value="$(arg language)"/>
@@ -55,6 +58,9 @@
     <include file="$(find t_top)/launch/behaviors/explore.launch">
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
+
+    <!-- Too Near Reaction -->
+    <include file="$(find t_top)/launch/behaviors/too_close_reaction.launch"/>
 
     <!-- Sound Player -->
     <include file="$(find t_top)/launch/behaviors/sound_player.launch"/>

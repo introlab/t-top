@@ -13,7 +13,7 @@ from face_following.lib_face_following_node import FaceFollowingNode
 
 class SpecificFaceFollowingNode(FaceFollowingNode):
     def __init__(self):
-        super().__init__()
+        super().__init__(namespace='specific_face_following')
         self._direction_frame_id = rospy.get_param('~direction_frame_id')
 
         self._target_name_lock = threading.Lock()

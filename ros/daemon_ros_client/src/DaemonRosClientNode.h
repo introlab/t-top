@@ -66,6 +66,8 @@ class DaemonRosClientNode : public QCoreApplication
 
     DaemonRosClientNode(int &argc, char* argv[], ros::NodeHandle& nodeHandle, DaemonRosClientNodeConfiguration configuration);
 
+    void cleanup();
+
     private:
 
     void initROS();
