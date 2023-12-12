@@ -50,7 +50,6 @@
     <node if="$(arg camera_2d_wide_enabled)" pkg="watchdog" type="watchdog_node" name="cv_camera_watchdog_node" output="screen">
         <param name="node_name" value="cv_camera_node"/>
         <param name="timeout_duration_s" value="5.0"/>
-
         <remap from="topic" to="camera_2d_wide_full_hd/image"/>
     </node>
 
