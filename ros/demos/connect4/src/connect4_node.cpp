@@ -31,6 +31,7 @@ int startNode(int argc, char* argv[])
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createTelepresenceStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
+    strategies.emplace_back(createLedAnimationStrategy(filterPool, desireSet, nodeHandle));
 
     strategies.emplace_back(createCamera3dRecordingStrategy(filterPool));
 

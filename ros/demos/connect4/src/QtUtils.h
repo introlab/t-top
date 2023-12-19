@@ -25,7 +25,10 @@ inline FunctionEvent::~FunctionEvent()
 
 inline void invokeLater(std::function<void()> f)
 {
-    QCoreApplication::postEvent(qApp, new FunctionEvent(move(f)));
+    if (qApp != nullptr)
+    {
+        QCoreApplication::postEvent(qApp, new FunctionEvent(move(f)));
+    }
 }
 
 #endif

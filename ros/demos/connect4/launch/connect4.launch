@@ -50,7 +50,7 @@
     </include>
 
     <!-- GUI -->
-    <node pkg="connect4" type="connect4_node" name="connect4_node">
+    <node pkg="connect4" type="connect4_node" name="connect4_node" output="screen">
         <param name="fullscreen" value="$(arg fullscreen)"/>
     </node>
 
