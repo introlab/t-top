@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(connect4)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+## Set compile options
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -16,9 +17,13 @@ find_package(catkin REQUIRED COMPONENTS
   opentera_webrtc_ros_msgs
   led_animations
   daemon_ros_client
+  opentera_webrtc_ros
+  opentera_webrtc_ros_msgs
 )
 
 ## System dependencies are found with CMake's conventions
+
+add_compile_definitions(WEBRTC_POSIX QT_NO_KEYWORDS)
 
 set(connect4_qt_components Core Widgets)
 find_package(Qt5 COMPONENTS ${connect4_qt_components} REQUIRED)

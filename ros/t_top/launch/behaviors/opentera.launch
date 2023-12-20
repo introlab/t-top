@@ -68,19 +68,6 @@
         <arg name="cmd_vel_topic" value="/teleoperation/cmd_vel"/>
     </include>
 
-    <!-- Playback for audio coming from webrtc -->
-    <node pkg="audio_utils" type="playback_node" name="opentera_playback_node" respawn="true">
-        <param name="backend" value="alsa"/>
-        <param name="device" value="default"/>
-        <param name="format" value="signed_16"/>
-        <param name="channel_count" value="1"/>
-        <param name="sampling_frequency" value="48000"/>
-        <param name="frame_sample_count" value="480"/>
-        <param name="latency_us" value="100000"/>
-
-        <remap from="audio_in" to="audio_webrtc_incoming_signed_16_48000"/>
-    </node>
-
     <!-- Audio resampling for audio going to webrtc -->
     <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
         <param name="input_format" value="signed_16"/>
