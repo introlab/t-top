@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_compile_definitions(WEBRTC_POSIX QT_NO_KEYWORDS)
 
-set(connect4_qt_components Core Widgets)
+set(connect4_qt_components Core Widgets Network WebSockets)
 find_package(Qt5 COMPONENTS ${connect4_qt_components} REQUIRED)
 
 

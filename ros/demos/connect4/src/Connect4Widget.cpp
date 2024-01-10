@@ -9,39 +9,20 @@
 #include <QUrlQuery>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaEnum>
 
 constexpr float ENABLED_VOLUME = 1;
 constexpr float DISABLED_VOLUME = 0;
 constexpr int SET_VOLUME_TIMER_INTERVAL_MS = 500;
 
-using namespace opentera;
-
-std::string openteraClientGetClientType(const Client& client)
-{
-    if (client.data()->get_flag() != sio::message::flag_object)
-    {
-        return "";
-    }
-
-    auto typeIt = client.data()->get_map().find("type");
-    if (typeIt == client.data()->get_map().end())
-    {
-        return "";
-    }
-
-    if (typeIt->second->get_flag() != sio::message::flag_string)
-    {
-        return "";
-    }
-
-    return typeIt->second->get_string();
-}
+constexpr int WEB_SOCKET_STATUS_TIMEOUT_MS = 1000;
 
 
 Connect4Widget::Connect4Widget(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent)
     : m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet)),
-      m_enabled(false)
+      m_enabled(false),
+      m_connect4ManagerConnectionRequested(false)
 {
     m_imageDisplay = new ImageDisplay;
     QVBoxLayout* layout = new QVBoxLayout;
@@ -61,6 +42,17 @@ Connect4Widget::Connect4Widget(ros::NodeHandle& nodeHandle, std::shared_ptr<Desi
     m_setVolumeTimer->start(SET_VOLUME_TIMER_INTERVAL_MS);
 
     m_openteraEventSubscriber = m_nodeHandle.subscribe("events", 10, &Connect4Widget::openteraEventCallback, this);
+
+    m_connect4ManagerWebSocketTimer = new QTimer(this);
+    connect(m_connect4ManagerWebSocketTimer, &QTimer::timeout, this, &Connect4Widget::onConnect4ManagerWebSocketTimeout);
+    m_connect4ManagerWebSocketTimer->start(WEB_SOCKET_STATUS_TIMEOUT_MS);
+
+    m_connect4ManagerWebSocket = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
+    connect(m_connect4ManagerWebSocket, &QWebSocket::sslErrors, this, &Connect4Widget::onConnect4ManagerWebSocketSslErrors);
+    connect(m_connect4ManagerWebSocket, &QWebSocket::connected, this, &Connect4Widget::onConnect4ManagerWebSocketConnected);
+    connect(m_connect4ManagerWebSocket, &QWebSocket::disconnected, this, &Connect4Widget::onConnect4ManagerWebSocketDisconnected);
+    connect(m_connect4ManagerWebSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &Connect4Widget::onConnect4ManagerWebSocketErrorOccurred);
+    connect(m_connect4ManagerWebSocket, &QWebSocket::textMessageReceived, this, &Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived);
 }
 
 void Connect4Widget::onSetVolumeTimerTimeout()
@@ -72,6 +64,71 @@ void Connect4Widget::onSetVolumeTimerTimeout()
     else
     {
         setVolume(DISABLED_VOLUME);
+    }
+}
+
+void Connect4Widget::onConnect4ManagerWebSocketTimeout()
+{
+    if (!m_connect4ManagerConnectionRequested)
+    {
+        return;
+    }
+
+    if (m_connect4ManagerWebSocket->state() == QAbstractSocket::UnconnectedState)
+    {
+        m_connect4ManagerWebSocket->open(m_connect4ManagerWebSocketUrl);
+    }
+    else
+    {
+        m_connect4ManagerWebSocket->ping();
+    }
+}
+
+void Connect4Widget::onConnect4ManagerWebSocketSslErrors(const QList<QSslError>& errors)
+{
+    QString errorString;
+    for (auto& error : errors)
+    {
+        errorString += error.errorString() + ", ";
+    }
+    ROS_ERROR_STREAM("Connect 4 manager web socket SSL errors: " << errorString.toStdString());
+}
+
+void Connect4Widget::onConnect4ManagerWebSocketConnected()
+{
+    ROS_INFO("Connect 4 manager web socket connected");
+
+    QJsonObject dataObject;
+    dataObject.insert("participant_name", m_observedParticipantName);
+    sendConnect4ManagerEvent("add_observer", dataObject);
+}
+
+void Connect4Widget::onConnect4ManagerWebSocketDisconnected()
+{
+    ROS_INFO("Connect 4 manager web socket disconnected");
+}
+
+void Connect4Widget::onConnect4ManagerWebSocketErrorOccurred(QAbstractSocket::SocketError error)
+{
+    ROS_ERROR_STREAM("Connect 4 manager web socket error: " <<
+        QMetaEnum::fromType<QAbstractSocket::SocketError>().valueToKey(error));
+}
+
+void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString& message)
+{
+    ROS_INFO_STREAM("Connect 4 manager web socket message: " << message.toStdString());
+
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonMessage = QJsonDocument::fromJson(message.toUtf8(), &jsonParseError);
+    if (jsonParseError.error != QJsonParseError::NoError)
+    {
+        ROS_ERROR_STREAM("onnect 4 manager web socket message parsing error:" << jsonParseError.errorString().toStdString());
+        return;
+    }
+
+    if (jsonMessage["event"] == "game_finished")
+    {
+        handleGameFinishedEvent(jsonMessage["data"]["result"].toString());
     }
 }
 
@@ -128,56 +185,57 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::OpenT
         std::string deviceName = msg->current_device_name;
         std::string sessionUrl = msg->join_session_events[0].session_url;
         std::string sessionParameters = msg->join_session_events[0].session_parameters;
-        invokeLater([=]() { connectGameDataChannel(deviceName, sessionUrl, sessionParameters); });
+
+        invokeLater(
+            [=]()
+            {
+                m_connect4ManagerConnectionRequested = true;
+
+                parseSessionUrl(sessionUrl, m_connect4ManagerWebSocketUrl, m_connect4ManagerWebSocketPassword);
+                m_observedParticipantName = getParticipantName(deviceName, sessionParameters);
+
+                ROS_INFO_STREAM("Connect4 Manager Web Socket: Connection (sessionUrl=" << sessionUrl <<
+                    ", webSocketUrl=" << m_connect4ManagerWebSocketUrl.toStdString() <<
+                    ", password=" << m_connect4ManagerWebSocketPassword.toStdString() <<
+                    ", deviceName=" << deviceName <<
+                    ", participantName" << m_observedParticipantName.toStdString() << ")");
+
+                m_connect4ManagerWebSocket->open(m_connect4ManagerWebSocketUrl);
+            });
     }
     if (!msg->stop_session_events.empty())
     {
-        invokeLater([this]() { closeGameDataChannel(); });
+        invokeLater(
+            [this]()
+            {
+                m_connect4ManagerConnectionRequested = false;
+                m_connect4ManagerWebSocketUrl = "";
+                m_connect4ManagerWebSocketPassword = "";
+                m_observedParticipantName = "";
+
+                m_connect4ManagerWebSocket->close();
+            });
     }
 }
 
-void Connect4Widget::connectGameDataChannel(
-    const std::string& deviceName,
-    const std::string& sessionUrl,
-    const std::string& sessionParameters)
+bool Connect4Widget::sendConnect4ManagerEvent(const QString& event, const QJsonObject& data)
 {
-    constexpr bool VERIFY_TLS = true;
-
-    m_deviceName = deviceName;
-    m_participantName = getParticipantName(deviceName, sessionParameters);
-
-    std::string baseUrl;
-    std::string password;
-    parseSessionUrl(sessionUrl, baseUrl, password);
-
-    std::vector<IceServer> iceServers;
-    if (!IceServer::fetchFromServer(baseUrl + "/iceservers", password, iceServers, VERIFY_TLS))
+    if (!m_connect4ManagerWebSocket->isValid())
     {
-        ROS_ERROR("Connect4 Game Data Channel: IceServer::fetchFromServer failed");
-        iceServers.clear();
+        return false;
     }
 
-    auto clientData = sio::object_message::create();
-    clientData->get_map()["type"] = sio::string_message::create("robot");
+    QJsonObject eventObject;
+    eventObject.insert("event", event);
+    eventObject.insert("data", data);
 
-    auto webrtcConfiguration = WebrtcConfiguration::create(iceServers);
-    auto dataChannelConfiguration = DataChannelConfiguration::create();
-    auto signalingServerConfiguration = SignalingServerConfiguration::create(baseUrl + "/socket.io", deviceName, clientData, "game", password);
-
-    m_gameDataChannelClient = std::make_unique<DataChannelClient>(signalingServerConfiguration, webrtcConfiguration, dataChannelConfiguration);
-    m_gameDataChannelClient->setTlsVerificationEnabled(VERIFY_TLS);
-
-    setGameDataChannelCallbacks();
-
-    ROS_INFO_STREAM("Connect4 Game Data Channel: Connection (sessionUrl=" << sessionUrl <<
-        ", baseUrl=" << baseUrl <<
-        ", password=" << password <<
-        ", deviceName=" << m_deviceName <<
-        ", participantName" << m_participantName << ")");
-    m_gameDataChannelClient->connect();
+    QJsonDocument document;
+    document.setObject(eventObject);
+    QByteArray bytes = document.toJson();
+    return m_connect4ManagerWebSocket->sendTextMessage(bytes) == bytes.size();
 }
 
-std::string Connect4Widget::getParticipantName(const std::string& deviceName, const std::string& sessionParameters)
+QString Connect4Widget::getParticipantName(const std::string& deviceName, const std::string& sessionParameters)
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonMessage = QJsonDocument::fromJson(QString(sessionParameters.c_str()).toUtf8(), &jsonParseError);
@@ -197,11 +255,11 @@ std::string Connect4Widget::getParticipantName(const std::string& deviceName, co
     QString qDeviceName(deviceName.c_str());
     if (qDeviceName == robot1)
     {
-        return participant1.toStdString();
+        return participant1;
     }
     else if (qDeviceName == robot2)
     {
-        return participant2.toStdString();
+        return participant2;
     }
     else
     {
@@ -210,92 +268,38 @@ std::string Connect4Widget::getParticipantName(const std::string& deviceName, co
     }
 }
 
-void Connect4Widget::parseSessionUrl(const std::string& sessionUrl, std::string& baseUrl, std::string& password)
+void Connect4Widget::parseSessionUrl(const std::string& sessionUrl, QString& webSocketUrl, QString& password)
 {
-    baseUrl = sessionUrl.substr(0, sessionUrl.find('?'));
+    std::string baseUrl = sessionUrl.substr(0, sessionUrl.find('?'));
     if (!baseUrl.empty() && baseUrl[baseUrl.size() - 1] == '/')
     {
         baseUrl = baseUrl.substr(0, baseUrl.size() - 1);
     }
-    password = QUrlQuery(QUrl(sessionUrl.c_str()).query()).queryItemValue("pwd").toStdString();
+    webSocketUrl = baseUrl.c_str();
+    webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/game";
+
+    password = QUrlQuery(QUrl(sessionUrl.c_str()).query()).queryItemValue("pwd");
 }
 
-void Connect4Widget::setGameDataChannelCallbacks()
-{
-    m_gameDataChannelClient->setOnSignalingConnectionOpened([]()
-        {
-            ROS_INFO("Connect4 Game Data Channel: Signaling Connection Opened");
-        });
-    m_gameDataChannelClient->setOnSignalingConnectionClosed([]()
-        {
-            ROS_INFO("Connect4 Game Data Channel: Signaling Connection Closed");
-        });
-    m_gameDataChannelClient->setOnSignalingConnectionError([](const std::string& error)
-        {
-            ROS_ERROR_STREAM("Connect4 Game Data Channel: Signaling Connection Error : " << error);
-        });
-
-    m_gameDataChannelClient->setCallAcceptor([](const Client& client)
-        {
-            return openteraClientGetClientType(client) == "manager";
-        });
-
-    m_gameDataChannelClient->setOnDataChannelOpened([](const Client& client)
-        {
-            ROS_INFO_STREAM("Connect4 Game Data Channel: Data Channel Opened : " << client.id() << ", " << client.name());
-        });
-    m_gameDataChannelClient->setOnDataChannelClosed([](const Client& client)
-        {
-            ROS_INFO_STREAM("Connect4 Game Data Channel: Data Channel Closed : " << client.id() << ", " << client.name());
-        });
-    m_gameDataChannelClient->setOnDataChannelError([](const Client& client, const std::string& error)
-        {
-            ROS_ERROR_STREAM("Connect4 Game Data Channel: Data Channel Closed : " << client.id() << ", " << client.name() << " : " << error);
-        });
-    m_gameDataChannelClient->setOnDataChannelMessageString([this](const Client& client, const std::string& message)
-        {
-            invokeLater([this, message]() { handleGameMessage(message.c_str()); });
-        });
-
-    m_gameDataChannelClient->setOnError([](const std::string& error)
-        {
-            ROS_ERROR_STREAM("Connect4 Game Data Channel: Error : " << error);
-        });
-    m_gameDataChannelClient->setLogger([](const std::string& message)
-        {
-            ROS_ERROR_STREAM("Connect4 Game Data Channel: Log : " << message);
-        });
-}
-
-void Connect4Widget::handleGameMessage(const QString& message)
+void Connect4Widget::handleGameFinishedEvent(const QString& result)
 {
     if (!m_enabled)
     {
         return;
     }
 
-    QStringList values = message.split(" ");
-
-    if (values[0] == "game_finished" && values.size() == 2)
+    if (result == "winner")
     {
-        if (values[1] == "tie")
-        {
-            addRotatingSinDesire(255, 255, 0);
-        }
-        else if (isWinner(values[1].toStdString()))
-        {
-            addRotatingSinDesire(0, 255, 0);
-        }
-        else
-        {
-            addRotatingSinDesire(255, 0, 0);
-        }
+        addRotatingSinDesire(0, 255, 0);
     }
-}
-
-bool Connect4Widget::isWinner(const std::string& participantId)
-{
-    return m_gameDataChannelClient->getRoomClient(participantId).name() == m_participantName;
+    else if (result == "loser")
+    {
+        addRotatingSinDesire(255, 0, 0);
+    }
+    else
+    {
+        addRotatingSinDesire(255, 255, 0);
+    }
 }
 
 void Connect4Widget::addRotatingSinDesire(uint8_t r, uint8_t g, uint8_t b)
@@ -313,11 +317,4 @@ void Connect4Widget::addRotatingSinDesire(uint8_t r, uint8_t g, uint8_t b)
         std::vector<daemon_ros_client::LedColor>{c},
         SPEED,
         DURATION_S);
-}
-
-void Connect4Widget::closeGameDataChannel()
-{
-    m_deviceName = "";
-    m_participantName = "";
-    m_gameDataChannelClient.reset();
 }
