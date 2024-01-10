@@ -11,3 +11,4 @@ This folder contains the ROS packages to use the robot.
 - The [user_interface](user_interface) folder contains the web user interface for the robot face.
 - The [t_top](t_top) folder contains the configuration files, the launch files and common code files.
 - The [utils](utils) folder contains ROS packages for utilities.
+- The [tests](tests) folder contains ROS packages to perform tests.

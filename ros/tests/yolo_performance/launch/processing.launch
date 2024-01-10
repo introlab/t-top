@@ -1,0 +1,17 @@
+<launch>
+    <arg name="input_path"/>
+    <arg name="dataset"/> <!-- coco or objects365 -->
+    <arg name="confidence_threshold" default="0.5"/>
+    <arg name="nms_threshold" default="0.5"/>
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+    <arg if="$(eval arg('dataset') == 'coco')" name="yolo_models" default="[yolo_v4_coco, yolo_v4_tiny_coco, yolo_v7_coco, yolo_v7_tiny_coco]"/>
+    <arg if="$(eval arg('dataset') == 'objects365')" name="yolo_models" default="[yolo_v7_objects365]"/>
+
+    <node pkg="yolo_performance" type="processing_node.py" name="processing_node" output="screen">
+        <param name="input_path" value="$(arg input_path)"/>
+        <rosparam param="yolo_models" subst_value="true">$(arg yolo_models)</rosparam>
+        <param name="confidence_threshold" value="$(arg confidence_threshold)"/>
+        <param name="nms_threshold" value="$(arg nms_threshold)"/>
+        <param name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+    </node>
+</launch>
