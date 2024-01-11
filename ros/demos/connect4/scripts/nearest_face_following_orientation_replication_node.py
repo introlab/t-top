@@ -10,6 +10,7 @@ import tf
 from geometry_msgs.msg import PointStamped
 from video_analyzer.msg import VideoAnalysis
 from std_msgs.msg import String
+from opentera_webrtc_ros_msgs.msg import PeerData
 
 from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_ROLL_INDEX, HEAD_POSE_PITCH_INDEX
 
@@ -40,7 +41,8 @@ class NearestFaceFollowingOrientationReplicationNode:
 
         self._tf_listener = tf.TransformListener()
         self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
-        self._video_analysis_sub = rospy.Subscriber('face_orientation', String, self._face_orientation_cb, queue_size=1)
+        self._face_orientation_sub = rospy.Subscriber('face_orientation', String, self._face_orientation_cb, queue_size=1)
+        self._face_orientation_peer_data_sub = rospy.Subscriber('face_orientation_peer_data', PeerData, self._face_orientation_cb, queue_size=1)
 
     def _video_analysis_cb(self, msg):
         if self._movement_commands.is_filtering_all_messages:
