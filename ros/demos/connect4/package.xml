@@ -59,6 +59,11 @@
   <build_depend>daemon_ros_client</build_depend>
   <build_depend>opentera_webrtc_ros</build_depend>
   <build_depend>opentera_webrtc_ros_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>t_top</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>video_analyzer</build_depend>
   <build_export_depend>daemon_ros_client</build_export_depend>
   <build_export_depend>hbba_lite</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
@@ -69,6 +74,11 @@
   <build_export_depend>daemon_ros_client</build_export_depend>
   <build_export_depend>opentera_webrtc_ros</build_export_depend>
   <build_export_depend>opentera_webrtc_ros_msgs</build_export_depend>
+  <build_export_depend>tf</build_export_depend>
+  <build_export_depend>t_top</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>video_analyzer</build_export_depend>
   <exec_depend>daemon_ros_client</exec_depend>
   <exec_depend>hbba_lite</exec_depend>
   <exec_depend>roscpp</exec_depend>
@@ -79,6 +89,11 @@
   <exec_depend>daemon_ros_client</exec_depend>
   <exec_depend>opentera_webrtc_ros</exec_depend>
   <exec_depend>opentera_webrtc_ros_msgs</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>t_top</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>video_analyzer</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
