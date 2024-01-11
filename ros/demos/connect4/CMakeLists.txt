@@ -19,13 +19,18 @@ find_package(catkin REQUIRED COMPONENTS
   daemon_ros_client
   opentera_webrtc_ros
   opentera_webrtc_ros_msgs
+  tf
+  t_top
+  std_msgs
+  geometry_msgs
+  video_analyzer
 )
 
 ## System dependencies are found with CMake's conventions
 
 add_compile_definitions(WEBRTC_POSIX QT_NO_KEYWORDS)
 
-set(connect4_qt_components Core Widgets)
+set(connect4_qt_components Core Widgets Network WebSockets)
 find_package(Qt5 COMPONENTS ${connect4_qt_components} REQUIRED)
 
 
@@ -190,10 +195,11 @@ target_link_libraries(${PROJECT_NAME}_node
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/nearest_face_orientation_node.py
+  scripts/nearest_face_following_orientation_replication_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
