@@ -23,6 +23,7 @@ class NearestFaceFollowingOrientationReplicationNode:
         self._rate = rospy.Rate(rospy.get_param('~control_frequency'))
         self._torso_control_alpha = rospy.get_param('~torso_control_alpha')
         self._head_control_alpha = rospy.get_param('~head_control_alpha')
+        self._head_control_pitch_up_alpha_gain = rospy.get_param('~head_control_pitch_up_alpha_gain')
         self._min_head_roll = rospy.get_param('~min_head_roll_rad')
         self._max_head_roll = rospy.get_param('~max_head_roll_rad')
         self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
@@ -32,8 +33,8 @@ class NearestFaceFollowingOrientationReplicationNode:
 
         self._target_lock = threading.Lock()
         self._target_torso_yaw = None
-        self._target_head_roll = None
-        self._target_head_pitch = None
+        self._target_head_roll = 0.0
+        self._target_head_pitch = 0.0
 
         self._movement_commands = MovementCommands(self._simulation, 'other')
 
@@ -49,8 +50,13 @@ class NearestFaceFollowingOrientationReplicationNode:
             return
 
         face_position = self._find_nearest_face_position(msg.objects, msg.header)
-        with self._target_lock:
-            self._target_torso_yaw, _ = vector_to_angles(face_position)
+        if face_position is None:
+            return
+
+        target_torso_yaw, _ = vector_to_angles(face_position)
+        if math.isfinite(target_torso_yaw):
+            with self._target_lock:
+                self._target_torso_yaw = target_torso_yaw
 
     def _find_nearest_face_position(self, objects, header):
         nose_points_3d = []
@@ -103,8 +109,7 @@ class NearestFaceFollowingOrientationReplicationNode:
                 continue
 
             self._update_torso()
-            if self._head_enabled:
-                self._update_head()
+            self._update_head()
 
     def _update_torso(self):
         with self._target_lock:
@@ -130,7 +135,12 @@ class NearestFaceFollowingOrientationReplicationNode:
         current_pitch = self._movement_commands.current_head_pose[HEAD_POSE_PITCH_INDEX]
 
         roll = current_roll * (1.0 - self._head_control_alpha) + target_head_roll * self._head_control_alpha
-        pitch = current_pitch * (1.0 - self._head_control_alpha) + target_head_pitch * self._head_control_alpha
+
+        pitch_alpha = self._head_control_alpha
+        if target_head_pitch < current_pitch:
+            pitch_alpha *= self._head_control_pitch_up_alpha_gain
+
+        pitch = current_pitch * (1.0 - pitch_alpha) + target_head_pitch * pitch_alpha
 
         self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, roll, pitch, 0])
 
