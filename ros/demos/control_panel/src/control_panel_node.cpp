@@ -28,7 +28,8 @@ int startNode(int argc, char* argv[])
     privateNodeHandle.param("camera_2d_wide_enabled", camera2dWideEnabled, false);
 
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
+    auto rosFilterPool = make_unique<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
+    auto filterPool = make_shared<RosLogFilterPoolDecorator>(move(rosFilterPool));
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));
@@ -56,7 +57,7 @@ int startNode(int argc, char* argv[])
     }
 
     auto solver = make_unique<GecodeSolver>();
-    auto strategyStateLogger = make_unique<RosStrategyStateLogger>(nodeHandle);
+    auto strategyStateLogger = make_unique<RosLogStrategyStateLogger>();
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
     QApplication application(argc, argv);

@@ -25,8 +25,6 @@ StrategyType FaceAnimationStrategy::strategyType()
 
 void FaceAnimationStrategy::onEnabling(const FaceAnimationDesire& desire)
 {
-    Strategy<FaceAnimationDesire>::onEnabling(desire);
-
     std_msgs::String msg;
     msg.data = desire.name();
     m_animationPublisher.publish(msg);
@@ -59,8 +57,6 @@ StrategyType LedEmotionStrategy::strategyType()
 
 void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
 {
-    Strategy<LedEmotionDesire>::onEnabling(desire);
-
     std_msgs::String msg;
     msg.data = desire.name();
     m_emotionPublisher.publish(msg);
@@ -91,8 +87,6 @@ StrategyType LedAnimationStrategy::strategyType()
 
 void LedAnimationStrategy::onEnabling(const LedAnimationDesire& desire)
 {
-    Strategy<LedAnimationDesire>::onEnabling(desire);
-
     led_animations::Animation msg;
     msg.id = desire.id();
     msg.duration_s = desire.durationS();
@@ -132,8 +126,6 @@ StrategyType SpecificFaceFollowingStrategy::strategyType()
 
 void SpecificFaceFollowingStrategy::onEnabling(const SpecificFaceFollowingDesire& desire)
 {
-    Strategy<SpecificFaceFollowingDesire>::onEnabling(desire);
-
     std_msgs::String msg;
     msg.data = desire.targetName();
     m_targetNamePublisher.publish(msg);
@@ -163,8 +155,6 @@ StrategyType TalkStrategy::strategyType()
 
 void TalkStrategy::onEnabling(const TalkDesire& desire)
 {
-    Strategy<TalkDesire>::onEnabling(desire);
-
     talk::Text msg;
     msg.text = desire.text();
     msg.id = desire.id();
@@ -200,8 +190,6 @@ StrategyType GestureStrategy::strategyType()
 
 void GestureStrategy::onEnabling(const GestureDesire& desire)
 {
-    Strategy<GestureDesire>::onEnabling(desire);
-
     gesture::GestureName msg;
     msg.name = desire.name();
     msg.id = desire.id();
@@ -241,8 +229,6 @@ StrategyType PlaySoundStrategy::strategyType()
 
 void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)
 {
-    Strategy<PlaySoundDesire>::onEnabling(desire);
-
     sound_player::SoundFile msg;
     msg.path = desire.path();
     msg.id = desire.id();

@@ -60,7 +60,7 @@ void startNode(
     strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
 
     auto solver = make_unique<GecodeSolver>();
-    auto strategyStateLogger = make_unique<RosStrategyStateLogger>(nodeHandle);
+    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(nodeHandle);
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
     StateManager stateManager;
