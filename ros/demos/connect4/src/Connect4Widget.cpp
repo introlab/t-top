@@ -248,10 +248,10 @@ QString Connect4Widget::getParticipantName(const std::string& deviceName, const 
 
     QJsonObject jsonObject = jsonMessage.object();
     QString participant1 = jsonObject["participant1"].toString();
-    QString participant2 = jsonObject["partiticipant2"].toString();
+    QString participant2 = jsonObject["participant2"].toString();
     QString robot1 = jsonObject["robot1"].toString();
     QString robot2 = jsonObject["robot2"].toString();
-
+    
     QString qDeviceName(deviceName.c_str());
     if (qDeviceName == robot1)
     {
