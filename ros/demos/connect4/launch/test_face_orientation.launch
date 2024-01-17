@@ -16,9 +16,9 @@
 
     <node pkg="connect4" type="nearest_face_orientation_node.py" name="nearest_face_orientation_node">
         <param name="nose_confidence_threshold" value="0.4"/>
-        <param name="pitch_offset_rad" value="-0.7"/>
-        <param name="filter_alpha" value="0.6"/>
-        <param name="roll_dead_zone" value="0.075"/>
+        <param name="pitch_offset_rad" value="-0.8"/>
+        <param name="filter_alpha" value="0.65"/>
+        <param name="roll_dead_zone" value="0.05"/>
 
         <remap from="video_analysis" to="camera_3d/video_analysis"/>
     </node>
