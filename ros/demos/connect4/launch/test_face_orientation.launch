@@ -40,4 +40,17 @@
         <remap from="pose/filter_state" to="nearest_face_following_orientation_replication/filter_state"/>
     </node>
 
+    <node pkg="t_top" type="head_roll_image_rotation_node.py" name="head_roll_image_rotation_node">
+        <remap from="input_image" to="camera_3d/color/image_raw"/>
+        <remap from="output_image" to="camera_3d/color/rotated_image_raw"/>
+    </node>
+
+    <include if="$(arg use_outgoing_face_cropping)" file="$(find face_cropping)/launch/face_cropping.launch" >
+        <arg name="output" value="screen"/>
+        <arg name="input_camera_topic" value="/camera_3d/color/rotated_image_raw"/>
+        <arg name="output_camera_topic" value="/face_camera/image_raw"/>
+
+        <arg name="face_detection_model" value="small_yunet_0.5_320"/>
+    </include>
+
 </launch>
