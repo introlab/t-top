@@ -42,7 +42,7 @@ class HeadRollImageRotationNode:
             roll_angle_rad = self._roll_angle_rad
 
         h, w, _ = color_image.shape
-        rotation_matrix = cv2.getRotationMatrix2D((w / 2, h / 2), math.degrees(roll_angle_rad), 1.0)
+        rotation_matrix = cv2.getRotationMatrix2D((w / 2, h / 2), -math.degrees(roll_angle_rad), 1.0)
         rotated_color_image = cv2.warpAffine(color_image, rotation_matrix, (w, h))
 
         rotated_color_image_msg = self._cv_bridge.cv2_to_imgmsg(rotated_color_image, 'bgr8')
