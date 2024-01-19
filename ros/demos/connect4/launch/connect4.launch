@@ -2,11 +2,11 @@
     <arg name="visualization" default="false"/>
     <arg name="simulation" default="false"/>
     <arg name="camera_2d_wide_enabled" default="false"/>
-    <arg name="use_echo_cancellation" default="true"/>
+    <arg name="use_echo_cancellation" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="is_stand_alone" default="false"/>
     <arg name="verify_ssl" default="true"/>
-    <arg name="fullscreen" default="false"/>
+    <arg name="fullscreen" default="true"/>
 
     <!-- Platform nodes -->
     <include file="$(find t_top)/launch/platform.launch">
