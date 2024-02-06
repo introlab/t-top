@@ -68,19 +68,6 @@
         <arg name="cmd_vel_topic" value="/teleoperation/cmd_vel"/>
     </include>
 
-    <!-- Playback for audio coming from webrtc -->
-    <node pkg="audio_utils" type="playback_node" name="opentera_playback_node" respawn="true">
-        <param name="backend" value="alsa"/>
-        <param name="device" value="default"/>
-        <param name="format" value="signed_16"/>
-        <param name="channel_count" value="1"/>
-        <param name="sampling_frequency" value="48000"/>
-        <param name="frame_sample_count" value="480"/>
-        <param name="latency_us" value="100000"/>
-
-        <remap from="audio_in" to="audio_webrtc_incoming_signed_16_48000"/>
-    </node>
-
     <!-- Audio resampling for audio going to webrtc -->
     <node pkg="audio_utils" type="resampling_node.py" name="resampling_node">
         <param name="input_format" value="signed_16"/>
@@ -98,9 +85,13 @@
     <node name="robot_status" type="robot_status.py" pkg="t_top" />
 
     <!-- Face cropping local -->
+    <node if="$(arg use_outgoing_face_cropping)" pkg="t_top" type="head_roll_image_rotation_node.py" name="head_roll_image_rotation_node">
+        <remap from="input_image" to="/camera_3d/color/image_raw"/>
+        <remap from="output_image" to="/camera_3d/color/rotated_image_raw"/>
+    </node>
     <include if="$(arg use_outgoing_face_cropping)" file="$(find face_cropping)/launch/face_cropping.launch" >
         <arg name="output" value="screen"/>
-        <arg name="input_camera_topic" value="/camera_3d/color/image_raw"/>
+        <arg name="input_camera_topic" value="/camera_3d/color/rotated_image_raw"/>
         <arg name="output_camera_topic" value="/face_camera/image_raw"/>
 
         <arg name="face_detection_model" value="small_yunet_0.5_320"/>

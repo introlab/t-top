@@ -1,0 +1,56 @@
+<launch>
+    <include file="$(find t_top)/launch/platform.launch">
+        <arg name="camera_2d_wide_enabled" value="false"/>
+        <arg name="use_echo_cancellation" value="false"/>
+    </include>
+
+    <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
+        <arg name="camera_2d_wide_enabled" value="false"/>
+        <arg name="neural_network_inference_type" value="trt_gpu"/>
+        <arg name="video_analyzer_3d_pose_enabled" value="true"/>
+        <arg name="video_analyzer_3d_face_descriptor_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_pose_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="false"/>
+        <arg name="visualization" value="false"/>
+    </include>
+
+    <node pkg="connect4" type="nearest_face_orientation_node.py" name="nearest_face_orientation_node">
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="pitch_offset_rad" value="-0.8"/>
+        <param name="filter_alpha" value="0.65"/>
+        <param name="roll_dead_zone" value="0.05"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+    </node>
+
+    <node pkg="connect4" type="nearest_face_following_orientation_replication_node.py" name="nearest_face_following_orientation_replication_node">
+        <param name="simulation" value="false"/>
+        <param name="control_frequency" value="30"/>
+        <param name="torso_control_alpha" value="0.2"/>
+        <param name="head_control_alpha" value="0.1"/>
+        <param name="head_control_pitch_up_alpha_gain" value="2.0"/>
+        <param name="min_head_roll_rad" value="-0.3"/>
+        <param name="max_head_roll_rad" value="0.3"/>
+        <param name="min_head_pitch_rad" value="-0.15"/>
+        <param name="max_head_pitch_rad" value="0.3"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+
+        <remap from="pose/filter_state" to="nearest_face_following_orientation_replication/filter_state"/>
+    </node>
+
+    <node pkg="t_top" type="head_roll_image_rotation_node.py" name="head_roll_image_rotation_node">
+        <remap from="input_image" to="camera_3d/color/image_raw"/>
+        <remap from="output_image" to="camera_3d/color/rotated_image_raw"/>
+    </node>
+
+    <include file="$(find face_cropping)/launch/face_cropping.launch" >
+        <arg name="output" value="screen"/>
+        <arg name="input_camera_topic" value="/camera_3d/color/rotated_image_raw"/>
+        <arg name="output_camera_topic" value="/face_camera/image_raw"/>
+
+        <arg name="face_detection_model" value="small_yunet_0.5_320"/>
+    </include>
+
+</launch>

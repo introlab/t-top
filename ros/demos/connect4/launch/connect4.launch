@@ -2,16 +2,17 @@
     <arg name="visualization" default="false"/>
     <arg name="simulation" default="false"/>
     <arg name="camera_2d_wide_enabled" default="false"/>
-    <arg name="use_echo_cancellation" default="true"/>
+    <arg name="use_echo_cancellation" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
     <arg name="is_stand_alone" default="false"/>
     <arg name="verify_ssl" default="true"/>
-    <arg name="fullscreen" default="false"/>
+    <arg name="fullscreen" default="true"/>
 
     <!-- Platform nodes -->
     <include file="$(find t_top)/launch/platform.launch">
         <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+        <arg name="opentera_playback_node_enabled" value="true"/>
     </include>
 
     <!-- Perceptions -->
@@ -35,8 +36,38 @@
         <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="false"/>
     </include>
 
+    <node pkg="connect4" type="nearest_face_orientation_node.py" name="nearest_face_orientation_node">
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="pitch_offset_rad" value="-0.8"/>
+        <param name="filter_alpha" value="0.65"/>
+        <param name="roll_dead_zone" value="0.05"/>
+
+        <remap from="face_orientation" to="local_face_orientation"/>
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+    </node>
 
     <!-- Behaviors -->
+    <node pkg="connect4" type="nearest_face_following_orientation_replication_node.py" name="nearest_face_following_orientation_replication_node">
+        <param name="simulation" value="false"/>
+        <param name="control_frequency" value="30"/>
+        <param name="torso_control_alpha" value="0.2"/>
+        <param name="head_control_alpha" value="0.1"/>
+        <param name="head_control_pitch_up_alpha_gain" value="2.0"/>
+        <param name="min_head_roll_rad" value="-0.3"/>
+        <param name="max_head_roll_rad" value="0.3"/>
+        <param name="min_head_pitch_rad" value="-0.15"/>
+        <param name="max_head_pitch_rad" value="0.3"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+        <remap from="face_orientation_peer_data" to="remote_face_orientation"/>
+
+        <remap from="pose/filter_state" to="nearest_face_following/filter_state"/>
+    </node>
+
+    <include file="$(find t_top)/launch/behaviors/led_animations.launch"/>
+
+    <!-- WebRTC -->
     <include file="$(find t_top)/launch/behaviors/opentera.launch">
         <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
         <arg name="verify_ssl" value="$(arg verify_ssl)"/>
@@ -44,12 +75,20 @@
         <arg name="use_outgoing_face_cropping" value="true"/>
     </include>
 
-    <include file="$(find t_top)/launch/behaviors/face_following.launch">
-        <arg name="simulation" value="$(arg simulation)"/>
+    <include file="$(find opentera_webrtc_ros)/launch/ros_data_channel_client.launch">
+        <arg name="name" value="face_orientation_streamer"/>
+        <arg name="is_stand_alone" value="$(arg is_stand_alone)"/>
+
+        <arg name="client_name" value="Face Orientation Data Channel"/>
+        <arg name="room_name" value="face_orientation"/>
+        <arg name="verify_ssl" value="$(arg verify_ssl)"/>
+
+        <arg name="input_topic" value="local_face_orientation"/>
+        <arg name="output_topic" value="remote_face_orientation"/>
     </include>
 
     <!-- GUI -->
-    <node pkg="connect4" type="connect4_node" name="connect4_node">
+    <node pkg="connect4" type="connect4_node" name="connect4_node" output="screen">
         <param name="fullscreen" value="$(arg fullscreen)"/>
     </node>
 

@@ -14,7 +14,7 @@ class ImageDisplay : public QWidget
 public:
     explicit ImageDisplay(QWidget* parent = nullptr);
 
-public slots:
+public Q_SLOTS:
     void setImage(const QImage& image);
 
 protected:
