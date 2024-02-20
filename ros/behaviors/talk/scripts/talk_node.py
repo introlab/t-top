@@ -32,6 +32,7 @@ class TalkNode:
         self._mouth_signal_gain = rospy.get_param('~mouth_signal_gain')
         self._sampling_frequency = rospy.get_param('~sampling_frequency')
         self._frame_sample_count = rospy.get_param('~frame_sample_count')
+        self._done_delay_s = rospy.get_param('~done_delay_s', 0.5)
 
         self._rospack = rospkg.RosPack()
         self._pkg_path = self._rospack.get_path('talk')
@@ -62,6 +63,7 @@ class TalkNode:
                     file_path = self._voice_generator.generate(msg.text)
                     self._play_audio(file_path)
                 ok = True
+                rospy.sleep(self._done_delay_s)
             except Exception as e:
                 rospy.logerr(f'Unable to talk ({e})')
                 ok = False
