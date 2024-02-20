@@ -53,6 +53,10 @@ class VoiceGenerator(ABC):
     def generate(self, text: str) -> str:
         pass
 
+    def delete_generated_file(self, file_path: str):
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
     def _generate_random_path(self, extension: str) -> str:
         return os.path.join(self._directory, str(uuid.uuid4()) + extension)
 
@@ -181,3 +185,6 @@ class CachedVoiceGenerator(VoiceGenerator):
     def _get_cache_key(self, text: str) -> str:
         return (f'{type(self._voice_generator).__name__}__{self._language.value}__{self._gender.value}__'
                 f'{self._speaking_rate}__{text}')
+
+    def delete_generated_file(self, file_path: str):
+        pass

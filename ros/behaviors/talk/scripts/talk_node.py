@@ -39,12 +39,14 @@ class TalkNode:
         audio_directory_path = os.path.join(self._pkg_path, 'audio_files')
 
         if generator_type == 'google':
-            voice_generator = GoogleVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
+            self._voice_generator = GoogleVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
         elif generator_type == 'piper':
-            voice_generator = PiperVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
+            self._voice_generator = PiperVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
         else:
             raise ValueError(f'Invalid generator type ({generator_type})')
-        self._voice_generator = CachedVoiceGenerator(voice_generator, cache_size)
+
+        if cache_size > 0:
+            self._voice_generator = CachedVoiceGenerator(self._voice_generator, cache_size)
 
         self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
@@ -62,8 +64,10 @@ class TalkNode:
                 if msg.text != '':
                     file_path = self._voice_generator.generate(msg.text)
                     self._play_audio(file_path)
+                    self._voice_generator.delete_generated_file(file_path)
+                    rospy.sleep(self._done_delay_s)
+
                 ok = True
-                rospy.sleep(self._done_delay_s)
             except Exception as e:
                 rospy.logerr(f'Unable to talk ({e})')
                 ok = False
