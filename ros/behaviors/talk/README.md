@@ -17,6 +17,7 @@ This node makes T-Top talk and move its lips accordingly. It uses Google Cloud T
 - `mouth_signal_gain` (double): The gain to apply after the filter calculating the mouth signal.
 - `sampling_frequency` (int): The output sampling frequency.
 - `frame_sample_count` (double): The number of sample in each audio frame.
+- `done_delay_s` (double): The delay before sending the talk done message (default: 0.5).
 
 #### Subscribed Topics
 
