@@ -67,8 +67,9 @@ See [01_COMPUTER_CONFIGURATION.md](documentation/assembly/01_COMPUTER_CONFIGURAT
 
 ## Papers
 
-- [M.-A. Maheux, A. M. Panchea, P. Warren, D. Létourneau and F. Michaud, “T-Top, an Open Source Tabletop Robot with Advanced Onboard Audio, Vision and Deep Learning Capabilities,” 2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Detroit, MI, USA, 2023, pp. 7862-7869.](https://ieeexplore.ieee.org/abstract/document/10342252)
-- [M.-A. Maheux, C. Caya, D. Létourneau, and F. Michaud, “T-top, a sar experimental platform,” in Proceedings of the 2022 ACM/IEEE International Conference on Human-Robot Interaction, 2022, p. 904–908.](https://dl.acm.org/doi/abs/10.5555/3523760.3523902)
+- [A. M. Panchea, M.-A. Maheux, P. Warren, D. Létourneau, and F. Michaud, “Exploratory Evaluation of a Tabletop Robot With Older Adults”, in Proceedings of the 2024 ACM/IEEE International Conference on Human-Robot Interaction, Boulder, CO, USA, 2024, pp. 817–821.](https://dl.acm.org/doi/10.1145/3610978.3640621)
+- [M.-A. Maheux, A. M. Panchea, P. Warren, D. Létourneau and F. Michaud, “T-Top, an Open Source Tabletop Robot with Advanced Onboard Audio, Vision and Deep Learning Capabilities,” in Proceedings of the 2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Detroit, MI, USA, 2023, pp. 7862-7869.](https://ieeexplore.ieee.org/abstract/document/10342252)
+- [M.-A. Maheux, C. Caya, D. Létourneau, and F. Michaud, “T-Top, a sar experimental platform,” in Proceedings of the 2022 ACM/IEEE International Conference on Human-Robot Interaction, 2022, p. 904–908.](https://dl.acm.org/doi/abs/10.5555/3523760.3523902)
 
 ## Sponsor
 
