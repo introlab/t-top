@@ -25,6 +25,7 @@ def main():
                                                     'small_ecapa_tdnn_512',
                                                     'passt_s_n', 'passt_s_n_l'],
                         help='Choose the backbone type', required=True)
+    parser.add_argument('--conv_bias', action='store_true', help='Set bias=True to Conv2d (open_face_inception only)')
     parser.add_argument('--embedding_size', type=int, help='Set the embedding size', required=True)
     parser.add_argument('--pooling_layer', choices=['avg', 'vlad', 'sap', 'psla'], help='Set the pooling layer')
     parser.add_argument('--waveform_size', type=int, help='Set the waveform size', required=True)
@@ -58,7 +59,7 @@ def main():
         raise ValueError('Invalid dataset type')
 
     model = create_model(args.backbone_type, args.n_features, args.embedding_size, class_count=class_count,
-                         pooling_layer=args.pooling_layer)
+                         pooling_layer=args.pooling_layer, conv_bias=args.conv_bias)
     device = torch.device('cuda' if torch.cuda.is_available() and args.use_gpu else 'cpu')
 
     output_path = os.path.join(args.output_path, args.backbone_type + '_' + args.dataset_type +

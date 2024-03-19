@@ -1,16 +1,25 @@
 <launch>
     <arg name="use_echo_cancellation" default="false"/>
+
     <arg name="language" default="en"/>  <!-- Options: fr or en -->
     <arg name="gender" default="male"/> <!-- Options: female or male -->
     <arg name="voice_generator_type" default="piper"/> <!-- Options: google or piper -->
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="speech_to_text_type" default="whisper"/> <!-- Options: google or whisper -->
+
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
+
+    <arg name="video_analyzer_3d_use_descriptor_yolo" default="false"/>
+    <arg name="video_analyzer_3d_yolo_model" default="yolo_v7_tiny_coco"/>
     <arg name="video_analyzer_3d_pose_enabled" default="true"/>
     <arg name="video_analyzer_3d_face_descriptor_enabled" default="true"/>
+
+    <arg name="video_analyzer_2d_wide_use_descriptor_yolo" default="false"/>
+    <arg name="video_analyzer_2d_wide_yolo_model" default="yolo_v7_coco"/>
     <arg name="video_analyzer_2d_wide_pose_enabled" default="false"/>
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled" default="false"/>
-    <arg name="speech_to_text_type" default="whisper"/> <!-- Options: google or whisper -->
+
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
     <arg name="simulation" default="false"/>
@@ -27,10 +36,17 @@
         <arg name="language" value="$(arg language)"/>
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+
+        <arg name="video_analyzer_3d_use_descriptor_yolo" value="$(arg video_analyzer_3d_use_descriptor_yolo)"/>
+        <arg name="video_analyzer_3d_yolo_model" value="$(arg video_analyzer_3d_yolo_model)"/>
         <arg name="video_analyzer_3d_pose_enabled" value="$(arg video_analyzer_3d_pose_enabled)"/>
         <arg name="video_analyzer_3d_face_descriptor_enabled" value="$(arg video_analyzer_3d_face_descriptor_enabled)"/>
+
+        <arg name="video_analyzer_2d_wide_use_descriptor_yolo" value="$(arg video_analyzer_2d_wide_use_descriptor_yolo)"/>
+        <arg name="video_analyzer_2d_wide_yolo_model" value="$(arg video_analyzer_2d_wide_yolo_model)"/>
         <arg name="video_analyzer_2d_wide_pose_enabled" value="$(arg video_analyzer_2d_wide_pose_enabled)"/>
         <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="$(arg video_analyzer_2d_wide_face_descriptor_enabled)"/>
+
         <arg name="speech_to_text_type" value="$(arg speech_to_text_type)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="slam" value="$(arg slam)"/>
