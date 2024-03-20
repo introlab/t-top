@@ -6,11 +6,13 @@
     <arg name="video_analyzer_3d_yolo_model"/>
     <arg name="video_analyzer_3d_pose_enabled"/>
     <arg name="video_analyzer_3d_face_descriptor_enabled"/>
+    <arg name="video_analyzer_3d_cropped_image_enabled"/>
 
     <arg name="video_analyzer_2d_wide_use_descriptor_yolo"/>
     <arg name="video_analyzer_2d_wide_yolo_model"/>
     <arg name="video_analyzer_2d_wide_pose_enabled"/>
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled"/>
+    <arg name="video_analyzer_2d_wide_cropped_image_enabled"/>
 
     <arg name="visualization" default="false"/>
 
@@ -26,7 +28,7 @@
         <param name="pose_enabled" value="$(arg video_analyzer_3d_pose_enabled)"/>
         <param name="face_descriptor_enabled" value="$(arg video_analyzer_3d_face_descriptor_enabled)"/>
         <param name="semantic_segmentation_enabled" value="false"/>
-        <param name="cropped_image_enabled" value="false"/>
+        <param name="cropped_image_enabled" value="$(arg video_analyzer_3d_cropped_image_enabled)"/>
 
         <param name="depth_mean_offset" value="2"/>
 
@@ -57,7 +59,7 @@
         <param name="face_descriptor_enabled" value="$(arg video_analyzer_2d_wide_face_descriptor_enabled)"/>
         <param name="semantic_segmentation_enabled" value="false"/>
         <param name="semantic_segmentation_dataset" value="coco"/> <!-- coco, kitchen_open_images or person_other_open_images -->
-        <param name="cropped_image_enabled" value="false"/>
+        <param name="cropped_image_enabled" value="$(arg video_analyzer_2d_wide_cropped_image_enabled)"/>
 
         <remap from="image_raw" to="camera_2d_wide/image_rect"/>
         <remap from="video_analysis" to="camera_2d_wide/video_analysis"/>

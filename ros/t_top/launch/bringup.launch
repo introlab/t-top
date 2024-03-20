@@ -14,11 +14,13 @@
     <arg name="video_analyzer_3d_yolo_model" default="yolo_v7_tiny_coco"/>
     <arg name="video_analyzer_3d_pose_enabled" default="true"/>
     <arg name="video_analyzer_3d_face_descriptor_enabled" default="true"/>
+    <arg name="video_analyzer_3d_cropped_image_enabled" default="false"/>
 
     <arg name="video_analyzer_2d_wide_use_descriptor_yolo" default="false"/>
     <arg name="video_analyzer_2d_wide_yolo_model" default="yolo_v7_coco"/>
     <arg name="video_analyzer_2d_wide_pose_enabled" default="false"/>
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled" default="false"/>
+    <arg name="video_analyzer_2d_wide_cropped_image_enabled"  default="false"/>
 
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
@@ -41,11 +43,13 @@
         <arg name="video_analyzer_3d_yolo_model" value="$(arg video_analyzer_3d_yolo_model)"/>
         <arg name="video_analyzer_3d_pose_enabled" value="$(arg video_analyzer_3d_pose_enabled)"/>
         <arg name="video_analyzer_3d_face_descriptor_enabled" value="$(arg video_analyzer_3d_face_descriptor_enabled)"/>
+        <arg name="video_analyzer_3d_cropped_image_enabled" value="$(arg video_analyzer_3d_cropped_image_enabled)"/>
 
         <arg name="video_analyzer_2d_wide_use_descriptor_yolo" value="$(arg video_analyzer_2d_wide_use_descriptor_yolo)"/>
         <arg name="video_analyzer_2d_wide_yolo_model" value="$(arg video_analyzer_2d_wide_yolo_model)"/>
         <arg name="video_analyzer_2d_wide_pose_enabled" value="$(arg video_analyzer_2d_wide_pose_enabled)"/>
         <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="$(arg video_analyzer_2d_wide_face_descriptor_enabled)"/>
+        <arg name="video_analyzer_2d_wide_cropped_image_enabled" value="$(arg video_analyzer_2d_wide_cropped_image_enabled)"/>
 
         <arg name="speech_to_text_type" value="$(arg speech_to_text_type)"/>
         <arg name="visualization" value="$(arg visualization)"/>
