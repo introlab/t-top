@@ -29,6 +29,7 @@ class WhisperSpeechToTextNode:
         self._compute_type = rospy.get_param('~compute_type')
 
         self._prebuffering_frame_count = rospy.get_param('~prebuffering_frame_count', 4)
+        self._minimum_voice_sequence_size = rospy.get_param('~minimum_voice_sequence_size', 8000)
 
         if self._language not in SUPPORTED_LANGUAGES:
             raise ValueError(f'Invalid language ({self._language})')
@@ -69,6 +70,7 @@ class WhisperSpeechToTextNode:
                 self._frames = self._frames[-self._prebuffering_frame_count:]
 
     def _filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
+        rospy.logerr(f"WhisperSpeechToTextNode Filter state changed \nprevious: {previous_is_filtering_all_messages}, new: {new_is_filtering_all_messages}")
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
             self._is_voice = False
             self._put_frames_in_voice_sequence_queue()
@@ -89,10 +91,12 @@ class WhisperSpeechToTextNode:
             voice_sequence = self._voice_sequence_queue.get()
             if voice_sequence is None:
                 break
+            elif voice_sequence.shape[0] < self._minimum_voice_sequence_size:
+                # Residual audio is flushed.
+                continue
 
             segments, _ = self._model.transcribe(voice_sequence,
                                                  beam_size=1, best_of=1, temperature=0.0, language=self._language)
-
             msg = Transcript()
             msg.text = ' '.join((segment.text for segment in segments))
             msg.is_final = True
