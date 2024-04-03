@@ -29,6 +29,9 @@ The node performs speech to text. It uses [Faster Whisper](https://github.com/gu
  (tiny, tiny.en, base, base.en, small, small.en, medium, medium.en, large or large.en).
  - `device` (string): The device that executes the model (cpu or cuda)
  - `compute_type` (string): The compute type (int8, float16 or float32).
+ - `prebuffering_frame_count` (int): Number of frames to be accumulated before processing (default=4)
+ - `minimum_voice_sequence_size` (int): Minimum number of voice samples to be processed (default=8000)
+
 
 #### Subscribed Topics
  - `voice_activity` ([audio_utils/VoiceActivity](https://github.com/introlab/audio_utils/blob/main/msg/VoiceActivity.msg)): The output of the voice activity detector.
