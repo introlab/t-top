@@ -70,7 +70,6 @@ class WhisperSpeechToTextNode:
                 self._frames = self._frames[-self._prebuffering_frame_count:]
 
     def _filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        rospy.logerr(f"WhisperSpeechToTextNode Filter state changed \nprevious: {previous_is_filtering_all_messages}, new: {new_is_filtering_all_messages}")
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
             self._is_voice = False
             self._put_frames_in_voice_sequence_queue()
