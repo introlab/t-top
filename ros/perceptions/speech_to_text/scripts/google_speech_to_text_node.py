@@ -35,6 +35,7 @@ class GoogleSpeechToTextNode:
         self._buffer = self._create_request_frame_buffer()
         self._current_buffer_index = 0
         self._request_frame_queue = queue.Queue()
+        self._total_samples_count = 0
 
         rospy.on_shutdown(self._shutdown_cb)
 
@@ -105,21 +106,22 @@ class GoogleSpeechToTextNode:
             requests = self._request_frame_generator()
             start_timestamp = datetime.datetime.now()
             responses = self._speech_client.streaming_recognize(config=streaming_config, requests=requests)
-            end_timestamp = datetime.datetime.now()
 
             for response in responses:
                 if response.results:
+                    end_timestamp = datetime.datetime.now()
                     msg = Transcript()
                     msg.text = response.results[0].alternatives[0].transcript
                     msg.is_final = response.results[0].is_final
                     msg.processing_time_s = (end_timestamp - start_timestamp).total_seconds()
-                    # Not sure how many samples we processed.
-                    msg.total_samples_count = self._frame_sample_count
+                    msg.total_samples_count = self._total_samples_count
                     self._text_pub.publish(msg)
 
     def _request_frame_generator(self):
+        self._total_samples_count = 0
         while self._is_enabled:
             audio_content = self._request_frame_queue.get()
+            self._total_samples_count += audio_content.shape[0]
             if audio_content is None:
                 break
 
