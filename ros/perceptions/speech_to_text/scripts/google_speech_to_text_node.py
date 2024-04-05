@@ -3,7 +3,7 @@
 import queue
 import threading
 import time
-
+import datetime
 import numpy as np
 
 import rospy
@@ -103,12 +103,18 @@ class GoogleSpeechToTextNode:
                                                                  interim_results=True)
 
             requests = self._request_frame_generator()
+            start_timestamp = datetime.datetime.now()
             responses = self._speech_client.streaming_recognize(config=streaming_config, requests=requests)
+            end_timestamp = datetime.datetime.now()
+
             for response in responses:
                 if response.results:
                     msg = Transcript()
                     msg.text = response.results[0].alternatives[0].transcript
                     msg.is_final = response.results[0].is_final
+                    msg.processing_time_s = (end_timestamp - start_timestamp).total_seconds()
+                    # Not sure how many samples we processed.
+                    msg.total_samples_count = self._frame_sample_count
                     self._text_pub.publish(msg)
 
     def _request_frame_generator(self):
