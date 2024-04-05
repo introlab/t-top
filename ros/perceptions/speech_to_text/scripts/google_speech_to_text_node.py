@@ -107,15 +107,25 @@ class GoogleSpeechToTextNode:
             start_timestamp = datetime.datetime.now()
             responses = self._speech_client.streaming_recognize(config=streaming_config, requests=requests)
 
+            processing_time = 0
+
             for response in responses:
+                processing_time += (datetime.datetime.now() - start_timestamp).total_seconds()
                 if response.results:
-                    end_timestamp = datetime.datetime.now()
                     msg = Transcript()
                     msg.text = response.results[0].alternatives[0].transcript
                     msg.is_final = response.results[0].is_final
-                    msg.processing_time_s = (end_timestamp - start_timestamp).total_seconds()
+                    msg.processing_time_s = processing_time
                     msg.total_samples_count = self._total_samples_count
                     self._text_pub.publish(msg)
+
+                    # Reset samples and processing time when message is final
+                    if msg.is_final:
+                        self._total_samples_count = 0
+                        processing_time = 0
+
+                # Reset time for this iteration
+                start_timestamp = datetime.datetime.now()
 
     def _request_frame_generator(self):
         self._total_samples_count = 0
