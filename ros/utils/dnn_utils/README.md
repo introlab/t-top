@@ -10,10 +10,11 @@ TensorRT depending on the executing speed.
 
 This neural network classifies a sound to one class and extracts an embedding. It takes as input a mono audio frame.
 
-### `DescriptorYoloV4`
+### `DescriptorYolo`
 
 This neural network detects objects, classifies them and extracts embeddings for them. It takes as input a RGB image.
-The model is a modified version of `YOLOv4-tiny`.
+The model is a modified version of `YOLOv4-tiny (COCO)` or `YOLOv7 (COCO)`.
+`YOLOv7 (COCO)` is training with [this repository](https://github.com/mamaheux/descriptor-yolov7).
 
 ### `FaceDescriptorExtractor`
 
@@ -33,8 +34,8 @@ This neural network estimates the pose of a person. It takes as input an image c
 This neural network extracts an embedding for a sound containing a voice. It takes as input a mono audio frame
 containing a voice.
 
-### `YoloV4`
+### `Yolo`
 
-This neural network detects objects and classifies them. It takes as input a RGB image. The model is `YOLOv4-tiny`
-and [pre-trained weights](https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-tiny.weights)
-are used.
+This neural network detects objects and classifies them. It takes as input a RGB image. The model is `YOLOv4 (COCO)`,
+`YOLOv4-tiny (COCO)`, `YOLOv7 (COCO)`, `YOLOv7-tiny (COCO)` or `YOLOv7 (Objects365)`.
+The pre-trained weights are used except for `YOLOv7 (Objects365)` which is trained with [this repository](https://github.com/WongKinYiu/yolov7).

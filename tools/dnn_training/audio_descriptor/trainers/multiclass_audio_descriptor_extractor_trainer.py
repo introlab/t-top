@@ -191,3 +191,6 @@ class MulticlassAudioDescriptorExtractorTrainer(Trainer):
                                                                              precision_recall_metric.get_precision(),
                                                                              precision_recall_metric.get_recall(),
                                                                              map_metric.get_value()))
+
+        aps_by_class = map_metric.get_values_by_class(dataset_loader.dataset.class_names())
+        print('\nAP : {}'.format(aps_by_class))

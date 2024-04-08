@@ -23,6 +23,12 @@ class MulticlassAudioDescriptorDataset(Dataset):
     def _list_sounds(self, root, split, enhanced_targets):
         raise NotImplementedError()
 
+    def class_names(self):
+        class_names = [''] * len(self._class_indexes_by_name)
+        for name, index in self._class_indexes_by_name.items():
+            class_names[index] = name
+        return class_names
+
     def _create_target(self, class_names):
         target = torch.zeros(len(self._class_indexes_by_name), dtype=torch.float)
         for class_name in class_names:
