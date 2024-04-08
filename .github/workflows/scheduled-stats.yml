@@ -6,19 +6,16 @@ on:
         branches:
             - github-stats
     schedule:
-        - cron: '0 0 * * *'
+        - cron: '0 5 * * *'
 jobs:
     get_stats:
         runs-on: ubuntu-latest
         steps:
-            - name: Call API to get stats
-              run: |
-                CLONE_STATS=$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.STATS_TOKEN_FOR_GITHUB }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/introlab/t-top/traffic/clones?per=day)
-                PATH_STATS=$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.STATS_TOKEN_FOR_GITHUB }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/introlab/t-top/traffic/popular/paths)
-                REFERRERS_STATS=$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.STATS_TOKEN_FOR_GITHUB }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/introlab/t-top/traffic/popular/referrers)
-                VIEWS_STATS=$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.STATS_TOKEN_FOR_GITHUB }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/introlab/t-top/traffic/views?per=day)
-
-                echo "Clones : $CLONE_STATS\n"
-                echo "Paths: $PATH_STATS\n"
-                echo "Referrers: $REFERRERS_STATS\n"
-                echo "Views: $VIEWS_STATS\n"
+            - name: Update Stats
+              uses: introlab/github-stats-action@main
+              with:
+                  github-stats-token: ${{ secrets.STATS_TOKEN }}
+                  google-application-credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+                  spreadsheet-id: ${{ secrets.SPREADSHEET_ID }}
+                  github-owner-name: 'introlab'
+                  github-project-name: 'github-stats-action'
