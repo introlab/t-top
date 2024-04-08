@@ -8,8 +8,9 @@ on:
     schedule:
         - cron: '0 0 * * *'
 jobs:
-    build:
+    get_stats:
         runs-on: ubuntu-latest
+        permissions: write-all
         steps:
             - name: Call API to get stats
               run: |
