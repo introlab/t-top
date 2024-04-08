@@ -17,5 +17,3 @@ jobs:
                   github-stats-token: ${{ secrets.STATS_TOKEN }}
                   google-application-credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
                   spreadsheet-id: ${{ secrets.SPREADSHEET_ID }}
-                  github-owner-name: 'introlab'
-                  github-project-name: 'github-stats-action'
