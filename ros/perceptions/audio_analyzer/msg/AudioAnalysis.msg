@@ -10,3 +10,5 @@ float32[] voice_descriptor
 float64 direction_x
 float64 direction_y
 float64 direction_z
+
+float32 processing_time_s
