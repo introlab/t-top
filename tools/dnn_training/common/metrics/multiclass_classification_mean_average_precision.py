@@ -35,3 +35,16 @@ class MulticlassClassificationMeanAveragePrecisionMetric:
             mean_average_precision += average_precision_score(target[:, class_index], prediction[:, class_index])
 
         return mean_average_precision / self._class_count
+
+    def get_values_by_class(self, class_names):
+        prediction = np.concatenate(self._predictions, axis=0)
+        target = np.concatenate(self._targets, axis=0)
+
+        ap_by_class = {}
+        for class_index, class_name in enumerate(class_names):
+            ap_by_class[class_name] = average_precision_score(target[:, class_index], prediction[:, class_index])
+
+        ap_by_class = list(ap_by_class.items())
+        ap_by_class.sort(key=lambda x: x[1], reverse=True)
+
+        return ap_by_class
