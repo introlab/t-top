@@ -95,6 +95,7 @@
         <arg name="output_camera_topic" value="/face_camera/image_raw"/>
 
         <arg name="face_detection_model" value="small_yunet_0.5_640"/>
+        <arg name="use_gpu_if_available" value="true"/>
     </include>
 
     <!-- Face cropping webrtc -->
@@ -104,6 +105,7 @@
         <arg name="output_camera_topic" value="/face_webrtc_image"/>
 
         <arg name="face_detection_model" value="small_yunet_0.5_640"/>
+        <arg name="use_gpu_if_available" value="true"/>
     </include>
 
     <!-- OpenTera Robot GUI -->
