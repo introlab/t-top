@@ -2,6 +2,7 @@
 
 import queue
 import threading
+import datetime
 
 import numpy as np
 
@@ -94,11 +95,16 @@ class WhisperSpeechToTextNode:
                 # Residual audio is flushed.
                 continue
 
+            start_timestamp = datetime.datetime.now()
             segments, _ = self._model.transcribe(voice_sequence,
                                                  beam_size=1, best_of=1, temperature=0.0, language=self._language)
+            end_timestamp = datetime.datetime.now()
+
             msg = Transcript()
             msg.text = ' '.join((segment.text for segment in segments))
             msg.is_final = True
+            msg.processing_time_s = (end_timestamp - start_timestamp).total_seconds()
+            msg.total_samples_count = voice_sequence.shape[0]
             self._text_pub.publish(msg)
 
     def _warm_up_model(self):

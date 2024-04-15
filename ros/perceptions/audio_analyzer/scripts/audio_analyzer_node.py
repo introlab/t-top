@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import threading
-
+from datetime import datetime
 import numpy as np
 
 import torch
@@ -86,6 +86,7 @@ class AudioAnalyzerNode:
                 self._audio_analysis_count += audio_frame.shape[0]
 
     def _analyse(self):
+        start_time = datetime.now()
         audio_buffer, sst_id = self._get_audio_buffer_and_sst_id()
         audio_descriptor_buffer = audio_buffer[-self._audio_descriptor_extractor.get_supported_duration():]
         audio_descriptor, audio_class_probabilities = self._audio_descriptor_extractor(audio_descriptor_buffer)
@@ -99,7 +100,8 @@ class AudioAnalyzerNode:
             voice_descriptor = []
 
         audio_classes = self._get_audio_classes(audio_class_probabilities)
-        self._publish_audio_analysis(sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor)
+        processing_time_s = (datetime.now() - start_time).total_seconds()
+        self._publish_audio_analysis(sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor, processing_time_s)
 
     def _get_audio_buffer_and_sst_id(self):
         with self._audio_frames_lock:
@@ -114,7 +116,7 @@ class AudioAnalyzerNode:
         return [self._class_names[i] for i in range(len(self._class_names))
                 if audio_class_probabilities[i].item() >= self._class_probability_threshold]
 
-    def _publish_audio_analysis(self, sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor):
+    def _publish_audio_analysis(self, sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor, processing_time_s=0):
         with self._audio_direction_lock:
             frame_id, direction_x, direction_y, direction_z = self._audio_direction
 
@@ -138,6 +140,8 @@ class AudioAnalyzerNode:
         msg.direction_x = direction_x
         msg.direction_y = direction_y
         msg.direction_z = direction_z
+
+        msg.processing_time_s = processing_time_s
 
         self._audio_analysis_pub.publish(msg)
         self._audio_analysis_seq += 1
