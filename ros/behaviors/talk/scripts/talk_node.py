@@ -66,18 +66,10 @@ class TalkNode:
                 if msg.text != '':
                     start_time = datetime.now()
                     file_path = self._voice_generator.generate(msg.text)
-
                     frames = self._load_frames(file_path)
+                    processing_time_s = (datetime.now() - start_time).total_seconds()
 
-                    stats = Statistics()
-                    stats.text = msg.text
-                    stats.header.stamp = rospy.Time.now()
-                    stats.processing_time_s = (datetime.now() - start_time).total_seconds()
-                    stats.total_samples_count = 0
-                    for frame in frames:
-                        stats.total_samples_count += frame.shape[0]
-
-                    self._stats_pub.publish(stats)
+                    self._publish_stats(msg.text, frames, processing_time_s)
 
                     self._play_audio(frames)
                     self._voice_generator.delete_generated_file(file_path)
@@ -89,6 +81,18 @@ class TalkNode:
                 ok = False
 
             self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
+
+    def _publish_stats(self, text, frames, processing_time_s):
+        stats = Statistics()
+        stats.text = text
+        stats.processing_time_s = processing_time_s
+        stats.header.stamp = rospy.Time.now()
+        stats.total_samples_count = 0
+
+        for frame in frames:
+            stats.total_samples_count += frame.shape[0]
+
+        self._stats_pub.publish(stats)
 
     def _play_audio(self, frames):
         global_energy_filter_sos, global_energy_filter_zi = self._initialize_global_energy_filter()
