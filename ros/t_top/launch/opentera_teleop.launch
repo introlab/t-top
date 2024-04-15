@@ -28,12 +28,21 @@
 
     <include file="$(find t_top)/launch/perceptions/video_analyzer.launch">
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
-        <arg name="visualization" value="$(arg visualization)"/>
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+
+        <arg name="video_analyzer_3d_use_descriptor_yolo" value="false"/>
+        <arg name="video_analyzer_3d_yolo_model" value="yolo_v7_tiny_coco"/>
         <arg name="video_analyzer_3d_pose_enabled" value="true"/>
-        <arg name="video_analyzer_3d_face_descriptor_enabled" value="false"/>
+        <arg name="video_analyzer_3d_face_descriptor_enabled" value="true"/>
+        <arg name="video_analyzer_3d_cropped_image_enabled" value="false"/>
+
+        <arg name="video_analyzer_2d_wide_use_descriptor_yolo" value="false"/>
+        <arg name="video_analyzer_2d_wide_yolo_model" value="yolo_v7_coco"/>
         <arg name="video_analyzer_2d_wide_pose_enabled" value="false"/>
         <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_cropped_image_enabled" value="false"/>
+
+        <arg name="visualization" value="$(arg visualization)"/>
     </include>
 
 

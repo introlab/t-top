@@ -20,7 +20,7 @@
     <arg name="video_analyzer_2d_wide_yolo_model" default="yolo_v7_coco"/>
     <arg name="video_analyzer_2d_wide_pose_enabled" default="false"/>
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled" default="false"/>
-    <arg name="video_analyzer_2d_wide_cropped_image_enabled"  default="false"/>
+    <arg name="video_analyzer_2d_wide_cropped_image_enabled" default="false"/>
 
     <arg name="visualization" default="false"/>
     <arg name="slam" default="true"/>
