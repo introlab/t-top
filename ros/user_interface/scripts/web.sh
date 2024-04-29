@@ -9,7 +9,7 @@ PATH=$(npm bin):$PATH
 serve -s dist -l 8080 &
 SERVER_PID=$!
 trap "kill ${SERVER_PID}; exit 1" INT
-sleep 10
+sleep 1
 
 if [ "$1" == "true" ]
 then
