@@ -6,6 +6,7 @@
     <arg name="voice_generator_type" default="piper"/> <!-- Options: google or piper -->
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
     <arg name="speech_to_text_type" default="whisper"/> <!-- Options: google or whisper -->
+    <arg name="whisper_model" default="base"/> <!-- Options: tiny, base, small, medium -->
 
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
@@ -68,6 +69,7 @@
         <arg name="audio_analyzer_class_probability_threshold" value="$(arg audio_analyzer_class_probability_threshold)"/>
 
         <arg name="speech_to_text_type" value="$(arg speech_to_text_type)"/>
+        <arg name="whisper_model" value="$(arg whisper_model)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="slam" value="$(arg slam)"/>
     </include>
