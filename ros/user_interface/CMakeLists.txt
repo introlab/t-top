@@ -203,6 +203,14 @@ add_custom_target(
         VERBATIM
 )
 
+add_custom_target(
+    user_interface-build ALL
+    DEPENDS user_interface-install
+    COMMAND npm run build
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
+)
+
 #######################
 ## Required programs ##
 #######################
