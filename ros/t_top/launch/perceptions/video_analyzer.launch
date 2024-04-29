@@ -14,15 +14,20 @@
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled"/>
     <arg name="video_analyzer_2d_wide_cropped_image_enabled"/>
 
+    <arg name="video_analyzer_confidence_threshold"/>
+    <arg name="video_analyzer_nms_threshold"/>
+    <arg name="video_analyzer_person_probability_threshold"/>
+    <arg name="video_analyzer_pose_confidence_threshold"/>
+
     <arg name="visualization" default="false"/>
 
     <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_3d_node">
         <param name="use_descriptor_yolo" value="$(arg video_analyzer_3d_use_descriptor_yolo)"/>
         <param name="yolo_model" value="$(arg video_analyzer_3d_yolo_model)"/>
-        <param name="confidence_threshold" value="0.5"/>
-        <param name="nms_threshold" value="0.5"/>
-        <param name="person_probability_threshold" value="0.75"/>
-        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="confidence_threshold" value="$(arg video_analyzer_confidence_threshold)"/>
+        <param name="nms_threshold" value="$(arg video_analyzer_nms_threshold)"/>
+        <param name="person_probability_threshold" value="$(arg video_analyzer_person_probability_threshold)"/>
+        <param name="pose_confidence_threshold" value="$(arg video_analyzer_pose_confidence_threshold)"/>
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
 
         <param name="pose_enabled" value="$(arg video_analyzer_3d_pose_enabled)"/>
@@ -49,10 +54,10 @@
     <node if="$(arg camera_2d_wide_enabled)" pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node">
         <param name="use_descriptor_yolo" value="$(arg video_analyzer_2d_wide_use_descriptor_yolo)"/>
         <param name="yolo_model" value="$(arg video_analyzer_2d_wide_yolo_model)"/>
-        <param name="confidence_threshold" value="0.5"/>
-        <param name="nms_threshold" value="0.5"/>
-        <param name="person_probability_threshold" value="0.75"/>
-        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="confidence_threshold" value="$(arg video_analyzer_confidence_threshold)"/>
+        <param name="nms_threshold" value="$(arg video_analyzer_nms_threshold)"/>
+        <param name="person_probability_threshold" value="$(arg video_analyzer_person_probability_threshold)"/>
+        <param name="pose_confidence_threshold" value="$(arg video_analyzer_pose_confidence_threshold)"/>
         <param name="inference_type" value="$(arg neural_network_inference_type)"/>
 
         <param name="pose_enabled" value="$(arg video_analyzer_2d_wide_pose_enabled)"/>

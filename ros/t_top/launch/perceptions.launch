@@ -15,6 +15,11 @@
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled"/>
     <arg name="video_analyzer_2d_wide_cropped_image_enabled"/>
 
+    <arg name="video_analyzer_confidence_threshold"/>
+    <arg name="video_analyzer_nms_threshold"/>
+    <arg name="video_analyzer_person_probability_threshold"/>
+    <arg name="video_analyzer_pose_confidence_threshold"/>
+
     <arg name="audio_analyzer_voice_probability_threshold"/>
     <arg name="audio_analyzer_class_probability_threshold"/>
 
@@ -42,6 +47,11 @@
         <arg name="video_analyzer_2d_wide_pose_enabled" value="$(arg video_analyzer_2d_wide_pose_enabled)"/>
         <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="$(arg video_analyzer_2d_wide_face_descriptor_enabled)"/>
         <arg name="video_analyzer_2d_wide_cropped_image_enabled" value="$(arg video_analyzer_2d_wide_cropped_image_enabled)"/>
+
+        <arg name="video_analyzer_confidence_threshold" value="$(arg video_analyzer_confidence_threshold)"/>
+        <arg name="video_analyzer_nms_threshold" value="$(arg video_analyzer_nms_threshold)"/>
+        <arg name="video_analyzer_person_probability_threshold" value="$(arg video_analyzer_person_probability_threshold)"/>
+        <arg name="video_analyzer_pose_confidence_threshold" value="$(arg video_analyzer_pose_confidence_threshold)"/>
 
         <arg name="visualization" value="$(arg visualization)"/>
     </include>
