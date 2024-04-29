@@ -15,6 +15,9 @@
     <arg name="video_analyzer_2d_wide_face_descriptor_enabled"/>
     <arg name="video_analyzer_2d_wide_cropped_image_enabled"/>
 
+    <arg name="audio_analyzer_voice_probability_threshold"/>
+    <arg name="audio_analyzer_class_probability_threshold"/>
+
     <arg name="speech_to_text_type"/> <!-- Options: google or whisper -->
     <arg name="visualization" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
@@ -75,6 +78,8 @@
     <!-- Audio Analyzer -->
     <include file="$(find t_top)/launch/perceptions/audio_analyzer.launch">
         <arg name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+        <arg name="audio_analyzer_voice_probability_threshold" value="$(arg audio_analyzer_voice_probability_threshold)"/>
+        <arg name="audio_analyzer_class_probability_threshold" value="$(arg audio_analyzer_class_probability_threshold)"/>
     </include>
 
     <!-- Person Identification -->
