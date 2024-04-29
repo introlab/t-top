@@ -1,6 +1,7 @@
 <launch>
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="type"/> <!-- Options: google or whisper -->
+    <arg name="whisper_model"/> <!-- Options: tiny, base, small, medium -->
 
     <node if="$(eval arg('type') == 'google')" pkg="speech_to_text" type="google_speech_to_text_node.py" name="google_speech_to_text_node">
         <param name="sampling_frequency" value="16000"/>
@@ -15,8 +16,8 @@
 
     <node if="$(eval arg('type') == 'whisper')" pkg="speech_to_text" type="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen">
         <param name="language" value="$(arg language)"/>
-        <param if="$(eval arg('language') == 'en')" name="model_size" value="base.en"/>
-        <param if="$(eval arg('language') == 'fr')" name="model_size" value="base"/>
+        <param if="$(eval arg('language') == 'en')" name="model_size" value="$(arg whisper_model).en"/>
+        <param if="$(eval arg('language') == 'fr')" name="model_size" value="$(arg whisper_model)"/>
         <param name="device" value="cuda"/>
         <param name="compute_type" value="int8"/>
 
