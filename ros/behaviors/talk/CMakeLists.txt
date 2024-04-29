@@ -55,6 +55,7 @@ add_message_files(
         FILES
         Text.msg
         Done.msg
+        Statistics.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -72,7 +73,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages()
+generate_messages(
+    DEPENDENCIES
+    std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##

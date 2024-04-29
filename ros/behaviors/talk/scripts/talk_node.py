@@ -3,6 +3,7 @@
 
 import os
 import threading
+from datetime import datetime
 
 import numpy as np
 from scipy import signal
@@ -12,7 +13,7 @@ import librosa
 import rospy
 import rospkg
 from std_msgs.msg import Float32
-from talk.msg import Text, Done
+from talk.msg import Text, Done, Statistics
 from audio_utils.msg import AudioFrame
 
 import hbba_lite
@@ -51,6 +52,7 @@ class TalkNode:
         self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
         self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
         self._done_talking_pub = rospy.Publisher('talk/done', Done, queue_size=5)
+        self._stats_pub = rospy.Publisher('talk/statistics', Statistics, queue_size=5)
 
         self._text_sub_lock = threading.Lock()
         self._text_sub = rospy.Subscriber('talk/text', Text, self._on_text_received_cb, queue_size=1)
@@ -62,8 +64,14 @@ class TalkNode:
 
             try:
                 if msg.text != '':
+                    start_time = datetime.now()
                     file_path = self._voice_generator.generate(msg.text)
-                    self._play_audio(file_path)
+                    frames = self._load_frames(file_path)
+                    processing_time_s = (datetime.now() - start_time).total_seconds()
+
+                    self._publish_stats(msg.text, frames, processing_time_s)
+
+                    self._play_audio(frames)
                     self._voice_generator.delete_generated_file(file_path)
                     rospy.sleep(self._done_delay_s)
 
@@ -74,9 +82,19 @@ class TalkNode:
 
             self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
 
-    def _play_audio(self, file_path):
-        frames = self._load_frames(file_path)
+    def _publish_stats(self, text, frames, processing_time_s):
+        stats = Statistics()
+        stats.text = text
+        stats.processing_time_s = processing_time_s
+        stats.header.stamp = rospy.Time.now()
+        stats.total_samples_count = 0
 
+        for frame in frames:
+            stats.total_samples_count += frame.shape[0]
+
+        self._stats_pub.publish(stats)
+
+    def _play_audio(self, frames):
         global_energy_filter_sos, global_energy_filter_zi = self._initialize_global_energy_filter()
         current_energy_filter_sos, current_energy_filter_zi = self._initialize_current_energy_filter()
         mouth_signal_filter_sos, mouth_signal_filter_zi = self._initialize_mouth_signal_filter()
@@ -109,7 +127,6 @@ class TalkNode:
             audio_frame.header.stamp = rospy.Time.now()
             audio_frame.data = frame.tobytes()
             self._audio_pub.publish(audio_frame)
-
             rate.sleep()
 
         mouth_signal_msg.data = 0.0

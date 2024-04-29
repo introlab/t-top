@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import traceback
-
+from datetime import datetime
 import rospy
 
 from sensor_msgs.msg import Image
@@ -20,11 +20,13 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
 
     def _image_cb(self, color_image_msg):
         try:
+            start_time = datetime.now()
             color_image = self._cv_bridge.imgmsg_to_cv2(color_image_msg, 'rgb8')
             object_analyses, semantic_segmentation = self._analyse(color_image)
 
             video_analysis_msg = self._analysis_to_msg(object_analyses, semantic_segmentation,
                                                        color_image_msg.header, color_image)
+            video_analysis_msg.processing_time_s = (datetime.now() - start_time).total_seconds()
             self._video_analysis_pub.publish(video_analysis_msg)
             self._publish_analysed_image(color_image, color_image_msg.header, object_analyses)
         except Exception as e:

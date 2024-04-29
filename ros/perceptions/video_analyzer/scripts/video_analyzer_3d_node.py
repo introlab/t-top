@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import traceback
-
+from datetime import datetime
 import rospy
 import message_filters
 
@@ -33,6 +33,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
             rospy.logerr('Invalid depth image encoding')
 
         try:
+            start_time = datetime.now()
             color_image = self._cv_bridge.imgmsg_to_cv2(color_image_msg, 'rgb8')
             depth_image = self._cv_bridge.imgmsg_to_cv2(depth_image_msg, '16UC1')
 
@@ -41,6 +42,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
             video_analysis_msg = self._analysis_to_msg(object_analyses, semantic_segmentation,
                                                        color_image_msg.header, color_image,
                                                        depth_image, depth_camera_info)
+            video_analysis_msg.processing_time_s = (datetime.now() - start_time).total_seconds()
             self._video_analysis_pub.publish(video_analysis_msg)
             self._publish_analysed_image(color_image, color_image_msg.header, object_analyses)
         except Exception as e:
