@@ -77,7 +77,7 @@ def _hflip_bbox(target, image_size):
         annotation[0] = image_size[1] - center_x
 
 
-def _convert_bbox_to_yolo(target, scale, image_size, one_hot_class):
+def _convert_bbox_to_yolo(target, scale, image_size, offset_x, offset_y, one_hot_class):
     if one_hot_class:
         class_count = len(CATEGORY_ID_TO_CLASS_INDEX_MAPPING)
         converted_target = {'bbox': torch.zeros(len(target), 4, dtype=torch.float),
@@ -97,8 +97,8 @@ def _convert_bbox_to_yolo(target, scale, image_size, one_hot_class):
         w = min([w, image_size[1] - x])
         h = min([h, image_size[0] - y])
 
-        center_x = x + w / 2
-        center_y = y + h / 2
+        center_x = x + w / 2 + offset_x
+        center_y = y + h / 2 + offset_y
 
         converted_target['bbox'][i] = torch.tensor([center_x, center_y, w, h], dtype=torch.float)
         if one_hot_class:
@@ -125,7 +125,7 @@ class CocoDetectionTrainingTransforms:
         image, target = _random_crop(image, target)
 
         resized_image, scale, offset_x, offset_y = _resize_image(image, self._image_size)
-        target = _convert_bbox_to_yolo(target, scale, self._image_size, self._one_hot_class)
+        target = _convert_bbox_to_yolo(target, scale, self._image_size, offset_x, offset_y, self._one_hot_class)
 
         if random.random() < self._horizontal_flip_p:
             resized_image = F.hflip(resized_image)
@@ -151,7 +151,7 @@ class CocoDetectionValidationTransforms:
         resized_image_tensor = F.to_tensor(resized_image)
 
         if target is not None:
-            target = _convert_bbox_to_yolo(target, scale, self._image_size, self._one_hot_class)
+            target = _convert_bbox_to_yolo(target, scale, self._image_size, offset_x, offset_y, self._one_hot_class)
 
         metadata = {
             'scale': scale,
