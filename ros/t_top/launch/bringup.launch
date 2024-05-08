@@ -102,17 +102,17 @@
         <arg name="fullscreen_face" value="$(arg fullscreen_face)"/>
         <!-- Delays -->
         <arg name="dance_behavior_delay" value="$(eval arg('platform_delay') + 40.0)"/>
-        <arg name="explore_behavior_delay" value="$(eval arg('platform_delay') + 40.0)"/>
-        <arg name="face_behavior_delay" value="$(eval arg('platform_delay') + 45.0)"/>
-        <arg name="face_following_behavior_delay" value="$(eval arg('platform_delay') + 40.0)"/>
-        <arg name="gesture_behavior_delay" value="$(eval arg('platform_delay') + 40.0)"/>
-        <arg name="led_animations_behavior_delay" value="$(eval arg('platform_delay') + 45.0)"/>
+        <arg name="explore_behavior_delay" value="$(eval arg('platform_delay') + 41.0)"/>
+        <arg name="face_behavior_delay" value="$(eval arg('platform_delay') + 120.0)"/>
+        <arg name="face_following_behavior_delay" value="$(eval arg('platform_delay') + 42.0)"/>
+        <arg name="gesture_behavior_delay" value="$(eval arg('platform_delay') + 43.0)"/>
+        <arg name="led_animations_behavior_delay" value="$(eval arg('platform_delay') + 44.0)"/>
         <arg name="led_emotions_behavior_delay" value="$(eval arg('platform_delay') + 45.0)"/>
-        <arg name="sound_following_behavior_delay" value="$(eval arg('platform_delay') + 45.0)"/>
+        <arg name="sound_following_behavior_delay" value="$(eval arg('platform_delay') + 46.0)"/>
         <arg name="sound_object_person_following_behavior_delay" value="$(eval arg('platform_delay') + 50.0)"/>
-        <arg name="sound_player_behavior_delay" value="$(eval arg('platform_delay') + 50.0)"/>
-        <arg name="talk_behavior_delay" value="$(eval arg('platform_delay') + 55.0)"/>
-        <arg name="too_close_reaction_behavior_delay" value="$(eval arg('platform_delay') + 50.0)"/>
+        <arg name="sound_player_behavior_delay" value="$(eval arg('platform_delay') + 55.0)"/>
+        <arg name="talk_behavior_delay" value="$(eval arg('platform_delay') + 60.0)"/>
+        <arg name="too_close_reaction_behavior_delay" value="$(eval arg('platform_delay') + 60.0)"/>
     </include>
 
     <node pkg="cloud_data" type="cloud_data_node.py" name="cloud_data_node">
