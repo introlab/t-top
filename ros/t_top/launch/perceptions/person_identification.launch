@@ -1,6 +1,8 @@
 <launch>
 
-    <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node">
+    <arg name="person_identification_perception_delay"/>
+
+    <node pkg="person_identification" type="person_identification_node.py" name="person_identification_node" launch-prefix="bash -c 'sleep $(arg person_identification_perception_delay); $0 $@' ">
         <param name="face_sharpness_score_threshold" value="0.5"/>
         <param name="face_descriptor_threshold" value="0.7"/>
         <param name="voice_descriptor_threshold" value="1.266"/>

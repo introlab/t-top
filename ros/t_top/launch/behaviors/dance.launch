@@ -1,6 +1,7 @@
 <launch>
+    <arg name="dance_behavior_delay"/>
 
-    <node pkg="dance" type="head_dance_node.py" name="head_dance_node">
+    <node pkg="dance" type="head_dance_node.py" name="head_dance_node" launch-prefix="bash -c 'sleep $(arg dance_behavior_delay); $0 $@' ">
         <param name="movement_file" value="$(find dance)/head_movements.json"/>
 
         <remap from="pose/filter_state" to="head_dance/filter_state"/>
@@ -8,7 +9,7 @@
         <remap from="beat" to="dance/beat"/>
     </node>
 
-    <node pkg="dance" type="torso_dance_node.py" name="torso_dance_node">
+    <node pkg="dance" type="torso_dance_node.py" name="torso_dance_node" launch-prefix="bash -c 'sleep $(arg dance_behavior_delay); $0 $@' ">
         <param name="movement_file" value="$(find dance)/torso_movements.json"/>
 
         <remap from="pose/filter_state" to="torso_dance/filter_state"/>
@@ -16,7 +17,7 @@
         <remap from="beat" to="dance/beat"/>
     </node>
 
-    <node pkg="dance" type="led_dance_node.py" name="led_dance_node">
+    <node pkg="dance" type="led_dance_node.py" name="led_dance_node" launch-prefix="bash -c 'sleep $(arg dance_behavior_delay); $0 $@' ">
         <param name="led_colors_file" value="$(find dance)/led_colors.json"/>
 
         <remap from="set_led_colors/filter_state" to="led_dance/filter_state"/>

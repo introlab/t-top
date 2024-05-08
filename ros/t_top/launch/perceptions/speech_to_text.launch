@@ -2,8 +2,9 @@
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="type"/> <!-- Options: google or whisper -->
     <arg name="whisper_model"/> <!-- Options: tiny, base, small, medium -->
+    <arg name="speech_to_text_perception_delay"/>
 
-    <node if="$(eval arg('type') == 'google')" pkg="speech_to_text" type="google_speech_to_text_node.py" name="google_speech_to_text_node">
+    <node if="$(eval arg('type') == 'google')" pkg="speech_to_text" type="google_speech_to_text_node.py" name="google_speech_to_text_node" launch-prefix="bash -c 'sleep $(arg speech_to_text_perception_delay); $0 $@' ">
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
         <param name="request_frame_count" value="4"/>
@@ -14,7 +15,7 @@
         <remap from="transcript" to="speech_to_text/transcript"/>
     </node>
 
-    <node if="$(eval arg('type') == 'whisper')" pkg="speech_to_text" type="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen">
+    <node if="$(eval arg('type') == 'whisper')" pkg="speech_to_text" type="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen" launch-prefix="bash -c 'sleep $(arg speech_to_text_perception_delay); $0 $@' ">
         <param name="language" value="$(arg language)"/>
         <param if="$(eval arg('language') == 'en')" name="model_size" value="$(arg whisper_model).en"/>
         <param if="$(eval arg('language') == 'fr')" name="model_size" value="$(arg whisper_model)"/>

@@ -20,8 +20,11 @@
     <arg name="video_analyzer_pose_confidence_threshold"/>
 
     <arg name="visualization" default="false"/>
+    <arg name="video_analyser_3d_perception_delay"/>
+    <arg name="video_analyzer_2d_wide_perception_delay"/>
 
-    <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_3d_node">
+
+    <node pkg="video_analyzer" type="video_analyzer_3d_node.py" name="video_analyzer_3d_node" launch-prefix="bash -c 'sleep $(arg video_analyser_3d_perception_delay); $0 $@' ">
         <param name="use_descriptor_yolo" value="$(arg video_analyzer_3d_use_descriptor_yolo)"/>
         <param name="yolo_model" value="$(arg video_analyzer_3d_yolo_model)"/>
         <param name="confidence_threshold" value="$(arg video_analyzer_confidence_threshold)"/>
@@ -51,7 +54,7 @@
         <remap from="video_analysis_markers" to="camera_3d/video_analysis_markers"/>
     </node>
 
-    <node if="$(arg camera_2d_wide_enabled)" pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node">
+    <node if="$(arg camera_2d_wide_enabled)" pkg="video_analyzer" type="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node" launch-prefix="bash -c 'sleep $(arg video_analyzer_2d_wide_perception_delay); $0 $@' ">
         <param name="use_descriptor_yolo" value="$(arg video_analyzer_2d_wide_use_descriptor_yolo)"/>
         <param name="yolo_model" value="$(arg video_analyzer_2d_wide_yolo_model)"/>
         <param name="confidence_threshold" value="$(arg video_analyzer_confidence_threshold)"/>

@@ -3,8 +3,9 @@
     <arg name="gender"/> <!-- Options: female or male -->
     <arg name="voice_generator_type"/> <!-- Options: google or piper -->
     <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="talk_behavior_delay"/>
 
-    <node pkg="talk" type="talk_node.py" name="talk_node">
+    <node pkg="talk" type="talk_node.py" name="talk_node" launch-prefix="bash -c 'sleep $(arg talk_behavior_delay); $0 $@' ">
         <param name="language" value="$(arg language)"/>
         <param name="gender" value="$(arg gender)"/>
         <param name="generator_type" value="$(arg voice_generator_type)"/>
@@ -18,7 +19,7 @@
         <remap from="audio_out/filter_state" to="talk/filter_state"/>
     </node>
 
-    <node if="$(eval arg('voice_generator_type') == 'piper')" pkg="piper_ros" type="piper_node" name="piper_node">
+    <node if="$(eval arg('voice_generator_type') == 'piper')" pkg="piper_ros" type="piper_node" name="piper_node" launch-prefix="bash -c 'sleep $(arg talk_behavior_delay); $0 $@' ">
         <param name="use_gpu_if_available" value="true"/>
     </node>
 

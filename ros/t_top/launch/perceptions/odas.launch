@@ -1,12 +1,11 @@
 <launch>
     <arg name="odas_configuration_path" default="$(find t_top)/config/configuration_16SoundsUSB.cfg"/>
     <arg name="visualization" default="false"/>
-    <arg name="rviz" default="false"/>
-    <arg name="rviz_cfg" default="-d $(find odas_ros)/config/rviz/odas_rviz.rviz"/>
     <arg name="use_echo_cancellation" default="false"/>
+    <arg name="odas_perception_delay"/>
 
     <!-- ODAS -->
-    <node unless="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_server_node.py" name="odas_server_node" respawn="true">
+    <node unless="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_server_node.py" name="odas_server_node" respawn="true" launch-prefix="bash -c 'sleep $(arg odas_perception_delay); $0 $@' ">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 
@@ -15,7 +14,7 @@
         <remap from="sst" to="audio_sst"/>
         <remap from="sss" to="audio_input_signed_16_16000"/>
     </node>
-    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_echocancel_filter_server_node.py" name="odas_server_node" respawn="true">
+    <node if="$(arg use_echo_cancellation)" pkg="odas_ros" type="odas_echocancel_filter_server_node.py" name="odas_server_node" respawn="true" launch-prefix="bash -c 'sleep $(arg odas_perception_delay); $0 $@' ">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
         <param name="frame_id" value="odas"/>
 
@@ -25,14 +24,10 @@
         <remap from="sss" to="audio_input_signed_16_16000"/>
         <remap from="ec_signal" to="audio_input_signed_16_16000"/>
     </node>
-    <node if="$(eval arg('visualization') or arg('rviz'))" pkg="odas_ros" type="odas_visualization_node.py" name="odas_visualization_node">
+    <node if="$(arg visualization)" pkg="odas_ros" type="odas_visualization_node.py" name="odas_visualization_node" launch-prefix="bash -c 'sleep $(arg odas_perception_delay); $0 $@' ">
         <param name="configuration_path" value="$(arg odas_configuration_path)"/>
 
         <remap from="ssl" to="audio_ssl"/>
         <remap from="sst" to="audio_sst"/>
     </node>
-
-    <!-- Rviz -->
-    <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="$(arg rviz_cfg)"/>
-
 </launch>

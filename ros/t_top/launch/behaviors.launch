@@ -8,6 +8,20 @@
     <arg name="open_browser" default="true"/>
     <arg name="fullscreen_face" default="false"/>
 
+    <!-- Delays -->
+    <arg name="dance_behavior_delay"/>
+    <arg name="explore_behavior_delay"/>
+    <arg name="face_behavior_delay"/>
+    <arg name="face_following_behavior_delay"/>
+    <arg name="gesture_behavior_delay"/>
+    <arg name="led_animations_behavior_delay"/>
+    <arg name="led_emotions_behavior_delay"/>
+    <arg name="sound_following_behavior_delay"/>
+    <arg name="sound_object_person_following_behavior_delay"/>
+    <arg name="sound_player_behavior_delay"/>
+    <arg name="talk_behavior_delay"/>
+    <arg name="too_close_reaction_behavior_delay"/>
+
     <!-- Telepresence -->
     <!-- See opentera-webrtc-ros -->
 
@@ -16,11 +30,17 @@
     <include file="$(find t_top)/launch/behaviors/face.launch">
         <arg name="open_browser" value="$(arg open_browser)"/>
         <arg name="fullscreen" value="$(arg fullscreen_face)"/>
+        <arg name="face_behavior_delay" value="$(arg face_behavior_delay)"/>
     </include>
-    <include file="$(find t_top)/launch/behaviors/led_emotions.launch"/>
+
+    <include file="$(find t_top)/launch/behaviors/led_emotions.launch">
+        <arg name="led_emotions_behavior_delay" value="$(arg led_emotions_behavior_delay)"/>
+    </include>
 
     <!-- Led Animation -->
-    <include file="$(find t_top)/launch/behaviors/led_animations.launch"/>
+    <include file="$(find t_top)/launch/behaviors/led_animations.launch">
+        <arg name="led_animations_behavior_delay" value="$(arg led_animations_behavior_delay)"/>
+    </include>
 
     <!-- Talk -->
     <include file="$(find t_top)/launch/behaviors/talk.launch">
@@ -28,41 +48,53 @@
         <arg name="gender" value="$(arg gender)"/>
         <arg name="voice_generator_type" value="$(arg voice_generator_type)"/>
         <arg name="speaking_rate" value="$(arg speaking_rate)"/>
+        <arg name="talk_behavior_delay" value="$(arg talk_behavior_delay)"/>
     </include>
 
     <!-- Gesture -->
     <include file="$(find t_top)/launch/behaviors/gesture.launch">
         <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="gesture_behavior_delay" value="$(arg gesture_behavior_delay)"/>
     </include>
 
     <!-- Sound Following -->
     <include file="$(find t_top)/launch/behaviors/sound_following.launch">
         <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="sound_following_behavior_delay" value="$(arg sound_following_behavior_delay)"/>
     </include>
 
     <!-- Face Following -->
     <include file="$(find t_top)/launch/behaviors/face_following.launch">
         <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="face_following_behavior_delay" value="$(arg face_following_behavior_delay)"/>
     </include>
 
     <!-- Sound Object Person Following -->
     <include file="$(find t_top)/launch/behaviors/sound_object_person_following.launch">
         <arg name="simulation" value="$(arg simulation)"/>
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
+        <arg name="sound_object_person_following_behavior_delay" value="$(arg sound_object_person_following_behavior_delay)"/>
     </include>
 
     <!-- Dance -->
-    <include file="$(find t_top)/launch/behaviors/dance.launch"/>
+    <include file="$(find t_top)/launch/behaviors/dance.launch">
+        <arg name="dance_behavior_delay" value="$(arg dance_behavior_delay)"/>
+    </include>
 
     <!-- Explore -->
     <include file="$(find t_top)/launch/behaviors/explore.launch">
         <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="explore_behavior_delay" value="$(arg explore_behavior_delay)"/>
     </include>
 
     <!-- Too Near Reaction -->
-    <include file="$(find t_top)/launch/behaviors/too_close_reaction.launch"/>
+    <include file="$(find t_top)/launch/behaviors/too_close_reaction.launch">
+        <arg name="too_close_reaction_behavior_delay" value="$(arg too_close_reaction_behavior_delay)"/>
+    </include>
 
     <!-- Sound Player -->
-    <include file="$(find t_top)/launch/behaviors/sound_player.launch"/>
+    <include file="$(find t_top)/launch/behaviors/sound_player.launch">
+        <arg name="sound_player_behavior_delay" value="$(arg sound_player_behavior_delay)"/>
+    </include>
 
 </launch>

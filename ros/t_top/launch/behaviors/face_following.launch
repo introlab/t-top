@@ -1,7 +1,8 @@
 <launch>
     <arg name="simulation"/>
+    <arg name="face_following_behavior_delay"/>
 
-    <node pkg="face_following" type="nearest_face_following_node.py" name="nearest_face_following_node">
+    <node pkg="face_following" type="nearest_face_following_node.py" name="nearest_face_following_node" launch-prefix="bash -c 'sleep $(arg face_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>
         <param name="torso_control_alpha" value="0.2"/>
@@ -16,7 +17,7 @@
         <remap from="pose/filter_state" to="nearest_face_following/filter_state"/>
     </node>
 
-    <node pkg="face_following" type="specific_face_following_node.py" name="specific_face_following_node">
+    <node pkg="face_following" type="specific_face_following_node.py" name="specific_face_following_node" launch-prefix="bash -c 'sleep $(arg face_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>
         <param name="torso_control_alpha" value="0.2"/>
