@@ -2,8 +2,9 @@
     <arg name="simulation"/>
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="min_sst_activity" default="0.1"/>
+    <arg name="sound_object_person_following_behavior_delay"/>
 
-    <node if="$(arg camera_2d_wide_enabled)" pkg="sound_object_person_following" type="sound_object_person_following_node.py" name="sound_object_person_following">
+    <node if="$(arg camera_2d_wide_enabled)" pkg="sound_object_person_following" type="sound_object_person_following_node.py" name="sound_object_person_following" launch-prefix="bash -c 'sleep $(arg sound_object_person_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>
         <param name="torso_control_alpha" value="0.2"/>

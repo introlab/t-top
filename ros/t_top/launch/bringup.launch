@@ -38,6 +38,11 @@
     <arg name="fullscreen_face" default="false"/>
     <arg name="record_session" default="false"/>
 
+
+    <arg name="platform_delay" default="30.0"/>
+
+
+    <!-- 30 seconds needed to launch platform.launch -->
     <include file="$(find t_top)/launch/platform.launch">
         <arg name="camera_2d_wide_enabled" value="$(arg camera_2d_wide_enabled)"/>
         <arg name="use_echo_cancellation" value="$(arg use_echo_cancellation)"/>
@@ -72,6 +77,19 @@
         <arg name="whisper_model" value="$(arg whisper_model)"/>
         <arg name="visualization" value="$(arg visualization)"/>
         <arg name="slam" value="$(arg slam)"/>
+        <!-- Delays -->
+        <arg name="audio_analyzer_perception_delay" value="$(eval arg('platform_delay') + 0.0)"/>
+        <arg name="ego_noise_reduction_perception_delay" value="$(eval arg('platform_delay') + 5.0)"/>
+        <arg name="music_beat_detector_perception_delay" value="$(eval arg('platform_delay') + 5.0)"/>
+        <arg name="odas_perception_delay" value="$(eval arg('platform_delay') + 10.0)"/>
+        <arg name="person_identification_perception_delay" value="$(eval arg('platform_delay') + 5.0)"/>
+        <arg name="pose_classifier_perception_delay" value="$(eval arg('platform_delay') + 5.0)"/>
+        <arg name="robot_name_detector_perception_delay" value="$(eval arg('platform_delay') + 15.0)"/>
+        <arg name="rtabmap_perception_delay" value="$(eval arg('platform_delay') + 60.0)"/>
+        <arg name="speech_to_text_perception_delay" value="$(eval arg('platform_delay') + 20.0)"/>
+        <arg name="vad_perception_delay" value="$(eval arg('platform_delay') + 25.0)"/>
+        <arg name="video_analyser_3d_perception_delay" value="$(eval arg('platform_delay') + 30.0)"/>
+        <arg name="video_analyzer_2d_wide_perception_delay" value="$(eval arg('platform_delay') + 35.0)"/>
     </include>
     <include file="$(find t_top)/launch/behaviors.launch">
         <arg name="language" value="$(arg language)"/>
@@ -82,6 +100,19 @@
         <arg name="simulation" value="$(arg simulation)"/>
         <arg name="open_browser" value="$(arg open_browser)"/>
         <arg name="fullscreen_face" value="$(arg fullscreen_face)"/>
+        <!-- Delays -->
+        <arg name="dance_behavior_delay" value="$(eval arg('platform_delay') + 40.0)"/>
+        <arg name="explore_behavior_delay" value="$(eval arg('platform_delay') + 41.0)"/>
+        <arg name="face_behavior_delay" value="$(eval arg('platform_delay') + 120.0)"/>
+        <arg name="face_following_behavior_delay" value="$(eval arg('platform_delay') + 42.0)"/>
+        <arg name="gesture_behavior_delay" value="$(eval arg('platform_delay') + 43.0)"/>
+        <arg name="led_animations_behavior_delay" value="$(eval arg('platform_delay') + 44.0)"/>
+        <arg name="led_emotions_behavior_delay" value="$(eval arg('platform_delay') + 45.0)"/>
+        <arg name="sound_following_behavior_delay" value="$(eval arg('platform_delay') + 46.0)"/>
+        <arg name="sound_object_person_following_behavior_delay" value="$(eval arg('platform_delay') + 50.0)"/>
+        <arg name="sound_player_behavior_delay" value="$(eval arg('platform_delay') + 55.0)"/>
+        <arg name="talk_behavior_delay" value="$(eval arg('platform_delay') + 60.0)"/>
+        <arg name="too_close_reaction_behavior_delay" value="$(eval arg('platform_delay') + 60.0)"/>
     </include>
 
     <node pkg="cloud_data" type="cloud_data_node.py" name="cloud_data_node">

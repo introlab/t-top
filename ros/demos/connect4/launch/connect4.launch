@@ -72,7 +72,9 @@
         <remap from="pose/filter_state" to="nearest_face_following/filter_state"/>
     </node>
 
-    <include file="$(find t_top)/launch/behaviors/led_animations.launch"/>
+    <include file="$(find t_top)/launch/behaviors/led_animations.launch">
+        <arg name="led_animations_behavior_delay" value="0.0"/>
+    </include>
 
     <!-- WebRTC -->
     <include file="$(find t_top)/launch/behaviors/opentera.launch">

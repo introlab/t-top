@@ -1,6 +1,8 @@
 <launch>
 
-    <node pkg="led_emotions" type="led_emotions_node.py" name="led_emotions_node">
+    <arg name="led_emotions_behavior_delay"/>
+
+    <node pkg="led_emotions" type="led_emotions_node.py" name="led_emotions_node" launch-prefix="bash -c 'sleep $(arg led_emotions_behavior_delay); $0 $@' ">
         <param name="led_patterns_file" value="$(find led_emotions)/led_patterns.json"/>
 
         <remap from="set_led_colors/filter_state" to="led_emotions/filter_state"/>

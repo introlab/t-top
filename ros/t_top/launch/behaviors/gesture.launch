@@ -1,7 +1,8 @@
 <launch>
     <arg name="simulation"/>
+    <arg name="gesture_behavior_delay"/>
 
-    <node pkg="gesture" type="gesture_node.py" name="gesture_node">
+    <node pkg="gesture" type="gesture_node.py" name="gesture_node" launch-prefix="bash -c 'sleep $(arg gesture_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(arg simulation)"/>
 
         <remap from="pose/filter_state" to="gesture/filter_state"/>

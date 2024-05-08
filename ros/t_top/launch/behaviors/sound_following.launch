@@ -1,8 +1,9 @@
 <launch>
     <arg name="simulation"/>
     <arg name="min_activity" default="0.1"/>
+    <arg name="sound_following_behavior_delay"/>
 
-    <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node">
+    <node pkg="sound_following" type="sound_following_node.py" name="sound_following_node" launch-prefix="bash -c 'sleep $(arg sound_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="control_frequency" value="30"/>
         <param name="torso_control_alpha" value="0.2"/>

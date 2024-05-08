@@ -2,20 +2,21 @@
     <arg name="localization" default="false"/>
     <arg if="$(arg localization)" name="rtabmap_args" default=""/>
     <arg unless="$(arg localization)" name="rtabmap_args" default="-d"/>
+    <arg name="rtabmap_perception_delay"/>
 
-    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_sync/rgbd_sync">
+    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_sync/rgbd_sync" launch-prefix="bash -c 'sleep $(arg rtabmap_perception_delay); $0 $@' ">
         <remap from="rgb/image" to="/camera_3d/color/image_raw"/>
         <remap from="depth/image" to="/camera_3d/aligned_depth_to_color/image_raw"/>
         <remap from="rgb/camera_info" to="/camera_3d/aligned_depth_to_color/camera_info"/>
 
         <param name="approx_sync" value="true"/>
     </node>
-    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="rtabmap_filter">
+    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="rtabmap_filter" launch-prefix="bash -c 'sleep $(arg rtabmap_perception_delay); $0 $@' ">
         <remap from="in" to="rgbd_image"/>
         <remap from="out" to="rgbd_image_filtered"/>
         <remap from="filter_state" to="rtabmap/filter_state"/>
     </node>
-    <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" args="$(arg rtabmap_args)">
+    <node name="rtabmap" pkg="rtabmap_slam" type="rtabmap" args="$(arg rtabmap_args)" launch-prefix="bash -c 'sleep $(arg rtabmap_perception_delay); $0 $@' ">
         <param name="odom_frame_id" type="string" value="base_link"/>
         <param name="subscribe_depth" type="bool" value="false"/>
         <param name="subscribe_rgbd" type="bool" value="true"/>

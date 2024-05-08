@@ -1,11 +1,12 @@
 <launch>
+    <arg name="music_beat_detector_perception_delay"/>
 
-    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="beat_detector_node_filter">
+    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="beat_detector_node_filter" launch-prefix="bash -c 'sleep $(arg music_beat_detector_perception_delay); $0 $@' ">
         <remap from="in" to="audio_input_signed_16_16000"/>
         <remap from="out" to="beat_detector/audio_input_signed_16_16000_filtered"/>
         <remap from="filter_state" to="beat_detector/filter_state"/>
     </node>
-    <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node">
+    <node pkg="audio_utils" type="beat_detector_node" name="beat_detector_node" launch-prefix="bash -c 'sleep $(arg music_beat_detector_perception_delay); $0 $@' ">
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="64"/>
         <param name="oss_fft_window_size" value="1024"/>
