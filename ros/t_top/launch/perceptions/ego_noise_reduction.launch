@@ -1,6 +1,8 @@
 <launch>
 
-    <node pkg="ego_noise_reduction" type="ego_noise_reduction_node" name="ego_noise_reduction_node" respawn="true">
+    <arg name="ego_noise_reduction_perception_delay"/>
+
+    <node pkg="ego_noise_reduction" type="ego_noise_reduction_node" name="ego_noise_reduction_node" respawn="true" launch-prefix="bash -c 'sleep $(arg ego_noise_reduction_perception_delay); $0 $@' ">
         <param name="type" value="log_mmse"/>
         <param name="format" value="signed_32"/>
         <param name="channel_count" value="16"/>

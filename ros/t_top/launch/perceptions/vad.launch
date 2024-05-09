@@ -1,10 +1,11 @@
 <launch>
-    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="vad_node_filter">
+    <arg name="vad_perception_delay"/>
+    <node pkg="hbba_lite" type="on_off_hbba_filter_node" name="vad_node_filter" launch-prefix="bash -c 'sleep $(arg vad_perception_delay); $0 $@' ">
         <remap from="in" to="audio_input_signed_16_16000"/>
         <remap from="out" to="vad/audio_input_signed_16_16000"/>
         <remap from="filter_state" to="vad/filter_state"/>
     </node>
-    <node name="vad_node" type="vad_node" pkg="audio_utils">
+    <node name="vad_node" type="vad_node" pkg="audio_utils" launch-prefix="bash -c 'sleep $(arg vad_perception_delay); $0 $@' ">
     	<param name="silence_to_voice_threshold" value="0.5"/>
     	<param name="voice_to_silence_threshold" value="0.4"/>
     	<param name="min_silence_duration_ms" value="500"/>

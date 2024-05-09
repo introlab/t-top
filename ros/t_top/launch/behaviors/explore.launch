@@ -1,7 +1,8 @@
 <launch>
     <arg name="simulation"/>
+    <arg name="explore_behavior_delay"/>
 
-    <node pkg="explore" type="explore_node.py" name="explore_node">
+    <node pkg="explore" type="explore_node.py" name="explore_node" launch-prefix="bash -c 'sleep $(arg explore_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(arg simulation)"/>
         <param name="explore_frequency" value="0.00833333333"/>
         <param name="torso_speed_rad_sec" value="0.5"/>

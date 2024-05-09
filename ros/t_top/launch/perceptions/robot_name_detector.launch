@@ -1,7 +1,8 @@
 <launch>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+    <arg name="robot_name_detector_perception_delay"/>
 
-    <node pkg="robot_name_detector" type="robot_name_detector_node.py" name="robot_name_detector_node">
+    <node pkg="robot_name_detector" type="robot_name_detector_node.py" name="robot_name_detector_node" launch-prefix="bash -c 'sleep $(arg robot_name_detector_perception_delay); $0 $@' ">
         <param name="fast_sound_rms_attack" value="0.05"/>
         <param name="fast_sound_rms_release" value="0.9"/>
         <param name="slow_sound_rms_attack" value="0.975"/>
