@@ -12,7 +12,7 @@
  # Use the CMake version that we built, must be > 3.8
  # Build with CUDA (default), the CUDA flag is USE_CUDA, ie -DUSE_CUDA=true
 -cmake ../ -DBUILD_EXAMPLES=true -DBUILD_WITH_CUDA=true
-+cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=true -DBUILD_WITH_CUDA=true
++cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DFORCE_RSUSB_BACKEND=true
  # The library will be installed in /usr/local/lib, header files in /usr/local/include
  # The demos, tutorials and tests will located in /usr/local/bin.
  echo "${green}Building librealsense, headers, tools and demos${reset}"
