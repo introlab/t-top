@@ -14,7 +14,7 @@ if [ -f Weights.zip ]; then
     OLD_TIME=$(stat Weights.zip -c %Y)
 fi
 
-if OUT=$(wget -N https://github.com/introlab/t-top/releases/download/DNN_Weights_v4.0.0/Weights.zip 2>&1); then
+if OUT=$(wget -N https://github.com/introlab/t-top/releases/download/DNN_Weights_v4.1.0/Weights.zip 2>&1); then
     # Output to stdout on success
     echo $OUT
 else
