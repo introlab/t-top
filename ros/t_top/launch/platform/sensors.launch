@@ -7,7 +7,7 @@
     <arg name="ec_volume_percent"/>
 
     <!-- Camera 3d -->
-    <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">
+    <include file="$(find t_top)/launch/platform/realsense.launch">
         <arg name="fisheye_width" value="1280"/>
         <arg name="fisheye_height" value="720"/>
 
