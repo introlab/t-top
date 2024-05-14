@@ -67,7 +67,7 @@ See [01_COMPUTER_CONFIGURATION.md](documentation/assembly/01_COMPUTER_CONFIGURAT
 
 ## Papers
 
-- [M.-A. Maheux, D. Létourneau, P. Warren, A. M. Panchea, J. M. Robillard and F. Michaud, “‍Designing a Tabletop SAR as an Advanced HRI Experimentation Platform,” in Proceedings of the 2024 International Symposium on Technological Advances in Human-Robot Interaction (TAHRI 2024), Boulder, CO, USA, 2024](https://drive.google.com/file/d/154ssh5UaqKThvJGrEQdwGyqmmI7cFu8R/view)
+- [M.-A. Maheux, D. Létourneau, P. Warren, A. M. Panchea, J. M. Robillard and F. Michaud, “‍Designing a Tabletop SAR as an Advanced HRI Experimentation Platform,” in Proceedings of the 2024 International Symposium on Technological Advances in Human-Robot Interaction (TAHRI 2024), Boulder, CO, USA, 2024](https://dl.acm.org/doi/10.1145/3648536.3648538)
     - [YouTube Video](https://youtu.be/HSd65F055VE)
 - [A. M. Panchea, M.-A. Maheux, P. Warren, D. Létourneau and F. Michaud, “Exploratory Evaluation of a Tabletop Robot With Older Adults,” in Proceedings of the 2024 ACM/IEEE International Conference on Human-Robot Interaction, Boulder, CO, USA, 2024, pp. 817–821.](https://dl.acm.org/doi/10.1145/3610978.3640621)
 - [M.-A. Maheux, A. M. Panchea, P. Warren, D. Létourneau and F. Michaud, “T-Top, an Open Source Tabletop Robot with Advanced Onboard Audio, Vision and Deep Learning Capabilities,” in Proceedings of the 2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Detroit, MI, USA, 2023, pp. 7862-7869.](https://ieeexplore.ieee.org/abstract/document/10342252)
