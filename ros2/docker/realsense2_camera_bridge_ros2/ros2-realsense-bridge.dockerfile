@@ -16,10 +16,6 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-# Setup sources
-# RUN apt-get install software-properties-common
-# RUN add-apt-repository universe
-
 # Setup ROS2 GPG
 RUN apt-get update && apt-get install curl -y
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
@@ -38,14 +34,6 @@ RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt
 RUN apt-get update
 RUN apt-get install ros-noetic-desktop-full -y
 
-# Install ROS1 Bridge
-RUN apt-get install ros-foxy-ros1-bridge ros-foxy-rosbridge-msgs -y
-
-# Install ROS2 Realsense
-# RUN apt-get install ros-foxy-realsense2-camera -y
-
-
-
 # Download and compile librealsense with CUDA support
 RUN apt-get install git libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev build-essential cmake cmake-curses-gui libssl-dev libusb-1.0-0-dev pkg-config -y
 RUN apt-get install cuda-nvcc-11-4 -y
@@ -60,13 +48,19 @@ RUN cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-ma
 RUN make -j8
 RUN make install
 
+# Install ROS1 Bridge
+RUN apt-get install ros-foxy-ros1-bridge ros-foxy-rosbridge-msgs -y
+
+SHELL ["/bin/bash", "-c"]
+
 # Get ROS2 Realsense from source and compile
 RUN apt-get install python3-colcon-common-extensions ros-foxy-ament-cmake-python ros-foxy-diagnostic-updater -y
 RUN mkdir -p /root/ros2/workspace/src
-WORKDIR /root/ros2/workspace/src
-RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b 4.54.1 --depth 1 --recurse-submodules
 
-SHELL ["/bin/bash", "-c"]
+WORKDIR /root/ros2/workspace/src
+# Get Realsense ROS2 from source and compile
+RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b 4.54.1 --depth 1 --recurse-submodules
+# Got back to workspace and compile both packages
 WORKDIR /root/ros2/workspace
 RUN source /opt/ros/foxy/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
