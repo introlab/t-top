@@ -1,0 +1,17 @@
+
+<launch>
+    <!-- Launch Realsense ROS2 -->
+    <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
+        <arg name="depth_module.profile" value="1280x720x15" />
+        <arg name="rgb_camera.profile" value="1280x720x15" />
+        <arg name="enable_depth" value="true" />
+        <arg name="enable_color" value="true" />
+        <arg name="camera_namespace" value="camera_3d"/>
+        <arg name="camera_name" value="camera_3d"/>
+        <arg name="enable_sync" value="true"/>
+        <arg name="align_depth.enable" value="true"/>
+    </include>
+
+    <!-- Launch ROS1 bridge -->
+    <node pkg="ros1_bridge" exec="dynamic_bridge" name="ros1_bridge" args="--bridge-all-topics"/>
+</launch>

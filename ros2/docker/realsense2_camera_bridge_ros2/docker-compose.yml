@@ -11,7 +11,7 @@ services:
       - DISPLAY=$DISPLAY
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-    command: bash
+      - ./realsense_bridge.launch.xml:/root/ros2/workspace/launch/realsense_bridge.launch.xml
     runtime: nvidia
 
 
