@@ -233,6 +233,19 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Installing Docker"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp docker) = "false" ] ; then
+    sudo apt install docker-compose-v2 docker-buildx
+    sudo addgroup introlab docker
+    newgrp docker
+    makestamp docker
+else
+    SKIP_SECTION "Docker already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Installing NPM and Node"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp node) = "false" ] ; then
