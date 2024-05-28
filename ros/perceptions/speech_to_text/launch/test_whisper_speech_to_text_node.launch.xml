@@ -1,0 +1,36 @@
+<launch>
+
+    <node pkg="audio_utils" exec="capture_node" name="audio_capture" output="screen">
+        <param name="backend" value="alsa"/>
+        <param name="device" value="default"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="512"/>
+        <param name="merge" value="false" />
+        <param name="gain" value="1.0" />
+
+        <remap from="audio_out" to="audio_input_signed_16_16000"/>
+    </node>
+
+    <node pkg="audio_utils" exec="vad_node" name="vad_node">
+        <param name="silence_to_voice_threshold" value="0.4"/>
+        <param name="voice_to_silence_threshold" value="0.5"/>
+        <param name="min_silence_duration_ms" value="500"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+    </node>
+
+    <node pkg="speech_to_text" exec="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen">
+        <param name="language" value="en"/>
+        <param name="model_size" value="base.en"/>
+        <param name="device" value="cpu"/>
+        <param name="compute_type" value="float32"/>
+        <param name="prebuffering_frame_count" value="4"/>
+        <param name="minimum_voice_sequence_size" value="8000"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+    </node>
+
+</launch>
