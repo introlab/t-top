@@ -1,0 +1,26 @@
+<launch>
+
+    <node pkg="audio_utils" exec="capture_node" name="audio_capture" output="screen">
+        <param name="backend" value="alsa"/>
+        <param name="device" value="default"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="512"/>
+        <param name="merge" value="false" />
+        <param name="gain" value="1.0" />
+
+        <remap from="audio_out" to="audio_input_signed_16_16000"/>
+    </node>
+
+    <node pkg="audio_analyzer" exec="audio_analyzer_node.py" name="audio_analyzer_node" output="screen">
+        <param name="inference_type" value="torch_gpu"/>
+        <param name="interval" value="16000"/>
+        <param name="voice_probability_threshold" value="0.5"/>
+        <param name="class_probability_threshold" value="0.5"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="audio_analyzer/filter_state"/>
+    </node>
+
+</launch>

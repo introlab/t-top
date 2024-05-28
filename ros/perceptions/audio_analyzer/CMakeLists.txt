@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(cloud_data)
+project(audio_analyzer)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -18,19 +18,28 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(odas_ros REQUIRED)
+find_package(audio_utils REQUIRED)
+find_package(hbba_lite REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 # Generate services
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/CurrentLocalWeather.srv"
-  "srv/LocalWeatherForecast.srv"
-  "srv/Location.srv"
+  "msg/AudioAnalysis.msg"
+  DEPENDENCIES std_msgs audio_utils
 )
 
 # Python Nodes
 install(PROGRAMS
-  scripts/cloud_data_node.py
+  scripts/audio_analyzer_node.py
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()
