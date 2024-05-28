@@ -5,6 +5,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from common.modules import NormalizedLinear
+
 from object_detection.modules.descriptor_yolo_layer import DescriptorYoloV7Layer
 from object_detection.modules.yolo_v7_modules import YoloV7SPPCSPC, RepConv
 
@@ -459,7 +461,7 @@ class DescriptorYoloV7(nn.Module):
             DescriptorYoloV7Layer(IMAGE_SIZE, 32, self._anchors[2], embedding_size)
         )
 
-        self._classifier = nn.Linear(embedding_size, class_count, bias=False)
+        self._classifier = NormalizedLinear(embedding_size, class_count)
         self._class_probs = class_probs
 
     def get_image_size(self):
