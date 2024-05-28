@@ -3,7 +3,7 @@
 <package format="3">
   <name>daemon_ros_client</name>
   <version>0.0.0</version>
-  <description>The audio_utils package</description>
+  <description>The daemon_ros_client package</description>
   <maintainer email="marc-antoine.maheux@usherbrooke.ca">Marc-Antoine Maheux</maintainer>
   <license>GPL-3.0 license </license>
 

@@ -3,7 +3,7 @@
 <package format="3">
   <name>dnn_utils</name>
   <version>0.0.0</version>
-  <description>The cloud_data package</description>
+  <description>The dnn_utils package</description>
   <maintainer email="marc-antoine.maheux@usherbrooke.ca">Marc-Antoine Maheux</maintainer>
   <license>GPL-3.0 license</license>
 

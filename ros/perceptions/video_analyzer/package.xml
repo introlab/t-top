@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>audio_analyzer</name>
+  <name>video_analyzer</name>
   <version>0.0.0</version>
-  <description>The audio_analyzer package</description>
+  <description>The video_analyzer package</description>
   <maintainer email="marc-antoine.maheux@usherbrooke.ca">Marc-Antoine Maheux</maintainer>
   <license>GPL-3.0 license</license>
 
@@ -14,8 +14,9 @@
   <depend>dnn_utils</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>odas_ros</depend>
-  <depend>audio_utils</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>cv_bridge</depend>
   <depend>hbba_lite</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
