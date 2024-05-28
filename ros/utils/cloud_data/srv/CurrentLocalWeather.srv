@@ -1,0 +1,17 @@
+---
+bool ok
+
+string city
+string region
+string country_code
+string country_name
+
+float64 temperature_celsius
+float64 feels_like_temperature_celsius
+float64 pressure_kpa
+float64 humidity_percent
+float64 clouds_percent
+float64 visibility_meter
+float64 wind_speed_kph
+float64 wind_gust_kph # -1 if not available
+string weather_description # '' if not available
