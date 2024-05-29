@@ -49,6 +49,7 @@ int main(int argc, char** argv)
 
     node->cleanup();
     rosExecutor.cancel();
+    spinThread.join();
 
     rclcpp::shutdown();
 }
