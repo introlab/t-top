@@ -26,7 +26,7 @@ find_package(visualization_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-# Generate services
+# Generate messages
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/PoseClassification.msg"
   "msg/PoseClassifications.msg"

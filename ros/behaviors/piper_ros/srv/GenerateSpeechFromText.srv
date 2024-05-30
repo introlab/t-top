@@ -1,0 +1,8 @@
+string language # en or fr
+string gender # male or female
+float32 length_scale
+string text
+string path
+---
+bool ok
+string message

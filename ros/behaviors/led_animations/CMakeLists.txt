@@ -24,7 +24,7 @@ find_package(hbba_lite REQUIRED)
 find_package(t_top REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-# Generate services
+# Generate messages
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Done.msg"
   "msg/Animation.msg"
