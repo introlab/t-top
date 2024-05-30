@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(t_top)
+project(dance)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -20,21 +20,26 @@ find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(daemon_ros_client REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(cv_bridge REQUIRED)
 find_package(hbba_lite REQUIRED)
+find_package(t_top REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})
 
 # Python Nodes
 install(PROGRAMS
-  scripts/head_roll_image_rotation_node.py
-  scripts/robot_status.py
+  scripts/head_dance_node.py
+  scripts/led_dance_node.py
+  scripts/torso_dance_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Install the config
-install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
+# Install the movements files
+install(DIRECTORY movements DESTINATION share/${PROJECT_NAME})
+
+# Launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_package()

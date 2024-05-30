@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>t_top</name>
+  <name>dance</name>
   <version>0.0.0</version>
-  <description>The t_top package</description>
+  <description>The dance package</description>
   <maintainer email="marc-antoine.maheux@usherbrooke.ca">Marc-Antoine Maheux</maintainer>
   <license>GPL-3.0 license</license>
 
@@ -12,10 +12,8 @@
   <depend>rclpy</depend>
   <depend>daemon_ros_client</depend>
   <depend>std_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>cv_bridge</depend>
-  <depend>tf_transformations</depend>
   <depend>hbba_lite</depend>
+  <depend>t_top</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
