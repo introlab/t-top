@@ -232,16 +232,16 @@ class PoseClassifierNode(rclpy.node.Node):
 
 def main():
     rclpy.init()
-
     pose_classifier_node = PoseClassifierNode()
-    pose_classifier_node.run()
 
-    pose_classifier_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        pose_classifier_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        pose_classifier_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

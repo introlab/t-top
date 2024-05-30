@@ -121,16 +121,16 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
 
 def main():
     rclpy.init()
-
     whisper_speech_to_text_node = WhisperSpeechToTextNode()
-    whisper_speech_to_text_node.run()
 
-    whisper_speech_to_text_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        whisper_speech_to_text_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        whisper_speech_to_text_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

@@ -205,28 +205,28 @@ def main():
     rclpy.init()
     node = rclpy.node.Node('dnn_utils_test')
 
-    launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
-    launch_test(test_descriptor_yolo, 'yolo_v7_coco')
-    launch_test(test_yolo, 'yolo_v4_coco')
-    launch_test(test_yolo, 'yolo_v4_tiny_coco')
-    launch_test(test_yolo, 'yolo_v7_coco')
-    launch_test(test_yolo, 'yolo_v7_tiny_coco')
-    launch_test(test_yolo, 'yolo_v7_objects365')
-    launch_test(test_pose_estimator)
-    launch_test(test_face_descriptor_extractor)
-    launch_test(test_multiclass_audio_descriptor_extractor)
-    launch_test(test_voice_descriptor_extractor)
-    launch_test(test_ttop_keyword_spotter)
-    launch_test(test_semantic_segmentation_network, 'coco')
-    launch_test(test_semantic_segmentation_network, 'kitchen_open_images')
-    launch_test(test_semantic_segmentation_network, 'person_other_open_images')
-
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
+        launch_test(test_descriptor_yolo, 'yolo_v7_coco')
+        launch_test(test_yolo, 'yolo_v4_coco')
+        launch_test(test_yolo, 'yolo_v4_tiny_coco')
+        launch_test(test_yolo, 'yolo_v7_coco')
+        launch_test(test_yolo, 'yolo_v7_tiny_coco')
+        launch_test(test_yolo, 'yolo_v7_objects365')
+        launch_test(test_pose_estimator)
+        launch_test(test_face_descriptor_extractor)
+        launch_test(test_multiclass_audio_descriptor_extractor)
+        launch_test(test_voice_descriptor_extractor)
+        launch_test(test_ttop_keyword_spotter)
+        launch_test(test_semantic_segmentation_network, 'coco')
+        launch_test(test_semantic_segmentation_network, 'kitchen_open_images')
+        launch_test(test_semantic_segmentation_network, 'person_other_open_images')
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

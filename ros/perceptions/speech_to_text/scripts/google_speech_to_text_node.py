@@ -150,21 +150,21 @@ def main():
 
     google_speech_to_text_node = GoogleSpeechToTextNode()
 
-    while rclpy.ok():
-        try:
-            google_speech_to_text_node.run()
-        except (core_exceptions.InvalidArgument,
-                core_exceptions.Unknown,
-                core_exceptions.DeadlineExceeded,
-                core_exceptions.OutOfRange) as e:
-            google_speech_to_text_node.get_logger().error(f'google_speech_to_text_node has failed ({e})')
-
-    google_speech_to_text_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        while rclpy.ok():
+            try:
+                google_speech_to_text_node.run()
+            except (core_exceptions.InvalidArgument,
+                    core_exceptions.Unknown,
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.OutOfRange) as e:
+                google_speech_to_text_node.get_logger().error(f'google_speech_to_text_node has failed ({e})')
+    except KeyboardInterrupt:
+        pass
+    finally:
+        google_speech_to_text_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

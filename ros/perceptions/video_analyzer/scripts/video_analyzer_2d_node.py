@@ -79,16 +79,16 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
 
 def main():
     rclpy.init()
-
     video_analyzer_node = VideoAnalyzer2dNode()
-    video_analyzer_node.run()
 
-    video_analyzer_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        video_analyzer_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analyzer_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

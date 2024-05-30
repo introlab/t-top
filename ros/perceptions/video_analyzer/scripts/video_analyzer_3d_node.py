@@ -2,7 +2,7 @@
 
 import traceback
 from datetime import datetime
-import rlcpy
+import rclpy
 import message_filters
 
 from sensor_msgs.msg import Image, CameraInfo
@@ -125,16 +125,16 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
 
 def main():
     rclpy.init()
-
     video_analyzer_node = VideoAnalyzer3dNode()
-    video_analyzer_node.run()
 
-    video_analyzer_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        video_analyzer_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analyzer_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

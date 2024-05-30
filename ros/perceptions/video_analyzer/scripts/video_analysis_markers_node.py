@@ -87,16 +87,16 @@ class VideoAnalysisMarkersNode(rclpy.node.Node):
 
 def main():
     rclpy.init()
-
     video_analysis_markers_node = VideoAnalysisMarkersNode()
-    video_analysis_markers_node.run()
 
-    video_analysis_markers_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        video_analysis_markers_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analysis_markers_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

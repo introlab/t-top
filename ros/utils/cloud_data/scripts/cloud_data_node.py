@@ -157,16 +157,16 @@ class CloudDataNode(rclpy.node.Node):
 
 def main():
     rclpy.init()
-
     cloud_data_node = CloudDataNode()
-    cloud_data_node.run()
 
-    cloud_data_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        cloud_data_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        cloud_data_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()
