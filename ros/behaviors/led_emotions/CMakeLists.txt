@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(audio_analyzer)
+project(led_emotions)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -18,24 +18,20 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(daemon_ros_client REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(odas_ros REQUIRED)
-find_package(audio_utils REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate services
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/AudioAnalysis.msg"
-  DEPENDENCIES std_msgs audio_utils
-)
+find_package(t_top REQUIRED)
 
 # Python Nodes
 install(PROGRAMS
-  scripts/audio_analyzer_node.py
+  scripts/led_emotions_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# Install the pattern files
+install(DIRECTORY led_patterns DESTINATION share/${PROJECT_NAME})
+
 
 # Launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})

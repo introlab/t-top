@@ -9,7 +9,7 @@ This folder contains the node to perform animations with the LED strip.
 This node performs animations with the LED strip.
 
 #### Parameters
-- `period_s` (double): The period in second of the animation timer. The default value is 0.0333.
+- `period_s` (double): The period in seconds of the animation timer. The default value is 0.0333.
 
 #### Subscribed Topics
 

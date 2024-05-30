@@ -1,0 +1,27 @@
+{
+    "joy": {
+        "color": { "red": 255, "green": 179, "blue": 0 },
+        "period_s": 0.748,
+        "ratio": 0.24
+    },
+    "trust": {
+        "color": { "red": 51, "green": 255, "blue": 0 },
+        "period_s": 2.601,
+        "ratio": 0.5
+    },
+    "sadness": {
+        "color": { "red": 34, "green": 0, "blue": 255 },
+        "period_s": 3.954,
+        "ratio": 0.8
+    },
+    "fear": {
+        "color": { "red": 170, "green": 0, "blue": 255 },
+        "period_s": 2.387,
+        "ratio": 0.64
+    },
+    "anger": {
+        "color": { "red": 255, "green": 4, "blue": 0 },
+        "period_s": 0.312,
+        "ratio": 0.14
+    }
+}

@@ -49,11 +49,11 @@ class LedAnimationsNode(rclpy.node.Node):
 
         try:
             animation = LedAnimation.from_name(msg.name, self._period_s, msg.speed, msg.colors)
+            self._start_timer(msg.id, animation, msg.duration_s)
         except Exception as e:
             self.get_logger().error(f'Unable to instantiate the LED animation ({e})')
             self._done_pub.publish(Done(id=msg.id, ok=False))
 
-        self._start_timer(msg.id, animation, msg.duration_s)
 
     def _stop_timer(self):
         if self._timer is not None:

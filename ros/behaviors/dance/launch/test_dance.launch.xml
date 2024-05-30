@@ -50,5 +50,4 @@
         <remap from="bpm" to="dance/bpm"/>
         <remap from="beat" to="dance/beat"/>
     </node>
-
 </launch>
