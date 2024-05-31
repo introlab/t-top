@@ -18,7 +18,7 @@ endif()
 
 set(MUSIC_BEAT_DETECTOR_ENABLE_TESTS OFF CACHE BOOL "")
 
-# find dependencies
+# Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)

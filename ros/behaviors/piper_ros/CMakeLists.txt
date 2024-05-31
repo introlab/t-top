@@ -130,7 +130,7 @@ if (NOT EXISTS ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/CMakeLists.txt)
 endif()
 include_directories(${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp)
 
-# find dependencies
+# Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(ament_index_cpp REQUIRED)
