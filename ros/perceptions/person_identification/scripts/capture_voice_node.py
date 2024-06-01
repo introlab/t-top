@@ -11,9 +11,6 @@ from audio_analyzer.msg import AudioAnalysis
 import person_identification
 
 
-INACTIVE_SLEEP_DURATION = 0.1
-
-
 class CaptureVoiceNode(rclpy.node.Node):
     def __init__(self):
         super().__init__('capture_voice_node')

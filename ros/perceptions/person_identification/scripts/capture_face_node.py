@@ -11,9 +11,6 @@ from video_analyzer.msg import VideoAnalysis
 import person_identification
 
 
-INACTIVE_SLEEP_DURATION = 0.1
-
-
 class CaptureFaceNode(rclpy.node.Node):
     def __init__(self):
         super().__init__('capture_face_node')
