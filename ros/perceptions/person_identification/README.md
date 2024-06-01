@@ -24,7 +24,7 @@ This node adds to `people.json` an averaged voice descriptor for the person talk
 
 Use the following command to launch the nodes.
 ```bash
-roslaunch person_identification capture_voice.launch name:=<person_name> neural_network_inference_type:=<cpu, torch_gpu or trt_gpu>
+ros2 launch person_identification capture_voice.launch name:=<person_name> neural_network_inference_type:=<cpu, torch_gpu or trt_gpu>
 ```
 
 #### Parameters

@@ -56,7 +56,7 @@ class PersonIdentificationNode(rclpy.node.Node):
         self._direction_frame_id = self.declare_parameter('direction_frame_id', 'odas').get_parameter_value().string_value
         self._direction_angle_threshold_rad = self.declare_parameter('direction_angle_threshold_rad', 0.15).get_parameter_value().double_value
         self._ignore_direction_z = self.declare_parameter('ignore_direction_z', True).get_parameter_value().bool_value
-        self._search_frequency = self.declare_parameter('search_frequency', 2.0).get_parameter_value().string_value
+        self._search_frequency = self.declare_parameter('search_frequency', 2.0).get_parameter_value().double_value
 
         self._face_descriptors_by_name = {}
         self._voice_descriptors_by_name = {}
@@ -69,6 +69,7 @@ class PersonIdentificationNode(rclpy.node.Node):
 
         self._tf_buffer = Buffer()
         self._tf_listener = TransformListener(self._tf_buffer, self)
+
         self._video_analysis_sub = self.create_subscription(VideoAnalysis, 'video_analysis', self._video_analysis_cb, 10)
         self._audio_analysis = self.create_subscription(AudioAnalysis, 'audio_analysis', self._audio_analysis_cb, 10)
 

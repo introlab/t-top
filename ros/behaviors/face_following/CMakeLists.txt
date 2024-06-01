@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(person_identification)
+project(face_following)
 
 
 # Default to C99
@@ -19,34 +19,23 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(audio_analyzer REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
+find_package(t_top REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(video_analyzer REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/PersonName.msg"
-  "msg/PersonNames.msg"
-  DEPENDENCIES geometry_msgs
-)
+find_package(person_identification REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})
 
 # Python Nodes
 install(PROGRAMS
-  scripts/capture_face_node.py
-  scripts/capture_voice_node.py
-  scripts/person_identification_node.py
+  scripts/nearest_face_following_node.py
+  scripts/specific_face_following_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
-
-# Launch files
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
 ament_package()
