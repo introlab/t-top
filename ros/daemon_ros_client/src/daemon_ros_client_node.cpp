@@ -45,11 +45,13 @@ int main(int argc, char** argv)
     std::thread spinThread([&rosExecutor]() { rosExecutor.spin(); });
 
     // Initialize and start Qt App
-    app.exec();
+    int returnCode = app.exec();
 
     node->cleanup();
     rosExecutor.cancel();
     spinThread.join();
 
     rclcpp::shutdown();
+
+    return returnCode;
 }

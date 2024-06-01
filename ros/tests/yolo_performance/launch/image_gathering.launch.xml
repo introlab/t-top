@@ -67,11 +67,11 @@
     </node>
 
     <node pkg="yolo_performance" exec="image_gathering_node.py" name="image_gathering_node" output="screen">
-        <param name="output_path" value="$(arg output_path)"/>
-        <param name="image_count" value="$(arg image_count)"/>
-        <param param="setups" value="[1m, 2m, 3m]"/>
-        <param if="$(eval arg('dataset') == 'coco')" param="classes" value="[person, bowl, bottle]"/>
-        <param if="$(eval arg('dataset') == 'objects365')" param="classes" value="[person, bowl, bottle, tong]"/>
+        <param name="output_path" value="$(var output_path)"/>
+        <param name="image_count" value="$(var image_count)"/>
+        <param name="setups" value="[1m, 2m, 3m]"/>
+        <param if="$(eval arg('dataset') == 'coco')" name="classes" value="[person, bowl, bottle]"/>
+        <param if="$(eval arg('dataset') == 'objects365')" name="classes" value="[person, bowl, bottle, tong]"/>
 
         <remap if="$(eval arg('camera_type') == 'realsense')" from="image_raw" to="camera_3d/color/image_raw"/>
         <remap if="$(eval arg('camera_type') == 'camera_2d_wide')" from="image_raw" to="camera_2d_wide/image_rect"/>

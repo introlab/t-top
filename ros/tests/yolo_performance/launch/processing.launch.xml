@@ -8,10 +8,10 @@
     <arg if="$(eval arg('dataset') == 'objects365')" name="yolo_models" default="[yolo_v7_objects365]"/>
 
     <node pkg="yolo_performance" exec="processing_node.py" name="processing_node" output="screen">
-        <param name="input_path" value="$(arg input_path)"/>
-        <rosparam param="yolo_models" subst_value="true">$(arg yolo_models)</rosparam>
-        <param name="confidence_threshold" value="$(arg confidence_threshold)"/>
-        <param name="nms_threshold" value="$(arg nms_threshold)"/>
-        <param name="neural_network_inference_type" value="$(arg neural_network_inference_type)"/>
+        <param name="input_path" value="$(var input_path)"/>
+        <param name="yolo_models" value="$(var yolo_models)"/>
+        <param name="confidence_threshold" value="$(var confidence_threshold)"/>
+        <param name="nms_threshold" value="$(var nms_threshold)"/>
+        <param name="neural_network_inference_type" value="$(var neural_network_inference_type)"/>
     </node>
 </launch>
