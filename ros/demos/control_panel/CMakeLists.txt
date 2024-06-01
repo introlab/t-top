@@ -70,7 +70,8 @@ qt5_wrap_cpp(project_moc_srcs ${moc_headers})
 add_executable(${PROJECT_NAME}_node ${srcs} ${uis} ${moc_headers} ${other_headers} ${project_moc_uis} ${project_moc_srcs})
 qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 ament_target_dependencies(${PROJECT_NAME}_node
-  rclcpp audio_analyzer
+  rclcpp
+  audio_analyzer
   gesture
   person_identification
   std_msgs

@@ -1,0 +1,42 @@
+<launch>
+    <arg name="language" default="fr"/>  <!-- Options: fr or en -->
+    <arg name="speaking_rate" default="0.85"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="single_task_per_person" default="false"/>
+    <arg name="record_session" default="false"/>
+    <arg name="use_after_task_delay_duration_topic" default="true"/>
+
+    <node pkg="smart_speaker" type="smart_speaker_smart_node" name="smart_speaker_smart_node" output="screen" launch-prefix="bash -c 'sleep 45; $0 $1 $2 $3 $4 $5 $6' ">
+        <param name="record_session" value="$(arg record_session)"/>
+
+        <param name="language" value="$(arg language)"/>
+
+        <param name="person_distance_threshold" value="1.5"/>
+        <param name="person_distance_frame_id" value="odas"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+
+        <param name="video_analysis_message_count_threshold" value="5"/>
+        <param name="video_analysis_message_count_tolerance" value="2"/>
+
+        <param name="use_after_task_delay_duration_topic" value="$(arg use_after_task_delay_duration_topic)"/>
+        <param name="after_task_delay_duration_s" value="30"/> <!-- Useless when use_after_task_delay_duration_topic=true -->
+        <param name="single_task_per_person" value="$(arg single_task_per_person)"/>
+
+        <param if="$(eval arg('language') == 'fr')" name="song_names" values="[Ça fait rire les oiseaux, La dame en bleu, Un amour qui ne veut pas mourir]"/>
+        <param if="$(eval arg('language') == 'fr')" name="song_keywords" values="[rire;oiseau, dame;bleu, amour;mourir]"/>
+        <param if="$(eval arg('language') == 'fr')" name="song_paths" values="[~/.ros/t-top/audio/fr/Compagnie_créole_ca_fait_rire_les_oiseaux_30s.mp3, ~/.ros/t-top/audio/fr/Michel_Louvain_La_Dame_En_Bleu_30s.mp3, ~/.ros/t-top/audio/fr/Renee_Martel_Un_Amour_Qui_Ne_Veut_Pas_Mourir_30s.mp3]"/>
+
+        <param if="$(eval arg('language') == 'en')" name="song_names" values="[Can't Buy Me Love, Surfin' USA, The Locomotion]"/>
+        <param if="$(eval arg('language') == 'en')" name="song_keywords" values="[buy;love, surf;usa, locomotion]"/>
+        <param if="$(eval arg('language') == 'en')" name="song_paths" values="[~/.ros/t-top/audio/en/The_Beatles_Cant_Buy_Me_Love_30s.mp3, ~/.ros/t-top/audio/en/The_Beach_Boys_Surfin_USA_30s.mp3, ~/.ros/t-top/audio/en/Little_Eva_The_Locomotion_30s.mp3]"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+    </node>
+
+    <include file="$(find t_top)/launch/bringup.launch">
+        <arg name="language" value="$(arg language)"/>
+        <arg name="speaking_rate" value="$(arg speaking_rate)"/>
+        <arg name="slam" value="false"/>
+        <arg name="fullscreen_face" value="true"/>
+        <arg name="record_session" value="$(arg record_session)"/>
+    </include>
+</launch>
