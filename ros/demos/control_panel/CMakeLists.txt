@@ -94,4 +94,7 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
+# Launch files
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+
 ament_package()
