@@ -13,8 +13,7 @@
         <param name="merge" value="false"/>
         <param name="gain" value="1.0"/>
         <param name="latency_us" value="64000"/>
-
-        <param param="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]" />
+        <param param="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
 
         <remap from="audio_out" to="audio_input_before_ego_noise_signed_32_16000"/>
     </node>
@@ -26,7 +25,7 @@
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
         <param name="n_fft" value="1024"/>
-        <param name="noise_directory" value="$(find ego_noise_reduction)/noise_data"/>
+        <param name="noise_directory" value="$(find-pkg-share ego_noise_reduction)/noise_data"/>
 
         <remap from="audio_in" to="audio_input_before_ego_noise_signed_32_16000"/>
         <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>

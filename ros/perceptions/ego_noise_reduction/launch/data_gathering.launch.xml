@@ -15,7 +15,7 @@
         <param name="merge" value="false"/>
         <param name="gain" value="1.0"/>
         <param name="latency_us" value="64000"/>
-        <param param="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]" />
+        <param param="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
 
         <remap from="audio_out" to="audio_signed_32_16000"/>
     </node>

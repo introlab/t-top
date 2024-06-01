@@ -1,0 +1,39 @@
+<launch>
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+
+    <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
+        <arg name="depth_module.profile" value="1280x720x15" />
+        <arg name="rgb_camera.profile" value="1280x720x15" />
+        <arg name="enable_depth" value="true" />
+        <arg name="enable_color" value="true" />
+        <arg name="camera_namespace" value="camera_3d"/>
+        <arg name="camera_name" value="camera_3d"/>
+        <arg name="enable_sync" value="true"/>
+        <arg name="align_depth.enable" value="true"/>
+    </include>
+
+    <node pkg="video_analyzer" exec="video_analyzer_3d_node.py" name="video_analyzer_node">
+        <param name="use_descriptor_yolo" value="false"/>
+        <param name="yolo_model" value="yolo_v7_tiny_coco"/>
+        <param name="confidence_threshold" value="0.70"/>
+        <param name="nms_threshold" value="0.5"/>
+        <param name="person_probability_threshold" value="0.75"/>
+        <param name="pose_confidence_threshold" value="0.4"/>
+        <param name="inference_type" value="$(var neural_network_inference_type)"/>
+
+        <param name="pose_enabled" value="true"/>
+        <param name="face_descriptor_enabled" value="true"/>
+        <param name="semantic_segmentation_enabled" value="false"/>
+        <param name="cropped_image_enabled" value="false"/>
+
+        <param name="depth_mean_offset" value="2"/>
+
+        <remap from="color_image_raw" to="/camera_3d/color/image_raw"/>
+        <remap from="depth_image_raw" to="/camera_3d/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="/camera_3d/aligned_depth_to_color/camera_info"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>
+    </node>
+
+</launch>
