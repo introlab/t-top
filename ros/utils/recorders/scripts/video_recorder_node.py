@@ -352,12 +352,31 @@ class VideoRecorderConfiguration:
 
         output_directory = node.declare_parameter('output_directory', '').get_parameter_value().string_value
         filename_prefix = node.declare_parameter('filename_prefix', '').get_parameter_value().string_value
-        video_streams = [
-            VideoStreamConfiguration.from_parameters(video_stream, index) for index, video_stream in enumerate(rospy.get_param(f'~video_streams'))  # type: ignore
-        ]
-        audio_streams = [
-            AudioStreamConfiguration.from_parameters(audio_stream, index) for index, audio_stream in enumerate(rospy.get_param(f'~audio_streams'))  # type: ignore
-        ]
+
+        video_stream_parameters = {
+            'name': node.declare_parameter('video_stream_name', '').get_parameter_value().string_value,
+            'format': node.declare_parameter('video_stream_format', '').get_parameter_value().string_value,
+            'width': node.declare_parameter('video_stream_width', 0).get_parameter_value().integer_value,
+            'height': node.declare_parameter('video_stream_height', 0).get_parameter_value().integer_value,
+            'framerate': node.declare_parameter('video_stream_framerate', 0).get_parameter_value().integer_value,
+            'codec': node.declare_parameter('video_stream_codec', '').get_parameter_value().string_value,
+            'bitrate': node.declare_parameter('video_stream_bitrate', 0).get_parameter_value().integer_value,
+            'delay_s': node.declare_parameter('video_stream_delay_s', 0).get_parameter_value().double_value,
+            'language_code': node.declare_parameter('video_stream_language_code', '').get_parameter_value().string_value,
+        }
+
+        audio_stream_parameters = {
+            'name': node.declare_parameter('audio_stream_name', '').get_parameter_value().string_value,
+            'format': node.declare_parameter('audio_stream_format', '').get_parameter_value().string_value,
+            'channel_count': node.declare_parameter('audio_stream_channel_count', 0).get_parameter_value().integer_value,
+            'sampling_frequency': node.declare_parameter('audio_stream_sampling_frequency', 0).get_parameter_value().integer_value,
+            'codec': node.declare_parameter('audio_stream_codec', '').get_parameter_value().string_value,
+            'merge_channels': node.declare_parameter('audio_stream_merge_channels', False).get_parameter_value().bool_value,
+            'language_code': node.declare_parameter('audio_stream_language_code', '').get_parameter_value().string_value,
+        }
+
+        video_streams = [VideoStreamConfiguration.from_parameters(video_stream_parameters, 0)]
+        audio_streams = [AudioStreamConfiguration.from_parameters(audio_stream_parameters, 0)]
 
         streams_count = len(video_streams) + len(audio_streams)
         if streams_count < 1:
