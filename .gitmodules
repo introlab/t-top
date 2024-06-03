@@ -10,3 +10,9 @@
 [submodule "ros/perceptions/odas_ros"]
 	path = ros/perceptions/odas_ros
 	url = git@github.com:introlab/odas_ros.git
+[submodule "ros/demos/home_logger/3rd_party/fmt"]
+	path = ros/demos/home_logger/3rd_party/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "ros/utils/recorders/3rd_party/SQLiteCpp"]
+	path = ros/utils/recorders/3rd_party/SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
