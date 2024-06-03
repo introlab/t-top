@@ -38,7 +38,7 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
 
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
-
+# Base ROS2 deps
 RUN apt-get update && apt-get install -y \
   python3-flake8-docstrings \
   python3-pip \
@@ -111,8 +111,9 @@ RUN source /ros2_iron/install/local_setup.bash && colcon build --cmake-args -DCM
 #
 # RTABMAP
 #
-RUN apt-get install libpcl-dev \
-  libpcl-conversions-dev \
+RUN apt-get install \
+  'libpcl-*-dev' \
+  libeigen3-dev \
   libasound2-dev \
   libpulse-dev \
   libconfig-dev \
@@ -150,7 +151,7 @@ RUN apt-get install libpcl-dev \
   nodejs npm -y
 
 WORKDIR /root
-RUN git clone -b iron-devel https://github.com/introlab/rtabmap.git --depth 1 --recurse-submodules
+RUN git clone -b master https://github.com/introlab/rtabmap.git --depth 1 --recurse-submodules
 RUN mkdir -p /root/rtabmap/build
 WORKDIR /root/rtabmap/build
 RUN cmake ../
@@ -160,8 +161,19 @@ RUN make install
 #
 # RTABMAP ROS
 #
+RUN apt-get install libangles-dev libzmq3-dev libbehaviortree3-dev -y
+
 WORKDIR /root/ros2/workspace/src
-RUN git clone -b iron-devel https://github.com/introlab/rtabmap_ros.git --depth 1 --recurse-submodules
+# NAV2
+RUN git clone -b iron https://github.com/ros-navigation/navigation2 --depth 1 --recurse-submodules
+RUN git clone -b ros2 https://github.com/ros-geographic-info/geographic_info.git --depth 1 --recurse-submodules
+RUN git clone -b ros2 https://github.com/ros/bond_core.git --depth 1 --recurse-submodules
+RUN git clone -b master https://github.com/BehaviorTree/BehaviorTree.CPP.git --depth 1 --recurse-submodules
+# PCL - ROS
+RUN git clone -b ros2 https://github.com/ros-perception/pcl_msgs.git --depth 1 --recurse-submodules
+RUN git clone -b ros2 https://github.com/ros-perception/perception_pcl.git --depth 1 --recurse-submodules
+#RTABMAP-ROS
+RUN git clone -b ros2 https://github.com/introlab/rtabmap_ros.git --depth 1 --recurse-submodules
 
 WORKDIR /root/ros2/workspace
 RUN source /ros2_iron/install/local_setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
