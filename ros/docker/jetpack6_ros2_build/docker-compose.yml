@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  build-only:
+    privileged: true
+    build:
+      dockerfile: jetpack6-ros2-build.dockerfile
+    network_mode: host
+    restart: always
+    environment:
+      - DISPLAY=$DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./realsense_bridge.launch.xml:/root/ros2/workspace/launch/realsense_bridge.launch.xml
+    runtime: nvidia
