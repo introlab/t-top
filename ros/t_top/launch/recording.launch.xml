@@ -1,6 +1,6 @@
 <launch>
     <arg name="camera_2d_wide_enabled"/>
-    <arg name="output_directory" default="$(env HOME)/.ros/ttop/recordings"/>
+    <arg name="output_directory" default="$(env HOME)/.ros/t-top/recordings"/>
 
     <node pkg="recorders" exec="video_recorder_node.py" name="video_recorder_camera_3d_node">
         <param name="output_directory" value="$(var output_directory)"/>
