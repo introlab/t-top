@@ -1,0 +1,13 @@
+<launch>
+
+    <arg name="sound_player_behavior_delay"/>
+
+    <node pkg="sound_player" exec="sound_player_node.py" name="sound_player_node" launch-prefix="bash -c 'sleep $(var sound_player_behavior_delay); $0 $@' ">
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+
+        <remap from="audio_out" to="audio_output_float_16000"/>
+        <remap from="audio_out/filter_state" to="sound_player/filter_state"/>
+    </node>
+
+</launch>

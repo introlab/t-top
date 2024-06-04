@@ -1,0 +1,19 @@
+<launch>
+
+    <arg name="person_identification_perception_delay"/>
+
+    <node pkg="person_identification" exec="person_identification_node.py" name="person_identification_node" launch-prefix="bash -c 'sleep $(var person_identification_perception_delay); $0 $@' ">
+        <param name="face_sharpness_score_threshold" value="0.5"/>
+        <param name="face_descriptor_threshold" value="0.7"/>
+        <param name="voice_descriptor_threshold" value="1.266"/>
+        <param name="face_voice_descriptor_threshold" value="1.5092"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="direction_frame_id" value="odas"/>
+        <param name="direction_angle_threshold_rad" value="0.15"/>
+        <param name="ignore_direction_z" value="true"/>
+        <param name="search_frequency" value="2"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+    </node>
+
+</launch>

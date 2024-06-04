@@ -1,0 +1,18 @@
+<launch>
+
+    <arg name="ego_noise_reduction_perception_delay"/>
+
+    <node pkg="ego_noise_reduction" exec="ego_noise_reduction_node" name="ego_noise_reduction_node" respawn="true" launch-prefix="bash -c 'sleep $(var ego_noise_reduction_perception_delay); $0 $@' ">
+        <param name="type" value="log_mmse"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="n_fft" value="1024"/>
+        <param name="noise_directory" value="$(find-pkg-share ego_noise_reduction)/noise_data"/>
+
+        <remap from="audio_in" to="audio_input_before_ego_noise_signed_32_16000"/>
+        <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
+    </node>
+
+</launch>

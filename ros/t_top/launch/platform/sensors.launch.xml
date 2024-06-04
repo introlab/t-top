@@ -1,8 +1,10 @@
 <launch>
-    <arg name="output_path"/>
-    <arg name="dataset"/> <!-- coco or objects365 -->
-    <arg name="image_count"/>
-    <arg name="camera_type" default=""/> <!-- realsense, camera_2d_wide or "" -->
+    <arg name="camera_2d_wide_enabled" default="false"/>
+    <arg name="use_echo_cancellation" default="false"/>
+    <arg name="pulse_audio_source"/>
+    <arg name="pulse_audio_sink"/>
+    <arg name="echo_cancellation_dest"/>
+    <arg name="ec_volume_percent"/>
 
     <!-- Camera 3d -->
     <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
@@ -16,8 +18,9 @@
         <arg name="align_depth.enable" value="true"/>
     </include>
 
-    <!-- Camera 2d Wide -->
-    <node if="$(eval '\'$(var camera_type)\' == \'camera_2d_wide\'')" pkg="cv_camera" exec="cv_camera_node" name="cv_camera_node">
+
+    <!-- Camera 2d -->
+    <node if="$(var camera_2d_wide_enabled)" pkg="cv_camera" exec="cv_camera_node" name="cv_camera_node" respawn="true">
         <param name="rate" value="5"/>
         <param name="device_path" value="/dev/camera_2d_wide"/>
         <param name="image_width" value="1920"/>
@@ -31,6 +34,12 @@
         <remap from="cv_camera_node/image_raw" to="camera_2d_wide_full_hd/image"/>
         <remap from="cv_camera_node/camera_info" to="camera_2d_wide_full_hd/camera_info"/>
         <remap from="cv_camera_node/set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>
+    </node>
+    <node if="$(var camera_2d_wide_enabled)" pkg="watchdog" exec="watchdog_node" name="cv_camera_watchdog_node" output="screen">
+        <param name="node_name" value="cv_camera_node"/>
+        <param name="timeout_duration_s" value="5.0"/>
+
+        <remap from="topic" to="camera_2d_wide_full_hd/image"/>
     </node>
 
     <node_container pkg="rclcpp_components" exec="component_container" name="camera_2d_image_proc_container">
@@ -55,27 +64,25 @@
         </composable_node>
     </node_container>
 
-    <!-- Camera 2d default -->
-    <node if="$(eval '\'$(var camera_type)\' != \'camera_2d_wide\'')" pkg="cv_camera" exec="cv_camera_node" name="cv_camera_node">
-        <param name="rate" value="5"/>
-        <param name="device_path" value="/dev/video0"/>
-        <param name="image_width" value="1920"/>
-        <param name="image_height" value="1080"/>
+    <!-- Sound -->
+    <node if="$(var use_echo_cancellation)" pkg="odas_ros" exec="echocancel.sh" name="echocancel" args="$(var pulse_audio_source) $(var pulse_audio_sink) $(var echo_cancellation_dest) $(var ec_volume_percent)" />
 
-        <param name="property_0_code" value="38"/> <!-- CAP_PROP_BUFFERSIZE -->
-        <param name="property_0_value" value="1"/>
+    <node pkg="audio_utils" exec="capture_node" name="capture_node" output="screen" respawn="true">
+        <param name="backend" value="pulse_audio"/>
+        <param unless="$(var use_echo_cancellation)" name="device" value="$(var pulse_audio_source)"/>
+        <param if="$(var use_echo_cancellation)" name="device" value="$(var echo_cancellation_dest)_ec"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="merge" value="false"/>
+        <param name="gain" value="1.0"/>
+        <param name="latency_us" value="64000"/>
 
-        <remap from="cv_camera_node/image_raw" to="image_raw"/>
-    </node>
+        <remap from="audio_out" to="audio_input_before_ego_noise_signed_32_16000"/>
 
-    <node pkg="yolo_performance" exec="image_gathering_node.py" name="image_gathering_node" output="screen">
-        <param name="output_path" value="$(var output_path)"/>
-        <param name="image_count" value="$(var image_count)"/>
-        <param name="setups" value="[1m, 2m, 3m]"/>
-        <param if="$(eval '\'$(var 'dataset')\' == \'coco\'')" name="classes" value="[person, bowl, bottle]"/>
-        <param if="$(eval '\'$(var 'dataset')\' == \'objects365\'')" name="classes" value="[person, bowl, bottle, tong]"/>
-
-        <remap if="$(eval '\'$(var camera_type)\' == \'realsense\'')" from="image_raw" to="camera_3d/color/image_raw"/>
-        <remap if="$(eval '\'$(var camera_type)\' == \'camera_2d_wide\'')" from="image_raw" to="camera_2d_wide/image_rect"/>
+        <rosparam param="channel_map">
+            [front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]
+        </rosparam>
     </node>
 </launch>

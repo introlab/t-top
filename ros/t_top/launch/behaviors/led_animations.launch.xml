@@ -1,0 +1,8 @@
+<launch>
+    <arg name="led_animations_behavior_delay"/>
+
+    <node pkg="led_animations" exec="led_animations_node.py" name="led_animations_node" launch-prefix="bash -c 'sleep $(var led_animations_behavior_delay); $0 $@' ">
+        <remap from="set_led_colors/filter_state" to="led_animations/filter_state"/>
+    </node>
+
+</launch>

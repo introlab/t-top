@@ -1,0 +1,79 @@
+<launch>
+    <arg name="camera_2d_wide_enabled"/>
+    <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
+
+    <arg name="video_analyzer_3d_use_descriptor_yolo"/>
+    <arg name="video_analyzer_3d_yolo_model"/>
+    <arg name="video_analyzer_3d_pose_enabled"/>
+    <arg name="video_analyzer_3d_face_descriptor_enabled"/>
+    <arg name="video_analyzer_3d_cropped_image_enabled"/>
+
+    <arg name="video_analyzer_2d_wide_use_descriptor_yolo"/>
+    <arg name="video_analyzer_2d_wide_yolo_model"/>
+    <arg name="video_analyzer_2d_wide_pose_enabled"/>
+    <arg name="video_analyzer_2d_wide_face_descriptor_enabled"/>
+    <arg name="video_analyzer_2d_wide_cropped_image_enabled"/>
+
+    <arg name="video_analyzer_confidence_threshold"/>
+    <arg name="video_analyzer_nms_threshold"/>
+    <arg name="video_analyzer_person_probability_threshold"/>
+    <arg name="video_analyzer_pose_confidence_threshold"/>
+
+    <arg name="visualization" default="false"/>
+    <arg name="video_analyser_3d_perception_delay"/>
+    <arg name="video_analyzer_2d_wide_perception_delay"/>
+
+
+    <node pkg="video_analyzer" exec="video_analyzer_3d_node.py" name="video_analyzer_3d_node" launch-prefix="bash -c 'sleep $(var video_analyser_3d_perception_delay); $0 $@' ">
+        <param name="use_descriptor_yolo" value="$(var video_analyzer_3d_use_descriptor_yolo)"/>
+        <param name="yolo_model" value="$(var video_analyzer_3d_yolo_model)"/>
+        <param name="confidence_threshold" value="$(var video_analyzer_confidence_threshold)"/>
+        <param name="nms_threshold" value="$(var video_analyzer_nms_threshold)"/>
+        <param name="person_probability_threshold" value="$(var video_analyzer_person_probability_threshold)"/>
+        <param name="pose_confidence_threshold" value="$(var video_analyzer_pose_confidence_threshold)"/>
+        <param name="inference_type" value="$(var neural_network_inference_type)"/>
+
+        <param name="pose_enabled" value="$(var video_analyzer_3d_pose_enabled)"/>
+        <param name="face_descriptor_enabled" value="$(var video_analyzer_3d_face_descriptor_enabled)"/>
+        <param name="semantic_segmentation_enabled" value="false"/>
+        <param name="cropped_image_enabled" value="$(var video_analyzer_3d_cropped_image_enabled)"/>
+
+        <param name="depth_mean_offset" value="2"/>
+
+        <remap from="color_image_raw" to="camera_3d/color/image_raw"/>
+        <remap from="depth_image_raw" to="camera_3d/aligned_depth_to_color/image_raw"/>
+        <remap from="depth_camera_info" to="camera_3d/aligned_depth_to_color/camera_info"/>
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+        <remap from="analysed_image" to="camera_3d/analysed_image"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer_3d/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer_3d/image_raw/filter_state"/>
+    </node>
+    <node if="$(var visualization)" pkg="video_analyzer" name="video_analysis_markers" exec="video_analysis_markers_node.py">
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+        <remap from="video_analysis_markers" to="camera_3d/video_analysis_markers"/>
+    </node>
+
+    <node if="$(var camera_2d_wide_enabled)" pkg="video_analyzer" exec="video_analyzer_2d_node.py" name="video_analyzer_2d_wide_node" launch-prefix="bash -c 'sleep $(var video_analyzer_2d_wide_perception_delay); $0 $@' ">
+        <param name="use_descriptor_yolo" value="$(var video_analyzer_2d_wide_use_descriptor_yolo)"/>
+        <param name="yolo_model" value="$(var video_analyzer_2d_wide_yolo_model)"/>
+        <param name="confidence_threshold" value="$(var video_analyzer_confidence_threshold)"/>
+        <param name="nms_threshold" value="$(var video_analyzer_nms_threshold)"/>
+        <param name="person_probability_threshold" value="$(var video_analyzer_person_probability_threshold)"/>
+        <param name="pose_confidence_threshold" value="$(var video_analyzer_pose_confidence_threshold)"/>
+        <param name="inference_type" value="$(var neural_network_inference_type)"/>
+
+        <param name="pose_enabled" value="$(var video_analyzer_2d_wide_pose_enabled)"/>
+        <param name="face_descriptor_enabled" value="$(var video_analyzer_2d_wide_face_descriptor_enabled)"/>
+        <param name="semantic_segmentation_enabled" value="false"/>
+        <param name="semantic_segmentation_dataset" value="coco"/> <!-- coco, kitchen_open_images or person_other_open_images -->
+        <param name="cropped_image_enabled" value="$(var video_analyzer_2d_wide_cropped_image_enabled)"/>
+
+        <remap from="image_raw" to="camera_2d_wide/image_rect"/>
+        <remap from="video_analysis" to="camera_2d_wide/video_analysis"/>
+        <remap from="analysed_image" to="camera_2d_wide/analysed_image"/>
+
+        <remap from="analysed_image/filter_state" to="video_analyzer_2d_wide/analysed_image/filter_state"/>
+        <remap from="image_raw/filter_state" to="video_analyzer_2d_wide/image_raw/filter_state"/>
+    </node>
+</launch>

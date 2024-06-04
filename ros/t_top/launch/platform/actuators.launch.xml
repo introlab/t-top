@@ -1,0 +1,36 @@
+<launch>
+    <arg name="pulse_audio_sink"/>
+    <arg name="opentera_playback_node_enabled"/>
+
+    <!-- Screen -->
+    <include file="$(find-pkg-share rosbridge_server)/launch/rosbridge_websocket.launch.xml">
+        <arg name="port" value="9090"/>
+    </include>
+
+    <!-- Sound -->
+    <node pkg="audio_utils" exec="playback_node" name="playback_node" respawn="true">
+        <param name="backend" value="pulse_audio"/>
+        <param name="device" value="$(var pulse_audio_sink)"/>
+        <param name="format" value="float"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="latency_us" value="64000"/>
+
+        <remap from="audio_in" to="audio_output_float_16000"/>
+    </node>
+
+    <!-- Playback for audio coming from webrtc -->
+    <node if="$(var opentera_playback_node_enabled)" pkg="audio_utils" exec="playback_node" name="opentera_playback_node" respawn="true">
+        <param name="backend" value="pulse_audio"/>
+        <param name="device" value="$(var pulse_audio_sink)"/>
+        <param name="format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="sampling_frequency" value="48000"/>
+        <param name="frame_sample_count" value="480"/>
+        <param name="latency_us" value="100000"/>
+
+        <remap from="audio_in" to="audio_webrtc_incoming_signed_16_48000"/>
+    </node>
+
+</launch>

@@ -1,0 +1,60 @@
+<launch>
+    <!--Static tf broadcast launch-->
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="stewart_base_tf_publisher" args="0 0 0.04875 0 0 0 torso_base stewart_base"/>
+
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="dynamixel_control_tf_publisher" args="-0.026336 0.081616 -0.03325 0 0 0 stewart_base dynamixel_control"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="dynamixel_control_imu_tf_publisher" args="0 0 0 0.6124 0.3535 0.3535 0.6124 dynamixel_control dynamixel_control_imu"/>
+
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_3d_link_tf_publisher" args="0.0645 0 0.17189 0 0 0 head camera_3d_link"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_3d_depth_tf_publisher" args="0.01995 0 0 0 0 0 camera_3d_link camera_3d_depth_frame"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_3d_depth_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_depth_frame camera_3d_depth_optical_frame"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_3d_color_tf_publisher" args="0 0 0 0 0 0 camera_3d_depth_frame camera_3d_color_frame"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_3d_color_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_3d_color_frame camera_3d_color_optical_frame"/>
+
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_2d_wide_link_tf_publisher" args="0.06675 0 0.13968 0 0 0 head camera_2d_wide_link"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_2d_wide_frame_tf_publisher" args="0.0015 0 0 0 0 0 camera_2d_wide_link camera_2d_wide_frame"/>
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_2d_wide_optical_tf_publisher" args="0 0 0 1.570796 3.141593 1.570796 camera_2d_wide_frame camera_2d_wide_optical_frame"/>
+
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="odas_tf_publisher" args="0 0 0.12282 0 0 0 base_link odas"/>
+
+
+    <!-- IMU filter launch -->
+    <node pkg="imu_filter_madgwick" exec="imu_filter_node" name="imu_filter_node">
+        <param name="use_mag" value="false"/>
+        <param name="world_frame" value="enu"/>
+        <param name="publish_tf" value="false"/>
+
+        <remap from="imu/data_raw" to="daemon/imu/data_raw"/>
+        <remap from="imu/data" to="imu/data"/>
+    </node>
+
+    <!-- Dynamic tf broadcast and odom launch -->
+    <node pkg="daemon_ros_client" exec="daemon_ros_client_node" name="daemon_ros_client_node">
+        <param name="base_link_torso_base_delta_z" value="0.184"/>
+    </node>
+
+    <!-- Arbitration nodes -->
+    <node pkg="hbba_lite" exec="arbitration_node" name="led_arbitration_node" output="screen">
+        <param name="topics" value="[led_emotions/set_led_colors, dance/set_led_colors, led_animations/set_led_colors, robot_name_detector/set_led_colors]"/>
+        <param name="priorities" value="[1, 2, 3, 4]"/>
+        <param name="timeout_s" value="[0.1, 2.0, 0.1, 0.2]"/>
+
+        <remap from="out" to="daemon/set_led_colors"/>
+    </node>
+
+    <node pkg="hbba_lite" exec="arbitration_node" name="torso_arbitration_node" output="screen">
+        <param name="topics" value="[teleoperation/set_torso_orientation, gesture/set_torso_orientation, dance/set_torso_orientation, explore/set_torso_orientation, sound_object_person_following/set_torso_orientation, specific_face_following/set_torso_orientation, nearest_face_following/set_torso_orientation, sound_following/set_torso_orientation, other/set_torso_orientation]"/>
+        <param name="priorities" value="[1, 2, 3, 4, 5, 6, 7, 8, 9]"/>
+        <param name="timeout_s" value="[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]"/>
+
+        <remap from="out" to="daemon/set_torso_orientation"/>
+    </node>
+
+    <node pkg="t_top_hbba_lite" exec="set_head_pose_arbitration_node" name="head_arbitration_node" output="screen">
+        <param name="topics" value="[teleoperation/set_head_pose, gesture/set_head_pose, dance/set_head_pose, explore/set_head_pose, sound_object_person_following/set_head_pose, specific_face_following/set_head_pose, nearest_face_following/set_head_pose, sound_following/set_head_pose, other/set_head_pose]"/>
+        <param name="priorities" value="[1, 2, 3, 4, 5, 6, 7, 8, 9]"/>
+        <param name="timeout_s" value="[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]"/>
+
+        <param name="offset_topics" value="[too_close_reaction/set_head_pose]"/>
+    </node>
+</launch>

@@ -6,7 +6,7 @@
         <param name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
     </node>
 
-    <include file="$(find-pkg-share t_top)/launch/bringup.launch">
+    <include file="$(find-pkg-share t_top)/launch/bringup.launch.xml">
         <arg name="language" value="$(var language)"/>
         <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
         <arg name="slam" value="false"/>

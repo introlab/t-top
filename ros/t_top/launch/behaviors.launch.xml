@@ -1,0 +1,100 @@
+<launch>
+    <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="gender"/> <!-- Options: female or male -->
+    <arg name="voice_generator_type"/> <!-- Options: google or piper -->
+    <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
+    <arg name="camera_2d_wide_enabled"/>
+    <arg name="simulation"/>
+    <arg name="open_browser" default="true"/>
+    <arg name="fullscreen_face" default="false"/>
+
+    <!-- Delays -->
+    <arg name="dance_behavior_delay"/>
+    <arg name="explore_behavior_delay"/>
+    <arg name="face_behavior_delay"/>
+    <arg name="face_following_behavior_delay"/>
+    <arg name="gesture_behavior_delay"/>
+    <arg name="led_animations_behavior_delay"/>
+    <arg name="led_emotions_behavior_delay"/>
+    <arg name="sound_following_behavior_delay"/>
+    <arg name="sound_object_person_following_behavior_delay"/>
+    <arg name="sound_player_behavior_delay"/>
+    <arg name="talk_behavior_delay"/>
+    <arg name="too_close_reaction_behavior_delay"/>
+
+    <!-- Telepresence -->
+    <!-- See opentera-webrtc-ros -->
+
+    <!-- Emotions -->
+    <!-- See user_interface -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/face.launch.xml">
+        <arg name="open_browser" value="$(var open_browser)"/>
+        <arg name="fullscreen" value="$(var fullscreen_face)"/>
+        <arg name="face_behavior_delay" value="$(var face_behavior_delay)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/behaviors/led_emotions.launch.xml">
+        <arg name="led_emotions_behavior_delay" value="$(var led_emotions_behavior_delay)"/>
+    </include>
+
+    <!-- Led Animation -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/led_animations.launch.xml">
+        <arg name="led_animations_behavior_delay" value="$(var led_animations_behavior_delay)"/>
+    </include>
+
+    <!-- Talk -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/talk.launch.xml">
+        <arg name="language" value="$(var language)"/>
+        <arg name="gender" value="$(var gender)"/>
+        <arg name="voice_generator_type" value="$(var voice_generator_type)"/>
+        <arg name="speaking_rate" value="$(var speaking_rate)"/>
+        <arg name="talk_behavior_delay" value="$(var talk_behavior_delay)"/>
+    </include>
+
+    <!-- Gesture -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/gesture.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+        <arg name="gesture_behavior_delay" value="$(var gesture_behavior_delay)"/>
+    </include>
+
+    <!-- Sound Following -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/sound_following.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+        <arg name="sound_following_behavior_delay" value="$(var sound_following_behavior_delay)"/>
+    </include>
+
+    <!-- Face Following -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/face_following.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+        <arg name="face_following_behavior_delay" value="$(var face_following_behavior_delay)"/>
+    </include>
+
+    <!-- Sound Object Person Following -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/sound_object_person_following.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="sound_object_person_following_behavior_delay" value="$(var sound_object_person_following_behavior_delay)"/>
+    </include>
+
+    <!-- Dance -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/dance.launch.xml">
+        <arg name="dance_behavior_delay" value="$(var dance_behavior_delay)"/>
+    </include>
+
+    <!-- Explore -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/explore.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+        <arg name="explore_behavior_delay" value="$(var explore_behavior_delay)"/>
+    </include>
+
+    <!-- Too Near Reaction -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/too_close_reaction.launch.xml">
+        <arg name="too_close_reaction_behavior_delay" value="$(var too_close_reaction_behavior_delay)"/>
+    </include>
+
+    <!-- Sound Player -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/sound_player.launch.xml">
+        <arg name="sound_player_behavior_delay" value="$(var sound_player_behavior_delay)"/>
+    </include>
+
+</launch>

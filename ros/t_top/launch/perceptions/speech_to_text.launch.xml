@@ -1,0 +1,33 @@
+<launch>
+    <arg name="language"/> <!-- Options: fr or en -->
+    <arg name="type"/> <!-- Options: google or whisper -->
+    <arg name="whisper_model"/> <!-- Options: tiny, base, small, medium -->
+    <arg name="speech_to_text_perception_delay"/>
+
+    <node if="$(eval '\'$(var type)\' == \'google\'')" pkg="speech_to_text" exec="google_speech_to_text_node.py" name="google_speech_to_text_node" launch-prefix="bash -c 'sleep $(var speech_to_text_perception_delay); $0 $@' ">
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="request_frame_count" value="4"/>
+        <param name="language" value="$(var language)"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+        <remap from="transcript" to="speech_to_text/transcript"/>
+    </node>
+
+    <node if="$(eval '\'$(var type)\' == \'whisper\''))" pkg="speech_to_text" exec="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen" launch-prefix="bash -c 'sleep $(var speech_to_text_perception_delay); $0 $@' ">
+        <param name="language" value="$(var language)"/>
+        <param if="$(eval '\'$(var language)\' == \'en\'')" name="model_size" value="$(var whisper_model).en"/>
+        <param if="$(eval '\'$(var language)\' == \'fr\'')" name="model_size" value="$(var whisper_model)"/>
+        <param name="device" value="cuda"/>
+        <param name="compute_type" value="int8"/>
+
+        <param name="prebuffering_frame_count" value="4"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
+        <remap from="transcript" to="speech_to_text/transcript"/>
+
+        <env name="OPENBLAS_NUM_THREADS" value="1"/>
+    </node>
+</launch>

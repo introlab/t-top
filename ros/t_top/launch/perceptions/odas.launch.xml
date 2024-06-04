@@ -1,0 +1,33 @@
+<launch>
+    <arg name="odas_configuration_path" default="$(find-pkg-share t_top)/config/configuration_16SoundsUSB.cfg"/>
+    <arg name="visualization" default="false"/>
+    <arg name="use_echo_cancellation" default="false"/>
+    <arg name="odas_perception_delay"/>
+
+    <!-- ODAS -->
+    <node unless="$(var use_echo_cancellation)" pkg="odas_ros" exec="odas_server_node.py" name="odas_server_node" respawn="true" launch-prefix="bash -c 'sleep $(var odas_perception_delay); $0 $@' ">
+        <param name="configuration_path" value="$(var odas_configuration_path)"/>
+        <param name="frame_id" value="odas"/>
+
+        <remap from="raw" to="audio_input_before_odas_signed_32_16000"/>
+        <remap from="ssl" to="audio_ssl"/>
+        <remap from="sst" to="audio_sst"/>
+        <remap from="sss" to="audio_input_signed_16_16000"/>
+    </node>
+    <node if="$(var use_echo_cancellation)" pkg="odas_ros" exec="odas_echocancel_filter_server_node.py" name="odas_server_node" respawn="true" launch-prefix="bash -c 'sleep $(var odas_perception_delay); $0 $@' ">
+        <param name="configuration_path" value="$(var odas_configuration_path)"/>
+        <param name="frame_id" value="odas"/>
+
+        <remap from="raw" to="audio_input_before_odas_signed_32_16000"/>
+        <remap from="ssl" to="audio_ssl"/>
+        <remap from="sst" to="audio_sst"/>
+        <remap from="sss" to="audio_input_signed_16_16000"/>
+        <remap from="ec_signal" to="audio_input_signed_16_16000"/>
+    </node>
+    <node if="$(var visualization)" pkg="odas_ros" exec="odas_visualization_node.py" name="odas_visualization_node" launch-prefix="bash -c 'sleep $(var odas_perception_delay); $0 $@' ">
+        <param name="configuration_path" value="$(var odas_configuration_path)"/>
+
+        <remap from="ssl" to="audio_ssl"/>
+        <remap from="sst" to="audio_sst"/>
+    </node>
+</launch>

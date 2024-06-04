@@ -1,5 +1,5 @@
 <launch>
-    <include file="$(find-pkg-share t_top)/launch/platform.launch">
+    <include file="$(find-pkg-share t_top)/launch/platform.launch.xml">
         <arg name="camera_2d_wide_enabled" value="true"/>
         <arg name="use_echo_cancellation" value="false"/>
     </include>

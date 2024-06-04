@@ -1,0 +1,24 @@
+<launch>
+    <arg name="camera_2d_wide_enabled"/>
+    <arg name="use_echo_cancellation" default="false"/>
+    <arg name="opentera_playback_node_enabled" default="false"/>
+
+    <let name="pulse_audio_sink" value="alsa_output.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.analog-surround-40" />
+
+    <include file="$(find-pkg-share t_top)/launch/platform/daemon_ros_client.launch.xml"/>
+
+    <include file="$(find-pkg-share t_top)/launch/platform/actuators.launch.xml">
+        <arg name="pulse_audio_sink" value="$(var pulse_audio_sink)"/>
+        <arg name="opentera_playback_node_enabled" value="$(var opentera_playback_node_enabled)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/platform/sensors.launch.xml">
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="use_echo_cancellation" value="$(var use_echo_cancellation)"/>
+        <arg name="pulse_audio_source" value="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input" />
+        <arg name="pulse_audio_sink" value="$(var pulse_audio_sink)" />
+        <arg name="echo_cancellation_dest" value="odas_echo_cancelled" />
+        <arg name="ec_volume_percent" value="90" />
+    </include>
+
+</launch>

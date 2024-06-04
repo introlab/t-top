@@ -37,4 +37,7 @@ install(PROGRAMS
 # Install the config
 install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
+# Launch files
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+
 ament_package()

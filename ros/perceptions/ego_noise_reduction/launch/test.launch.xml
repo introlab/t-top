@@ -1,7 +1,7 @@
 <launch>
     <arg name="output_directory"/>
 
-    <include file="$(find-pkg-share t_top)/launch/platform/daemon_ros_client.launch"/>
+    <include file="$(find-pkg-share t_top)/launch/platform/daemon_ros_client.launch.xml"/>
 
     <node pkg="audio_utils" exec="capture_node" name="capture_node" output="screen">
         <param name="backend" value="pulse_audio"/>
@@ -31,7 +31,7 @@
         <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
     </node>
 
-    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch"/>
+    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml"/>
 
     <node pkg="ego_noise_reduction" exec="test.py" name="test_node" output="screen"/>
 
