@@ -53,7 +53,9 @@ private:
     void videoAnalysisSubscriberCallback(const video_analyzer::msg::VideoAnalysis::SharedPtr msg);
 
     double personNameDistance(const person_identification::msg::PersonName& name);
-    double faceDistance(const video_analyzer::msg::VideoAnalysisObject& object, const tf2::Stamped<tf2::Transform>& transform);
+    double faceDistance(
+        const video_analyzer::msg::VideoAnalysisObject& object,
+        const tf2::Stamped<tf2::Transform>& transform);
 };
 
 inline std::type_index SmartIdleState::type() const

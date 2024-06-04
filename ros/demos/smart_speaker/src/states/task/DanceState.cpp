@@ -31,8 +31,7 @@ void DanceState::enable(const string& parameter, const type_index& previousStage
     m_desireSet->addDesire(move(danceDesire));
     m_desireSet->addDesire(move(faceAnimationDesire));
 
-    m_timeoutTimer =
-        m_node->create_wall_timer(chrono::seconds(DANCE_TIMEOUT_S), [this]() { timeoutTimerCallback(); });
+    m_timeoutTimer = m_node->create_wall_timer(chrono::seconds(DANCE_TIMEOUT_S), [this]() { timeoutTimerCallback(); });
 }
 
 void DanceState::disable()

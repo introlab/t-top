@@ -25,7 +25,10 @@ DancePlayedSongState::DancePlayedSongState(
 
     m_desireSet->addObserver(this);
 
-    m_songStartedSubscriber = m_node->create_subscription<sound_player::msg::Started>("sound_player/started", 1, [this](const sound_player::msg::Started::SharedPtr msg) { songStartedSubscriberCallback(msg); });
+    m_songStartedSubscriber = m_node->create_subscription<sound_player::msg::Started>(
+        "sound_player/started",
+        1,
+        [this](const sound_player::msg::Started::SharedPtr msg) { songStartedSubscriberCallback(msg); });
 }
 
 DancePlayedSongState::~DancePlayedSongState()

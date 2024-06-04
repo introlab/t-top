@@ -82,21 +82,15 @@ void startNode(
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
     stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, node, songNames));
-    stateManager.addState(
-        make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, node, songKeywords));
+    stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, node, songKeywords));
     stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, node));
     stateManager.addState(
         make_unique<InvalidTaskState>(language, stateManager, desireSet, node, askOtherTaskStateType));
 
     stateManager.addState(
         make_unique<CurrentWeatherState>(language, stateManager, desireSet, node, askOtherTaskStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(
-        language,
-        stateManager,
-        desireSet,
-        node,
-        askOtherTaskStateType,
-        songPaths));
+    stateManager.addState(
+        make_unique<DancePlayedSongState>(language, stateManager, desireSet, node, askOtherTaskStateType, songPaths));
 
     stateManager.addState(
         make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, node, singleTaskPerPerson));
@@ -158,14 +152,18 @@ int startNode()
     int videoAnalysisMessageCountThreshold = node->declare_parameter("video_analysis_message_count_threshold", -1);
     if (videoAnalysisMessageCountThreshold < 1)
     {
-        RCLCPP_ERROR(node->get_logger(), "The parameter video_analysis_message_count_threshold must be set and greater than 0.");
+        RCLCPP_ERROR(
+            node->get_logger(),
+            "The parameter video_analysis_message_count_threshold must be set and greater than 0.");
         return -1;
     }
 
     int videoAnalysisMessageCountTolerance = node->declare_parameter("video_analysis_message_count_tolerance", -1);
     if (videoAnalysisMessageCountTolerance < 0)
     {
-        RCLCPP_ERROR(node->get_logger(), "The parameter video_analysis_message_count_tolerance must be set and greater than or equal to 0.");
+        RCLCPP_ERROR(
+            node->get_logger(),
+            "The parameter video_analysis_message_count_tolerance must be set and greater than or equal to 0.");
         return -1;
     }
 
@@ -180,12 +178,19 @@ int startNode()
     vector<string> songPaths = node->declare_parameter("song_paths", vector<string>{});
     if (songNames.size() != songKeywords.size() || songNames.size() != songPaths.size() || songNames.size() < 1)
     {
-        RCLCPP_ERROR(node->get_logger(), "The parameters song_names, song_keywords and song_paths must have the same size and contain at least one item.");
+        RCLCPP_ERROR(
+            node->get_logger(),
+            "The parameters song_names, song_keywords and song_paths must have the same size and contain at least one "
+            "item.");
         return -1;
     }
 
     vector<vector<string>> splittedSongKeywords;
-    std::transform(songKeywords.begin(), songKeywords.end(), std::back_inserter(splittedSongKeywords), [](auto& x) { return splitStrings(x, ";"); });
+    std::transform(
+        songKeywords.begin(),
+        songKeywords.end(),
+        std::back_inserter(splittedSongKeywords),
+        [](auto& x) { return splitStrings(x, ";"); });
 
 
     startNode(

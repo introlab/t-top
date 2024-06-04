@@ -77,11 +77,27 @@ public:
         m_speechLogger = std::make_unique<SQLiteSpeechLogger>(*m_database);
         m_hbbaStrategyStateLogger = std::make_unique<SQLiteHbbaStrategyStateLogger>(*m_database);
 
-        m_videoAnalysis3dSubscriber = create_subscription<video_analyzer::msg::VideoAnalysis>("video_analysis", 10, [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
-        m_audioAnalysisSubscriber = create_subscription<audio_analyzer::msg::AudioAnalysis>("audio_analysis", 10, [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
-        m_talkTextSubscriber = create_subscription<talk::msg::Text>("talk/text", 10, [this](const talk::msg::Text::SharedPtr msg) { talkTextSubscriberCallback(msg); });
-        m_speechToTextTranscriptSubscriber = create_subscription<speech_to_text::msg::Transcript>("speech_to_text/transcript", 10, [this](const speech_to_text::msg::Transcript::SharedPtr msg) { speechToTextTranscriptSubscriberCallback(msg); });
-        m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite::msg::StrategyState>("hbba_strategy_state_log", 10, [this](const hbba_lite::msg::StrategyState::SharedPtr msg) { hbbaStrategyStateSubscriberCallback(msg); });
+        m_videoAnalysis3dSubscriber = create_subscription<video_analyzer::msg::VideoAnalysis>(
+            "video_analysis",
+            10,
+            [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
+        m_audioAnalysisSubscriber = create_subscription<audio_analyzer::msg::AudioAnalysis>(
+            "audio_analysis",
+            10,
+            [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
+        m_talkTextSubscriber = create_subscription<talk::msg::Text>(
+            "talk/text",
+            10,
+            [this](const talk::msg::Text::SharedPtr msg) { talkTextSubscriberCallback(msg); });
+        m_speechToTextTranscriptSubscriber = create_subscription<speech_to_text::msg::Transcript>(
+            "speech_to_text/transcript",
+            10,
+            [this](const speech_to_text::msg::Transcript::SharedPtr msg)
+            { speechToTextTranscriptSubscriberCallback(msg); });
+        m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite::msg::StrategyState>(
+            "hbba_strategy_state_log",
+            10,
+            [this](const hbba_lite::msg::StrategyState::SharedPtr msg) { hbbaStrategyStateSubscriberCallback(msg); });
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(get_clock());
         m_tfListener = std::make_shared<tf2_ros::TransformListener>(*m_tfBuffer);
@@ -155,7 +171,8 @@ public:
     void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    static Position pointToPosition(const geometry_msgs::msg::Point& point, const tf2::Stamped<tf2::Transform>& transform)
+    static Position
+        pointToPosition(const geometry_msgs::msg::Point& point, const tf2::Stamped<tf2::Transform>& transform)
     {
         tf2::Vector3 transformedPoint = transform * tf2::Vector3(point.x, point.y, point.z);
         return Position{transformedPoint.x(), transformedPoint.y(), transformedPoint.z()};
@@ -166,7 +183,8 @@ private:
         return ImagePosition{point.x, point.y};
     }
 
-    static BoundingBox centreWidthHeightToBoundingBox(const geometry_msgs::msg::Point& centre, double width, double height)
+    static BoundingBox
+        centreWidthHeightToBoundingBox(const geometry_msgs::msg::Point& centre, double width, double height)
     {
         return BoundingBox{pointToImagePosition(centre), width, height};
     }

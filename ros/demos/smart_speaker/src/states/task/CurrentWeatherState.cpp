@@ -54,7 +54,8 @@ string CurrentWeatherState::generateFrenchText(const string& _)
     if (ok)
     {
         ss << "La température courante est de " << response.temperature_celsius << " degré Celsius. ";
-        ss << "La température courante ressentie est de " << response.feels_like_temperature_celsius << " degré Celsius. ";
+        ss << "La température courante ressentie est de " << response.feels_like_temperature_celsius
+           << " degré Celsius. ";
         ss << "L'humidité courante est de " << response.humidity_percent << "%. ";
         ss << "La vitesse courante du vent est de " << response.wind_speed_kph << " kilomètres par heure. ";
     }

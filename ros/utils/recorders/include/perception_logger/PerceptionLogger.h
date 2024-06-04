@@ -130,10 +130,7 @@ struct Timestamp
 
     explicit Timestamp(int64_t unixEpochMs) : unixEpochMs(unixEpochMs) {}
 
-    Timestamp(const rclcpp::Time& time)
-        : unixEpochMs{static_cast<int64_t>(time.seconds() * 1'000)}
-    {
-    }
+    Timestamp(const rclcpp::Time& time) : unixEpochMs{static_cast<int64_t>(time.seconds() * 1'000)} {}
 };
 
 #endif

@@ -82,8 +82,7 @@ TEST(AddReminderCommandParametersParserTests, parse_faceDescriptor_shouldReturnA
     loadFrenchStringResources();
 
     AddReminderCommandParametersParser testee;
-    auto command =
-        testee.parse(make_shared<AddReminderCommand>("a"), nullopt, nullopt, FaceDescriptor({11.f}));
+    auto command = testee.parse(make_shared<AddReminderCommand>("a"), nullopt, nullopt, FaceDescriptor({11.f}));
     auto addReminderCommand = dynamic_pointer_cast<AddReminderCommand>(command);
     EXPECT_EQ(addReminderCommand->transcript(), "a");
     EXPECT_EQ(addReminderCommand->text(), nullopt);
@@ -129,8 +128,7 @@ TEST(RemoveReminderCommandParametersParserTests, parse_parameterNothing_shouldRe
 TEST(RemoveReminderCommandParametersParserTests, parse_transcriptCurrent_shouldReturnACopyWithVolume)
 {
     RemoveReminderCommandParametersParser testee;
-    auto command =
-        testee.parse(make_shared<RemoveReminderCommand>("Alarme 15"), nullopt, nullopt, nullopt);
+    auto command = testee.parse(make_shared<RemoveReminderCommand>("Alarme 15"), nullopt, nullopt, nullopt);
     auto removeReminderCommand = dynamic_pointer_cast<RemoveReminderCommand>(command);
     EXPECT_EQ(removeReminderCommand->transcript(), "Alarme 15");
     EXPECT_EQ(removeReminderCommand->id(), 15);

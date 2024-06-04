@@ -54,9 +54,7 @@ class ArbitrationNode : public rclcpp::Node
     optional<geometry_msgs::msg::PoseStamped> m_lastPose;
 
 public:
-    ArbitrationNode()
-        : rclcpp::Node(NODE_NAME),
-          m_lastMessageTime(get_clock()->now())
+    ArbitrationNode() : rclcpp::Node(NODE_NAME), m_lastMessageTime(get_clock()->now())
     {
         m_topics = convertToTopics(
             declare_parameter("topics", vector<string>{}),
@@ -87,14 +85,17 @@ public:
 
         m_publisher = create_publisher<geometry_msgs::msg::PoseStamped>("daemon/set_head_pose", 1);
 
-        m_motorStatusSubscriber =
-            create_subscription<daemon_ros_client::msg::MotorStatus>("daemon/motor_status", 1, [this](const daemon_ros_client::msg::MotorStatus::SharedPtr msg) { motorStatusCallback(msg); });
+        m_motorStatusSubscriber = create_subscription<daemon_ros_client::msg::MotorStatus>(
+            "daemon/motor_status",
+            1,
+            [this](const daemon_ros_client::msg::MotorStatus::SharedPtr msg) { motorStatusCallback(msg); });
     }
 
     void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    vector<Topic> convertToTopics(const vector<string>& topics, const vector<int64_t>& priorities, const vector<double>& timeoutS)
+    vector<Topic>
+        convertToTopics(const vector<string>& topics, const vector<int64_t>& priorities, const vector<double>& timeoutS)
     {
         if (topics.size() != priorities.size() || topics.size() != timeoutS.size())
         {

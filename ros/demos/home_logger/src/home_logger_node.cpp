@@ -118,19 +118,11 @@ void startNode(
         faceDescriptorThreshold));
     stateManager.addState(make_unique<SleepState>(stateManager, desireSet, node, sleepTime, wakeUpTime));
     stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, node));
-    stateManager.addState(make_unique<ExecuteCommandState>(
-        stateManager,
-        desireSet,
-        node,
-        volumeManager,
-        alarmManager,
-        reminderManager));
+    stateManager.addState(
+        make_unique<ExecuteCommandState>(stateManager, desireSet, node, volumeManager, alarmManager, reminderManager));
     stateManager.addState(make_unique<WaitCommandParameterState>(stateManager, desireSet, node));
-    stateManager.addState(make_unique<WaitFaceDescriptorCommandParameterState>(
-        stateManager,
-        desireSet,
-        node,
-        noseConfidenceThreshold));
+    stateManager.addState(
+        make_unique<WaitFaceDescriptorCommandParameterState>(stateManager, desireSet, node, noseConfidenceThreshold));
 
     stateManager.addState(make_unique<AlarmState>(stateManager, desireSet, node, alarmManager, alarmPath));
     stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, node, reminderManager));

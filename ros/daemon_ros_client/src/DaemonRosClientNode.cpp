@@ -18,10 +18,22 @@ void DaemonRosClientNode::initROS()
     m_imuPub = create_publisher<sensor_msgs::msg::Imu>("daemon/imu/data_raw", PubQueueSize);
     m_motorStatusPub = create_publisher<daemon_ros_client::msg::MotorStatus>("daemon/motor_status", PubQueueSize);
 
-    m_setVolumeSub = create_subscription<std_msgs::msg::UInt8>("daemon/set_volume", SubQueueSize, [this] (const std_msgs::msg::UInt8::SharedPtr msg) { setVolumeCallback(msg); });
-    m_setLedColorsSub = create_subscription<daemon_ros_client::msg::LedColors>("daemon/set_led_colors", SubQueueSize, [this] (const daemon_ros_client::msg::LedColors::SharedPtr msg) { setLedColorsCallback(msg); });
-    m_setTorsoOrientationSub = create_subscription<std_msgs::msg::Float32>("daemon/set_torso_orientation", SubQueueSize, [this] (const std_msgs::msg::Float32::SharedPtr msg) { setTorsoOrientationCallback(msg); });
-    m_setHeadPoseSub = create_subscription<geometry_msgs::msg::PoseStamped>("daemon/set_head_pose", SubQueueSize, [this] (const geometry_msgs::msg::PoseStamped::SharedPtr msg) { setHeadPoseCallback(msg); });
+    m_setVolumeSub = create_subscription<std_msgs::msg::UInt8>(
+        "daemon/set_volume",
+        SubQueueSize,
+        [this](const std_msgs::msg::UInt8::SharedPtr msg) { setVolumeCallback(msg); });
+    m_setLedColorsSub = create_subscription<daemon_ros_client::msg::LedColors>(
+        "daemon/set_led_colors",
+        SubQueueSize,
+        [this](const daemon_ros_client::msg::LedColors::SharedPtr msg) { setLedColorsCallback(msg); });
+    m_setTorsoOrientationSub = create_subscription<std_msgs::msg::Float32>(
+        "daemon/set_torso_orientation",
+        SubQueueSize,
+        [this](const std_msgs::msg::Float32::SharedPtr msg) { setTorsoOrientationCallback(msg); });
+    m_setHeadPoseSub = create_subscription<geometry_msgs::msg::PoseStamped>(
+        "daemon/set_head_pose",
+        SubQueueSize,
+        [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg) { setHeadPoseCallback(msg); });
 }
 
 void DaemonRosClientNode::initWebSocketProtocolWrapper()
@@ -31,10 +43,30 @@ void DaemonRosClientNode::initWebSocketProtocolWrapper()
 
     // Connect only useful signals
     // WARNING Using direct connection, handleXXX functions must be thread safe)
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newBaseStatus, this, &DaemonRosClientNode::handleBaseStatus, Qt::DirectConnection);
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newButtonPressed, this, &DaemonRosClientNode::handleButtonPressed, Qt::DirectConnection);
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newImuData, this, &DaemonRosClientNode::handleImuData, Qt::DirectConnection);
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newMotorStatus, this, &DaemonRosClientNode::handleMotorStatus, Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newBaseStatus,
+        this,
+        &DaemonRosClientNode::handleBaseStatus,
+        Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newButtonPressed,
+        this,
+        &DaemonRosClientNode::handleButtonPressed,
+        Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newImuData,
+        this,
+        &DaemonRosClientNode::handleImuData,
+        Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newMotorStatus,
+        this,
+        &DaemonRosClientNode::handleMotorStatus,
+        Qt::DirectConnection);
 }
 
 void DaemonRosClientNode::setVolumeCallback(const std_msgs::msg::UInt8::SharedPtr& msg)
@@ -55,7 +87,7 @@ void DaemonRosClientNode::setVolumeCallback(const std_msgs::msg::UInt8::SharedPt
 void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::msg::LedColors::SharedPtr& msg)
 {
     SetLedColorsPayload payload;
-    for (size_t i  = 0; i < SetLedColorsPayload::LED_COUNT; i++)
+    for (size_t i = 0; i < SetLedColorsPayload::LED_COUNT; i++)
     {
         payload.colors[i].red = msg->colors[i].red;
         payload.colors[i].green = msg->colors[i].green;
@@ -257,7 +289,7 @@ void DaemonRosClientNode::sendHeadTf(const rclcpp::Time& stamp, const geometry_m
 void DaemonRosClientNode::cleanup()
 {
     SetLedColorsPayload payload;
-    for (size_t i  = 0; i < SetLedColorsPayload::LED_COUNT; i++)
+    for (size_t i = 0; i < SetLedColorsPayload::LED_COUNT; i++)
     {
         payload.colors[i].red = 0;
         payload.colors[i].green = 0;

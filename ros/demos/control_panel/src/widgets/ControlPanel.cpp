@@ -24,8 +24,10 @@ ControlPanel::ControlPanel(
 
     createUi(camera2dWideEnabled);
 
-    m_baseStatusSubscriber =
-        m_node->create_subscription<daemon_ros_client::msg::BaseStatus>("daemon/base_status", 1, [this] (const daemon_ros_client::msg::BaseStatus::SharedPtr msg) { baseStatusSubscriberCallback(msg); });
+    m_baseStatusSubscriber = m_node->create_subscription<daemon_ros_client::msg::BaseStatus>(
+        "daemon/base_status",
+        1,
+        [this](const daemon_ros_client::msg::BaseStatus::SharedPtr msg) { baseStatusSubscriberCallback(msg); });
 }
 
 void ControlPanel::onVolumeChanged(int volume)

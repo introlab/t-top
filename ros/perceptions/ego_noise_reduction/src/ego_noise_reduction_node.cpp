@@ -109,7 +109,7 @@ class EgoNoiseReductionNode : public rclcpp::Node
     rclcpp::Publisher<audio_utils::msg::AudioFrame>::SharedPtr m_audioPub;
     rclcpp::Subscription<audio_utils::msg::AudioFrame>::SharedPtr m_audioSub;
 
-    rclcpp::Subscription<daemon_ros_client::msg::MotorStatus>::SharedPtr  m_motorStatusSub;
+    rclcpp::Subscription<daemon_ros_client::msg::MotorStatus>::SharedPtr m_motorStatusSub;
 
     PcmAudioFrame m_inputPcmAudioFrame;
     size_t m_inputPcmAudioFrameIndex;
@@ -133,9 +133,15 @@ public:
           m_outputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft)
     {
         m_audioPub = create_publisher<audio_utils::msg::AudioFrame>("audio_out", AudioQueueSize);
-        m_audioSub = create_subscription<audio_utils::msg::AudioFrame>("audio_in", AudioQueueSize, [this](const audio_utils::msg::AudioFrame::SharedPtr msg) { audioCallback(msg); });
+        m_audioSub = create_subscription<audio_utils::msg::AudioFrame>(
+            "audio_in",
+            AudioQueueSize,
+            [this](const audio_utils::msg::AudioFrame::SharedPtr msg) { audioCallback(msg); });
 
-        m_motorStatusSub = create_subscription<daemon_ros_client::msg::MotorStatus>("daemon/motor_status", StatusQueueSize, [this](const daemon_ros_client::msg::MotorStatus::SharedPtr msg) { motorStatusCallback(msg); });
+        m_motorStatusSub = create_subscription<daemon_ros_client::msg::MotorStatus>(
+            "daemon/motor_status",
+            StatusQueueSize,
+            [this](const daemon_ros_client::msg::MotorStatus::SharedPtr msg) { motorStatusCallback(msg); });
 
         m_audioFrameMsg.format = m_configuration.formatString;
         m_audioFrameMsg.channel_count = m_configuration.channelCount;

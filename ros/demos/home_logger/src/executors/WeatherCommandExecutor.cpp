@@ -180,7 +180,8 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
     {
         request->relative_day = i;
         auto result = client->async_send_request(request);
-        if (rclcpp::spin_until_future_complete(m_node, result) != rclcpp::FutureReturnCode::SUCCESS || !result.get()->ok)
+        if (rclcpp::spin_until_future_complete(m_node, result) != rclcpp::FutureReturnCode::SUCCESS ||
+            !result.get()->ok)
         {
             ok = false;
             return;

@@ -13,15 +13,32 @@ StateManager::StateManager(shared_ptr<DesireSet> desireSet, rclcpp::Node::Shared
 {
     m_desireSet->addObserver(this);
 
-    m_speechToTextSubscriber = m_node->create_subscription<speech_to_text::msg::Transcript>("speech_to_text/transcript", 1, [this](const speech_to_text::msg::Transcript::SharedPtr msg) { onSpeechToTextTranscriptReceived(msg); });
-    m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>("robot_name_detected", 1, [this](const std_msgs::msg::Empty::SharedPtr msg) { onRobotNameDetected(msg); });
-    m_videoAnalysisSubscriber = m_node->create_subscription<video_analyzer::msg::VideoAnalysis>("video_analysis", 1, [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { onVideoAnalysisReceived(msg); });
-    m_audioAnalysisSubscriber = m_node->create_subscription<audio_analyzer::msg::AudioAnalysis>("audio_analysis", 1, [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { onAudioAnalysisReceived(msg); });
-    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>("person_names", 1, [this](const person_identification::msg::PersonNames::SharedPtr msg) { onPersonNamesDetected(msg); });
-    m_baseStatusSubscriber = m_node->create_subscription<daemon_ros_client::msg::BaseStatus>("daemon/base_status", 1, [this](const daemon_ros_client::msg::BaseStatus::SharedPtr msg) { onBaseStatusChanged(msg); });
+    m_speechToTextSubscriber = m_node->create_subscription<speech_to_text::msg::Transcript>(
+        "speech_to_text/transcript",
+        1,
+        [this](const speech_to_text::msg::Transcript::SharedPtr msg) { onSpeechToTextTranscriptReceived(msg); });
+    m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
+        "robot_name_detected",
+        1,
+        [this](const std_msgs::msg::Empty::SharedPtr msg) { onRobotNameDetected(msg); });
+    m_videoAnalysisSubscriber = m_node->create_subscription<video_analyzer::msg::VideoAnalysis>(
+        "video_analysis",
+        1,
+        [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { onVideoAnalysisReceived(msg); });
+    m_audioAnalysisSubscriber = m_node->create_subscription<audio_analyzer::msg::AudioAnalysis>(
+        "audio_analysis",
+        1,
+        [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { onAudioAnalysisReceived(msg); });
+    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const person_identification::msg::PersonNames::SharedPtr msg) { onPersonNamesDetected(msg); });
+    m_baseStatusSubscriber = m_node->create_subscription<daemon_ros_client::msg::BaseStatus>(
+        "daemon/base_status",
+        1,
+        [this](const daemon_ros_client::msg::BaseStatus::SharedPtr msg) { onBaseStatusChanged(msg); });
 
-    m_everyMinuteTimer =
-        m_node->create_wall_timer(chrono::seconds(ONE_MINUTE_S), [this]() { onEveryMinuteTimeout(); });
+    m_everyMinuteTimer = m_node->create_wall_timer(chrono::seconds(ONE_MINUTE_S), [this]() { onEveryMinuteTimeout(); });
     m_everyTenMinuteTimer =
         m_node->create_wall_timer(chrono::seconds(TEN_MINUTES_S), [this]() { onEveryTenMinutesTimeout(); });
 }
@@ -58,8 +75,7 @@ void StateManager::switchTo(StateType type, const StateParameter& parameter)
     m_currentState = m_states.at(type).get();
     m_currentState->enable(parameter, previousStateType);
 
-    m_stateTimeoutTimer =
-        m_node->create_wall_timer(chrono::seconds(TIMEOUT_S), [this]() { onStateTimeout(); });
+    m_stateTimeoutTimer = m_node->create_wall_timer(chrono::seconds(TIMEOUT_S), [this]() { onStateTimeout(); });
 }
 
 void StateManager::onDesireSetChanged(const vector<unique_ptr<Desire>>& desires)

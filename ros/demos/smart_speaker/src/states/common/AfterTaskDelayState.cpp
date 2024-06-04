@@ -19,8 +19,10 @@ AfterTaskDelayState::AfterTaskDelayState(
 {
     if (m_useAfterTaskDelayDurationTopic)
     {
-        m_startButtonSubscriber =
-            m_node->create_subscription<std_msgs::msg::Empty>("daemon/start_button_pressed", 1, [this] (const std_msgs::msg::Empty::SharedPtr msg) { startButtonCallback(msg); });
+        m_startButtonSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
+            "daemon/start_button_pressed",
+            1,
+            [this](const std_msgs::msg::Empty::SharedPtr msg) { startButtonCallback(msg); });
     }
 }
 
@@ -30,7 +32,7 @@ void AfterTaskDelayState::enable(const string& parameter, const type_index& prev
 
     if (!m_useAfterTaskDelayDurationTopic)
     {
-        m_timeoutTimer = m_node->create_wall_timer(m_durationMs, [this] () { timeoutTimerCallback(); });
+        m_timeoutTimer = m_node->create_wall_timer(m_durationMs, [this]() { timeoutTimerCallback(); });
     }
 }
 

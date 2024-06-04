@@ -72,16 +72,21 @@ string WeatherForecastState::generateFrenchText(const string& _)
     if (ok)
     {
         ss << "Demain matin, la température sera de " << response.temperature_morning_celsius << " degré Celsius et ";
-        ss << "la température ressentie sera de " << response.feals_like_temperature_morning_celsius << " degré Celsius. ";
+        ss << "la température ressentie sera de " << response.feals_like_temperature_morning_celsius
+           << " degré Celsius. ";
 
         ss << "Demain en journée, la température sera de " << response.temperature_day_celsius << " degré Celsius et ";
         ss << "la température ressentie sera de " << response.feals_like_temperature_day_celsius << " degré Celsius. ";
 
-        ss << "Demain en soirée, la température sera de " << response.temperature_evening_celsius << " degré Celsius et ";
-        ss << "la température ressentie sera de " << response.feals_like_temperature_evening_celsius << " degré Celsius. ";
+        ss << "Demain en soirée, la température sera de " << response.temperature_evening_celsius
+           << " degré Celsius et ";
+        ss << "la température ressentie sera de " << response.feals_like_temperature_evening_celsius
+           << " degré Celsius. ";
 
-        ss << "La nuit prochaine, la température sera de " << response.temperature_night_celsius << " degré Celsius et ";
-        ss << "la température ressentie sera de " << response.feals_like_temperature_night_celsius << " degré Celsius. ";
+        ss << "La nuit prochaine, la température sera de " << response.temperature_night_celsius
+           << " degré Celsius et ";
+        ss << "la température ressentie sera de " << response.feals_like_temperature_night_celsius
+           << " degré Celsius. ";
 
         ss << "Demain, l'humidité sera de " << response.humidity_percent << "%, ";
         ss << "la vitesse du vent sera de " << response.wind_speed_kph << " kilomètres par heure, ";

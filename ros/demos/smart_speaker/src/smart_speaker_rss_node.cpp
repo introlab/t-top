@@ -81,8 +81,7 @@ void startNode(
         make_unique<WeatherForecastState>(language, stateManager, desireSet, node, afterTaskDelayStateType));
     stateManager.addState(
         make_unique<RssStoryState>(language, stateManager, desireSet, node, englishStoryPath, frenchStoryPath));
-    stateManager.addState(
-        make_unique<DanceState>(language, stateManager, desireSet, node, afterTaskDelayStateType));
+    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, node, afterTaskDelayStateType));
     stateManager.addState(make_unique<DancePlayedSongState>(
         language,
         stateManager,

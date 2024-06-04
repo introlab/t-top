@@ -6,10 +6,16 @@ using namespace std;
 
 constexpr float MAXIMUM_INT_VOLUME_VALUE = 63.f;
 
-VolumeManager::VolumeManager(rclcpp::Node::SharedPtr node) : m_node(move(node)), m_currentVolumePercent(35), m_maximumVolumePercent(100.f)
+VolumeManager::VolumeManager(rclcpp::Node::SharedPtr node)
+    : m_node(move(node)),
+      m_currentVolumePercent(35),
+      m_maximumVolumePercent(100.f)
 {
     m_volumePublisher = node->create_publisher<std_msgs::msg::UInt8>("daemon/set_volume", 1);
-    m_baseStatusSubscriber = node->create_subscription<daemon_ros_client::msg::BaseStatus>("daemon/base_status", 1, [this](const daemon_ros_client::msg::BaseStatus::SharedPtr msg) { baseStatusSubscriberCallback(msg); });
+    m_baseStatusSubscriber = node->create_subscription<daemon_ros_client::msg::BaseStatus>(
+        "daemon/base_status",
+        1,
+        [this](const daemon_ros_client::msg::BaseStatus::SharedPtr msg) { baseStatusSubscriberCallback(msg); });
 
     setVolume(m_currentVolumePercent);
 }

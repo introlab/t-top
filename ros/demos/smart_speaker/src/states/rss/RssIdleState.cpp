@@ -17,10 +17,14 @@ RssIdleState::RssIdleState(
     rclcpp::Node::SharedPtr node)
     : State(language, stateManager, desireSet, move(node))
 {
-    m_robotNameDetectedSubscriber =
-        m_node->create_subscription<std_msgs::msg::Empty>("robot_name_detected", 1, [this](const std_msgs::msg::Empty::SharedPtr msg) { robotNameDetectedSubscriberCallback(msg); });
-    m_personNamesSubscriber =
-        m_node->create_subscription<person_identification::msg::PersonNames>("person_names", 1, [this] (const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
+    m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
+        "robot_name_detected",
+        1,
+        [this](const std_msgs::msg::Empty::SharedPtr msg) { robotNameDetectedSubscriberCallback(msg); });
+    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 }
 
 void RssIdleState::enable(const string& parameter, const type_index& previousStageType)

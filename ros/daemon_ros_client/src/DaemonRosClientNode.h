@@ -34,7 +34,7 @@ class DaemonRosClientNode : public QObject, public rclcpp::Node
 
     double m_baseLinkTorsoBaseDeltaZ;
 
-    WebSocketProtocolWrapper *m_websocketProtocolWrapper;
+    WebSocketProtocolWrapper* m_websocketProtocolWrapper;
 
     rclcpp::Publisher<daemon_ros_client::msg::BaseStatus>::SharedPtr m_baseStatusPub;
     rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr m_startButtonPressedPub;
@@ -69,4 +69,4 @@ private:
     void sendHeadTf(const rclcpp::Time& stamp, const geometry_msgs::msg::Pose& pose);
 };
 
-#endif //_DAEMON_ROS_CLIENT_NODE_H_
+#endif  //_DAEMON_ROS_CLIENT_NODE_H_

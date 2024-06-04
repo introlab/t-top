@@ -55,9 +55,7 @@ void State::onAudioAnalysisReceived(const audio_analyzer::msg::AudioAnalysis::Sh
 
 void State::onPersonNamesDetected(const person_identification::msg::PersonNames::SharedPtr& msg) {}
 
-void State::onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg)
-{
-}
+void State::onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg) {}
 
 void State::onStateTimeout() {}
 

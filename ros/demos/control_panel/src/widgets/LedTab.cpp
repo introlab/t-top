@@ -19,9 +19,7 @@ daemon_ros_client::msg::LedColor color(uint8_t r, uint8_t g, uint8_t b)
 }
 
 
-LedTab::LedTab(shared_ptr<DesireSet> desireSet, QWidget* parent)
-    : QWidget(parent),
-      m_desireSet(std::move(desireSet))
+LedTab::LedTab(shared_ptr<DesireSet> desireSet, QWidget* parent) : QWidget(parent), m_desireSet(std::move(desireSet))
 {
     createUi();
 }

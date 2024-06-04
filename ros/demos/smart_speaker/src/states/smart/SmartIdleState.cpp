@@ -36,11 +36,15 @@ SmartIdleState::SmartIdleState(
       m_videoAnalysisValidMessageCount(0),
       m_videoAnalysisInvalidMessageCount(0)
 {
-    m_personNamesSubscriber =
-        m_node->create_subscription<person_identification::msg::PersonNames>("person_names", 1, [this] (const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
+    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 
-    m_videoAnalysisSubscriber =
-        m_node->create_subscription<video_analyzer::msg::VideoAnalysis>("video_analysis", 1, [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
+    m_videoAnalysisSubscriber = m_node->create_subscription<video_analyzer::msg::VideoAnalysis>(
+        "video_analysis",
+        1,
+        [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
 
     m_tfBuffer = make_unique<tf2_ros::Buffer>(m_node->get_clock());
     m_tfListener = make_shared<tf2_ros::TransformListener>(*m_tfBuffer);
@@ -143,7 +147,8 @@ double SmartIdleState::personNameDistance(const person_identification::msg::Pers
 
     try
     {
-        geometry_msgs::msg::TransformStamped transformMsg = m_tfBuffer->lookupTransform(m_personDistanceFrameId, name.frame_id, tf2::TimePointZero);
+        geometry_msgs::msg::TransformStamped transformMsg =
+            m_tfBuffer->lookupTransform(m_personDistanceFrameId, name.frame_id, tf2::TimePointZero);
         tf2::Stamped<tf2::Transform> transform;
         tf2::convert(transformMsg, transform);
 

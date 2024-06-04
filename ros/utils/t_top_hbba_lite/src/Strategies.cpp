@@ -9,7 +9,8 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     : Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
       m_node(move(node))
 {
-    m_animationPublisher = node->create_publisher<std_msgs::msg::String>("face/animation", rclcpp::QoS(1).transient_local());
+    m_animationPublisher =
+        node->create_publisher<std_msgs::msg::String>("face/animation", rclcpp::QoS(1).transient_local());
 }
 
 StrategyType FaceAnimationStrategy::strategyType()
@@ -33,7 +34,10 @@ void FaceAnimationStrategy::onDisabling()
     Strategy<FaceAnimationDesire>::onDisabling();
 }
 
-LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, shared_ptr<rclcpp::Node> node)
+LedEmotionStrategy::LedEmotionStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<rclcpp::Node> node)
     : Strategy<LedEmotionDesire>(
           utility,
           {},
@@ -41,7 +45,8 @@ LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> 
           move(filterPool)),
       m_node(move(node))
 {
-    m_emotionPublisher = node->create_publisher<std_msgs::msg::String>("led_emotions/name", rclcpp::QoS(1).transient_local());
+    m_emotionPublisher =
+        node->create_publisher<std_msgs::msg::String>("led_emotions/name", rclcpp::QoS(1).transient_local());
 }
 
 StrategyType LedEmotionStrategy::strategyType()
@@ -69,8 +74,13 @@ LedAnimationStrategy::LedAnimationStrategy(
       m_desireSet(desireSet),
       m_node(move(node))
 {
-    m_animationPublisher = node->create_publisher<led_animations::msg::Animation>("led_animations/animation", rclcpp::QoS(1).transient_local());
-    m_animationDoneSubscriber = node->create_subscription<led_animations::msg::Done>("led_animations/done", 1, [this](const led_animations::msg::Done::SharedPtr msg) { animationDoneSubscriberCallback(msg); });
+    m_animationPublisher = node->create_publisher<led_animations::msg::Animation>(
+        "led_animations/animation",
+        rclcpp::QoS(1).transient_local());
+    m_animationDoneSubscriber = node->create_subscription<led_animations::msg::Done>(
+        "led_animations/done",
+        1,
+        [this](const led_animations::msg::Done::SharedPtr msg) { animationDoneSubscriberCallback(msg); });
 }
 
 StrategyType LedAnimationStrategy::strategyType()
@@ -109,7 +119,8 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
           move(filterPool)),
       m_node(move(node))
 {
-    m_targetNamePublisher = node->create_publisher<std_msgs::msg::String>("face_following/target_name", rclcpp::QoS(1).transient_local());
+    m_targetNamePublisher =
+        node->create_publisher<std_msgs::msg::String>("face_following/target_name", rclcpp::QoS(1).transient_local());
 }
 
 StrategyType SpecificFaceFollowingStrategy::strategyType()
@@ -138,7 +149,10 @@ TalkStrategy::TalkStrategy(
       m_node(move(node))
 {
     m_talkPublisher = node->create_publisher<talk::msg::Text>("talk/text", rclcpp::QoS(1).transient_local());
-    m_talkDoneSubscriber = node->create_subscription<talk::msg::Done>("talk/done", 1, [this](const talk::msg::Done::SharedPtr msg) { talkDoneSubscriberCallback(msg); });
+    m_talkDoneSubscriber = node->create_subscription<talk::msg::Done>(
+        "talk/done",
+        1,
+        [this](const talk::msg::Done::SharedPtr msg) { talkDoneSubscriberCallback(msg); });
 }
 
 StrategyType TalkStrategy::strategyType()
@@ -171,9 +185,12 @@ GestureStrategy::GestureStrategy(
       m_desireSet(move(desireSet)),
       m_node(move(node))
 {
-    m_gesturePublisher = node->create_publisher<gesture::msg::GestureName>("gesture/name", rclcpp::QoS(1).transient_local());
-    m_gestureDoneSubscriber =
-        node->create_subscription<gesture::msg::Done>("gesture/done", 1, [this](const gesture::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
+    m_gesturePublisher =
+        node->create_publisher<gesture::msg::GestureName>("gesture/name", rclcpp::QoS(1).transient_local());
+    m_gestureDoneSubscriber = node->create_subscription<gesture::msg::Done>(
+        "gesture/done",
+        1,
+        [this](const gesture::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
 }
 
 StrategyType GestureStrategy::strategyType()
@@ -210,9 +227,12 @@ PlaySoundStrategy::PlaySoundStrategy(
       m_desireSet(desireSet),
       m_node(move(node))
 {
-    m_pathPublisher = node->create_publisher<sound_player::msg::SoundFile>("sound_player/file", rclcpp::QoS(1).transient_local());
-    m_soundDoneSubscriber =
-        node->create_subscription<gesture::msg::Done>("sound_player/done", 1, [this](const sound_player::msg::Done::SharedPtr msg) { soundDoneSubscriberCallback(msg); });
+    m_pathPublisher =
+        node->create_publisher<sound_player::msg::SoundFile>("sound_player/file", rclcpp::QoS(1).transient_local());
+    m_soundDoneSubscriber = node->create_subscription<gesture::msg::Done>(
+        "sound_player/done",
+        1,
+        [this](const sound_player::msg::Done::SharedPtr msg) { soundDoneSubscriberCallback(msg); });
 }
 
 StrategyType PlaySoundStrategy::strategyType()

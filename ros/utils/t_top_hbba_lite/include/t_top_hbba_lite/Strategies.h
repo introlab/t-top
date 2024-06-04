@@ -213,8 +213,10 @@ std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createLedEmotionStrategy(std::shared_ptr<FilterPool> filterPool, std::shared_ptr<rclcpp::Node> node, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createLedEmotionStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    std::shared_ptr<rclcpp::Node> node,
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createLedAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
@@ -250,7 +252,8 @@ std::unique_ptr<BaseStrategy> createPlaySoundStrategy(
 std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
-std::unique_ptr<BaseStrategy> createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
 
 #endif

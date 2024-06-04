@@ -17,9 +17,14 @@ SpeechTab::SpeechTab(rclcpp::Node::SharedPtr node, shared_ptr<DesireSet> desireS
     createUi();
     m_desireSet->addObserver(this);
 
-    m_speechToTextSubscriber =
-        m_node->create_subscription<speech_to_text::msg::Transcript>("speech_to_text/transcript", 1, [this](const speech_to_text::msg::Transcript::SharedPtr msg){ speechToTextSubscriberCallback(msg); });
-    m_vadSubscriber = m_node->create_subscription<audio_utils::msg::VoiceActivity>("voice_activity", 1, [this](const audio_utils::msg::VoiceActivity::SharedPtr msg) { vadSubscriberCallback(msg); });
+    m_speechToTextSubscriber = m_node->create_subscription<speech_to_text::msg::Transcript>(
+        "speech_to_text/transcript",
+        1,
+        [this](const speech_to_text::msg::Transcript::SharedPtr msg) { speechToTextSubscriberCallback(msg); });
+    m_vadSubscriber = m_node->create_subscription<audio_utils::msg::VoiceActivity>(
+        "voice_activity",
+        1,
+        [this](const audio_utils::msg::VoiceActivity::SharedPtr msg) { vadSubscriberCallback(msg); });
 }
 
 SpeechTab::~SpeechTab()

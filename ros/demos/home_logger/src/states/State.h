@@ -117,7 +117,10 @@ namespace std
 }
 
 #define DECLARE_STATE_PROTECTED_METHODS(className)                                                                     \
-    StateType type() const override { return StateType::get<className>(); }
+    StateType type() const override                                                                                    \
+    {                                                                                                                  \
+        return StateType::get<className>();                                                                            \
+    }
 
 class State
 {
