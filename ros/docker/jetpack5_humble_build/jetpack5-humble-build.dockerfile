@@ -78,6 +78,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 #
 # Additional system deps
 #
+RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
   libasound2-dev \
   libpulse-dev \
@@ -111,17 +112,18 @@ RUN apt-get install -y --no-install-recommends \
   nodejs \
   npm
 
-
 # Make ROS2 workspace
 RUN mkdir -p /root/ros2/workspace/src
 WORKDIR /root/ros2/workspace/src
 # Get CV Camera
 RUN git clone -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
+# Diagnostics Updater
+RUN git clone -b ros2-${ROS_VERSION} https://github.com/ros/diagnostics.git --depth 1 --recurse-submodules
 # Realsense ROS2 from source and compile
 RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b 4.55.1 --depth 1 --recurse-submodules
 # Go back to workspace and compile both packages
 WORKDIR /root/ros2/workspace
-RUN source /opt/ros/$ROS_DISTRO/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+RUN source ${ROS_ROOT}/install/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # commands will be appended/run by the entrypoint which sources the ROS environment
 COPY ros_entrypoint.sh /ros_entrypoint.sh
