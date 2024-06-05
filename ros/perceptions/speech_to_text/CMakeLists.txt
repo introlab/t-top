@@ -20,12 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(audio_utils REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Transcript.msg"
-)
+find_package(perception_msgs REQUIRED)
 
 # Python Nodes
 install(PROGRAMS

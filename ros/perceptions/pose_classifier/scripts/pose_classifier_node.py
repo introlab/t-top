@@ -5,9 +5,7 @@ import numpy as np
 import rclpy
 import rclpy.node
 
-from video_analyzer.msg import VideoAnalysis
-
-from pose_classifier.msg import PoseClassification, PoseClassifications
+from perception_msgs.msg import VideoAnalysis, PoseClassification, PoseClassifications
 
 
 NOSE_INDEX = 0

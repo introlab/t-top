@@ -24,10 +24,8 @@ find_package(audio_utils REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(video_analyzer REQUIRED)
-find_package(audio_analyzer REQUIRED)
+find_package(perception_msgs REQUIRED)
 find_package(talk REQUIRED)
-find_package(speech_to_text REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
@@ -78,10 +76,8 @@ ament_target_dependencies(perception_logger_node
   sensor_msgs
   geometry_msgs
   hbba_lite
-  video_analyzer
-  audio_analyzer
+  perception_msgs
   talk
-  speech_to_text
   tf2
   tf2_ros
 )

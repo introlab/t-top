@@ -36,15 +36,15 @@ SmartIdleState::SmartIdleState(
       m_videoAnalysisValidMessageCount(0),
       m_videoAnalysisInvalidMessageCount(0)
 {
-    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
         "person_names",
         1,
-        [this](const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 
-    m_videoAnalysisSubscriber = m_node->create_subscription<video_analyzer::msg::VideoAnalysis>(
+    m_videoAnalysisSubscriber = m_node->create_subscription<perception_msgs::msg::VideoAnalysis>(
         "video_analysis",
         1,
-        [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
 
     m_tfBuffer = make_unique<tf2_ros::Buffer>(m_node->get_clock());
     m_tfListener = make_shared<tf2_ros::TransformListener>(*m_tfBuffer);
@@ -68,7 +68,7 @@ void SmartIdleState::enable(const string& parameter, const type_index& previousS
     m_desireSet->addDesire(move(faceAnimationDesire));
 }
 
-void SmartIdleState::personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg)
+void SmartIdleState::personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     if (!enabled() || msg->names.size() == 0)
     {
@@ -86,7 +86,7 @@ void SmartIdleState::personNamesSubscriberCallback(const person_identification::
     }
 }
 
-void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::msg::VideoAnalysis::SharedPtr msg)
+void SmartIdleState::videoAnalysisSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
 {
     if (!enabled() || msg->objects.size() == 0)
     {
@@ -138,7 +138,7 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::msg::
     }
 }
 
-double SmartIdleState::personNameDistance(const person_identification::msg::PersonName& name)
+double SmartIdleState::personNameDistance(const perception_msgs::msg::PersonName& name)
 {
     if (name.position_3d.size() == 0)
     {
@@ -164,7 +164,7 @@ double SmartIdleState::personNameDistance(const person_identification::msg::Pers
 }
 
 double SmartIdleState::faceDistance(
-    const video_analyzer::msg::VideoAnalysisObject& object,
+    const perception_msgs::msg::VideoAnalysisObject& object,
     const tf2::Stamped<tf2::Transform>& transform)
 {
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;

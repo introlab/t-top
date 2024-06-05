@@ -16,7 +16,7 @@ ros2 launch person_identification capture_face.launch name:=<person_name> neural
  - `face_sharpness_score_threshold` (double): The threshold to consider the face sharp enough. The default value is 0.5.
 
 #### Subscribed Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](../video_analyzer/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
 
 
 ### `capture_voice_node.py`
@@ -32,7 +32,7 @@ ros2 launch person_identification capture_voice.launch name:=<person_name> neura
  - `mean_size` (int): How many descriptor to average. The default value is 10.
 
 #### Subscribed Topics
- - `audio_analysis` ([audio_analyzer/AudioAnalysis](../audio_analyzer/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, general audio embedding, voice embedding and the sound direction.
+ - `audio_analysis` ([perception_msgs/AudioAnalysis](../perception_msgs/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, general audio embedding, voice embedding and the sound direction.
 
 
 ### `person_identification_node.py`
@@ -50,8 +50,8 @@ This node performs person identification. The people must be already added to `p
  - `search_frequency` (double): The frequency at which the search occurs. The default value is 2.
 
 #### Subscribed Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](../video_analyzer/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
- - `audio_analysis` ([audio_analyzer/AudioAnalysis](../audio_analyzer/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, general audio embedding, voice embedding and the sound direction.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `audio_analysis` ([perception_msgs/AudioAnalysis](../perception_msgs/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, general audio embedding, voice embedding and the sound direction.
 
 #### Published Topics
- - `person_names` ([person_identification/PersonNames](msg/PersonNames.msg)): The person names.
+ - `person_names` ([perception_msgs/PersonNames](../perception_msgs/msg/PersonNames.msg)): The person names.

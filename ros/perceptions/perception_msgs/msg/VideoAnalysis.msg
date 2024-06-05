@@ -1,0 +1,6 @@
+std_msgs/Header header
+
+bool contains_3d_positions
+perception_msgs/VideoAnalysisObject[] objects
+perception_msgs/SemanticSegmentation[] semantic_segmentation
+float32 processing_time_s

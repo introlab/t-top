@@ -48,7 +48,7 @@ void WaitCommandState::onDisabling()
     }
 }
 
-void WaitCommandState::onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg)
+void WaitCommandState::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg)
 {
     m_transcriptReceived = true;
     m_commands = m_parser.parse(msg->text);

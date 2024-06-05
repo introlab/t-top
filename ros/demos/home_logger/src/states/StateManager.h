@@ -13,11 +13,11 @@ class StateManager : private DesireSetObserver
     std::unordered_map<StateType, std::unique_ptr<State>> m_states;
     State* m_currentState;
 
-    rclcpp::Subscription<speech_to_text::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_robotNameDetectedSubscriber;
-    rclcpp::Subscription<video_analyzer::msg::VideoAnalysis>::SharedPtr m_videoAnalysisSubscriber;
-    rclcpp::Subscription<audio_analyzer::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
-    rclcpp::Subscription<person_identification::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
     rclcpp::Subscription<daemon_ros_client::msg::BaseStatus>::SharedPtr m_baseStatusSubscriber;
 
     rclcpp::TimerBase::SharedPtr m_stateTimeoutTimer;
@@ -40,11 +40,11 @@ public:
 private:
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& desires) override;
 
-    void onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg);
+    void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg);
     void onRobotNameDetected(const std_msgs::msg::Empty::SharedPtr& msg);
-    void onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg);
-    void onAudioAnalysisReceived(const audio_analyzer::msg::AudioAnalysis::SharedPtr& msg);
-    void onPersonNamesDetected(const person_identification::msg::PersonNames::SharedPtr& msg);
+    void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
+    void onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg);
+    void onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg);
     void onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg);
 
     void onStateTimeout();

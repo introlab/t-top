@@ -7,7 +7,7 @@ import rclpy
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
-from video_analyzer.msg import VideoAnalysis, VideoAnalysisObject
+from perception_msgs.msg import VideoAnalysis, VideoAnalysisObject
 
 import hbba_lite
 

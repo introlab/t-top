@@ -73,7 +73,7 @@ void IdleState::onDisabling()
     }
 }
 
-void IdleState::onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+void IdleState::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     SoundFaceFollowingState::onVideoAnalysisReceived(msg);
 
@@ -147,7 +147,7 @@ void IdleState::onEveryTenMinutesTimeout()
     m_todayReminders = m_reminderManager.listReminders(Date::now());
 }
 
-optional<Reminder> IdleState::findReminder(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+optional<Reminder> IdleState::findReminder(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     for (auto& object : msg->objects)
     {

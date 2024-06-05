@@ -5,4 +5,4 @@ string head_horizontal_class
 string left_arm_class
 string right_arm_class
 
-video_analyzer/VideoAnalysisObject object
+perception_msgs/VideoAnalysisObject object

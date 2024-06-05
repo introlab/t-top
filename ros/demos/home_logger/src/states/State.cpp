@@ -45,15 +45,15 @@ void State::disable()
 
 void State::onDesireSetChanged(const vector<unique_ptr<Desire>>& desires) {}
 
-void State::onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg) {}
+void State::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg) {}
 
 void State::onRobotNameDetected() {}
 
-void State::onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg) {}
+void State::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) {}
 
-void State::onAudioAnalysisReceived(const audio_analyzer::msg::AudioAnalysis::SharedPtr& msg) {}
+void State::onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg) {}
 
-void State::onPersonNamesDetected(const person_identification::msg::PersonNames::SharedPtr& msg) {}
+void State::onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg) {}
 
 void State::onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg) {}
 
@@ -64,7 +64,7 @@ void State::onEveryMinuteTimeout() {}
 void State::onEveryTenMinutesTimeout() {}
 
 
-bool containsAtLeastOnePerson(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+bool containsAtLeastOnePerson(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     for (auto& object : msg->objects)
     {

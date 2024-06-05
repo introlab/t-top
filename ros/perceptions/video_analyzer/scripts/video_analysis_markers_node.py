@@ -5,7 +5,7 @@ import rclpy.node
 
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
 class VideoAnalysisMarkersNode(rclpy.node.Node):
     def __init__(self):

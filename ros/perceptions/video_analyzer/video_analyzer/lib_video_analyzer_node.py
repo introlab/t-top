@@ -13,7 +13,7 @@ from cv_bridge import CvBridge
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
-from video_analyzer.msg import VideoAnalysis, SemanticSegmentation
+from perception_msgs.msg import VideoAnalysis, SemanticSegmentation
 
 from dnn_utils import DescriptorYolo, Yolo, PoseEstimator, FaceDescriptorExtractor, SemanticSegmentationNetwork
 import hbba_lite

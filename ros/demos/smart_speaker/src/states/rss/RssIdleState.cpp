@@ -21,10 +21,10 @@ RssIdleState::RssIdleState(
         "robot_name_detected",
         1,
         [this](const std_msgs::msg::Empty::SharedPtr msg) { robotNameDetectedSubscriberCallback(msg); });
-    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
         "person_names",
         1,
-        [this](const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 }
 
 void RssIdleState::enable(const string& parameter, const type_index& previousStageType)
@@ -58,7 +58,7 @@ void RssIdleState::robotNameDetectedSubscriberCallback(const std_msgs::msg::Empt
     m_stateManager.switchTo<RssWaitPersonIdentificationState>();
 }
 
-void RssIdleState::personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg)
+void RssIdleState::personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     if (!enabled() || msg->names.size() == 0)
     {
@@ -70,7 +70,7 @@ void RssIdleState::personNamesSubscriberCallback(const person_identification::ms
         msg->names.begin(),
         msg->names.end(),
         back_inserter(names),
-        [](const person_identification::msg::PersonName& name) { return name.name; });
+        [](const perception_msgs::msg::PersonName& name) { return name.name; });
 
     auto mergedNames = mergeNames(names, getAndWord());
     m_stateManager.switchTo<RssAskTaskState>(mergedNames);

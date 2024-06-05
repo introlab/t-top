@@ -25,7 +25,7 @@ find_package(hbba_lite REQUIRED)
 find_package(t_top REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(video_analyzer REQUIRED)
+find_package(perception_msgs REQUIRED)
 find_package(person_identification REQUIRED)
 
 # Python Librairies

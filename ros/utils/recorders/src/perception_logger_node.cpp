@@ -9,10 +9,10 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <video_analyzer/msg/video_analysis.hpp>
-#include <audio_analyzer/msg/audio_analysis.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
+#include <perception_msgs/msg/audio_analysis.hpp>
 #include <talk/msg/text.hpp>
-#include <speech_to_text/msg/transcript.hpp>
+#include <perception_msgs/msg/transcript.hpp>
 #include <hbba_lite/msg/strategy_state.hpp>
 
 #include <memory>
@@ -58,10 +58,10 @@ class PerceptionLoggerNode : public rclcpp::Node
     unique_ptr<tf2_ros::Buffer> m_tfBuffer;
     shared_ptr<tf2_ros::TransformListener> m_tfListener;
 
-    rclcpp::Subscription<video_analyzer::msg::VideoAnalysis>::SharedPtr m_videoAnalysis3dSubscriber;
-    rclcpp::Subscription<audio_analyzer::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysis3dSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
     rclcpp::Subscription<talk::msg::Text>::SharedPtr m_talkTextSubscriber;
-    rclcpp::Subscription<speech_to_text::msg::Transcript>::SharedPtr m_speechToTextTranscriptSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextTranscriptSubscriber;
     rclcpp::Subscription<hbba_lite::msg::StrategyState>::SharedPtr m_hbbaStrategyStateSubscriber;
 
 public:
@@ -77,22 +77,22 @@ public:
         m_speechLogger = std::make_unique<SQLiteSpeechLogger>(*m_database);
         m_hbbaStrategyStateLogger = std::make_unique<SQLiteHbbaStrategyStateLogger>(*m_database);
 
-        m_videoAnalysis3dSubscriber = create_subscription<video_analyzer::msg::VideoAnalysis>(
+        m_videoAnalysis3dSubscriber = create_subscription<perception_msgs::msg::VideoAnalysis>(
             "video_analysis",
             10,
-            [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
-        m_audioAnalysisSubscriber = create_subscription<audio_analyzer::msg::AudioAnalysis>(
+            [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
+        m_audioAnalysisSubscriber = create_subscription<perception_msgs::msg::AudioAnalysis>(
             "audio_analysis",
             10,
-            [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
+            [this](const perception_msgs::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
         m_talkTextSubscriber = create_subscription<talk::msg::Text>(
             "talk/text",
             10,
             [this](const talk::msg::Text::SharedPtr msg) { talkTextSubscriberCallback(msg); });
-        m_speechToTextTranscriptSubscriber = create_subscription<speech_to_text::msg::Transcript>(
+        m_speechToTextTranscriptSubscriber = create_subscription<perception_msgs::msg::Transcript>(
             "speech_to_text/transcript",
             10,
-            [this](const speech_to_text::msg::Transcript::SharedPtr msg)
+            [this](const perception_msgs::msg::Transcript::SharedPtr msg)
             { speechToTextTranscriptSubscriberCallback(msg); });
         m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite::msg::StrategyState>(
             "hbba_strategy_state_log",
@@ -105,7 +105,7 @@ public:
 
     virtual ~PerceptionLoggerNode() {}
 
-    void videoAnalysisSubscriberCallback(const video_analyzer::msg::VideoAnalysis::SharedPtr msg)
+    void videoAnalysisSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
     {
         if (!msg->contains_3d_positions)
         {
@@ -132,7 +132,7 @@ public:
         }
     }
 
-    void audioAnalysisSubscriberCallback(const audio_analyzer::msg::AudioAnalysis::SharedPtr msg)
+    void audioAnalysisSubscriberCallback(const perception_msgs::msg::AudioAnalysis::SharedPtr msg)
     {
         if (msg->header.frame_id != m_frameId)
         {
@@ -154,7 +154,7 @@ public:
         m_speechLogger->log(Speech(get_clock()->now(), SpeechSource::ROBOT, msg->text));
     }
 
-    void speechToTextTranscriptSubscriberCallback(const speech_to_text::msg::Transcript::SharedPtr msg)
+    void speechToTextTranscriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
     {
         if (msg->is_final)
         {
@@ -196,7 +196,7 @@ private:
     }
 
     static VideoAnalysis msgToAnalysis(
-        const video_analyzer::msg::VideoAnalysisObject& msg,
+        const perception_msgs::msg::VideoAnalysisObject& msg,
         const rclcpp::Time& timestamp,
         const tf2::Stamped<tf2::Transform>& transform)
     {
@@ -244,7 +244,7 @@ private:
         return videoAnalysis;
     }
 
-    static AudioAnalysis msgToAnalysis(const audio_analyzer::msg::AudioAnalysis::SharedPtr msg)
+    static AudioAnalysis msgToAnalysis(const perception_msgs::msg::AudioAnalysis::SharedPtr msg)
     {
         AudioAnalysis audioAnalysis(
             rclcpp::Time(msg->header.stamp),

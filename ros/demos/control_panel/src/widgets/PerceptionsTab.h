@@ -11,10 +11,10 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <sensor_msgs/msg/image.hpp>
-#include <video_analyzer/msg/video_analysis.hpp>
-#include <audio_analyzer/msg/audio_analysis.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
+#include <perception_msgs/msg/audio_analysis.hpp>
 #include <std_msgs/msg/empty.hpp>
-#include <person_identification/msg/person_names.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 
@@ -29,10 +29,10 @@ class PerceptionsTab : public QWidget
 
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_analyzedImage3dSubscriber;
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_analyzedImage2dWideSubscriber;
-    rclcpp::Subscription<video_analyzer::msg::VideoAnalysis>::SharedPtr m_videoAnalysis2dWideSubscriber;
-    rclcpp::Subscription<audio_analyzer::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysis2dWideSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_robotNameDetectedSubscriber;
-    rclcpp::Subscription<person_identification::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_videoAnalyzer3dDesireId;
@@ -58,10 +58,10 @@ private slots:
 private:
     void analyzedImage3dSubscriberCallback(const sensor_msgs::msg::Image::SharedPtr msg);
     void analyzedImage2dWideSubscriberCallback(const sensor_msgs::msg::Image::SharedPtr msg);
-    void videoAnalysis2dWideSubscriberCallback(const video_analyzer::msg::VideoAnalysis::SharedPtr msg);
-    void audioAnalysisSubscriberCallback(const audio_analyzer::msg::AudioAnalysis::SharedPtr msg);
+    void videoAnalysis2dWideSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg);
+    void audioAnalysisSubscriberCallback(const perception_msgs::msg::AudioAnalysis::SharedPtr msg);
     void robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg);
-    void personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
 
     void createUi();
 

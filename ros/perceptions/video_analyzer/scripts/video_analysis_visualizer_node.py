@@ -9,7 +9,7 @@ import rclpy.node
 from cv_bridge import CvBridge
 
 from sensor_msgs.msg import Image
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
 
 def concatenate_horizontal(image0, image1):

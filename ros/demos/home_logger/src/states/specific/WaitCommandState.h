@@ -24,7 +24,7 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg) override;
+    void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg) override;
     void onStateTimeout() override;
 
 private:

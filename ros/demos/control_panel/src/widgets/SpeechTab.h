@@ -9,7 +9,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <speech_to_text/msg/transcript.hpp>
+#include <perception_msgs/msg/transcript.hpp>
 #include <audio_utils/msg/voice_activity.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
@@ -23,7 +23,7 @@ class SpeechTab : public QWidget, public DesireSetObserver
 
     rclcpp::Node::SharedPtr m_node;
 
-    rclcpp::Subscription<speech_to_text::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
     rclcpp::Subscription<audio_utils::msg::VoiceActivity>::SharedPtr m_vadSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
@@ -43,7 +43,7 @@ private slots:
     void onVadButtonToggled(bool checked);
 
 private:
-    void speechToTextSubscriberCallback(const speech_to_text::msg::Transcript::SharedPtr msg);
+    void speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
     void vadSubscriberCallback(const audio_utils::msg::VoiceActivity::SharedPtr msg);
 
     void createUi();

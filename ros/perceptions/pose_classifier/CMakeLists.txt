@@ -24,14 +24,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/PoseClassification.msg"
-  "msg/PoseClassifications.msg"
-  DEPENDENCIES std_msgs sensor_msgs geometry_msgs video_analyzer
-)
+find_package(perception_msgs REQUIRED)
 
 # Python Nodes
 install(PROGRAMS

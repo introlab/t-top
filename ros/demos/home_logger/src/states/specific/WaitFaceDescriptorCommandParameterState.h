@@ -41,11 +41,11 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg) override;
+    void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) override;
     void onStateTimeout() override;
 
 private:
-    std::optional<FaceDescriptor> findNearestFaceDescriptor(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg);
+    std::optional<FaceDescriptor> findNearestFaceDescriptor(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
     void switchState();
 };
 

@@ -9,7 +9,7 @@ import numpy as np
 import rclpy
 import rclpy.node
 
-from speech_to_text.msg import Transcript
+from perception_msgs.msg import Transcript
 from audio_utils.msg import AudioFrame
 import hbba_lite
 

@@ -16,10 +16,8 @@
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>hbba_lite</depend>
-  <depend>video_analyzer</depend>
-  <depend>audio_analyzer</depend>
+  <depend>perception_msgs</depend>
   <depend>talk</depend>
-  <depend>speech_to_text</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 

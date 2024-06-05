@@ -23,13 +23,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(odas_ros REQUIRED)
 find_package(audio_utils REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/AudioAnalysis.msg"
-  DEPENDENCIES std_msgs audio_utils
-)
+find_package(perception_msgs REQUIRED)
 
 # Python Nodes
 install(PROGRAMS

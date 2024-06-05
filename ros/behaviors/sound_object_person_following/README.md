@@ -47,7 +47,7 @@ This node makes T-Top follow the loudest sound, the biggest (nearest) person and
 - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
 - `sst` ([odas_ros/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/msg/OdasSstArrayStamped.msg)):
   The sound source tracking information.
-- `video_analysis` ([video_analyzer/VideoAnalysis](../../perceptions/video_analyzer/msg/VideoAnalysis.msg)): The video
+- `video_analysis` ([perception_msgs/VideoAnalysis](../../perceptions/perception_msgs/msg/VideoAnalysis.msg)): The video
   analysis containing the detected objects of the 2d wide camera.
 
 #### Published Topics

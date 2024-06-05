@@ -4,12 +4,12 @@
 #include "../State.h"
 
 #include <std_msgs/msg/empty.hpp>
-#include <person_identification/msg/person_names.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 class RssIdleState : public State
 {
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_robotNameDetectedSubscriber;
-    rclcpp::Subscription<person_identification::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
 
 public:
     RssIdleState(
@@ -29,7 +29,7 @@ protected:
 
 private:
     void robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg);
-    void personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
 };
 
 inline std::type_index RssIdleState::type() const

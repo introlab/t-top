@@ -11,7 +11,7 @@ from faster_whisper import WhisperModel
 import rclpy
 import rclpy.node
 
-from speech_to_text.msg import Transcript
+from perception_msgs.msg import Transcript
 
 from audio_utils import get_format_information, convert_audio_data_to_numpy_frames
 from audio_utils.msg import AudioFrame, VoiceActivity

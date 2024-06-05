@@ -26,14 +26,7 @@ find_package(tf2_ros REQUIRED)
 find_package(video_analyzer REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/PersonName.msg"
-  "msg/PersonNames.msg"
-  DEPENDENCIES geometry_msgs
-)
+find_package(perception_msgs REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})

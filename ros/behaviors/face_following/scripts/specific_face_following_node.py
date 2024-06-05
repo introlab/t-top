@@ -3,7 +3,7 @@
 import rclpy
 
 from std_msgs.msg import String
-from person_identification.msg import PersonNames
+from perception_msgs.msg import PersonNames
 
 from t_top import vector_to_angles
 

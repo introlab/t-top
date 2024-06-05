@@ -25,7 +25,7 @@ This node uses RGB images, so the 3D positions are not set.
  - `image_raw` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/msg/Image.html)): The color image.
 
 #### Published Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
  - `analysed_image` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/msg/Image.html)): A rendering of the video analysis.
 
 #### Services
@@ -59,7 +59,7 @@ This node uses RGB-D images, so the 3D positions are set.
  - `depth_camera_info` ([sensor_msgs/CameraInfo](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/CameraInfo.html)): The depth camera info used to preject 2D point in 3D.
 
 #### Published Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
  - `analysed_image` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): A rendering of the video analysis.
 
 #### Services
@@ -70,7 +70,7 @@ This node uses RGB-D images, so the 3D positions are set.
 This node create a mosaic containing the objects in the video analysis.
 
 #### Subscribed Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
 
 #### Published Topics
  - `video_analysis_mosaic` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): The mosaic containing the objects in the video analysis.
@@ -79,7 +79,7 @@ This node create a mosaic containing the objects in the video analysis.
 This node create a marker array for the objects in the video analysis.
 
 #### Subscribed Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
 
 #### Published Topics
  - `video_analysis_markers` ([visualization_msgs/MarkerArray](https://docs.ros2.org/foxy/api/visualization_msgs/html/msg/MarkerArray.html)): The marker array for the objects in the video analysis.

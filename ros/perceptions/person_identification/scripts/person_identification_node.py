@@ -12,9 +12,7 @@ from tf2_ros.transform_listener import TransformListener
 import tf2_geometry_msgs
 
 from geometry_msgs.msg import PointStamped, Point, Vector3
-from video_analyzer.msg import VideoAnalysis
-from audio_analyzer.msg import AudioAnalysis
-from person_identification.msg import PersonNames, PersonName
+from perception_msgs.msg import VideoAnalysis, AudioAnalysis, PersonNames, PersonName
 
 import person_identification
 

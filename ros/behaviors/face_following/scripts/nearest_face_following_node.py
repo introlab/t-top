@@ -8,7 +8,7 @@ from tf2_ros.transform_listener import TransformListener
 import tf2_geometry_msgs
 
 from geometry_msgs.msg import PointStamped
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
 from t_top import vector_to_angles
 

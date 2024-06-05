@@ -3,11 +3,11 @@
 
 #include "../State.h"
 
-#include <speech_to_text/msg/transcript.hpp>
+#include <perception_msgs/msg/transcript.hpp>
 
 class WaitAnswerState : public State
 {
-    rclcpp::Subscription<speech_to_text::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
     rclcpp::TimerBase::SharedPtr m_timeoutTimer;
 
     bool m_transcriptReceived;
@@ -31,7 +31,7 @@ protected:
     virtual void switchStateAfterTimeout(bool transcriptReceived) = 0;
 
 private:
-    void speechToTextSubscriberCallback(const speech_to_text::msg::Transcript::SharedPtr msg);
+    void speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
     void timeoutTimerCallback();
 };
 

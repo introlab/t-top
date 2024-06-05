@@ -55,7 +55,7 @@ vector<QColor> getSemanticSegmentationPaletteFromClassCount(size_t classCount)
 
 QImage semanticSegmentationToImage(
     rclcpp::Node& node,
-    const video_analyzer::msg::SemanticSegmentation& semanticSegmentation)
+    const perception_msgs::msg::SemanticSegmentation& semanticSegmentation)
 {
     int width = semanticSegmentation.width;
     int height = semanticSegmentation.height;
@@ -106,25 +106,25 @@ PerceptionsTab::PerceptionsTab(
             "camera_2d_wide/analysed_image",
             1,
             [this](const sensor_msgs::msg::Image::SharedPtr msg) { analyzedImage2dWideSubscriberCallback(msg); });
-        m_videoAnalysis2dWideSubscriber = m_node->create_subscription<video_analyzer::msg::VideoAnalysis>(
+        m_videoAnalysis2dWideSubscriber = m_node->create_subscription<perception_msgs::msg::VideoAnalysis>(
             "camera_2d_wide/video_analysis",
             1,
-            [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg)
+            [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
             { videoAnalysis2dWideSubscriberCallback(msg); });
     }
 
-    m_audioAnalysisSubscriber = m_node->create_subscription<audio_analyzer::msg::AudioAnalysis>(
+    m_audioAnalysisSubscriber = m_node->create_subscription<perception_msgs::msg::AudioAnalysis>(
         "audio_analysis",
         1,
-        [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
     m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
         "robot_name_detected",
         1,
         [this](const std_msgs::msg::Empty::SharedPtr msg) { robotNameDetectedSubscriberCallback(msg); });
-    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
         "person_names",
         1,
-        [this](const person_identification::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 }
 
 void PerceptionsTab::onVideoAnalyzer3dButtonToggled(bool checked)
@@ -176,7 +176,7 @@ void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::ms
         });
 }
 
-void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const video_analyzer::msg::VideoAnalysis::SharedPtr msg)
+void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
 {
     if (msg->semantic_segmentation.empty())
     {
@@ -191,7 +191,7 @@ void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const video_analyzer:
         });
 }
 
-void PerceptionsTab::audioAnalysisSubscriberCallback(const audio_analyzer::msg::AudioAnalysis::SharedPtr msg)
+void PerceptionsTab::audioAnalysisSubscriberCallback(const perception_msgs::msg::AudioAnalysis::SharedPtr msg)
 {
     QString classes = mergeStdStrings(msg->audio_classes);
     invokeLater([this, classes]() { m_soundClassesLineEdit->setText(classes); });
@@ -203,7 +203,7 @@ void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::msg::Em
     invokeLater([this, currentTime]() { m_robotNameDetectionTimeLineEdit->setText(currentTime.toString()); });
 }
 
-void PerceptionsTab::personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg)
+void PerceptionsTab::personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     vector<string> names;
     names.reserve(msg->names.size());
@@ -212,7 +212,7 @@ void PerceptionsTab::personNamesSubscriberCallback(const person_identification::
         msg->names.begin(),
         msg->names.end(),
         back_inserter(names),
-        [](const person_identification::msg::PersonName& name) { return name.name; });
+        [](const perception_msgs::msg::PersonName& name) { return name.name; });
 
     QString mergedNames = mergeStdStrings(names);
     invokeLater([this, mergedNames]() { m_identifiedPersonsLineEdit->setText(mergedNames); });

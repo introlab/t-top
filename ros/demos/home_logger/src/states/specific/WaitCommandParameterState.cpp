@@ -69,7 +69,7 @@ void WaitCommandParameterState::onDisabling()
     }
 }
 
-void WaitCommandParameterState::onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg)
+void WaitCommandParameterState::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg)
 {
     m_transcriptReceived = true;
     m_parameterResponse = msg->text;

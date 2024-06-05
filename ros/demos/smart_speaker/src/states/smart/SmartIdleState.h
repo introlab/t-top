@@ -7,8 +7,8 @@
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
 
-#include <person_identification/msg/person_names.hpp>
-#include <video_analyzer/msg/video_analysis.hpp>
+#include <perception_msgs/msg/person_names.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
 
 class SmartIdleState : public State
 {
@@ -24,8 +24,8 @@ class SmartIdleState : public State
     std::unique_ptr<tf2_ros::Buffer> m_tfBuffer;
     std::shared_ptr<tf2_ros::TransformListener> m_tfListener;
 
-    rclcpp::Subscription<person_identification::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
-    rclcpp::Subscription<video_analyzer::msg::VideoAnalysis>::SharedPtr m_videoAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysisSubscriber;
 
 public:
     SmartIdleState(
@@ -49,12 +49,12 @@ protected:
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
 
 private:
-    void personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg);
-    void videoAnalysisSubscriberCallback(const video_analyzer::msg::VideoAnalysis::SharedPtr msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
+    void videoAnalysisSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg);
 
-    double personNameDistance(const person_identification::msg::PersonName& name);
+    double personNameDistance(const perception_msgs::msg::PersonName& name);
     double faceDistance(
-        const video_analyzer::msg::VideoAnalysisObject& object,
+        const perception_msgs::msg::VideoAnalysisObject& object,
         const tf2::Stamped<tf2::Transform>& transform);
 };
 

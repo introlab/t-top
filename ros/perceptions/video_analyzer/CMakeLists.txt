@@ -26,15 +26,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/SemanticSegmentation.msg"
-  "msg/VideoAnalysis.msg"
-  "msg/VideoAnalysisObject.msg"
-  DEPENDENCIES std_msgs sensor_msgs geometry_msgs
-)
+find_package(perception_msgs REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})

@@ -6,7 +6,7 @@ import rclpy
 import rclpy.node
 
 from hbba_lite.srv import SetThrottlingFilterState
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
 import person_identification
 

@@ -16,8 +16,7 @@
   <depend>t_top</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
-  <depend>video_analyzer</depend>
-  <depend>person_identification</depend>
+  <depend>perception_msgs</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>

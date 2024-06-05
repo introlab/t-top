@@ -22,7 +22,7 @@ This node makes T-Top follow the nearest face.
 #### Subscribed Topics
 
 - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
-- `video_analysis` ([video_analyzer/VideoAnalysis](../../perceptions/video_analyzer/msg/VideoAnalysis.msg)): The video
+- `video_analysis` ([perception_msgs/VideoAnalysis](../../perceptions/perception_msgs/msg/VideoAnalysis.msg)): The video
   analysis containing the detected objects. The video analysis must contain 3d positions.
 
 #### Published Topics
@@ -55,7 +55,7 @@ This node makes T-Top follow the face of the specified person.
 
 #### Subscribed Topics
 
-- `person_names` ([person_identification/PersonNames](../../perceptions/person_identification/msg/PersonNames.msg)):
+- `person_names` ([person_identification/PersonNames](../../perceptions/perception_msgs/msg/PersonNames.msg)):
   The person names.
 - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
 

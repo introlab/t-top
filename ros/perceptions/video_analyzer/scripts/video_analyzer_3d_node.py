@@ -7,7 +7,7 @@ import message_filters
 
 from sensor_msgs.msg import Image, CameraInfo
 from geometry_msgs.msg import Point
-from video_analyzer.msg import VideoAnalysis, VideoAnalysisObject
+from perception_msgs.msg import VideoAnalysis, VideoAnalysisObject
 
 import hbba_lite
 

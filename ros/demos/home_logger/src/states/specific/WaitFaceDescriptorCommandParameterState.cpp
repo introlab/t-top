@@ -75,7 +75,7 @@ void WaitFaceDescriptorCommandParameterState::onDisabling()
 }
 
 void WaitFaceDescriptorCommandParameterState::onVideoAnalysisReceived(
-    const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+    const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     auto faceDescriptor = findNearestFaceDescriptor(msg);
     if (faceDescriptor.has_value())
@@ -95,7 +95,7 @@ void WaitFaceDescriptorCommandParameterState::onStateTimeout()
 }
 
 optional<FaceDescriptor> WaitFaceDescriptorCommandParameterState::findNearestFaceDescriptor(
-    const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+    const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;
 

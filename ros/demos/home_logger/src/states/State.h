@@ -9,10 +9,10 @@
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/utils/ClassMacros.h>
 
-#include <speech_to_text/msg/transcript.hpp>
-#include <video_analyzer/msg/video_analysis.hpp>
-#include <audio_analyzer/msg/audio_analysis.hpp>
-#include <person_identification/msg/person_names.hpp>
+#include <perception_msgs/msg/transcript.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
+#include <perception_msgs/msg/audio_analysis.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 #include <memory>
 #include <numeric>
@@ -150,11 +150,11 @@ protected:
 
     virtual void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& desires);
 
-    virtual void onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg);
+    virtual void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg);
     virtual void onRobotNameDetected();
-    virtual void onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg);
-    virtual void onAudioAnalysisReceived(const audio_analyzer::msg::AudioAnalysis::SharedPtr& msg);
-    virtual void onPersonNamesDetected(const person_identification::msg::PersonNames::SharedPtr& msg);
+    virtual void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
+    virtual void onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg);
+    virtual void onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg);
     virtual void onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg);
 
     virtual void onStateTimeout();
@@ -169,6 +169,6 @@ inline bool State::enabled() const
     return m_enabled;
 }
 
-bool containsAtLeastOnePerson(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg);
+bool containsAtLeastOnePerson(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
 
 #endif

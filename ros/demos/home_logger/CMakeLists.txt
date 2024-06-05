@@ -19,18 +19,15 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(audio_analyzer REQUIRED)
+find_package(perception_msgs REQUIRED)
 find_package(cloud_data REQUIRED)
 find_package(gesture REQUIRED)
 find_package(hbba_lite REQUIRED)
-find_package(person_identification REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(speech_to_text REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(talk REQUIRED)
-find_package(video_analyzer REQUIRED)
 find_package(recorders REQUIRED)
 find_package(led_animations REQUIRED)
 find_package(daemon_ros_client REQUIRED)
@@ -104,18 +101,15 @@ add_executable(${PROJECT_NAME}_node
 )
 ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
-  audio_analyzer
+  perception_msgs
   cloud_data
   gesture
   hbba_lite
-  person_identification
   sensor_msgs
   geometry_msgs
   std_msgs
   talk
-  video_analyzer
   t_top_hbba_lite
-  speech_to_text
   led_animations
   daemon_ros_client
   sound_player

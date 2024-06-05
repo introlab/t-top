@@ -24,7 +24,7 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg) override;
+    void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) override;
 
 private:
     void setFollowingDesire(std::unique_ptr<Desire> desire);

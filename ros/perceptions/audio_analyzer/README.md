@@ -16,7 +16,7 @@ This node classifies the audio and extracts a general audio embedding. If the au
  - `sst` ([odas_ros/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/msg/OdasSstArrayStamped.msg)): The sound source tracking information.
 
 #### Published Topics
- - `audio_analysis` ([audio_analyzer/AudioAnalysis](msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, general audio embedding, voice embedding and the sound direction.
+ - `audio_analysis` ([perception_msgs/AudioAnalysis](../perception_msgs/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, general audio embedding, voice embedding and the sound direction.
 
 #### Services
  - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.

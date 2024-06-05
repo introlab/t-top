@@ -13,26 +13,26 @@ StateManager::StateManager(shared_ptr<DesireSet> desireSet, rclcpp::Node::Shared
 {
     m_desireSet->addObserver(this);
 
-    m_speechToTextSubscriber = m_node->create_subscription<speech_to_text::msg::Transcript>(
+    m_speechToTextSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
         1,
-        [this](const speech_to_text::msg::Transcript::SharedPtr msg) { onSpeechToTextTranscriptReceived(msg); });
+        [this](const perception_msgs::msg::Transcript::SharedPtr msg) { onSpeechToTextTranscriptReceived(msg); });
     m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
         "robot_name_detected",
         1,
         [this](const std_msgs::msg::Empty::SharedPtr msg) { onRobotNameDetected(msg); });
-    m_videoAnalysisSubscriber = m_node->create_subscription<video_analyzer::msg::VideoAnalysis>(
+    m_videoAnalysisSubscriber = m_node->create_subscription<perception_msgs::msg::VideoAnalysis>(
         "video_analysis",
         1,
-        [this](const video_analyzer::msg::VideoAnalysis::SharedPtr msg) { onVideoAnalysisReceived(msg); });
-    m_audioAnalysisSubscriber = m_node->create_subscription<audio_analyzer::msg::AudioAnalysis>(
+        [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg) { onVideoAnalysisReceived(msg); });
+    m_audioAnalysisSubscriber = m_node->create_subscription<perception_msgs::msg::AudioAnalysis>(
         "audio_analysis",
         1,
-        [this](const audio_analyzer::msg::AudioAnalysis::SharedPtr msg) { onAudioAnalysisReceived(msg); });
-    m_personNamesSubscriber = m_node->create_subscription<person_identification::msg::PersonNames>(
+        [this](const perception_msgs::msg::AudioAnalysis::SharedPtr msg) { onAudioAnalysisReceived(msg); });
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
         "person_names",
         1,
-        [this](const person_identification::msg::PersonNames::SharedPtr msg) { onPersonNamesDetected(msg); });
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { onPersonNamesDetected(msg); });
     m_baseStatusSubscriber = m_node->create_subscription<daemon_ros_client::msg::BaseStatus>(
         "daemon/base_status",
         1,
@@ -86,7 +86,7 @@ void StateManager::onDesireSetChanged(const vector<unique_ptr<Desire>>& desires)
     }
 }
 
-void StateManager::onSpeechToTextTranscriptReceived(const speech_to_text::msg::Transcript::SharedPtr& msg)
+void StateManager::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg)
 {
     if (m_currentState != nullptr)
     {
@@ -102,7 +102,7 @@ void StateManager::onRobotNameDetected(const std_msgs::msg::Empty::SharedPtr& ms
     }
 }
 
-void StateManager::onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+void StateManager::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     if (m_currentState != nullptr)
     {
@@ -110,7 +110,7 @@ void StateManager::onVideoAnalysisReceived(const video_analyzer::msg::VideoAnaly
     }
 }
 
-void StateManager::onAudioAnalysisReceived(const audio_analyzer::msg::AudioAnalysis::SharedPtr& msg)
+void StateManager::onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg)
 {
     if (m_currentState != nullptr)
     {
@@ -118,7 +118,7 @@ void StateManager::onAudioAnalysisReceived(const audio_analyzer::msg::AudioAnaly
     }
 }
 
-void StateManager::onPersonNamesDetected(const person_identification::msg::PersonNames::SharedPtr& msg)
+void StateManager::onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg)
 {
     if (m_currentState != nullptr)
     {

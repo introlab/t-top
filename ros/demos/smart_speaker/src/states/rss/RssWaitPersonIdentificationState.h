@@ -3,11 +3,11 @@
 
 #include "../State.h"
 
-#include <person_identification/msg/person_names.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 class RssWaitPersonIdentificationState : public State
 {
-    rclcpp::Subscription<person_identification::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
     rclcpp::TimerBase::SharedPtr m_timeoutTimer;
 
 public:
@@ -28,7 +28,7 @@ protected:
     void disable() override;
 
 private:
-    void personNamesSubscriberCallback(const person_identification::msg::PersonNames::SharedPtr msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
     void timeoutTimerCallback();
 };
 

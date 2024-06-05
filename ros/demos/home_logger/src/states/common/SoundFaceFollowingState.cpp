@@ -29,7 +29,7 @@ void SoundFaceFollowingState::onDisabling()
     setFollowingDesire(nullptr);
 }
 
-void SoundFaceFollowingState::onVideoAnalysisReceived(const video_analyzer::msg::VideoAnalysis::SharedPtr& msg)
+void SoundFaceFollowingState::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     bool containsAPerson = containsAtLeastOnePerson(msg);
 

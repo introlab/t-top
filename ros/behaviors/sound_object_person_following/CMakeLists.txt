@@ -27,7 +27,7 @@ find_package(t_top REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(message_filters REQUIRED)
-find_package(video_analyzer REQUIRED)
+find_package(perception_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 

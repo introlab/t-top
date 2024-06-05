@@ -10,19 +10,16 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>audio_analyzer</depend>
+  <depend>perception_msgs</depend>
   <depend>cloud_data</depend>
   <depend>gesture</depend>
   <depend>hbba_lite</depend>
-  <depend>person_identification</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>talk</depend>
-  <depend>video_analyzer</depend>
   <depend>t_top_hbba_lite</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
-  <depend>speech_to_text</depend>
   <depend>sound_player</depend>
   <depend>daemon_ros_client</depend>
 

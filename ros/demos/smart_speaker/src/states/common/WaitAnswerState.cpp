@@ -27,10 +27,10 @@ WaitAnswerState::WaitAnswerState(
     : State(language, stateManager, desireSet, move(node)),
       m_transcriptReceived(false)
 {
-    m_speechToTextSubscriber = m_node->create_subscription<speech_to_text::msg::Transcript>(
+    m_speechToTextSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
         1,
-        [this](const speech_to_text::msg::Transcript::SharedPtr msg) { speechToTextSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::Transcript::SharedPtr msg) { speechToTextSubscriberCallback(msg); });
 }
 
 void WaitAnswerState::enable(const string& parameter, const type_index& previousStageType)
@@ -66,7 +66,7 @@ void WaitAnswerState::disable()
     }
 }
 
-void WaitAnswerState::speechToTextSubscriberCallback(const speech_to_text::msg::Transcript::SharedPtr msg)
+void WaitAnswerState::speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
 {
     if (!enabled())
     {

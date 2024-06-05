@@ -11,7 +11,7 @@ import rclpy.node
 
 
 from odas_ros.msg import OdasSstArrayStamped
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
 from t_top import MovementCommands, vector_to_angles, HEAD_POSE_PITCH_INDEX, HEAD_ZERO_Z
 
