@@ -25,12 +25,9 @@ find_package(geometry_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(sound_player REQUIRED)
+find_package(behavior_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(talk REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(gesture REQUIRED)
-find_package(led_animations REQUIRED)
 find_package(daemon_ros_client REQUIRED)
 
 # C++ Libraries
@@ -39,7 +36,7 @@ add_library(t_top_hbba_lite_cpp
   src/Strategies.cpp
 )
 target_include_directories(t_top_hbba_lite_cpp PUBLIC include)
-ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs sound_player std_msgs std_msgs talk gesture led_animations daemon_ros_client)
+ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
 install(TARGETS t_top_hbba_lite_cpp DESTINATION lib)
 
 ament_export_dependencies(rclcpp)

@@ -22,14 +22,7 @@ find_package(daemon_ros_client REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(t_top REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Done.msg"
-  "msg/Animation.msg"
-  DEPENDENCIES daemon_ros_client
-)
+find_package(behavior_msgs REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})

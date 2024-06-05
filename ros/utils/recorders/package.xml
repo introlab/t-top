@@ -17,7 +17,7 @@
   <depend>geometry_msgs</depend>
   <depend>hbba_lite</depend>
   <depend>perception_msgs</depend>
-  <depend>talk</depend>
+  <depend>behavior_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 

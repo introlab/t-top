@@ -21,17 +21,14 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(perception_msgs REQUIRED)
 find_package(cloud_data REQUIRED)
-find_package(gesture REQUIRED)
+find_package(behavior_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(talk REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(sound_player REQUIRED)
-find_package(led_animations REQUIRED)
 find_package(daemon_ros_client REQUIRED)
 
 add_executable(${PROJECT_NAME}_rss_node
@@ -59,25 +56,19 @@ ament_target_dependencies(${PROJECT_NAME}_rss_node
   rclcpp
   perception_msgs
   cloud_data
-  gesture
+  behavior_msgs
   hbba_lite
   sensor_msgs
   geometry_msgs
   std_msgs
-  talk
   t_top_hbba_lite
   tf2
   tf2_ros
-  sound_player
-  led_animations
   daemon_ros_client
 )
 target_link_libraries(${PROJECT_NAME}_rss_node
   ${hbba_lite_LIBRARIES}
-  ${led_animations_LIBRARIES}
-  ${talk_LIBRARIES}
-  ${sound_player_LIBRARIES}
-  ${gesture_LIBRARIES}
+  ${behavior_msgs_LIBRARIES}
 )
 install(TARGETS ${PROJECT_NAME}_rss_node DESTINATION lib/${PROJECT_NAME})
 
@@ -104,25 +95,19 @@ ament_target_dependencies(${PROJECT_NAME}_smart_node
   rclcpp
   perception_msgs
   cloud_data
-  gesture
+  behavior_msgs
   hbba_lite
   sensor_msgs
   geometry_msgs
   std_msgs
-  talk
   t_top_hbba_lite
   tf2
   tf2_ros
-  sound_player
-  led_animations
   daemon_ros_client
 )
 target_link_libraries(${PROJECT_NAME}_smart_node
   ${hbba_lite_LIBRARIES}
-  ${led_animations_LIBRARIES}
-  ${talk_LIBRARIES}
-  ${sound_player_LIBRARIES}
-  ${gesture_LIBRARIES}
+  ${behavior_msgs_LIBRARIES}
 )
 install(TARGETS ${PROJECT_NAME}_smart_node DESTINATION lib/${PROJECT_NAME})
 

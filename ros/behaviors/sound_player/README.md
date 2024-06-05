@@ -15,13 +15,13 @@ This node plays sound files.
 
 #### Subscribed Topics
 
-- `sound_player/file` ([sound_player/SoundFile](msg/SoundFile.msg)): The sound file to play.
+- `sound_player/file` ([behavior_msgs/SoundFile](../behavior_msgs/msg/SoundFile.msg)): The sound file to play.
 
 #### Published Topics
 
 - `audio_out` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The
   sound (mono, float format).
-- `sound_player/done` ([sound_player/Done](msg/Done.msg)): Indicates that the speech is finished.
+- `sound_player/done` ([behavior_msgs/Done](../behavior_msgs/msg/Done.msg)): Indicates that the speech is finished.
 
 #### Services
 

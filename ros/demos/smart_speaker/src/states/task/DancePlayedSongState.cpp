@@ -25,10 +25,10 @@ DancePlayedSongState::DancePlayedSongState(
 
     m_desireSet->addObserver(this);
 
-    m_songStartedSubscriber = m_node->create_subscription<sound_player::msg::Started>(
+    m_songStartedSubscriber = m_node->create_subscription<behavior_msgs::msg::SoundStarted>(
         "sound_player/started",
         1,
-        [this](const sound_player::msg::Started::SharedPtr msg) { songStartedSubscriberCallback(msg); });
+        [this](const behavior_msgs::msg::SoundStarted::SharedPtr msg) { songStartedSubscriberCallback(msg); });
 }
 
 DancePlayedSongState::~DancePlayedSongState()
@@ -77,7 +77,7 @@ void DancePlayedSongState::disable()
     m_songDesireId = MAX_DESIRE_ID;
 }
 
-void DancePlayedSongState::songStartedSubscriberCallback(const sound_player::msg::Started::SharedPtr msg)
+void DancePlayedSongState::songStartedSubscriberCallback(const behavior_msgs::msg::SoundStarted::SharedPtr msg)
 {
     if (!enabled() || msg->id != m_songDesireId)
     {

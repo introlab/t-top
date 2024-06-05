@@ -25,7 +25,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(perception_msgs REQUIRED)
-find_package(talk REQUIRED)
+find_package(behavior_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
@@ -77,7 +77,7 @@ ament_target_dependencies(perception_logger_node
   geometry_msgs
   hbba_lite
   perception_msgs
-  talk
+  behavior_msgs
   tf2
   tf2_ros
 )

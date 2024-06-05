@@ -14,12 +14,9 @@
   <depend>hbba_lite</depend>
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>sound_player</depend>
+  <depend>behavior_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>talk</depend>
   <depend>tf2</depend>
-  <depend>gesture</depend>
-  <depend>led_animations</depend>
   <depend>daemon_ros_client</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>

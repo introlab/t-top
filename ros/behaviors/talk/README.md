@@ -21,7 +21,7 @@ This node makes T-Top talk and move its lips accordingly. It uses Google Cloud T
 
 #### Subscribed Topics
 
-- `talk/text` ([talk/Text](msg/Text.msg)): The text to be said.
+- `talk/text` ([behavior_msgs/Text](../behavior_msgs/msg/Text.msg)): The text to be said.
 
 #### Published Topics
 
@@ -29,7 +29,7 @@ This node makes T-Top talk and move its lips accordingly. It uses Google Cloud T
   Indicates how much the mouth must be open.
 - `audio_out` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The
   speech sound (mono, float format).
-- `talk/done` ([talk/Done](msg/Done.msg)): Indicates that the speech is finished.
+- `talk/done` ([behavior_msgs/Done](../behavior_msgs/msg/Done.msg)): Indicates that the speech is finished.
 
 #### Services
 

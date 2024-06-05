@@ -10,7 +10,7 @@ import librosa
 import rclpy
 import rclpy.node
 
-from sound_player.msg import SoundFile, Started, Done
+from behavior_msgs.msg import SoundFile, SoundStarted, Done
 from audio_utils.msg import AudioFrame
 
 import hbba_lite
@@ -24,7 +24,7 @@ class SoundPlayerNode(rclpy.node.Node):
         self._frame_sample_count = self.declare_parameter('frame_sample_count', 1024).get_parameter_value().integer_value
 
         self._audio_pub = hbba_lite.OnOffHbbaPublisher(self, AudioFrame, 'audio_out', 5)
-        self._started_pub = self.create_publisher(Started, 'sound_player/started', 5)
+        self._started_pub = self.create_publisher(SoundStarted, 'sound_player/started', 5)
         self._done_pub = self.create_publisher(Done, 'sound_player/done', 5)
 
         self._file_sub = self.create_subscription(SoundFile, 'sound_player/file', self._on_file_received_cb, 1)

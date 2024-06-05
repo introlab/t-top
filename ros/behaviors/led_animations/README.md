@@ -13,12 +13,12 @@ This node performs animations with the LED strip.
 
 #### Subscribed Topics
 
-- `led_animations/name` ([led_animations/Animation](msg/Animation.msg)): The animation parameters.
+- `led_animations/name` ([behavior_msgs/Animation](../behavior_msgs/msg/Animation.msg)): The animation parameters.
 
 #### Published Topics
 
 - `led_animations/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)): The LED colors.
-- `led_animations/done` ([led_animations/Done](msg/Done.msg)): Indicates that the animation is finished.
+- `led_animations/done` ([led_animations/Done](../behavior_msgs/msg/Done.msg)): Indicates that the animation is finished.
 
 #### Services
 

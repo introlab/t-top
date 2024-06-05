@@ -5,7 +5,7 @@ import rclpy.node
 from rclpy.duration import Duration
 
 from daemon_ros_client.msg import LedColors
-from led_animations.msg import Animation, Done
+from behavior_msgs.msg import LedAnimation as LedAnimationMsg, Done
 
 import hbba_lite
 
@@ -36,7 +36,7 @@ class LedAnimationsNode(rclpy.node.Node):
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 
         self._done_pub = self.create_publisher(Done, 'led_animations/done', 5)
-        self._led_emotion_sub = self.create_subscription(Animation, 'led_animations/animation', self._animation_cb, 1)
+        self._led_emotion_sub = self.create_subscription(LedAnimationMsg, 'led_animations/animation', self._animation_cb, 1)
 
     def _hbba_filter_state_cb(self, publish_forced, previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:

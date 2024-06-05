@@ -3,7 +3,7 @@
 import rclpy
 import rclpy.node
 
-from gesture.msg import GestureName, Done
+from behavior_msgs.msg import GestureName, Done
 
 from t_top import MovementCommands
 

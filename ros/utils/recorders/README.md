@@ -42,5 +42,5 @@ This node logs the video analysis messages and the audio analysis messages into 
 #### Subscribed Topics
  - `video_analysis` ([perception_msgs/VideoAnalysis](../../perceptions/perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects. The video analysis must contain 3d positions.
  - `audio_analysis` ([perception_msgs/AudioAnalysis](../../perceptions/perception_msgs/msg/AudioAnalysis.msg)): The audio analysis containing the audio classes, voice embedding and the sound direction.
- - `talk/text` ([talk/Text](../../behaviors/talk/msg/Text.msg)): The text spoken by the robot.
+ - `talk/text` ([talk/Text](../../behaviors/behavior_msgs/msg/Text.msg)): The text spoken by the robot.
  - `speech_to_text/transcript` ([perception_msgs/Transcript](../../perceptions/perception_msgs/msg/Transcript.msg)): The text spoken by the human.

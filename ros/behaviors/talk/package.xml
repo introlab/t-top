@@ -8,13 +8,13 @@
   <license>GPL-3.0 license </license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>audio_utils</depend>
   <depend>hbba_lite</depend>
   <depend>piper_ros</depend>
+  <depend>behavior_msgs</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>ros2launch</exec_depend>

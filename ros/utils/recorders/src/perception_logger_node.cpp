@@ -11,7 +11,7 @@
 
 #include <perception_msgs/msg/video_analysis.hpp>
 #include <perception_msgs/msg/audio_analysis.hpp>
-#include <talk/msg/text.hpp>
+#include <behavior_msgs/msg/text.hpp>
 #include <perception_msgs/msg/transcript.hpp>
 #include <hbba_lite/msg/strategy_state.hpp>
 
@@ -60,7 +60,7 @@ class PerceptionLoggerNode : public rclcpp::Node
 
     rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysis3dSubscriber;
     rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
-    rclcpp::Subscription<talk::msg::Text>::SharedPtr m_talkTextSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::Text>::SharedPtr m_talkTextSubscriber;
     rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextTranscriptSubscriber;
     rclcpp::Subscription<hbba_lite::msg::StrategyState>::SharedPtr m_hbbaStrategyStateSubscriber;
 
@@ -85,10 +85,10 @@ public:
             "audio_analysis",
             10,
             [this](const perception_msgs::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
-        m_talkTextSubscriber = create_subscription<talk::msg::Text>(
+        m_talkTextSubscriber = create_subscription<behavior_msgs::msg::Text>(
             "talk/text",
             10,
-            [this](const talk::msg::Text::SharedPtr msg) { talkTextSubscriberCallback(msg); });
+            [this](const behavior_msgs::msg::Text::SharedPtr msg) { talkTextSubscriberCallback(msg); });
         m_speechToTextTranscriptSubscriber = create_subscription<perception_msgs::msg::Transcript>(
             "speech_to_text/transcript",
             10,
@@ -149,7 +149,7 @@ public:
         m_audioAnalysisLogger->log(msgToAnalysis(msg));
     }
 
-    void talkTextSubscriberCallback(const talk::msg::Text::SharedPtr msg)
+    void talkTextSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg)
     {
         m_speechLogger->log(Speech(get_clock()->now(), SpeechSource::ROBOT, msg->text));
     }

@@ -21,17 +21,14 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(perception_msgs REQUIRED)
 find_package(cloud_data REQUIRED)
-find_package(gesture REQUIRED)
+find_package(behavior_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
-find_package(talk REQUIRED)
 find_package(recorders REQUIRED)
-find_package(led_animations REQUIRED)
 find_package(daemon_ros_client REQUIRED)
-find_package(sound_player REQUIRED)
 find_package(tf2 REQUIRED)
 
 # C++ Library
@@ -103,25 +100,19 @@ ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
   perception_msgs
   cloud_data
-  gesture
+  behavior_msgs
   hbba_lite
   sensor_msgs
   geometry_msgs
   std_msgs
-  talk
   t_top_hbba_lite
-  led_animations
   daemon_ros_client
-  sound_player
   tf2
 )
 target_link_libraries(${PROJECT_NAME}_node
   ${hbba_lite_LIBRARIES}
-  ${led_animations_LIBRARIES}
-  ${talk_LIBRARIES}
-  ${gesture_LIBRARIES}
+  ${behavior_msgs_LIBRARIES}
   ${recorders_LIBRARIES}
-  ${sound_player_LIBRARIES}
   home_logger_common
   fmt
 )

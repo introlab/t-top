@@ -9,17 +9,11 @@
 
 #include <std_msgs/msg/string.hpp>
 
-#include <led_animations/msg/animation.hpp>
-#include <led_animations/msg/done.hpp>
-
-#include <talk/msg/text.hpp>
-#include <talk/msg/done.hpp>
-
-#include <gesture/msg/gesture_name.hpp>
-#include <gesture/msg/done.hpp>
-
-#include <sound_player/msg/sound_file.hpp>
-#include <sound_player/msg/done.hpp>
+#include <behavior_msgs/msg/led_animation.hpp>
+#include <behavior_msgs/msg/text.hpp>
+#include <behavior_msgs/msg/gesture_name.hpp>
+#include <behavior_msgs/msg/done.hpp>
+#include <behavior_msgs/msg/sound_file.hpp>
 
 #include <memory>
 
@@ -62,8 +56,8 @@ class LedAnimationStrategy : public Strategy<LedAnimationDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
     std::shared_ptr<rclcpp::Node> m_node;
-    rclcpp::Publisher<led_animations::msg::Animation>::SharedPtr m_animationPublisher;
-    rclcpp::Subscription<led_animations::msg::Done>::SharedPtr m_animationDoneSubscriber;
+    rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_animationPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_animationDoneSubscriber;
 
 public:
     LedAnimationStrategy(
@@ -81,7 +75,7 @@ protected:
     void onEnabling(const LedAnimationDesire& desire) override;
 
 private:
-    void animationDoneSubscriberCallback(const led_animations::msg::Done::SharedPtr msg);
+    void animationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
@@ -108,8 +102,8 @@ class TalkStrategy : public Strategy<TalkDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
     std::shared_ptr<rclcpp::Node> m_node;
-    rclcpp::Publisher<talk::msg::Text>::SharedPtr m_talkPublisher;
-    rclcpp::Subscription<talk::msg::Done>::SharedPtr m_talkDoneSubscriber;
+    rclcpp::Publisher<behavior_msgs::msg::Text>::SharedPtr m_talkPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
 
 public:
     TalkStrategy(
@@ -127,15 +121,15 @@ protected:
     void onEnabling(const TalkDesire& desire) override;
 
 private:
-    void talkDoneSubscriberCallback(const talk::msg::Done::SharedPtr msg);
+    void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 class GestureStrategy : public Strategy<GestureDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
     std::shared_ptr<rclcpp::Node> m_node;
-    rclcpp::Publisher<gesture::msg::GestureName>::SharedPtr m_gesturePublisher;
-    rclcpp::Subscription<gesture::msg::Done>::SharedPtr m_gestureDoneSubscriber;
+    rclcpp::Publisher<behavior_msgs::msg::GestureName>::SharedPtr m_gesturePublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_gestureDoneSubscriber;
 
 public:
     GestureStrategy(
@@ -153,15 +147,15 @@ protected:
     void onEnabling(const GestureDesire& desire) override;
 
 private:
-    void gestureDoneSubscriberCallback(const gesture::msg::Done::SharedPtr msg);
+    void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 class PlaySoundStrategy : public Strategy<PlaySoundDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
     std::shared_ptr<rclcpp::Node> m_node;
-    rclcpp::Publisher<sound_player::msg::SoundFile>::SharedPtr m_pathPublisher;
-    rclcpp::Subscription<sound_player::msg::Done>::SharedPtr m_soundDoneSubscriber;
+    rclcpp::Publisher<behavior_msgs::msg::SoundFile>::SharedPtr m_pathPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_soundDoneSubscriber;
 
 public:
     PlaySoundStrategy(
@@ -179,7 +173,7 @@ protected:
     void onEnabling(const PlaySoundDesire& desire) override;
 
 private:
-    void soundDoneSubscriberCallback(const sound_player::msg::Done::SharedPtr msg);
+    void soundDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 std::unique_ptr<BaseStrategy>

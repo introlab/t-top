@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-project(sound_player)
+project(behavior_msgs)
+
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -17,14 +18,19 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(audio_utils REQUIRED)
-find_package(hbba_lite REQUIRED)
-find_package(behavior_msgs REQUIRED)
+find_package(daemon_ros_client REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-# Python Nodes
-install(PROGRAMS
-  scripts/sound_player_node.py
-  DESTINATION lib/${PROJECT_NAME}
+# Generate messages
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Done.msg"
+  "msg/GestureName.msg"
+  "msg/LedAnimation.msg"
+  "msg/SoundFile.msg"
+  "msg/SoundStarted.msg"
+  "msg/Statistics.msg"
+  "msg/Text.msg"
+  DEPENDENCIES daemon_ros_client
 )
 
 ament_package()

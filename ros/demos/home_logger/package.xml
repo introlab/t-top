@@ -12,17 +12,14 @@
   <depend>rclcpp</depend>
   <depend>perception_msgs</depend>
   <depend>cloud_data</depend>
-  <depend>gesture</depend>
+  <depend>behavior_msgs</depend>
   <depend>hbba_lite</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
   <depend>t_top_hbba_lite</depend>
-  <depend>talk</depend>
   <depend>recorders</depend>
-  <depend>led_animations</depend>
   <depend>daemon_ros_client</depend>
-  <depend>sound_player</depend>
   <depend>tf2</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>

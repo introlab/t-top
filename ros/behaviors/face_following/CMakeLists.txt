@@ -26,7 +26,6 @@ find_package(t_top REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(perception_msgs REQUIRED)
-find_package(person_identification REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})

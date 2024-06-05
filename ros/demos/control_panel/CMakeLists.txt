@@ -20,15 +20,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(perception_msgs REQUIRED)
-find_package(gesture REQUIRED)
+find_package(behavior_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(talk REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
-find_package(led_animations REQUIRED)
 find_package(daemon_ros_client REQUIRED)
-find_package(sound_player REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 
 set(control_panel_components Core Widgets Gui OpenGL WebKitWidgets)
@@ -69,23 +66,17 @@ qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
   perception_msgs
-  gesture
+  behavior_msgs
   std_msgs
   sensor_msgs
-  talk
   hbba_lite
   t_top_hbba_lite
-  led_animations
   daemon_ros_client
-  sound_player
 )
 target_link_libraries(${PROJECT_NAME}_node
   ${control_panel_components_link}
   ${hbba_lite_LIBRARIES}
-  ${led_animations_LIBRARIES}
-  ${talk_LIBRARIES}
-  ${sound_player_LIBRARIES}
-  ${gesture_LIBRARIES}
+  ${behavior_msgs_LIBRARIES}
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 

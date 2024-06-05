@@ -3,13 +3,13 @@
 
 #include "../State.h"
 
-#include <sound_player/msg/started.hpp>
+#include <behavior_msgs/msg/sound_started.hpp>
 
 class DancePlayedSongState : public State, public DesireSetObserver
 {
     std::type_index m_nextStateType;
 
-    rclcpp::Subscription<sound_player::msg::Started>::SharedPtr m_songStartedSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::SoundStarted>::SharedPtr m_songStartedSubscriber;
 
     std::vector<std::string> m_songPaths;
     uint64_t m_songDesireId;
@@ -36,7 +36,7 @@ protected:
     void disable() override;
 
 private:
-    void songStartedSubscriberCallback(const sound_player::msg::Started::SharedPtr msg);
+    void songStartedSubscriberCallback(const behavior_msgs::msg::SoundStarted::SharedPtr msg);
 };
 
 inline std::type_index DancePlayedSongState::type() const
