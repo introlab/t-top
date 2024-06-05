@@ -1,4 +1,4 @@
-#include <piper_ros/srv/generate_speech_from_text.hpp>
+#include <behavior_srvs/srv/generate_speech_from_text.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -58,7 +58,7 @@ class PiperNode : public rclcpp::Node
 {
     bool m_useGpuIfAvailable;
 
-    rclcpp::Service<piper_ros::srv::GenerateSpeechFromText>::SharedPtr m_generateSpeechFromTextService;
+    rclcpp::Service<behavior_srvs::srv::GenerateSpeechFromText>::SharedPtr m_generateSpeechFromTextService;
 
     piper::PiperConfig m_piperConfig;
     piper::Voice m_englishFemaleVoice;
@@ -81,11 +81,11 @@ public:
 
         piper::initialize(m_piperConfig);
 
-        m_generateSpeechFromTextService = create_service<piper_ros::srv::GenerateSpeechFromText>(
+        m_generateSpeechFromTextService = create_service<behavior_srvs::srv::GenerateSpeechFromText>(
             "piper/generate_speech_from_text",
                 [this] (
-                const std::shared_ptr<piper_ros::srv::GenerateSpeechFromText::Request> request,
-                std::shared_ptr<piper_ros::srv::GenerateSpeechFromText::Response> response)
+                const std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Request> request,
+                std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Response> response)
                 {
                     generateSpeechFromTextServiceCallback(request, response);
                 });
@@ -130,8 +130,8 @@ private:
     }
 
     void generateSpeechFromTextServiceCallback(
-        const std::shared_ptr<piper_ros::srv::GenerateSpeechFromText::Request> request,
-        std::shared_ptr<piper_ros::srv::GenerateSpeechFromText::Response> response)
+        const std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Request> request,
+        std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Response> response)
     {
         std::optional<Language> language = languageFromString(request->language);
         if (language == std::nullopt)

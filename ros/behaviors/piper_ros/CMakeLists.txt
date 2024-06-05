@@ -133,22 +133,16 @@ include_directories(${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp)
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(behavior_srvs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-# Generate services
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/GenerateSpeechFromText.srv"
-)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # C++ Nodes
 add_executable(piper_node src/piper_node.cpp ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp/piper.cpp)
-ament_target_dependencies(piper_node rclcpp ament_index_cpp)
+ament_target_dependencies(piper_node rclcpp behavior_srvs ament_index_cpp)
 target_link_libraries(piper_node piper_phonemize fmt spdlog ${ONNXRUNTIME_LIBRARIES})
-rosidl_target_interfaces(piper_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
 install(TARGETS piper_node DESTINATION lib/${PROJECT_NAME})
 add_dependencies(piper_node fmt_external espeak_ng_external)
 

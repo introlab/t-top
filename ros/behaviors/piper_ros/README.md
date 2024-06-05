@@ -15,5 +15,5 @@ This node generates speech files with [Piper](https://github.com/rhasspy/piper).
 
 #### Services
 
-- `piper/generate_speech_from_text` ([piper_ros/GenerateSpeechFromText](srv/GenerateSpeechFromText.srv)):
+- `piper/generate_speech_from_text` ([behavior_srvs/GenerateSpeechFromText](../behavior_srvs/srv/GenerateSpeechFromText.srv)):
   The service to generate speech files.

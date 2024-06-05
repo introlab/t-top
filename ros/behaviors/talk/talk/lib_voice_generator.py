@@ -11,7 +11,7 @@ from google.cloud import texttospeech
 import rclpy
 import rclpy.node
 
-from piper_ros.srv import GenerateSpeechFromText
+from behavior_srvs.srv import GenerateSpeechFromText
 
 
 class Language(Enum):
