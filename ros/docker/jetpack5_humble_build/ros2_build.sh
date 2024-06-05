@@ -3,7 +3,6 @@
 # ROS_DISTRO, ROS_ROOT, ROS_PACKAGE environment variables should be set
 
 echo "ROS2 builder => ROS_DISTRO=$ROS_DISTRO ROS_PACKAGE=$ROS_PACKAGE ROS_ROOT=$ROS_ROOT"
-
 set -e
 #set -x
 
@@ -87,6 +86,7 @@ rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
 	camera_calibration_parsers \
 	camera_info_manager \
 	cv_bridge \
+	cv_camera \
 	v4l2_camera \
 	vision_opencv \
 	vision_msgs \
