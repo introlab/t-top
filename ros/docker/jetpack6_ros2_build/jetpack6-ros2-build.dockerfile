@@ -166,31 +166,100 @@ RUN source /ros2_humble/install/local_setup.bash && colcon build --cmake-args -D
 # RTABMAP
 #
 WORKDIR /root
-RUN git clone -b master https://github.com/introlab/rtabmap.git --depth 1 --recurse-submodules
+RUN git clone -b master https://github.com/introlab/rtabmap.git --recurse-submodules
 RUN mkdir -p /root/rtabmap/build
 WORKDIR /root/rtabmap/build
 RUN cmake ../
-RUN make -j12
-RUN make install
+RUN cmake --build . --parallel 12
+RUN cmake --install .
+
+#
+# BEHAVIOR TREE
+#
+WORKDIR /root
+# RUN git clone -b 4.6.1 https://github.com/BehaviorTree/BehaviorTree.CPP.git --depth 1 --recurse-submodules
+RUN git clone -b release/humble/behaviortree_cpp_v3 https://github.com/BehaviorTree/behaviortree_cpp_v3-release.git
+RUN mkdir -p /root/behaviortree_cpp_v3-release/build
+WORKDIR /root/behaviortree_cpp_v3-release/build
+RUN cmake ../
+RUN cmake --build . --parallel 12
+RUN cmake --install .
+
+#
+# XTENSOR
+#
+RUN apt-get install 'libgraphicsmagick*-dev' -y
+
+WORKDIR /root
+RUN git clone -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
+RUN mkdir -p /root/xtl/build
+WORKDIR /root/xtl/build
+RUN cmake ../
+RUN cmake --build . --parallel 12
+RUN cmake --install .
+
+WORKDIR /root
+RUN git clone -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
+RUN mkdir -p /root/xsimd/build
+WORKDIR /root/xsimd/build
+RUN cmake ../
+RUN cmake --build . --parallel 12
+RUN cmake --install .
+
+WORKDIR /root
+RUN git clone -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
+RUN mkdir -p /root/xtensor/build
+WORKDIR /root/xtensor/build
+RUN cmake ../
+RUN cmake --build . --parallel 12
+RUN cmake --install .
+
+#
+# Octomap
+#
+WORKDIR /root
+RUN git clone -b v1.10.0 https://github.com/OctoMap/octomap.git --depth 1 --recurse-submodules
+RUN mkdir -p /root/octomap/build
+WORKDIR /root/octomap/build
+RUN cmake ../
+RUN cmake --build . --parallel 12
+RUN cmake --install .
+
+WORKDIR /root
+RUN git clone -b v3.11.3 https://github.com/nlohmann/json.git --depth 1 --recurse-submodules
+RUN mkdir -p /root/json/build
+WORKDIR /root/json/build
+RUN cmake ../
+RUN cmake --build . --parallel 12
+RUN cmake --install .
 
 #
 # RTABMAP ROS & DEPENDENCIES
 #
+
+
+RUN apt-get install libceres-dev libompl-dev -y
+
 WORKDIR /root/ros2/workspace/src
 # NAV2
-RUN git clone -b humble https://github.com/ros-navigation/navigation2 --depth 1 --recurse-submodules
-RUN git clone -b ros2 https://github.com/ros-geographic-info/geographic_info.git --depth 1 --recurse-submodules
-RUN git clone -b ros2 https://github.com/ros/bond_core.git --depth 1 --recurse-submodules
-RUN git clone -b master https://github.com/BehaviorTree/BehaviorTree.CPP.git --depth 1 --recurse-submodules
-RUN git clone -b humble https://github.com/BehaviorTree/BehaviorTree.ROS2.git --depth 1 --recurse-submodules
-RUN git clone -b 1.1.0 https://github.com/PickNikRobotics/RSL.git --depth 1 --recurse-submodules
-RUN git clone -b 1.0.2 https://github.com/PickNikRobotics/cpp_polyfills.git --depth 1 --recurse-submodules
-RUN git clone -b 0.3.8 https://github.com/PickNikRobotics/generate_parameter_library.git
-# PCL - ROS
-RUN git clone -b ros2 https://github.com/ros-perception/pcl_msgs.git --depth 1 --recurse-submodules
-RUN git clone -b ros2 https://github.com/ros-perception/perception_pcl.git --depth 1 --recurse-submodules
-#RTABMAP-ROS
-RUN git clone -b ros2 https://github.com/introlab/rtabmap_ros.git --depth 1 --recurse-submodules
+RUN git clone -b humble https://github.com/ros-navigation/navigation2 --depth 1 --recurse-submodules && \
+  git clone -b ros2 https://github.com/ros-geographic-info/geographic_info.git --depth 1 --recurse-submodules && \
+  git clone -b ros2 https://github.com/ros/bond_core.git --depth 1 --recurse-submodules && \
+  git clone -b 1.1.0 https://github.com/PickNikRobotics/RSL.git --depth 1 --recurse-submodules && \
+  git clone -b 1.0.2 https://github.com/PickNikRobotics/cpp_polyfills.git --depth 1 --recurse-submodules && \
+  git clone -b 0.3.8 https://github.com/PickNikRobotics/generate_parameter_library.git && \
+  # PCL - ROS
+  git clone -b ros2 https://github.com/ros-perception/pcl_msgs.git --depth 1 --recurse-submodules && \
+  git clone -b ros2 https://github.com/ros-perception/perception_pcl.git --depth 1 --recurse-submodules && \
+  git clone -b humble https://github.com/ros-perception/image_pipeline.git --depth 1 --recurse-submodules && \
+  # OCTOMAP
+  git clone -b ros2 https://github.com/OctoMap/octomap_msgs.git --depth 1 --recurse-submodules && \
+  git clone -b humble https://github.com/ANYbotics/grid_map.git --depth 1 --recurse-submodules && \
+  git clone -b ros2 https://github.com/ros/filters.git --depth 1 --recurse-submodules && \
+  # RUN git clone -b humble https://github.com/BehaviorTree/BehaviorTree.ROS2.git --depth 1 --recurse-submodules
+  # RUN git clone -b ros2 https://github.com/OctoMap/octomap_ros.git --depth 1 --recurse-submodules
+  # RTABMAP-ROS
+  git clone -b ros2 https://github.com/introlab/rtabmap_ros.git --depth 1 --recurse-submodules
 
 WORKDIR /root/ros2/workspace
 RUN source /ros2_humble/install/local_setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
@@ -200,7 +269,7 @@ RUN source /ros2_humble/install/local_setup.bash && colcon build --cmake-args -D
 # T-TOP ROS2
 #
 
-RUN touch "LATEST_BUILD_JUNE_3_2024_15_45"
+RUN touch "LATEST_BUILD_JUNE_4_2024_9_00AM"
 WORKDIR /root/ros2/workspace/src
 RUN git clone -b ros2-migration https://github.com/introlab/t-top.git --depth 1 --recurse-submodules
 

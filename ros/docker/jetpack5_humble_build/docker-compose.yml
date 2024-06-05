@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  build-only:
+    privileged: true
+    build:
+      dockerfile: jetpack5-humble-build.dockerfile
+    network_mode: host
+    restart: always
+    environment:
+      - DISPLAY=$DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    runtime: nvidia
