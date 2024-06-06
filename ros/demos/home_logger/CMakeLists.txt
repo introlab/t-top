@@ -19,16 +19,9 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(perception_msgs REQUIRED)
 find_package(cloud_data REQUIRED)
-find_package(behavior_msgs REQUIRED)
-find_package(hbba_lite REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(recorders REQUIRED)
-find_package(daemon_ros_client REQUIRED)
 find_package(tf2 REQUIRED)
 
 # C++ Library
@@ -59,10 +52,7 @@ add_library(home_logger_common
 )
 ament_target_dependencies(home_logger_common
   rclcpp
-  std_msgs
-  hbba_lite
-  hbba_lite_msgs
-  hbba_lite_srvs
+  t_top_hbba_lite
   recorders
 )
 target_link_libraries(home_logger_common ${recorders_LIBRARIES})
@@ -100,17 +90,8 @@ add_executable(${PROJECT_NAME}_node
 )
 ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
-  perception_msgs
   cloud_data
-  behavior_msgs
-  hbba_lite
-  hbba_lite_msgs
-  hbba_lite_srvs
-  sensor_msgs
-  geometry_msgs
-  std_msgs
   t_top_hbba_lite
-  daemon_ros_client
   tf2
 )
 target_link_libraries(${PROJECT_NAME}_node
@@ -163,10 +144,7 @@ if(BUILD_TESTING)
   )
   ament_target_dependencies(${PROJECT_NAME}_test
     rclcpp
-    std_msgs
-    hbba_lite
-    hbba_lite_srvs
-    hbba_lite_msgs
+    t_top_hbba_lite
   )
   target_link_libraries(${PROJECT_NAME}_test ${recorders_LIBRARIES} home_logger_common fmt)
 endif()

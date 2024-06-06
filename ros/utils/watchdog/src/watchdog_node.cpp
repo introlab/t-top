@@ -1,5 +1,4 @@
 #include <rclcpp/rclcpp.hpp>
-#include <rosbag2_generic_topic/rosbag2_node.hpp>
 
 #include <sys/types.h>
 #include <signal.h>
@@ -35,7 +34,7 @@ bool getNodePid(const string& nodeName, int& pid)
     return false;
 }
 
-class WatchdogNode : public rosbag2_generic_topic::Rosbag2Node
+class WatchdogNode : public rclcpp::Node
 {
     string m_nodeName;
     string m_topic;
@@ -43,11 +42,11 @@ class WatchdogNode : public rosbag2_generic_topic::Rosbag2Node
 
     rclcpp::TimerBase::SharedPtr m_initTimer;
 
-    std::shared_ptr<rosbag2_generic_topic::GenericSubscription> m_subscriber;
+    rclcpp::GenericSubscription::SharedPtr m_subscriber;
     rclcpp::TimerBase::SharedPtr m_messageTimer;
 
 public:
-    WatchdogNode() : rosbag2_generic_topic::Rosbag2Node("watchdog_node")
+    WatchdogNode() : rclcpp::Node("watchdog_node")
     {
         m_nodeName = declare_parameter("node_name", "");
         m_topic = rclcpp::expand_topic_or_service_name(declare_parameter("topic", ""), get_name(), get_namespace(), false);

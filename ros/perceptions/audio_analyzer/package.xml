@@ -14,7 +14,7 @@
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>odas_ros_msgs</depend>
-  <depend>audio_utils</depend>
+  <depend>audio_utils_msgs</depend>
   <depend>hbba_lite</depend>
   <depend>perception_msgs</depend>
 

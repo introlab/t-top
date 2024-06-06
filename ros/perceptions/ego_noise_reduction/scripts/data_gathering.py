@@ -13,7 +13,7 @@ import rclpy
 import rclpy.node
 
 from std_msgs.msg import Float32, Int32, Empty
-from audio_utils.msg import AudioFrame
+from audio_utils_msgs.msg import AudioFrame
 
 
 STARTUP_DELAY_S = 10.

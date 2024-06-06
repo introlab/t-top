@@ -1,7 +1,7 @@
 std_msgs/Header header
 
 int64 tracking_id
-audio_utils/AudioFrame audio_frame
+audio_utils_msgs/AudioFrame audio_frame
 
 string[] audio_classes
 float32[] audio_descriptor

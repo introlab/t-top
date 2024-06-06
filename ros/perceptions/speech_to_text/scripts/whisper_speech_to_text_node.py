@@ -14,7 +14,7 @@ import rclpy.node
 from perception_msgs.msg import Transcript
 
 from audio_utils import get_format_information, convert_audio_data_to_numpy_frames
-from audio_utils.msg import AudioFrame, VoiceActivity
+from audio_utils_msgs.msg import AudioFrame, VoiceActivity
 
 import hbba_lite
 

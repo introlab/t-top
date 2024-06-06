@@ -19,13 +19,8 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(perception_msgs REQUIRED)
-find_package(behavior_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
-find_package(daemon_ros_client REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 
 set(control_panel_components Core Widgets Gui OpenGL WebKitWidgets)
@@ -65,15 +60,8 @@ add_executable(${PROJECT_NAME}_node ${srcs} ${uis} ${moc_headers} ${other_header
 qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
-  perception_msgs
-  behavior_msgs
-  std_msgs
-  sensor_msgs
   hbba_lite
-  hbba_lite_msgs
-  hbba_lite_srvs
   t_top_hbba_lite
-  daemon_ros_client
 )
 target_link_libraries(${PROJECT_NAME}_node
   ${control_panel_components_link}

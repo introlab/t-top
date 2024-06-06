@@ -32,7 +32,7 @@ import rclpy.node
 import rclpy.logging
 import rclpy.subscription
 
-from audio_utils.msg import AudioFrame
+from audio_utils_msgs.msg import AudioFrame
 from sensor_msgs.msg import Image
 
 import hbba_lite

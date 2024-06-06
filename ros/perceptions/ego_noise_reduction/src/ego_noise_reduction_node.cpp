@@ -16,7 +16,7 @@
 
 #include <hbba_lite/filters/FilterState.h>
 
-#include <audio_utils/msg/audio_frame.hpp>
+#include <audio_utils_msgs/msg/audio_frame.hpp>
 
 #include <armadillo>
 
@@ -106,8 +106,8 @@ class EgoNoiseReductionNode : public rclcpp::Node
     EgoNoiseReductionNodeConfiguration m_configuration;
 
     OnOffHbbaFilterState m_filterState;
-    rclcpp::Publisher<audio_utils::msg::AudioFrame>::SharedPtr m_audioPub;
-    rclcpp::Subscription<audio_utils::msg::AudioFrame>::SharedPtr m_audioSub;
+    rclcpp::Publisher<audio_utils_msgs::msg::AudioFrame>::SharedPtr m_audioPub;
+    rclcpp::Subscription<audio_utils_msgs::msg::AudioFrame>::SharedPtr m_audioSub;
 
     rclcpp::Subscription<daemon_ros_client::msg::MotorStatus>::SharedPtr m_motorStatusSub;
 
@@ -117,7 +117,7 @@ class EgoNoiseReductionNode : public rclcpp::Node
     PcmAudioFrame m_outputPcmAudioFrame;
 
     std::queue<rclcpp::Time> m_timestampQueue;
-    audio_utils::msg::AudioFrame m_audioFrameMsg;
+    audio_utils_msgs::msg::AudioFrame m_audioFrameMsg;
 
     shared_ptr<WeightedAverageWithAPrioriNoiseEstimator> m_noiseEstimator;
     unique_ptr<StftNoiseRemover> m_noiseRemover;
@@ -132,11 +132,11 @@ public:
           m_inputAudioFrame(m_configuration.channelCount, m_configuration.nFft),
           m_outputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft)
     {
-        m_audioPub = create_publisher<audio_utils::msg::AudioFrame>("audio_out", AudioQueueSize);
-        m_audioSub = create_subscription<audio_utils::msg::AudioFrame>(
+        m_audioPub = create_publisher<audio_utils_msgs::msg::AudioFrame>("audio_out", AudioQueueSize);
+        m_audioSub = create_subscription<audio_utils_msgs::msg::AudioFrame>(
             "audio_in",
             AudioQueueSize,
-            [this](const audio_utils::msg::AudioFrame::SharedPtr msg) { audioCallback(msg); });
+            [this](const audio_utils_msgs::msg::AudioFrame::SharedPtr msg) { audioCallback(msg); });
 
         m_motorStatusSub = create_subscription<daemon_ros_client::msg::MotorStatus>(
             "daemon/motor_status",
@@ -164,7 +164,7 @@ public:
     void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    void audioCallback(const audio_utils::msg::AudioFrame::SharedPtr msg)
+    void audioCallback(const audio_utils_msgs::msg::AudioFrame::SharedPtr msg)
     {
         if (msg->format != m_configuration.formatString || msg->channel_count != m_configuration.channelCount ||
             msg->sampling_frequency != m_configuration.samplingFrequency ||

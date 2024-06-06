@@ -28,7 +28,7 @@ This node performs ego noise reduction.
 
 #### Parameters
  - `type` (string): The noise reduction algorithm to use (`spectral_subtraction` or `log_mmse`). The default value is `log_mmse`.
- - `format` (string): The audio format (see [audio_utils/AudioFrame](../../audio_utils/msg/AudioFrame.msg)). The default value is `signed_32`.
+ - `format` (string): The audio format (see [audio_utils_msgs/AudioFrame](../../utils/audio_utils/audio_utils_msgs/msg/AudioFrame.msg)). The default value is `signed_32`.
  - `channel_count` (int): The channel count of the audio. The default value is `16`.
  - `sampling_frequency` (int): The sampling frequency of the audio. The default value is `16000`.
  - `frame_sample_count` (int): The number of samples in each frame. The default value is `1024`.
@@ -48,10 +48,10 @@ This node performs ego noise reduction.
 
 #### Subscribed Topics
  - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The current motor status.
- - `audio_in` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The sound topic to process.
+ - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic to process.
 
 #### Published Topics
-- `audio_out` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The processed sound topic.
+- `audio_out` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The processed sound topic.
 
 ## Acknowledgments
 

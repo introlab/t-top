@@ -20,7 +20,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(audio_utils REQUIRED)
+find_package(audio_utils_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
@@ -28,6 +28,7 @@ find_package(perception_msgs REQUIRED)
 find_package(behavior_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 # C++ Library
 add_subdirectory(3rd_party/SQLiteCpp)
@@ -72,7 +73,7 @@ install(
 add_executable(perception_logger_node src/perception_logger_node.cpp)
 ament_target_dependencies(perception_logger_node
   rclcpp
-  audio_utils
+  audio_utils_msgs
   sensor_msgs
   geometry_msgs
   hbba_lite
@@ -81,6 +82,7 @@ ament_target_dependencies(perception_logger_node
   behavior_msgs
   tf2
   tf2_ros
+  tf2_geometry_msgs
 )
 target_link_libraries(perception_logger_node perception_logger SQLiteCpp sqlite3 dl)
 install(TARGETS perception_logger_node DESTINATION lib/${PROJECT_NAME})

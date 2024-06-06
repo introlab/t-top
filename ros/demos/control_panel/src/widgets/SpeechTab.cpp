@@ -21,10 +21,10 @@ SpeechTab::SpeechTab(rclcpp::Node::SharedPtr node, shared_ptr<DesireSet> desireS
         "speech_to_text/transcript",
         1,
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { speechToTextSubscriberCallback(msg); });
-    m_vadSubscriber = m_node->create_subscription<audio_utils::msg::VoiceActivity>(
+    m_vadSubscriber = m_node->create_subscription<audio_utils_msgs::msg::VoiceActivity>(
         "voice_activity",
         1,
-        [this](const audio_utils::msg::VoiceActivity::SharedPtr msg) { vadSubscriberCallback(msg); });
+        [this](const audio_utils_msgs::msg::VoiceActivity::SharedPtr msg) { vadSubscriberCallback(msg); });
 }
 
 SpeechTab::~SpeechTab()
@@ -90,7 +90,7 @@ void SpeechTab::speechToTextSubscriberCallback(const perception_msgs::msg::Trans
     invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->text)); });
 }
 
-void SpeechTab::vadSubscriberCallback(const audio_utils::msg::VoiceActivity::SharedPtr msg)
+void SpeechTab::vadSubscriberCallback(const audio_utils_msgs::msg::VoiceActivity::SharedPtr msg)
 {
     invokeLater(
         [=]()

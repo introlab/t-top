@@ -11,7 +11,7 @@
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
-  <depend>audio_utils</depend>
+  <depend>audio_utils_msgs</depend>
   <depend>hbba_lite</depend>
   <depend>behavior_srvs</depend>
   <depend>behavior_msgs</depend>

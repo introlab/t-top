@@ -8,7 +8,7 @@ import rclpy
 import rclpy.node
 
 from std_msgs.msg import Float32, Bool, Empty
-from audio_utils.msg import AudioFrame
+from audio_utils_msgs.msg import AudioFrame
 from daemon_ros_client.msg import LedColors
 
 from dnn_utils import TTopKeywordSpotter

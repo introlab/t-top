@@ -9,7 +9,7 @@ import torch
 import rclpy
 import rclpy.node
 
-from audio_utils.msg import AudioFrame
+from audio_utils_msgs.msg import AudioFrame
 from perception_msgs.msg import AudioAnalysis
 from odas_ros_msgs.msg import OdasSstArrayStamped
 

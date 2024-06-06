@@ -11,7 +11,7 @@ import rclpy
 import rclpy.node
 
 from behavior_msgs.msg import SoundFile, SoundStarted, Done
-from audio_utils.msg import AudioFrame
+from audio_utils_msgs.msg import AudioFrame
 
 import hbba_lite
 

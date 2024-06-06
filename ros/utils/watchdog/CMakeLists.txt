@@ -20,13 +20,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(hbba_lite REQUIRED)
-find_package(std_msgs REQUIRED)
 
 # C++ Nodes
 add_executable(watchdog_node src/watchdog_node.cpp)
-ament_target_dependencies(watchdog_node rclcpp hbba_lite)
-target_link_libraries(watchdog_node ${hbba_lite_LIBRARIES})
+ament_target_dependencies(watchdog_node rclcpp)
 install(TARGETS watchdog_node DESTINATION lib/${PROJECT_NAME})
 
 # Python Nodes

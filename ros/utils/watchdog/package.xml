@@ -11,8 +11,6 @@
 
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
-  <depend>hbba_lite</depend>
-  <depend>std_msgs</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>ros2launch</exec_depend>

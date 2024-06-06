@@ -18,7 +18,7 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(audio_utils REQUIRED)
+find_package(audio_utils_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(perception_msgs REQUIRED)
 

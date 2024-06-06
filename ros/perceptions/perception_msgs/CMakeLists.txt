@@ -22,7 +22,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
-find_package(audio_utils REQUIRED)
+find_package(audio_utils_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 # Generate messages
@@ -36,7 +36,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Transcript.msg"
   "msg/VideoAnalysis.msg"
   "msg/VideoAnalysisObject.msg"
-  DEPENDENCIES std_msgs sensor_msgs geometry_msgs visualization_msgs audio_utils
+  DEPENDENCIES std_msgs sensor_msgs geometry_msgs visualization_msgs audio_utils_msgs
 )
 
 ament_package()

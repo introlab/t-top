@@ -26,6 +26,7 @@ find_package(hbba_lite REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(behavior_msgs REQUIRED)
+find_package(perception_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(daemon_ros_client REQUIRED)
@@ -60,5 +61,7 @@ install(
 add_executable(set_head_pose_arbitration_node src/set_head_pose_arbitration_node.cpp)
 ament_target_dependencies(set_head_pose_arbitration_node rclcpp geometry_msgs daemon_ros_client tf2)
 install(TARGETS set_head_pose_arbitration_node DESTINATION lib/${PROJECT_NAME})
+
+ament_export_dependencies(geometry_msgs hbba_lite nav_msgs perception_msgs sensor_msgs behavior_msgs std_msgs daemon_ros_client)
 
 ament_package()
