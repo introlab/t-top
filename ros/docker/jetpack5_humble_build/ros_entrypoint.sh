@@ -15,6 +15,7 @@ if [[ "$ROS_DISTRO" == "melodic" || "$ROS_DISTRO" == "noetic" ]]; then
 	ros_source_env "/opt/ros/$ROS_DISTRO/setup.bash"
 else
 	ros_source_env "$ROS_ROOT/install/setup.bash"
+    ros_source_env "/root/ros2/workspace/install/setup.bash"
 
 	#echo "ROS_PACKAGE_PATH   $ROS_PACKAGE_PATH"
 	#echo "COLCON_PREFIX_PATH $COLCON_PREFIX_PATH"

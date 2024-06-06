@@ -125,6 +125,15 @@ RUN git clone https://github.com/IntelRealSense/realsense-ros.git -b 4.55.1 --de
 WORKDIR /root/ros2/workspace
 RUN source ${ROS_ROOT}/install/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
+
+# Add T-TOP to the container
+RUN touch "LATEST_BUILD_JUNE_5_2024_12_00AM"
+WORKDIR /root/ros2/workspace/src
+RUN git clone -b ros2-migration https://github.com/introlab/t-top.git --depth 1 --recurse-submodules
+WORKDIR /root/ros2/workspace
+RUN source ${ROS_ROOT}/install/setup.bash && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+
 # commands will be appended/run by the entrypoint which sources the ROS environment
 COPY ros_entrypoint.sh /ros_entrypoint.sh
 
