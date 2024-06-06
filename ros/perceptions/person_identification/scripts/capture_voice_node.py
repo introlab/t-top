@@ -5,7 +5,7 @@ import numpy as np
 import rclpy
 import rclpy.node
 
-from hbba_lite.srv import SetOnOffFilterState
+from hbba_lite_srvs.srv import SetOnOffFilterState
 from perception_msgs.msg import AudioAnalysis
 
 import person_identification

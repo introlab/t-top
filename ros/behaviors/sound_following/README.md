@@ -25,7 +25,7 @@ This node makes T-Top follow the loudest sound.
 #### Subscribed Topics
 
 - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status.
-- `sst` ([odas_ros/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/msg/OdasSstArrayStamped.msg)):
+- `sst` ([odas_ros_msgs/OdasSstArrayStamped](https://github.com/introlab/odas_ros/blob/main/odas_ros_msgs/msg/OdasSstArrayStamped.msg)):
   The sound source tracking information.
 
 #### Published Topics
@@ -37,5 +37,5 @@ This node makes T-Top follow the loudest sound.
 
 #### Services
 
-- `pose/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `pose/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.

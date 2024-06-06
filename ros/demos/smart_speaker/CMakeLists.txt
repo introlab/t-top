@@ -58,6 +58,8 @@ ament_target_dependencies(${PROJECT_NAME}_rss_node
   cloud_data
   behavior_msgs
   hbba_lite
+  hbba_lite_msgs
+  hbba_lite_srvs
   sensor_msgs
   geometry_msgs
   std_msgs
@@ -69,6 +71,16 @@ ament_target_dependencies(${PROJECT_NAME}_rss_node
 target_link_libraries(${PROJECT_NAME}_rss_node
   ${hbba_lite_LIBRARIES}
   ${behavior_msgs_LIBRARIES}
+  gecodeflatzinc
+  gecodedriver
+  gecodegist
+  gecodesearch
+  gecodeminimodel
+  gecodeset
+  gecodefloat
+  gecodeint
+  gecodekernel
+  gecodesupport
 )
 install(TARGETS ${PROJECT_NAME}_rss_node DESTINATION lib/${PROJECT_NAME})
 
@@ -97,6 +109,8 @@ ament_target_dependencies(${PROJECT_NAME}_smart_node
   cloud_data
   behavior_msgs
   hbba_lite
+  hbba_lite_msgs
+  hbba_lite_srvs
   sensor_msgs
   geometry_msgs
   std_msgs
@@ -107,7 +121,19 @@ ament_target_dependencies(${PROJECT_NAME}_smart_node
 )
 target_link_libraries(${PROJECT_NAME}_smart_node
   ${hbba_lite_LIBRARIES}
+  ${hbba_lite_msgs_LIBRARIES}
+  ${hbba_lite_srvs_LIBRARIES}
   ${behavior_msgs_LIBRARIES}
+  gecodeflatzinc
+  gecodedriver
+  gecodegist
+  gecodesearch
+  gecodeminimodel
+  gecodeset
+  gecodefloat
+  gecodeint
+  gecodekernel
+  gecodesupport
 )
 install(TARGETS ${PROJECT_NAME}_smart_node DESTINATION lib/${PROJECT_NAME})
 

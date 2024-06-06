@@ -70,6 +70,8 @@ ament_target_dependencies(${PROJECT_NAME}_node
   std_msgs
   sensor_msgs
   hbba_lite
+  hbba_lite_msgs
+  hbba_lite_srvs
   t_top_hbba_lite
   daemon_ros_client
 )
@@ -77,6 +79,16 @@ target_link_libraries(${PROJECT_NAME}_node
   ${control_panel_components_link}
   ${hbba_lite_LIBRARIES}
   ${behavior_msgs_LIBRARIES}
+  gecodeflatzinc
+  gecodedriver
+  gecodegist
+  gecodesearch
+  gecodeminimodel
+  gecodeset
+  gecodefloat
+  gecodeint
+  gecodekernel
+  gecodesupport
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 

@@ -6,7 +6,7 @@ import time
 import rclpy
 import rclpy.node
 
-from hbba_lite.srv import SetOnOffFilterState
+from hbba_lite_srvs.srv import SetOnOffFilterState
 
 from t_top import MovementCommands
 

@@ -13,7 +13,7 @@
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>hbba_lite</depend>
-  <depend>odas_ros</depend>
+  <depend>odas_ros_msgs</depend>
   <depend>t_top</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>

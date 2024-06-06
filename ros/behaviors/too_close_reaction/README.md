@@ -26,5 +26,5 @@ This node makes T-Top move back its head when someone is too close to T-Top.
 
 #### Services
 
-- `depth_image_raw/filter_state` ([hbba_lite/SetOnOffFilterState](../../utils/hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `depth_image_raw/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.

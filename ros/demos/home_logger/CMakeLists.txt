@@ -61,6 +61,8 @@ ament_target_dependencies(home_logger_common
   rclcpp
   std_msgs
   hbba_lite
+  hbba_lite_msgs
+  hbba_lite_srvs
   recorders
 )
 target_link_libraries(home_logger_common ${recorders_LIBRARIES})
@@ -102,6 +104,8 @@ ament_target_dependencies(${PROJECT_NAME}_node
   cloud_data
   behavior_msgs
   hbba_lite
+  hbba_lite_msgs
+  hbba_lite_srvs
   sensor_msgs
   geometry_msgs
   std_msgs
@@ -115,6 +119,16 @@ target_link_libraries(${PROJECT_NAME}_node
   ${recorders_LIBRARIES}
   home_logger_common
   fmt
+  gecodeflatzinc
+  gecodedriver
+  gecodegist
+  gecodesearch
+  gecodeminimodel
+  gecodeset
+  gecodefloat
+  gecodeint
+  gecodekernel
+  gecodesupport
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
@@ -151,6 +165,8 @@ if(BUILD_TESTING)
     rclcpp
     std_msgs
     hbba_lite
+    hbba_lite_srvs
+    hbba_lite_msgs
   )
   target_link_libraries(${PROJECT_NAME}_test ${recorders_LIBRARIES} home_logger_common fmt)
 endif()

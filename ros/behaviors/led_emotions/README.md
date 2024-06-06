@@ -23,5 +23,5 @@ This node makes T-Top express emotions with it LED strip.
 
 #### Services
 
-- `set_led_colors/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `set_led_colors/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.

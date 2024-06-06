@@ -11,7 +11,7 @@ import rclpy.node
 
 from audio_utils.msg import AudioFrame
 from perception_msgs.msg import AudioAnalysis
-from odas_ros.msg import OdasSstArrayStamped
+from odas_ros_msgs.msg import OdasSstArrayStamped
 
 from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor
 import hbba_lite

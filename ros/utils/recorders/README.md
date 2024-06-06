@@ -30,7 +30,7 @@ This node records an image topic and an audio topic.
  - `audio_{audio_stream_name}` ([audio_utils/AudioFrame](https://github.com/introlab/audio_utils/blob/main/msg/AudioFrame.msg)): The audio topic to record.
 
 #### Services
- - `video_recorder/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the recording.
+ - `video_recorder/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the recording.
 
 ### `perception_logger_node`
 This node logs the video analysis messages and the audio analysis messages into a SQLite database.

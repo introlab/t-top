@@ -20,7 +20,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-# Generate messages
+# Generate services
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GenerateSpeechFromText.srv"
 )

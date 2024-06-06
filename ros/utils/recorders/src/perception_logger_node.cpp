@@ -13,7 +13,7 @@
 #include <perception_msgs/msg/audio_analysis.hpp>
 #include <behavior_msgs/msg/text.hpp>
 #include <perception_msgs/msg/transcript.hpp>
-#include <hbba_lite/msg/strategy_state.hpp>
+#include <hbba_lite_msgs/msg/strategy_state.hpp>
 
 #include <memory>
 #include <sstream>
@@ -62,7 +62,7 @@ class PerceptionLoggerNode : public rclcpp::Node
     rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Text>::SharedPtr m_talkTextSubscriber;
     rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextTranscriptSubscriber;
-    rclcpp::Subscription<hbba_lite::msg::StrategyState>::SharedPtr m_hbbaStrategyStateSubscriber;
+    rclcpp::Subscription<hbba_lite_msgs::msg::StrategyState>::SharedPtr m_hbbaStrategyStateSubscriber;
 
 public:
     PerceptionLoggerNode() : rclcpp::Node("perception_logger_node")
@@ -94,10 +94,10 @@ public:
             10,
             [this](const perception_msgs::msg::Transcript::SharedPtr msg)
             { speechToTextTranscriptSubscriberCallback(msg); });
-        m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite::msg::StrategyState>(
+        m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite_msgs::msg::StrategyState>(
             "hbba_strategy_state_log",
             10,
-            [this](const hbba_lite::msg::StrategyState::SharedPtr msg) { hbbaStrategyStateSubscriberCallback(msg); });
+            [this](const hbba_lite_msgs::msg::StrategyState::SharedPtr msg) { hbbaStrategyStateSubscriberCallback(msg); });
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(get_clock());
         m_tfListener = std::make_shared<tf2_ros::TransformListener>(*m_tfBuffer);
@@ -162,7 +162,7 @@ public:
         }
     }
 
-    void hbbaStrategyStateSubscriberCallback(const hbba_lite::msg::StrategyState::SharedPtr msg)
+    void hbbaStrategyStateSubscriberCallback(const hbba_lite_msgs::msg::StrategyState::SharedPtr msg)
     {
         m_hbbaStrategyStateLogger->log(
             HbbaStrategyState(get_clock()->now(), msg->desire_type_name, msg->strategy_type_name, msg->enabled));

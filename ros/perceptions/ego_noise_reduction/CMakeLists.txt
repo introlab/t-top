@@ -52,8 +52,13 @@ ament_export_libraries(${PROJECT_NAME})
 
 # C++ Nodes
 add_executable(ego_noise_reduction_node src/ego_noise_reduction_node.cpp)
-ament_target_dependencies(ego_noise_reduction_node rclcpp std_msgs daemon_ros_client hbba_lite audio_utils)
-target_link_libraries(ego_noise_reduction_node ${PROJECT_NAME} ${audio_utils_LIBRARIES} ${hbba_lite_LIBRARIES})
+ament_target_dependencies(ego_noise_reduction_node rclcpp std_msgs daemon_ros_client hbba_lite hbba_lite_srvs audio_utils)
+target_link_libraries(ego_noise_reduction_node
+  ${PROJECT_NAME}
+  ${audio_utils_LIBRARIES}
+  ${hbba_lite_LIBRARIES}
+  ${hbba_lite_srvs_LIBRARIES}
+)
 install(TARGETS ego_noise_reduction_node DESTINATION lib/${PROJECT_NAME})
 
 # Python Nodes

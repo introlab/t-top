@@ -18,7 +18,7 @@ The node performs speech to text. It uses Google Cloud Speech-to-Text.
  - `transcript` ([perception_msgs/Transcript](../perception_msgs/msg/Transcript.msg)): The text said.
 
 #### Services
- - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.
+ - `audio_in/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.
 
 ### `whisper_speech_to_text_node.py`
 The node performs speech to text. It uses [Faster Whisper](https://github.com/guillaumekln/faster-whisper).
@@ -41,4 +41,4 @@ The node performs speech to text. It uses [Faster Whisper](https://github.com/gu
  - `transcript` ([perception_msgs/Transcript](../perception_msgs/msg/Transcript.msg)): The text said.
 
 #### Services
- - `audio_in/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.
+ - `audio_in/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the processing.

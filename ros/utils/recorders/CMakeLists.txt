@@ -76,6 +76,7 @@ ament_target_dependencies(perception_logger_node
   sensor_msgs
   geometry_msgs
   hbba_lite
+  hbba_lite_msgs
   perception_msgs
   behavior_msgs
   tf2

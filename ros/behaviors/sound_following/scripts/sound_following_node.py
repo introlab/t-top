@@ -5,7 +5,7 @@ import math
 import rclpy
 import rclpy.node
 
-from odas_ros.msg import OdasSstArrayStamped
+from odas_ros_msgs.msg import OdasSstArrayStamped
 
 from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_PITCH_INDEX
 

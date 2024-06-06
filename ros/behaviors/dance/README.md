@@ -26,7 +26,7 @@ This node makes T-Top head dance on the beat. The moves are randomly chosen.
 
 #### Services
 
-- `pose/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `pose/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.
 
 
@@ -53,7 +53,7 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Services
 
-- `pose/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `pose/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.
 
 
@@ -77,5 +77,5 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Services
 
-- `set_led_colors/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `set_led_colors/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.

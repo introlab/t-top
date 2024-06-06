@@ -29,8 +29,8 @@ This node uses RGB images, so the 3D positions are not set.
  - `analysed_image` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/msg/Image.html)): A rendering of the video analysis.
 
 #### Services
- - `image_raw/filter_state` ([hbba_lite/SetThrottlingFilterState](../../hbba_lite/srv/SetThrottlingFilterState.srv)) The HBBA filter state service to enable, disable or throttle the processing.
- - `analysed_image/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)) The HBBA filter state service to enable or disable the topic `analysed_image`.
+ - `image_raw/filter_state` ([hbba_lite_srvs/SetThrottlingFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetThrottlingFilterState.srv)) The HBBA filter state service to enable, disable or throttle the processing.
+ - `analysed_image/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)) The HBBA filter state service to enable or disable the topic `analysed_image`.
 
 
 ### `video_analyzer_3d_node.py`
@@ -63,8 +63,8 @@ This node uses RGB-D images, so the 3D positions are set.
  - `analysed_image` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): A rendering of the video analysis.
 
 #### Services
- - `image_raw/filter_state` ([hbba_lite/SetThrottlingFilterState](../../hbba_lite/srv/SetThrottlingFilterState.srv)) The HBBA filter state service to enable, disable or throttle the processing.
- - `analysed_image/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)) The HBBA filter state service to enable or disable the topic `analysed_image`.
+ - `image_raw/filter_state` ([hbba_lite_srvs/SetThrottlingFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetThrottlingFilterState.srv)) The HBBA filter state service to enable, disable or throttle the processing.
+ - `analysed_image/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)) The HBBA filter state service to enable or disable the topic `analysed_image`.
 
 ### `video_analysis_visualizer_node.py`
 This node create a mosaic containing the objects in the video analysis.

@@ -39,7 +39,7 @@ target_include_directories(t_top_hbba_lite_cpp PUBLIC include)
 ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
 install(TARGETS t_top_hbba_lite_cpp DESTINATION lib)
 
-ament_export_dependencies(rclcpp)
+ament_export_dependencies(rclcpp geometry_msgs hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs daemon_ros_client)
 ament_export_include_directories(include)
 ament_export_libraries(t_top_hbba_lite_cpp)
 
