@@ -2,7 +2,7 @@
 # this script builds a ROS2 distribution from source
 # ROS_DISTRO, ROS_ROOT, ROS_PACKAGE environment variables should be set
 export ROS_DISTRO=humble
-export ROS_PACKAGE=ros_base
+export ROS_PACKAGE=desktop_full
 export ROS_ROOT=/opt/ros/$ROS_DISTRO
 export ROS_PYTHON_VERSION=3
 export DEBIAN_FRONTEND=noninteractive
