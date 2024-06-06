@@ -36,4 +36,7 @@
         <remap from="image_raw/filter_state" to="video_analyzer/image_raw/filter_state"/>
     </node>
 
+    <node pkg="video_analyzer" exec="video_analysis_markers_node.py" name="video_analysis_markers_node"/>
+    <node pkg="video_analyzer" exec="video_analysis_visualizer_node.py" name="video_analysis_markers_node"/>
+
 </launch>
