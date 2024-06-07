@@ -37,8 +37,7 @@ This node makes T-Top follow the loudest sound, the biggest (nearest) person and
 - `max_valid_sst_pitch` (double): The maximum pitch angle in radian to consider the sound source valid.
 - `direction_frame_id` (string): The audio analysis frame id.
 
-- `object_classes` (list of strings): The followed object classes. In launch files, use this syntax :
-  `<rosparam param="object_classes">[]</rosparam>`.
+- `object_classes` (list of strings): The followed object classes.
 - `padding` (double): The padding of the person and the objects.
 - `target_lambda` (double): The loss scale factor centering the person.
 

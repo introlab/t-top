@@ -19,13 +19,23 @@
 
 
     <!-- IMU filter launch -->
-    <node pkg="imu_filter_madgwick" exec="imu_filter_node" name="imu_filter_node">
+    <node pkg="imu_filter_madgwick" exec="imu_filter_madgwick_node" name="imu_filter_madgwick_node">
+        <param name="stateless" value="false"/>
         <param name="use_mag" value="false"/>
+        <param name="publish_tf" value="true"/>
+        <param name="reverse_tf" value="false"/>
+        <param name="fixed_frame" value="odom"/>
+        <param name="constant_dt" value="0.0"/>
+        <param name="publish_debug_topics" value="false"/>
         <param name="world_frame" value="enu"/>
-        <param name="publish_tf" value="false"/>
+        <param name="gain" value="0.1"/>
+        <param name="zeta" value="0.0"/>
+        <param name="mag_bias_x" value="0.0"/>
+        <param name="mag_bias_y" value="0.0"/>
+        <param name="mag_bias_z" value="0.0"/>
+        <param name="orientation_stddev" value="0.0"/>
 
         <remap from="imu/data_raw" to="daemon/imu/data_raw"/>
-        <remap from="imu/data" to="imu/data"/>
     </node>
 
     <!-- Dynamic tf broadcast and odom launch -->

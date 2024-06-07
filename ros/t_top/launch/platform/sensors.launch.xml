@@ -1,10 +1,13 @@
 <launch>
+
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="pulse_audio_source"/>
     <arg name="pulse_audio_sink"/>
     <arg name="echo_cancellation_dest"/>
     <arg name="ec_volume_percent"/>
+    <let if="$(var use_echo_cancellation)" name="audio_capture_device" value="$(var echo_cancellation_dest)_ec"/>
+    <let unless="$(var use_echo_cancellation)" name="audio_capture_device" value="$(var pulse_audio_source)"/>
 
     <!-- Camera 3d -->
     <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
@@ -41,7 +44,7 @@
         <param name="timeout_duration_s" value="5.0"/>
     </node>
 
-    <node_container pkg="rclcpp_components" exec="component_container" name="camera_2d_image_proc_container">
+    <node_container if="$(var camera_2d_wide_enabled)" pkg="rclcpp_components" exec="component_container" name="camera_2d_image_proc_container">
         <composable_node pkg="image_proc" plugin="image_proc::ResizeNode" name="camera_2d_resize">
             <param name="interpolation" value="1"/> <!-- Linear -->
             <param name="use_scale" value="false"/>
@@ -68,8 +71,7 @@
 
     <node pkg="audio_utils" exec="capture_node" name="capture_node" output="screen" respawn="true">
         <param name="backend" value="pulse_audio"/>
-        <param unless="$(var use_echo_cancellation)" name="device" value="$(var pulse_audio_source)"/>
-        <param if="$(var use_echo_cancellation)" name="device" value="$(var echo_cancellation_dest)_ec"/>
+        <param name="device" value="$(var audio_capture_device)"/>
         <param name="format" value="signed_32"/>
         <param name="channel_count" value="16"/>
         <param name="sampling_frequency" value="16000"/>
@@ -80,8 +82,6 @@
 
         <remap from="audio_out" to="audio_input_before_ego_noise_signed_32_16000"/>
 
-        <rosparam param="channel_map">
-            [front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]
-        </rosparam>
+        <param name="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
     </node>
 </launch>

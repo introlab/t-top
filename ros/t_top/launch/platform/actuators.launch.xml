@@ -3,7 +3,7 @@
     <arg name="opentera_playback_node_enabled"/>
 
     <!-- Screen -->
-    <include file="$(find-pkg-share rosbridge_server)/launch/rosbridge_websocket.launch.xml">
+    <include file="$(find-pkg-share rosbridge_server)/launch/rosbridge_websocket_launch.xml">
         <arg name="port" value="9090"/>
     </include>
 

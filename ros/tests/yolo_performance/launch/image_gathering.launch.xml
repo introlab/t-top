@@ -4,6 +4,11 @@
     <arg name="image_count"/>
     <arg name="camera_type" default=""/> <!-- realsense, camera_2d_wide or "" -->
 
+    <let if="$(eval '\'$(var 'dataset')\' == \'coco\'')" name="classes" value="[person, bowl, bottle]"/>
+    <let if="$(eval '\'$(var 'dataset')\' == \'objects365\'')" name="classes" value="[person, bowl, bottle, tong]"/>
+    <let if="$(eval '\'$(var camera_type)\' == \'realsense\'')" name="image_raw_remap" value="camera_3d/color/image_raw"/>
+    <let if="$(eval '\'$(var camera_type)\' == \'camera_2d_wide\'')" name="image_raw_remap" value="camera_2d_wide/image_rect"/>
+
     <!-- Camera 3d -->
     <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
         <arg name="depth_module.profile" value="1280x720x15" />
@@ -72,10 +77,7 @@
         <param name="output_path" value="$(var output_path)"/>
         <param name="image_count" value="$(var image_count)"/>
         <param name="setups" value="[1m, 2m, 3m]"/>
-        <param if="$(eval '\'$(var 'dataset')\' == \'coco\'')" name="classes" value="[person, bowl, bottle]"/>
-        <param if="$(eval '\'$(var 'dataset')\' == \'objects365\'')" name="classes" value="[person, bowl, bottle, tong]"/>
-
-        <remap if="$(eval '\'$(var camera_type)\' == \'realsense\'')" from="image_raw" to="camera_3d/color/image_raw"/>
-        <remap if="$(eval '\'$(var camera_type)\' == \'camera_2d_wide\'')" from="image_raw" to="camera_2d_wide/image_rect"/>
+        <param name="classes" value="$(var classes)"/>
+        <remap from="image_raw" to="$(var image_raw_remap)"/>
     </node>
 </launch>
