@@ -85,7 +85,7 @@ pip3 install --upgrade --no-cache-dir \
 # https://github.com/dusty-nv/jetson-containers/issues/216
 python3 -m pip install --upgrade pip
 pip3 install --no-cache-dir scikit-build
-pip3 install --upgrade --no-cache-dir --verbose cmake
+pip3 install --upgrade --no-cache-dir --verbose cmake==3.22.1
 cmake --version
 which cmake
 
@@ -140,20 +140,20 @@ fi
 touch src/ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall.vcsupdate
 
 # https://github.com/dusty-nv/jetson-containers/issues/181
-rm -r ${ROS_ROOT}/src/ament_cmake
-git -C ${ROS_ROOT}/src/ clone https://github.com/ament/ament_cmake -b ${ROS_DISTRO}
+# rm -r ${ROS_ROOT}/src/ament_cmake
+# git -C ${ROS_ROOT}/src/ clone https://github.com/ament/ament_cmake -b ${ROS_DISTRO}
 
 # remove librealsense2 & realsense-ros
-if [ -d "${ROS_ROOT}/src/librealsense2" ]; then
-	rm -r ${ROS_ROOT}/src/librealsense2
-fi
+#if [ -d "${ROS_ROOT}/src/librealsense2" ]; then
+#	rm -r ${ROS_ROOT}/src/librealsense2
+#fi
 
-if [ -d "${ROS_ROOT}/src/realsense2_camera" ]; then
-	rm -r ${ROS_ROOT}/src/realsense2_camera
-fi
+#if [ -d "${ROS_ROOT}/src/realsense2_camera" ]; then
+#	rm -r ${ROS_ROOT}/src/realsense2_camera
+#fi
 
-# skip installation of some conflicting packages
-SKIP_KEYS="libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv xsimd xtensor xtl librealsense2"
+# skip installation of some conflicting packages # add librealsense2
+SKIP_KEYS="libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv xsimd xtensor xtl"
 
 # patches for building Humble on 18.04
 if [ "$ROS_DISTRO" = "humble" ] || [ "$ROS_DISTRO" = "iron" ] && [ $(lsb_release --codename --short) = "bionic" ]; then
@@ -223,20 +223,20 @@ if [ ! -d "/tmp/xtensor" ]; then
 fi
 
 # install librealsense with CUDA support
-if [ ! -d "/tmp/librealsense" ]; then
-	cd /tmp
-	git clone https://github.com/IntelRealSense/librealsense.git -b v2.55.1 --depth 1  --recurse-submodules
-	mkdir -p /tmp/librealsense/build
-	cd /tmp/librealsense/build
-	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	cmake --install .
-fi
+# if [ ! -d "/tmp/librealsense" ]; then
+#	cd /tmp
+#	git clone https://github.com/IntelRealSense/librealsense.git -b v2.55.1 --depth 1  --recurse-submodules
+#	mkdir -p /tmp/librealsense/build
+#	cd /tmp/librealsense/build
+#	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
+#	cmake --build . --parallel $(nproc --ignore=1)
+#	cmake --install .
+#fi
 
 # clone the realsense-ros package in the src
-if [ ! -d "${ROS_ROOT}/src/realsense-ros" ]; then
-	git -C ${ROS_ROOT}/src clone -b 4.55.1 https://github.com/IntelRealSense/realsense-ros.git --depth 1 --recurse-submodules
-fi
+#if [ ! -d "${ROS_ROOT}/src/realsense-ros" ]; then
+#	git -C ${ROS_ROOT}/src clone -b 4.55.1 https://github.com/IntelRealSense/realsense-ros.git --depth 1 --recurse-submodules
+#fi
 
 # clone cv_camera package in the src
 if [ ! -d "${ROS_ROOT}/src/cv_camera" ]; then
@@ -248,7 +248,7 @@ cd ${ROS_ROOT}
 # build it all - for verbose, see https://answers.ros.org/question/363112/how-to-see-compiler-invocation-in-colcon-build
 colcon build \
 	--merge-install \
-	--cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=/opt/ros/$ROS_DISTRO -DBUILD_WITH_CUDA=true
+	--cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true
 
 # remove build files
 # rm -rf ${ROS_ROOT}/src
