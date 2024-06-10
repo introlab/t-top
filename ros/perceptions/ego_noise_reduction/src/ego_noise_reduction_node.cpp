@@ -77,7 +77,7 @@ struct EgoNoiseReductionNodeConfiguration
         typeString = node->declare_parameter("type", "log_mmse");
         type = StftNoiseRemover::parseType(typeString);
 
-        formatString = node->declare_parameter("type", "signed_32");
+        formatString = node->declare_parameter("format", "signed_32");
         format = parseFormat(formatString);
 
         channelCount = node->declare_parameter("channel_count", 16);
