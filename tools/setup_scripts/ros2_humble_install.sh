@@ -6,9 +6,9 @@ export ROS_PACKAGE=desktop_full
 export ROS_ROOT=/opt/ros/$ROS_DISTRO
 export ROS_PYTHON_VERSION=3
 export DEBIAN_FRONTEND=noninteractive
-
 export PYTHONIOENCODING=utf-8
 
+# Required for jetpack to find cuda
 export PATH=/usr/local/cuda-11.4/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH
 
@@ -149,8 +149,8 @@ if [ -d "${ROS_ROOT}/src/librealsense2" ]; then
 	rm -r ${ROS_ROOT}/src/librealsense2
 fi
 
-if [ -d "${ROS_ROOT}/src/realsense-ros" ]; then
-	rm -r ${ROS_ROOT}/src/realsense-ros
+if [ -d "${ROS_ROOT}/src/realsense2_camera" ]; then
+	rm -r ${ROS_ROOT}/src/realsense2_camera
 fi
 
 # skip installation of some conflicting packages
@@ -196,7 +196,7 @@ if [ ! -d "/tmp/xtl" ]; then
 	git clone -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
 	mkdir -p /tmp/xtl/build
 	cd /tmp/xtl/build
-	cmake ../
+	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
 	cmake --build . --parallel 12
 	cmake --install .
 fi
@@ -207,7 +207,7 @@ if [ ! -d "/tmp/xsimd" ]; then
 	git clone -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
 	mkdir -p /tmp/xsimd/build
 	cd /tmp/xsimd/build
-	cmake ../
+	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
 	cmake --build . --parallel 12
 	cmake --install .
 fi
@@ -218,7 +218,7 @@ if [ ! -d "/tmp/xtensor" ]; then
 	git clone -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
 	mkdir -p /tmp/xtensor/build
 	cd /tmp/xtensor/build
-	cmake ../
+	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
 	cmake --build . --parallel 12
 	cmake --install .
 fi
@@ -229,7 +229,7 @@ if [ ! -d "/tmp/librealsense" ]; then
 	git clone https://github.com/IntelRealSense/librealsense.git -b v2.55.1 --depth 1  --recurse-submodules
 	mkdir -p /tmp/librealsense/build
 	cd /tmp/librealsense/build
-	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=/opt/librealsense
+	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
 	cmake --build . --parallel 12
 	cmake --install .
 fi
@@ -249,7 +249,7 @@ cd ${ROS_ROOT}
 # build it all - for verbose, see https://answers.ros.org/question/363112/how-to-see-compiler-invocation-in-colcon-build
 colcon build \
 	--merge-install \
-	--cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/librealsense
+	--cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=/opt/ros/$ROS_DISTRO -DBUILD_WITH_CUDA=true
 
 # remove build files
 # rm -rf ${ROS_ROOT}/src
