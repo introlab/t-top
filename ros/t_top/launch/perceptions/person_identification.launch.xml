@@ -11,7 +11,7 @@
         <param name="direction_frame_id" value="odas"/>
         <param name="direction_angle_threshold_rad" value="0.15"/>
         <param name="ignore_direction_z" value="true"/>
-        <param name="search_frequency" value="2"/>
+        <param name="search_frequency" value="2.0"/>
 
         <remap from="video_analysis" to="camera_3d/video_analysis"/>
     </node>

@@ -12,8 +12,8 @@
         <param name="oss_fft_window_size" value="1024"/>
         <param name="flux_hamming_size" value="15"/>
         <param name="oss_bpm_window_size" value="1024"/>
-        <param name="min_bpm" value="50"/>
-        <param name="max_bpm" value="180"/>
+        <param name="min_bpm" value="50.0"/>
+        <param name="max_bpm" value="180.0"/>
         <param name="bpm_candidate_count" value="4"/>
 
         <remap from="audio_in" to="beat_detector/audio_input_signed_16_16000_filtered"/>
