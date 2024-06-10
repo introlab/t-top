@@ -20,5 +20,4 @@
         <arg name="echo_cancellation_dest" value="odas_echo_cancelled" />
         <arg name="ec_volume_percent" value="90" />
     </include>
-
 </launch>

@@ -8,7 +8,7 @@
 
     <arg name="rtabmap_perception_delay"/>
 
-    <node pkg="rtabmap_sync" exec="rtabmap_rgbd_sync" name="rgbd_sync" launch-prefix="bash -c 'sleep $(var rtabmap_perception_delay); $0 $@' ">
+    <node pkg="rtabmap_sync" exec="rgbd_sync" name="rgbd_sync" launch-prefix="bash -c 'sleep $(var rtabmap_perception_delay); $0 $@' ">
         <remap from="rgb/image" to="/camera_3d/color/image_raw"/>
         <remap from="depth/image" to="/camera_3d/aligned_depth_to_color/image_raw"/>
         <remap from="rgb/camera_info" to="/camera_3d/aligned_depth_to_color/camera_info"/>

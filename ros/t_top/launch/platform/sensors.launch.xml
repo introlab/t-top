@@ -1,5 +1,4 @@
 <launch>
-
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="pulse_audio_source"/>

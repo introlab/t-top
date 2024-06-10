@@ -17,7 +17,7 @@
         <remap from="transcript" to="speech_to_text/transcript"/>
     </node>
 
-    <node if="$(eval '\'$(var type)\' == \'whisper\''))" pkg="speech_to_text" exec="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen" launch-prefix="bash -c 'sleep $(var speech_to_text_perception_delay); $0 $@' ">
+    <node if="$(eval '\'$(var type)\' == \'whisper\'')" pkg="speech_to_text" exec="whisper_speech_to_text_node.py" name="whisper_speech_to_text_node" output="screen" launch-prefix="bash -c 'sleep $(var speech_to_text_perception_delay); $0 $@' ">
         <param name="language" value="$(var language)"/>
         <param name="model_size" value="$(var whisper_model_size)"/>
         <param name="device" value="cuda"/>
