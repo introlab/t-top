@@ -196,7 +196,7 @@ if [ ! -d "/tmp/xtl" ]; then
 	mkdir -p /tmp/xtl/build
 	cd /tmp/xtl/build
 	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
-	cmake --build . --parallel 12
+	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
 
@@ -207,7 +207,7 @@ if [ ! -d "/tmp/xsimd" ]; then
 	mkdir -p /tmp/xsimd/build
 	cd /tmp/xsimd/build
 	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
-	cmake --build . --parallel 12
+	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
 
@@ -218,7 +218,7 @@ if [ ! -d "/tmp/xtensor" ]; then
 	mkdir -p /tmp/xtensor/build
 	cd /tmp/xtensor/build
 	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
-	cmake --build . --parallel 12
+	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
 
@@ -229,7 +229,7 @@ if [ ! -d "/tmp/librealsense" ]; then
 	mkdir -p /tmp/librealsense/build
 	cd /tmp/librealsense/build
 	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
-	cmake --build . --parallel 12
+	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
 
