@@ -111,7 +111,6 @@ rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
 	camera_calibration_parsers \
 	camera_info_manager \
 	cv_bridge \
-	cv_camera \
 	v4l2_camera \
 	vision_opencv \
 	vision_msgs \
