@@ -195,7 +195,7 @@ if [ ! -d "/tmp/xtl" ]; then
 	git clone -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
 	mkdir -p /tmp/xtl/build
 	cd /tmp/xtl/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
+	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
 	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
@@ -206,7 +206,7 @@ if [ ! -d "/tmp/xsimd" ]; then
 	git clone -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
 	mkdir -p /tmp/xsimd/build
 	cd /tmp/xsimd/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
+	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
 	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
@@ -217,7 +217,7 @@ if [ ! -d "/tmp/xtensor" ]; then
 	git clone -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
 	mkdir -p /tmp/xtensor/build
 	cd /tmp/xtensor/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
+	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
 	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
@@ -228,7 +228,7 @@ if [ ! -d "/tmp/librealsense" ]; then
 	git clone https://github.com/IntelRealSense/librealsense.git -b v2.55.1 --depth 1  --recurse-submodules
 	mkdir -p /tmp/librealsense/build
 	cd /tmp/librealsense/build
-	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=/opt/ros/$ROS_DISTRO
+	cmake ../ -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DBUILD_EXAMPLES=false -DBUILD_WITH_CUDA=true -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
 	cmake --build . --parallel $(nproc --ignore=1)
 	cmake --install .
 fi
