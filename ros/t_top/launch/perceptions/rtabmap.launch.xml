@@ -2,8 +2,10 @@
     <arg name="localization" default="false"/>
     <let if="$(var localization)" name="rtabmap_args" value=""/>
     <let unless="$(var localization)" name="rtabmap_args" value="-d"/>
-    <let if="$(var localization)" name="incremental_memory" value="false"/>
-    <let unless="$(var localization)" name="incremental_memory" value="true"/>
+    <let if="$(var localization)" name="incremental_memory" value="'false'"/>
+    <let unless="$(var localization)" name="incremental_memory" value="'true'"/>
+    <let if="$(var localization)" name="init_wm_with_all_nodes" value="'true'"/>
+    <let unless="$(var localization)" name="init_wm_with_all_nodes" value="'false'"/>
 
 
     <arg name="rtabmap_perception_delay"/>
@@ -29,24 +31,24 @@
 
         <param name="map_always_update" value="true"/>
         <param name="map_filter_radius" value="0.1"/>
-        <param name="map_filter_angle" value="10"/>
+        <param name="map_filter_angle" value="10.0"/>
         <param name="gen_depth" value="false"/>
 
-        <param name="RGBD/AngularUpdate" value="0"/>
-        <param name="RGBD/LinearUpdate" value="0"/>
-        <param name="RGBD/OptimizeFromGraphEnd" value="false"/>
+        <param name="RGBD/AngularUpdate" value="'0'"/>
+        <param name="RGBD/LinearUpdate" value="'0'"/>
+        <param name="RGBD/OptimizeFromGraphEnd" value="'false'"/>
 
         <!-- Occupancy Grid -->
-        <param name="Grid/NormalsSegmentation" value="false"/>
-        <param name="Grid/MaxObstacleHeight" value="0.1"/>
-        <param name="Grid/MinGroundHeight" value="-0.1"/>
-        <param name="Grid/MaxGroundHeight" value="0.01"/>
-        <param name="Grid/3D" value="true"/>
-        <param name="Grid/RayTracing" value="true"/>
+        <param name="Grid/NormalsSegmentation" value="'false'"/>
+        <param name="Grid/MaxObstacleHeight" value="'0.1'"/>
+        <param name="Grid/MinGroundHeight" value="'-0.1'"/>
+        <param name="Grid/MaxGroundHeight" value="'0.01'"/>
+        <param name="Grid/3D" value="'true'"/>
+        <param name="Grid/RayTracing" value="'true'"/>
 
         <!-- localization mode -->
-        <param  name="Mem/IncrementalMemory" value="$(var incremental_memory)"/>
-        <param name="Mem/InitWMWithAllNodes" value="$(var localization)"/>
+        <param name="Mem/IncrementalMemory" value="$(var incremental_memory)"/>
+        <param name="Mem/InitWMWithAllNodes" value="$(var init_wm_with_all_nodes)"/>
         <remap from="rgbd_image" to="rgbd_image_filtered"/>
     </node>
 

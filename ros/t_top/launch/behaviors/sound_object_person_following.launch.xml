@@ -6,7 +6,7 @@
 
     <node if="$(var camera_2d_wide_enabled)" pkg="sound_object_person_following" exec="sound_object_person_following_node.py" name="sound_object_person_following" launch-prefix="bash -c 'sleep $(var sound_object_person_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>
-        <param name="control_frequency" value="30"/>
+        <param name="control_frequency" value="30.0"/>
         <param name="torso_control_alpha" value="0.2"/>
         <param name="torso_control_p_gain" value="0.45"/>
         <param name="head_control_p_gain" value="0.45"/>

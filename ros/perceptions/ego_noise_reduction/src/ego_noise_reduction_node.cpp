@@ -126,7 +126,7 @@ public:
     EgoNoiseReductionNode()
         : rclcpp::Node(NODE_NAME),
           m_configuration(this),
-          m_filterState(shared_from_this(), "ego_noise_reduction/filter_state"),
+          m_filterState(*this, "ego_noise_reduction/filter_state"),
           m_inputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft),
           m_inputPcmAudioFrameIndex(0),
           m_inputAudioFrame(m_configuration.channelCount, m_configuration.nFft),

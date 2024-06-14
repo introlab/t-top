@@ -14,7 +14,7 @@ import rclpy
 import rclpy.node
 
 from std_msgs.msg import Float32
-from talk.msg import Text, Done, Statistics
+from behavior_msgs.msg import Text, Done, Statistics
 from audio_utils_msgs.msg import AudioFrame
 
 import hbba_lite

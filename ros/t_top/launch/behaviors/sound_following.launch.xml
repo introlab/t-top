@@ -5,7 +5,7 @@
 
     <node pkg="sound_following" exec="sound_following_node.py" name="sound_following_node" launch-prefix="bash -c 'sleep $(var sound_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>
-        <param name="control_frequency" value="30"/>
+        <param name="control_frequency" value="30.0"/>
         <param name="torso_control_alpha" value="0.2"/>
         <param name="head_control_alpha" value="0.2"/>
         <param name="head_enabled" value="false"/>

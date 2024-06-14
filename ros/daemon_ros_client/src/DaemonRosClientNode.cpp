@@ -4,7 +4,7 @@
 
 DaemonRosClientNode::DaemonRosClientNode() : rclcpp::Node("daemon_ros_client_node"), m_tfBroadcaster(*this)
 {
-    m_baseLinkTorsoBaseDeltaZ = declare_parameter("base_link_torso_base_delta_z", 0.0);
+    m_baseLinkTorsoBaseDeltaZ = declare_parameter<double>("base_link_torso_base_delta_z", 0.0);
 
     initROS();
     initWebSocketProtocolWrapper();

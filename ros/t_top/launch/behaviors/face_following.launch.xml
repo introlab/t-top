@@ -4,7 +4,7 @@
 
     <node pkg="face_following" exec="nearest_face_following_node.py" name="nearest_face_following_node" launch-prefix="bash -c 'sleep $(var face_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>
-        <param name="control_frequency" value="30"/>
+        <param name="control_frequency" value="30.0"/>
         <param name="torso_control_alpha" value="0.2"/>
         <param name="head_control_p_gain" value="0.175"/>
         <param name="head_enabled" value="true"/>
@@ -19,7 +19,7 @@
 
     <node pkg="face_following" exec="specific_face_following_node.py" name="specific_face_following_node" launch-prefix="bash -c 'sleep $(var face_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>
-        <param name="control_frequency" value="30"/>
+        <param name="control_frequency" value="30.0"/>
         <param name="torso_control_alpha" value="0.2"/>
         <param name="head_control_p_gain" value="0.175"/>
         <param name="head_enabled" value="true"/>

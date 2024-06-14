@@ -38,7 +38,7 @@
         <remap from="cv_camera_node/set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>
     </node>
 
-    <node_container pkg="rclcpp_components" exec="component_container" name="camera_2d_image_proc_container">
+    <node_container pkg="rclcpp_components" exec="component_container" name="camera_2d_image_proc_container" namespace="">
         <composable_node pkg="image_proc" plugin="image_proc::ResizeNode" name="camera_2d_resize">
             <param name="interpolation" value="1"/> <!-- Linear -->
             <param name="use_scale" value="false"/>
