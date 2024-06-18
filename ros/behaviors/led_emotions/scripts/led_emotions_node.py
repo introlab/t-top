@@ -128,7 +128,8 @@ def main():
         pass
     finally:
         led_emotions_node.destroy_node()
-        rclpy.shutdown()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

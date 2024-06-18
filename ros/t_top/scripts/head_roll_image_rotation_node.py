@@ -60,7 +60,8 @@ def main():
         pass
     finally:
         head_roll_image_rotation_node.destroy_node()
-        rclpy.shutdown()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

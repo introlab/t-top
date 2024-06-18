@@ -99,8 +99,9 @@ def main():
         pass
     finally:
         image_gathering_node.destroy_node()
-        rclpy.shutdown()
         cv2.destroyAllWindows()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

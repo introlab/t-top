@@ -87,7 +87,8 @@ def main():
         pass
     finally:
         video_analyzer_node.destroy_node()
-        rclpy.shutdown()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

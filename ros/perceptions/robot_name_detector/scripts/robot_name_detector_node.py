@@ -214,7 +214,8 @@ def main():
         pass
     finally:
         robot_name_detector_node.destroy_node()
-        rclpy.shutdown()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

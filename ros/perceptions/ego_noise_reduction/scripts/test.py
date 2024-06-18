@@ -53,7 +53,8 @@ def main():
         pass
     finally:
         ego_noise_reduction_test_node.destroy_node()
-        rclpy.shutdown()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

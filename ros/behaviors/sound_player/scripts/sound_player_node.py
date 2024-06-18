@@ -86,7 +86,8 @@ def main():
         pass
     finally:
         sound_player_node.destroy_node()
-        rclpy.shutdown()
+        
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':
