@@ -12,7 +12,10 @@ except ImportError:
 import ament_index_python.packages
 
 
-DNN_TRAINING_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'dnn_training')
+DNN_TRAINING_PATHS = [
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'dnn_training'),
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '..', '..', 'tools', 'dnn_training'),
+]
 PACKAGE_PATH = ament_index_python.packages.get_package_share_directory('dnn_utils')
 
 

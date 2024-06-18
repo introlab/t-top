@@ -880,10 +880,15 @@ def main():
     Gst.init(None)
 
     video_recorder_node = VideoRecorderNode()
-    video_recorder_node.run()
-
-    video_recorder_node.destroy_node()
-    rclpy.shutdown()
+    
+    try:
+        video_recorder_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_recorder_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

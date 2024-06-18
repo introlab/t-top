@@ -53,7 +53,6 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         image_height, image_width, _ = color_image.shape
 
         msg = VideoAnalysis()
-        msg.header.seq = header.seq
         msg.header.stamp = header.stamp
         msg.header.frame_id = depth_camera_info.header.frame_id
         msg.contains_3d_positions = True
@@ -114,7 +113,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         y1 = int(y + self._depth_mean_offset)
         depth_pixels = depth_image[y0:y1, x0:x1]
         depth = depth_pixels[depth_pixels != 0].mean()
-        K = depth_camera_info.K
+        K = depth_camera_info.k
 
         point = Point()
         point.x = (x - K[2]) * depth / K[0] * MM_TO_M
@@ -133,8 +132,8 @@ def main():
         pass
     finally:
         video_analyzer_node.destroy_node()
-        
-    rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

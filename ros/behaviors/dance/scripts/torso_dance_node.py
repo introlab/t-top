@@ -46,8 +46,8 @@ def main():
         pass
     finally:
         torso_dance_node.destroy_node()
-        
-    rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

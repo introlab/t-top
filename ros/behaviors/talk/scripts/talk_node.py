@@ -60,6 +60,7 @@ class TalkNode(rclpy.node.Node):
     def _on_text_received_cb(self, msg):
         if self._audio_pub.is_filtering_all_messages:
             return
+        self.get_logger().warn(f'_on_text_received_cb {msg.text}')
 
         try:
             if msg.text != '':
@@ -170,8 +171,8 @@ def main():
         pass
     finally:
         talk_node.destroy_node()
-        
-    rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

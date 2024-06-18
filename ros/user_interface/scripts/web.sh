@@ -1,12 +1,12 @@
 #!/bin/bash
 
-SCRIPT=`realpath $0`
+SCRIPT=`realpath --no-symlinks $0`
 SCRIPT_PATH=`dirname $SCRIPT`
 
 cd $SCRIPT_PATH/..
 
 chmod +x $SCRIPT_PATH/node_modules/serve/build/main.js
-$SCRIPT_PATH/node_modules/serve/build/main.js -s $SCRIPT_PATH/dist -l 8080 &
+$SCRIPT_PATH/node_modules/serve/build/main.js -S -s $SCRIPT_PATH/dist -l 8080 &
 SERVER_PID=$!
 trap "kill ${SERVER_PID}; exit 1" INT
 sleep 1

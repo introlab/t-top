@@ -5,9 +5,9 @@ import torch
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
-from dnn_utils.dnn_model import DNN_TRAINING_PATH, PACKAGE_PATH, DnnModel
+from dnn_utils.dnn_model import DNN_TRAINING_PATHS, PACKAGE_PATH, DnnModel
 
-sys.path.append(DNN_TRAINING_PATH)
+sys.path.extend(DNN_TRAINING_PATHS)
 from pose_estimation.pose_estimator import get_coordinates
 
 

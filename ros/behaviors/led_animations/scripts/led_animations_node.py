@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import traceback
+import math
+
 import rclpy
 import rclpy.node
 from rclpy.duration import Duration
@@ -28,6 +31,7 @@ class LedAnimationsNode(rclpy.node.Node):
         self._timer = None
         self._timer_msg_id = -1
         self._timer_start_time = None
+        self._timer_finite = None
         self._timer_duration = None
         self._timer_animation = None
 
@@ -51,7 +55,8 @@ class LedAnimationsNode(rclpy.node.Node):
             animation = LedAnimation.from_name(msg.name, self._period_s, msg.speed, msg.colors)
             self._start_timer(msg.id, animation, msg.duration_s)
         except Exception as e:
-            self.get_logger().error(f'Unable to instantiate the LED animation ({e})')
+            tb = traceback.format_exc()
+            self.get_logger().error(f'Unable to instantiate the LED animation ({e}): {tb}')
             self._done_pub.publish(Done(id=msg.id, ok=False))
 
 
@@ -68,17 +73,18 @@ class LedAnimationsNode(rclpy.node.Node):
         self._stop_timer()
         self._timer_msg_id = id
         self._timer_start_time = self.get_clock().now()
-        self._timer_duration = Duration(seconds=duration_s)
+        self._timer_finite = math.isfinite(duration_s)
+        self._timer_duration = Duration(seconds=duration_s) if self._timer_finite else None
         self._timer_animation = animation
         self._timer = self.create_timer(self._period_s, self._timer_cb)
 
     def _timer_cb(self):
-        if self.get_clock().now() - self._timer_start_time > self._timer_duration:
+        if not self._timer_finite or self.get_clock().now() - self._timer_start_time < self._timer_duration:
+            self._led_colors_pub.publish(self._timer_animation.update())
+        else:
             self._led_colors_pub.publish(NONE_LED_COLORS)
             self._done_pub.publish(Done(id=self._timer_msg_id, ok=True))
             self._stop_timer()
-        else:
-            self._led_colors_pub.publish(self._timer_animation.update())
 
     def run(self):
         rclpy.spin(self)
@@ -94,8 +100,8 @@ def main():
         pass
     finally:
         led_animations_node.destroy_node()
-        
-    rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

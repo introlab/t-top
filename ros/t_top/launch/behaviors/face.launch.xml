@@ -3,6 +3,6 @@
     <arg name="fullscreen" default="false"/>
     <arg name="face_behavior_delay"/>
 
-    <node pkg="user_interface" exec="web.sh" name="user_interface" args="$(var open_browser) $(var fullscreen)" launch-prefix="bash -c 'sleep $(var face_behavior_delay); $0 $@' "/>
+    <node pkg="user_interface" exec="web.sh" name="user_interface" args="$(var open_browser) $(var fullscreen)" launch-prefix="bash -c 'sleep $(var face_behavior_delay); $0 $@' " output="screen"/>
 
 </launch>

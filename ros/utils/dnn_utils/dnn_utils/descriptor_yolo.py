@@ -5,10 +5,10 @@ import torch
 import torch.nn.functional as F
 import torchaudio
 
-from dnn_utils.dnn_model import DNN_TRAINING_PATH, PACKAGE_PATH, DnnModel
+from dnn_utils.dnn_model import DNN_TRAINING_PATHS, PACKAGE_PATH, DnnModel
 from dnn_utils.yolo import COCO_CLASS_NAMES, OBJECTS365_CLASS_NAMES
 
-sys.path.append(DNN_TRAINING_PATH)
+sys.path.extend(DNN_TRAINING_PATHS)
 from object_detection.modules.yolo_layer import X_INDEX, Y_INDEX, W_INDEX, H_INDEX, CONFIDENCE_INDEX, CLASSES_INDEX
 from object_detection.filter_yolo_predictions import group_predictions, filter_yolo_predictions
 

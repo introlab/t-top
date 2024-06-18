@@ -21,20 +21,20 @@
     </include>
 
     <!-- Camera 2d Wide -->
-    <node if="$(var camera_2d_wide_enabled)" pkg="cv_camera" exec="cv_camera_node" name="cv_camera_node" respawn="true">
+    <node if="$(var camera_2d_wide_enabled)" pkg="cv_camera" exec="cv_camera_node" name="camera_2d_wide_node" respawn="true">
         <param name="rate" value="5.0"/>
         <param name="device_path" value="/dev/camera_2d_wide"/>
         <param name="image_width" value="1920"/>
         <param name="image_height" value="1080"/>
-        <param name="camera_info_url" value="file://$(env HOME)/.ros/t-top/calibration/camera_2d_wide_full_hd.yaml'"/>
+        <param name="camera_info_url" value="file://$(env HOME)/.ros/t-top/calibration/camera_2d_wide_full_hd.yaml"/>
 
         <param name="cv_cap_prop_fourcc" value="1196444237.0"/>
         <param name="property_0_code" value="38"/>
         <param name="property_0_value" value="1.0"/>
 
-        <remap from="cv_camera_node/image_raw" to="camera_2d_wide_full_hd/image"/>
-        <remap from="cv_camera_node/camera_info" to="camera_2d_wide_full_hd/camera_info"/>
-        <remap from="cv_camera_node/set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>
+        <remap from="image_raw" to="camera_2d_wide_full_hd/image"/>
+        <remap from="camera_info" to="camera_2d_wide_full_hd/camera_info"/>
+        <remap from="set_camera_info" to="camera_2d_wide_full_hd/set_camera_info"/>
     </node>
 
     <node if="$(var camera_2d_wide_enabled)" pkg="watchdog" exec="watchdog_node" name="cv_camera_watchdog_node" output="screen">
@@ -57,7 +57,7 @@
             <remap from="resize/camera_info" to="camera_2d_wide/camera_info"/>
         </composable_node>
 
-        <composable_node pkg="image_proc" plugin="image_tools::RectifyNode" name="camera_2d_rectify">
+        <composable_node pkg="image_proc" plugin="image_proc::RectifyNode" name="camera_2d_rectify">
             <param name="interpolation" value="1"/>
 
             <remap from="image" to="camera_2d_wide/image"/>
