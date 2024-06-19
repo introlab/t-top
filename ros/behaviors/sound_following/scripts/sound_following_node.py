@@ -4,6 +4,7 @@ import math
 
 import rclpy
 import rclpy.node
+import rclpy.executors
 
 from odas_ros_msgs.msg import OdasSstArrayStamped
 
@@ -65,7 +66,9 @@ class SoundFollowingNode(rclpy.node.Node):
             self._update_head()
 
     def run(self):
-        rclpy.spin(self)
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
     def _update_torso(self):
         if self._target_torso_yaw is None:

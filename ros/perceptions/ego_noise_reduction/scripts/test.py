@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import threading
 import math
 import time
 
@@ -23,6 +24,9 @@ class EgoNoiseReductionTestNode(rclpy.node.Node):
         self._enable_on_off_filter('ego_noise_reduction/filter_state')
         self._enable_on_off_filter('pose/filter_state')
 
+        executer_thread = threading.Thread(target=lambda: rclpy.spin(self))
+        executer_thread.start()
+
         while rclpy.ok():
             time.sleep(PAUSE_DURATION_S)
             self._movement_commands.move_torso(math.pi / 2, should_wait=True)
@@ -31,6 +35,8 @@ class EgoNoiseReductionTestNode(rclpy.node.Node):
             self._movement_commands.move_yes(speed_rad_sec=1.0)
             self._movement_commands.move_no(speed_rad_sec=0.5)
             self._movement_commands.move_maybe(speed_rad_sec=1.5)
+
+        executer_thread.join()
 
     def _enable_on_off_filter(self, name):
         client = self.create_client(SetOnOffFilterState, name)

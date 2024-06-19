@@ -2,6 +2,7 @@
 
 import rclpy
 import rclpy.node
+import rclpy.executors
 
 from behavior_msgs.msg import GestureName, Done
 
@@ -66,7 +67,9 @@ class GestureNode(rclpy.node.Node):
         return True
 
     def run(self):
-        rclpy.spin(self)
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
 
 def main():

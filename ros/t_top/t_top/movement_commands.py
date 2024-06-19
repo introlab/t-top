@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import threading
 import math
 import time
 
 import numpy as np
 
 import rclpy
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 from tf_transformations import euler_from_quaternion, quaternion_from_euler
 
@@ -49,16 +51,12 @@ def abs_diff_torso_angle(a, b):
     return d
 
 
-def sleep(node, duration_s):
-    start_time = time.time()
-    while (time.time() - start_time) < duration_s:
-        time.sleep(duration_s / 100)
-        rclpy.spin_once(node)
-
-
 class MovementCommands:
     def __init__(self, node, simulation=False, namespace='daemon'):
         self.node = node
+
+        self._read_torso_lock = threading.Lock()
+        self._read_head_lock = threading.Lock()
 
         self._maxFreq = 30
         self._minTime = 1 / self._maxFreq
@@ -75,7 +73,9 @@ class MovementCommands:
         self._torso_orientation_pub = self.node.create_publisher(Float32, f'{namespace}/set_torso_orientation', 5)
         self._head_pose_pub = self.node.create_publisher(PoseStamped, f'{namespace}/set_head_pose', 5)
 
-        self._motor_status_sub = self.node.create_subscription(MotorStatus, 'daemon/motor_status', self._motor_status_cb, 1)
+        # Custom callback group in order to allow callbacks to be run in parallel
+        self._motor_status_sub = self.node.create_subscription(MotorStatus, 'daemon/motor_status', self._motor_status_cb, 1,
+                                                               callback_group=MutuallyExclusiveCallbackGroup())
 
     @property
     def is_filtering_all_messages(self):
@@ -83,11 +83,13 @@ class MovementCommands:
 
     @property
     def current_torso_pose(self):
-        return self._read_torso
+        with self._read_torso_lock:
+            return self._read_torso
 
     @property
     def current_head_pose(self):
-        return self._read_head
+        with self._read_head_lock:
+            return self._read_head
 
     @property
     def frequency(self):
@@ -98,19 +100,21 @@ class MovementCommands:
         return self._minTime
 
     def _motor_status_cb(self, msg):
-        self._read_torso = fmod_radian(msg.torso_orientation)
+        with self._read_torso_lock:
+            self._read_torso = fmod_radian(msg.torso_orientation)
 
         head_angles = euler_from_quaternion([msg.head_pose.orientation.x,
                                              msg.head_pose.orientation.y,
                                              msg.head_pose.orientation.z,
                                              msg.head_pose.orientation.w])
 
-        self._read_head[0] = msg.head_pose.position.x
-        self._read_head[1] = msg.head_pose.position.y
-        self._read_head[2] = msg.head_pose.position.z
-        self._read_head[3] = head_angles[0]
-        self._read_head[4] = head_angles[1]
-        self._read_head[5] = head_angles[2]
+        with self._read_head_lock:
+            self._read_head[0] = msg.head_pose.position.x
+            self._read_head[1] = msg.head_pose.position.y
+            self._read_head[2] = msg.head_pose.position.z
+            self._read_head[3] = head_angles[0]
+            self._read_head[4] = head_angles[1]
+            self._read_head[5] = head_angles[2]
 
     # Should be called in a loop
     def move_torso_speed(self, speed_rad_sec_torso, should_sleep=True):
@@ -128,7 +132,7 @@ class MovementCommands:
             self._torso_orientation_pub.publish(torso_pose)
 
             if should_sleep:
-                sleep(self.node, self._minTime)
+                time.sleep(self._minTime)
 
     # Should be called in a loop
     def move_head_speed(self, speeds_head, should_sleep=True, current_head_pose=None):
@@ -158,7 +162,7 @@ class MovementCommands:
             self._head_msg(head_pose)
 
             if should_sleep:
-                sleep(self.node, self._minTime)
+                time.sleep(self._minTime)
 
     def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10, stop_cb=None, timeout=float('inf')):
         if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
@@ -189,7 +193,7 @@ class MovementCommands:
                 steps_cumulative_size = i * steps_size
                 offset = distance - steps_cumulative_size
                 self._torso_orientation_pub.publish(pose - offset)
-                sleep(self.node, self._minTime)
+                time.sleep(self._minTime)
             self._torso_orientation_pub.publish(pose)
         else:
             if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
@@ -204,7 +208,7 @@ class MovementCommands:
                     raise TimeoutError()
 
                 self._torso_orientation_pub.publish(pose)
-                sleep(self.node, self._minTime)
+                time.sleep(self._minTime)
 
         return True
 
@@ -298,7 +302,7 @@ class MovementCommands:
                         np_offsets[j] = 0
 
                 self._head_msg(np_pose - np_offsets)
-                sleep(self.node, self._minTime)
+                time.sleep(self._minTime)
             self._head_msg(pose)
         else:
             if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
@@ -313,7 +317,7 @@ class MovementCommands:
                     raise TimeoutError()
 
                 self._head_msg(pose)
-                sleep(self.node, self._minTime)
+                time.sleep(self._minTime)
 
         return True
 

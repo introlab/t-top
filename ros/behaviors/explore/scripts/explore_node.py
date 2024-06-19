@@ -2,6 +2,7 @@
 
 import rclpy
 import rclpy.node
+import rclpy.executors
 
 from std_msgs.msg import Empty
 
@@ -46,7 +47,9 @@ class ExploreNode(rclpy.node.Node):
         self._done_pub.publish(Empty())
 
     def run(self):
-        rclpy.spin(self)
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
 
 def main():

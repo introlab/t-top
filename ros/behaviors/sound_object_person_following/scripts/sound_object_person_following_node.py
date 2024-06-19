@@ -8,7 +8,7 @@ from scipy.optimize import dual_annealing
 
 import rclpy
 import rclpy.node
-
+import rclpy.executors
 
 from odas_ros_msgs.msg import OdasSstArrayStamped
 from perception_msgs.msg import VideoAnalysis
@@ -281,7 +281,9 @@ class SoundObjectPersonFollowingNode(rclpy.node.Node):
             self._update_from_target(target)
 
     def run(self):
-        rclpy.spin(self)
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
     def _update_from_target(self, target):
         if target.yaw is not None:
