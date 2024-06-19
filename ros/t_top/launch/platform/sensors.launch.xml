@@ -51,9 +51,9 @@
             <param name="width" value="1280"/>
             <param name="height" value="720"/>
 
-            <remap from="image" to="camera_2d_wide_full_hd/image"/>
+            <remap from="image/image_raw" to="camera_2d_wide_full_hd/image"/>
             <remap from="image/camera_info" to="camera_2d_wide_full_hd/camera_info"/>
-            <remap from="resize" to="camera_2d_wide/image"/>
+            <remap from="resize/image_raw" to="camera_2d_wide/image"/>
             <remap from="resize/camera_info" to="camera_2d_wide/camera_info"/>
         </composable_node>
 
@@ -61,9 +61,8 @@
             <param name="interpolation" value="1"/>
 
             <remap from="image" to="camera_2d_wide/image"/>
-            <remap from="image/camera_info" to="camera_2d_wide/camera_info"/>
+            <remap from="camera_info" to="camera_2d_wide/camera_info"/>
             <remap from="image_rect" to="camera_2d_wide/image_rect"/>
-            <remap from="image_rect/camera_info" to="camera_2d_wide/image_rect/camera_info"/>
         </composable_node>
     </node_container>
 

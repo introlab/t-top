@@ -23,6 +23,7 @@ class Camera3dCalibration:
             return Camera3dCalibration(data['center_x'], data['center_y'], data['width'], data['height'])
 
     def save_json_file(self):
+        os.makedirs(os.path.dirname(CAMERA_3D_CALIBRATION_FILE_PATH), exist_ok=True)
         with open(CAMERA_3D_CALIBRATION_FILE_PATH, 'w') as file:
             data = {
                 'center_x': self.center_x,

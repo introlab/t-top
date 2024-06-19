@@ -84,10 +84,11 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
         speech_to_text_thread = threading.Thread(target=self._speech_to_text_thread_run)
         speech_to_text_thread.start()
 
-        rclpy.spin(self)
-
-        self._voice_sequence_queue.put(None)
-        speech_to_text_thread.join()
+        try:
+            rclpy.spin(self)
+        finally:
+            self._voice_sequence_queue.put(None)
+            speech_to_text_thread.join()
 
     def _speech_to_text_thread_run(self):
         self._warm_up_model()

@@ -14,6 +14,7 @@ from behavior_msgs.msg import SoundFile, SoundStarted, Done
 from audio_utils_msgs.msg import AudioFrame
 
 import hbba_lite
+import time_utils
 
 
 class SoundPlayerNode(rclpy.node.Node):
@@ -45,7 +46,7 @@ class SoundPlayerNode(rclpy.node.Node):
     def _play_audio(self, id, path):
         frames = self._load_frames(Path(path).expanduser().resolve())
 
-        self._started_pub.publish(Started(id=id))
+        self._started_pub.publish(SoundStarted(id=id))
 
         audio_frame = AudioFrame()
         audio_frame.format = 'float'
@@ -53,7 +54,7 @@ class SoundPlayerNode(rclpy.node.Node):
         audio_frame.sampling_frequency = self._sampling_frequency
         audio_frame.frame_sample_count = self._frame_sample_count
 
-        sleep_duration = self._frame_sample_count / self._sampling_frequency
+        rate = time_utils.Rate(self._sampling_frequency / self._frame_sample_count)
         for frame in frames:
             if self._audio_pub.is_filtering_all_messages:
                 break
@@ -62,7 +63,7 @@ class SoundPlayerNode(rclpy.node.Node):
             audio_frame.data = frame.tobytes()
             self._audio_pub.publish(audio_frame)
 
-            time.sleep(sleep_duration)
+            rate.sleep()
 
     def _load_frames(self, file_path):
         waveform, _ = librosa.load(file_path, sr=self._sampling_frequency, res_type='kaiser_fast')

@@ -37,7 +37,10 @@ private:
     QPushButton* m_maybeButton;
     QPushButton* m_originAllButton;
     QPushButton* m_originHeadButton;
+    QPushButton* m_slowOriginHeadButton;
     QPushButton* m_originTorsoButton;
+    QPushButton* m_thinkingButton;
+    QPushButton* m_sadButton;
 };
 
 #endif

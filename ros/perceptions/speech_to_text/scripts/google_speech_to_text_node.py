@@ -138,10 +138,10 @@ class GoogleSpeechToTextNode(rclpy.node.Node):
         self._total_samples_count = 0
         while self._is_enabled:
             audio_content = self._request_frame_queue.get()
-            self._total_samples_count += audio_content.shape[0]
             if audio_content is None:
                 break
-
+                
+            self._total_samples_count += audio_content.shape[0]
             yield speech.StreamingRecognizeRequest(audio_content=audio_content.tobytes())
 
 

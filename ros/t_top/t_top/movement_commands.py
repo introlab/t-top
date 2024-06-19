@@ -164,6 +164,11 @@ class MovementCommands:
             if should_sleep:
                 time.sleep(self._minTime)
 
+    def _torso_msg(self, pose):
+        msg = Float32()
+        msg.data = pose
+        return msg
+
     def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10, stop_cb=None, timeout=float('inf')):
         if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
             return False
@@ -192,13 +197,13 @@ class MovementCommands:
                     return False
                 steps_cumulative_size = i * steps_size
                 offset = distance - steps_cumulative_size
-                self._torso_orientation_pub.publish(pose - offset)
+                self._torso_orientation_pub.publish(self._torso_msg(pose - offset))
                 time.sleep(self._minTime)
-            self._torso_orientation_pub.publish(pose)
+            self._torso_orientation_pub.publish(self._torso_msg(pose))
         else:
             if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
                 return False
-            self._torso_orientation_pub.publish(pose)
+            self._torso_orientation_pub.publish(self._torso_msg(pose))
 
         if should_wait:
             while abs_diff_torso_angle(pose, self.current_torso_pose) > 0.1:
@@ -207,7 +212,7 @@ class MovementCommands:
                 if (time.time() - start_time) > timeout:
                     raise TimeoutError()
 
-                self._torso_orientation_pub.publish(pose)
+                self._torso_orientation_pub.publish(self._torso_msg(pose))
                 time.sleep(self._minTime)
 
         return True
@@ -245,16 +250,16 @@ class MovementCommands:
         pose_msg = PoseStamped()
         pose_msg.header.frame_id = 'stewart_base'
 
-        pose_msg.pose.position.x = pose[0]
-        pose_msg.pose.position.y = pose[1]
-        pose_msg.pose.position.z = pose[2]
+        pose_msg.pose.position.x = float(pose[0])
+        pose_msg.pose.position.y = float(pose[1])
+        pose_msg.pose.position.z = float(pose[2])
 
         q = quaternion_from_euler(pose[3], pose[4], pose[5])
 
-        pose_msg.pose.orientation.x = q[0]
-        pose_msg.pose.orientation.y = q[1]
-        pose_msg.pose.orientation.z = q[2]
-        pose_msg.pose.orientation.w = q[3]
+        pose_msg.pose.orientation.x = float(q[0])
+        pose_msg.pose.orientation.y = float(q[1])
+        pose_msg.pose.orientation.z = float(q[2])
+        pose_msg.pose.orientation.w = float(q[3])
 
         self._head_pose_pub.publish(pose_msg)
 

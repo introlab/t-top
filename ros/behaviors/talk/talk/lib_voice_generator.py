@@ -5,11 +5,13 @@ import os
 import json
 import random
 from enum import Enum
+import asyncio
 
 from google.cloud import texttospeech
 
 import rclpy
 import rclpy.node
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 from behavior_srvs.srv import GenerateSpeechFromText
 
@@ -54,6 +56,10 @@ class VoiceGenerator(ABC):
     @abstractmethod
     def generate(self, text: str) -> str:
         pass
+        
+    @property
+    def executer_thread_count(self):
+        return 1
 
     def delete_generated_file(self, file_path: str):
         if os.path.exists(file_path):
@@ -108,7 +114,8 @@ class PiperVoiceGenerator(VoiceGenerator):
         super().__init__(directory, language, gender, speaking_rate)
 
         self._node = node
-        self._piper_service = node.create_client(GenerateSpeechFromText, 'piper/generate_speech_from_text')
+        self._piper_service = node.create_client(GenerateSpeechFromText, 'piper/generate_speech_from_text',
+                                                 callback_group=MutuallyExclusiveCallbackGroup())
 
     def generate(self, text: str) -> str:
         request = GenerateSpeechFromText.Request()
@@ -119,13 +126,17 @@ class PiperVoiceGenerator(VoiceGenerator):
         request.path = self._generate_random_path('.wav')
 
         future = self._piper_service.call_async(request)
-        rclpy.spin_until_future_complete(self._node, future)
-        response = future.result()
+        async def wait_future():
+            return await future
+        response = asyncio.run(wait_future())
 
         if not response.ok:
             raise RuntimeError(response.message)
-
         return request.path
+        
+    @property
+    def executer_thread_count(self):
+        return 2
 
 
 class CachedVoiceGenerator(VoiceGenerator):
@@ -191,6 +202,10 @@ class CachedVoiceGenerator(VoiceGenerator):
     def _get_cache_key(self, text: str) -> str:
         return (f'{type(self._voice_generator).__name__}__{self._language.value}__{self._gender.value}__'
                 f'{self._speaking_rate}__{text}')
+
+    @property
+    def executer_thread_count(self):
+        return self._voice_generator.executer_thread_count
 
     def delete_generated_file(self, file_path: str):
         pass

@@ -67,14 +67,14 @@ class TooCloseReactionNode(rclpy.node.Node):
         pose_msg = PoseStamped()
         pose_msg.header.frame_id = 'stewart_base'
 
-        pose_msg.pose.position.x = -offset_m
-        pose_msg.pose.position.y = 0
-        pose_msg.pose.position.z = 0
+        pose_msg.pose.position.x = float(-offset_m)
+        pose_msg.pose.position.y = 0.0
+        pose_msg.pose.position.z = 0.0
 
-        pose_msg.pose.orientation.x = 0
-        pose_msg.pose.orientation.y = 0
-        pose_msg.pose.orientation.z = 0
-        pose_msg.pose.orientation.w = 1
+        pose_msg.pose.orientation.x = 0.0
+        pose_msg.pose.orientation.y = 0.0
+        pose_msg.pose.orientation.z = 0.0
+        pose_msg.pose.orientation.w = 1.0
 
         self._head_pose_pub.publish(pose_msg)
 

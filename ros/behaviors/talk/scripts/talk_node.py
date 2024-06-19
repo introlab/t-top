@@ -12,12 +12,14 @@ import librosa
 
 import rclpy
 import rclpy.node
+import rclpy.executors
 
 from std_msgs.msg import Float32
 from behavior_msgs.msg import Text, Done, Statistics
 from audio_utils_msgs.msg import AudioFrame
 
 import hbba_lite
+import time_utils
 
 from talk.lib_voice_generator import Language, Gender
 from talk.lib_voice_generator import GoogleVoiceGenerator, PiperVoiceGenerator, CachedVoiceGenerator
@@ -60,7 +62,6 @@ class TalkNode(rclpy.node.Node):
     def _on_text_received_cb(self, msg):
         if self._audio_pub.is_filtering_all_messages:
             return
-        self.get_logger().warn(f'_on_text_received_cb {msg.text}')
 
         try:
             if msg.text != '':
@@ -106,7 +107,7 @@ class TalkNode(rclpy.node.Node):
         audio_frame.sampling_frequency = self._sampling_frequency
         audio_frame.frame_sample_count = self._frame_sample_count
 
-        sleep_duration = self._frame_sample_count / self._sampling_frequency
+        rate = time_utils.Rate(self._sampling_frequency / self._frame_sample_count)
         for frame in frames:
             if self._audio_pub.is_filtering_all_messages:
                 break
@@ -128,7 +129,7 @@ class TalkNode(rclpy.node.Node):
             audio_frame.data = frame.tobytes()
             self._audio_pub.publish(audio_frame)
 
-            time.sleep(sleep_duration)
+            rate.sleep()
 
         mouth_signal_msg.data = 0.0
         self._mouth_signal_scale_pub.publish(mouth_signal_msg)
@@ -158,7 +159,13 @@ class TalkNode(rclpy.node.Node):
         return mouth_signal_filter_sos, mouth_signal_filter_zi
 
     def run(self):
-        rclpy.spin(self)
+        executer_thread_count = self._voice_generator.executer_thread_count
+        if executer_thread_count == 1:
+            rclpy.spin(self)
+        else:
+            executor = rclpy.executors.MultiThreadedExecutor(num_threads=executer_thread_count)
+            executor.add_node(self)
+            executor.spin()
 
 
 def main():

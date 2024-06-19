@@ -21,6 +21,7 @@ find_package(audio_utils_msgs REQUIRED)
 find_package(hbba_lite REQUIRED)
 find_package(behavior_srvs REQUIRED)
 find_package(behavior_msgs REQUIRED)
+find_package(time_utils REQUIRED)
 
 # Python Librairies
 ament_python_install_package(${PROJECT_NAME})

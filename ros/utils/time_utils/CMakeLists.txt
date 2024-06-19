@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(sound_player)
+project(time_utils)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -17,15 +17,11 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(audio_utils_msgs REQUIRED)
-find_package(hbba_lite REQUIRED)
-find_package(behavior_msgs REQUIRED)
-find_package(time_utils REQUIRED)
+find_package(rclpy REQUIRED)
 
-# Python Nodes
-install(PROGRAMS
-  scripts/sound_player_node.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+
+# Python Librairies
+ament_python_install_package(${PROJECT_NAME})
+
 
 ament_package()
