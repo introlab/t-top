@@ -82,7 +82,14 @@ void WeatherCommandExecutor::getCurrentWeatherText(string& text, bool& ok)
     auto request = make_shared<cloud_data::srv::CurrentLocalWeather::Request>();
     auto future = m_currentWeatherClient->async_send_request(request);
 
-    if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready || !future.get()->ok)
+    if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready)
+    {
+        ok = false;
+        return;
+    }
+
+    auto response = future.get();
+    if (!response->ok)
     {
         ok = false;
         return;
@@ -91,8 +98,8 @@ void WeatherCommandExecutor::getCurrentWeatherText(string& text, bool& ok)
     ok = true;
     text = Formatter::format(
         StringResources::getValue("dialogs.commands.weather.current"),
-        fmt::arg("temperature_celsius", future.get()->temperature_celsius),
-        fmt::arg("weather_description", future.get()->weather_description));
+        fmt::arg("temperature_celsius", response->temperature_celsius),
+        fmt::arg("weather_description", response->weather_description));
 }
 
 void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
@@ -101,7 +108,14 @@ void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
     request->relative_day = 0;
     auto future = m_weatherForecastClient->async_send_request(request);
 
-    if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready || !future.get()->ok)
+    if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready)
+    {
+        ok = false;
+        return;
+    }
+
+    auto response = future.get();
+    if (!response->ok)
     {
         ok = false;
         return;
@@ -115,27 +129,27 @@ void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
     {
         ss << Formatter::format(
             StringResources::getValue("dialogs.commands.weather.today.morning"),
-            fmt::arg("temperature_celsius", future.get()->temperature_morning_celsius));
+            fmt::arg("temperature_celsius", response->temperature_morning_celsius));
         ss << "\n";
     }
     if (currentTime < Time(17, 00))
     {
         ss << Formatter::format(
             StringResources::getValue("dialogs.commands.weather.today.day"),
-            fmt::arg("temperature_celsius", future.get()->temperature_day_celsius));
+            fmt::arg("temperature_celsius", response->temperature_day_celsius));
         ss << "\n";
     }
     if (currentTime < Time(21, 00))
     {
         ss << Formatter::format(
             StringResources::getValue("dialogs.commands.weather.today.evening"),
-            fmt::arg("temperature_celsius", future.get()->temperature_evening_celsius));
+            fmt::arg("temperature_celsius", response->temperature_evening_celsius));
         ss << "\n";
     }
 
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.today.night"),
-        fmt::arg("temperature_celsius", future.get()->temperature_night_celsius));
+        fmt::arg("temperature_celsius", response->temperature_night_celsius));
 
     text = ss.str();
 }
@@ -146,7 +160,14 @@ void WeatherCommandExecutor::getTomorrowWeatherForecastText(string& text, bool& 
     request->relative_day = 1;
     auto future = m_weatherForecastClient->async_send_request(request);
 
-    if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready || !future.get()->ok)
+    if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready)
+    {
+        ok = false;
+        return;
+    }
+
+    auto response = future.get();
+    if (!response->ok)
     {
         ok = false;
         return;
@@ -157,19 +178,19 @@ void WeatherCommandExecutor::getTomorrowWeatherForecastText(string& text, bool& 
     stringstream ss;
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.tomorrow.morning"),
-        fmt::arg("temperature_celsius", future.get()->temperature_morning_celsius));
+        fmt::arg("temperature_celsius", response->temperature_morning_celsius));
     ss << "\n";
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.tomorrow.day"),
-        fmt::arg("temperature_celsius", future.get()->temperature_day_celsius));
+        fmt::arg("temperature_celsius", response->temperature_day_celsius));
     ss << "\n";
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.tomorrow.evening"),
-        fmt::arg("temperature_celsius", future.get()->temperature_evening_celsius));
+        fmt::arg("temperature_celsius", response->temperature_evening_celsius));
     ss << "\n";
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.tomorrow.night"),
-        fmt::arg("temperature_celsius", future.get()->temperature_night_celsius));
+        fmt::arg("temperature_celsius", response->temperature_night_celsius));
 
     text = ss.str();
 }
@@ -185,13 +206,20 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
     {
         request->relative_day = i;
         auto future = m_weatherForecastClient->async_send_request(request);
-        if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready || !future.get()->ok)
+        if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready)
         {
             ok = false;
             return;
         }
 
-        temperatures[i] = future.get()->temperature_day_celsius;
+        auto response = future.get();
+        if (!response->ok)
+        {
+            ok = false;
+            return;
+        }
+
+        temperatures[i] = response->temperature_day_celsius;
     }
 
     ok = true;
