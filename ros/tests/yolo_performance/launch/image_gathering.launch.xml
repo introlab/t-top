@@ -4,8 +4,8 @@
     <arg name="image_count"/>
     <arg name="camera_type" default=""/> <!-- realsense, camera_2d_wide or "" -->
 
-    <let if="$(eval '\'$(var 'dataset')\' == \'coco\'')" name="classes" value="[person, bowl, bottle]"/>
-    <let if="$(eval '\'$(var 'dataset')\' == \'objects365\'')" name="classes" value="[person, bowl, bottle, tong]"/>
+    <let if="$(eval '\'$(var dataset)\' == \'coco\'')" name="classes" value="[person, bowl, bottle]"/>
+    <let if="$(eval '\'$(var dataset)\' == \'objects365\'')" name="classes" value="[person, bowl, bottle, tong]"/>
     <let if="$(eval '\'$(var camera_type)\' == \'realsense\'')" name="image_raw_remap" value="camera_3d/color/image_raw"/>
     <let if="$(eval '\'$(var camera_type)\' == \'camera_2d_wide\'')" name="image_raw_remap" value="camera_2d_wide/image_rect"/>
 
@@ -15,7 +15,7 @@
         <arg name="rgb_camera.profile" value="1280x720x15" />
         <arg name="enable_depth" value="true" />
         <arg name="enable_color" value="true" />
-        <arg name="camera_namespace" value="camera_3d"/>
+        <arg name="camera_namespace" value=""/>
         <arg name="camera_name" value="camera_3d"/>
         <arg name="enable_sync" value="true"/>
         <arg name="align_depth.enable" value="true"/>
@@ -61,7 +61,7 @@
     </node_container>
 
     <!-- Camera 2d default -->
-    <node if="$(eval '\'$(var camera_type)\' != \'camera_2d_wide\'')" pkg="cv_camera" exec="cv_camera_node" name="cv_camera_node">
+    <node if="$(eval '\'$(var camera_type)\' == \'\'')" pkg="cv_camera" exec="cv_camera_node" name="cv_camera_node">
         <param name="rate" value="5"/>
         <param name="device_path" value="/dev/video0"/>
         <param name="image_width" value="1920"/>

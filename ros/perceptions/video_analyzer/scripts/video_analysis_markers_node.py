@@ -22,6 +22,8 @@ class VideoAnalysisMarkersNode(rclpy.node.Node):
         self._video_analysis_markers_pub.publish(markerArray)
 
     def _create_marker(self, header, tag, type, pose, ID, scale, rgb, points=[], name=''):
+        scale = float(scale)
+
         marker = Marker()
         marker.header.stamp = header.stamp
         marker.header.frame_id = header.frame_id
@@ -30,17 +32,17 @@ class VideoAnalysisMarkersNode(rclpy.node.Node):
         marker.type = type
         marker.action = Marker.ADD
         marker.pose.position = pose
-        marker.pose.orientation.x = 0
-        marker.pose.orientation.y = 0
-        marker.pose.orientation.z = 0
-        marker.pose.orientation.w = 1
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
         marker.scale.x = scale
         marker.scale.y = scale
         marker.scale.z = scale
         marker.color.a = 1.0
-        marker.color.r = rgb[0]
-        marker.color.g = rgb[1]
-        marker.color.b = rgb[2]
+        marker.color.r = float(rgb[0])
+        marker.color.g = float(rgb[1])
+        marker.color.b = float(rgb[2])
         marker.points = points
         marker.text = name
 

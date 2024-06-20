@@ -23,8 +23,8 @@ class ImageGatheringNode(rclpy.node.Node):
 
         self._output_path = os.path.expanduser(self.declare_parameter('output_path', '').get_parameter_value().string_value)
         self._image_count = self.declare_parameter('image_count', 100).get_parameter_value().integer_value
-        self._setups = self.declare_parameter('setups', []).get_parameter_value().string_array_value
-        self._classes = self.declare_parameter('classes', []).get_parameter_value().string_array_value
+        self._setups = self.declare_parameter('setups', ['1m']).get_parameter_value().string_array_value
+        self._classes = self.declare_parameter('classes', ['people']).get_parameter_value().string_array_value
 
         self._current_image_index = 0
         self._current_class_index = 0
@@ -49,7 +49,7 @@ class ImageGatheringNode(rclpy.node.Node):
 
         if self._is_waiting and pressed_key == ENTER_KEY_CODE:
             self._is_waiting = False
-            print('Gathering images')
+            self.get_logger().info('Gathering images')
         elif not self._is_waiting and self._current_image_index < self._image_count:
             self._save_image(color_image)
             self._current_image_index += 1
@@ -64,7 +64,7 @@ class ImageGatheringNode(rclpy.node.Node):
             if self._current_class_index < len(self._classes):
                 self._print_current_class()
             else:
-                print('The gathering is finished.')
+                self.get_logger().info('The gathering is finished.')
                 rclpy.shutdown()
 
     def _display_image(self, color_image):
@@ -80,10 +80,10 @@ class ImageGatheringNode(rclpy.node.Node):
         cv2.imwrite(path, color_image)
 
     def _print_current_class(self):
-        print()
-        print(f'Waiting for {self._classes[self._current_class_index]} - {self._setups[self._current_setup_index]}')
-        print(f'Make sure only the object and at most one person are visible.')
-        print(f'Press enter to continue')
+        self.get_logger().info('')
+        self.get_logger().info(f'Waiting for {self._classes[self._current_class_index]} - {self._setups[self._current_setup_index]}')
+        self.get_logger().info(f'Make sure only the object and at most one person are visible.')
+        self.get_logger().info(f'Press enter to continue')
 
     def run(self):
         rclpy.spin(self)

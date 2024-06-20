@@ -64,7 +64,7 @@ def main():
 
     input_path = node.declare_parameter('input_path', '').get_parameter_value().string_value
     output_path = os.path.join(input_path, '..', 'results')
-    yolo_models = node.declare_parameter('yolo_models', []).get_parameter_value().string_array_value
+    yolo_models = node.declare_parameter('yolo_models', ['yolo_v4_coco']).get_parameter_value().string_array_value
     confidence_threshold = node.declare_parameter('confidence_threshold', 0.5).get_parameter_value().double_value
     nms_threshold = node.declare_parameter('nms_threshold', 0.5).get_parameter_value().double_value
     inference_type = node.declare_parameter('neural_network_inference_type', 'cpu').get_parameter_value().string_value

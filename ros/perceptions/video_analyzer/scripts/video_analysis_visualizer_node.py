@@ -65,10 +65,11 @@ class VideoAnalysisVisualizerNode(rclpy.node.Node):
         face_image = None
         if len(o.person_pose_2d) > 0:
             pose_image = self._cv_bridge.imgmsg_to_cv2(o.person_pose_image, 'rgb8')
-            face_image = self._cv_bridge.imgmsg_to_cv2(o.face_image, 'rgb8')
-
             output = concatenate_horizontal(object_image, pose_image)
-            output = concatenate_horizontal(output, face_image)
+
+            if len(o.face_descriptor) > 0:
+                face_image = self._cv_bridge.imgmsg_to_cv2(o.face_image, 'rgb8')
+                output = concatenate_horizontal(output, face_image)
         else:
             output = object_image
 

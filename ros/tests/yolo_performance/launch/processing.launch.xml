@@ -4,8 +4,8 @@
     <arg name="confidence_threshold" default="0.5"/>
     <arg name="nms_threshold" default="0.5"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
-    <let if="$(eval '\'$(var 'dataset')\' == \'coco\'')" name="yolo_models" value="[yolo_v4_coco, yolo_v4_tiny_coco, yolo_v7_coco, yolo_v7_tiny_coco]"/>
-    <let if="$(eval '\'$(var 'dataset')\' == \'objects365\'')" name="yolo_models" value="[yolo_v7_objects365]"/>
+    <let if="$(eval '\'$(var dataset)\' == \'coco\'')" name="yolo_models" value="[yolo_v4_coco, yolo_v4_tiny_coco, yolo_v7_coco, yolo_v7_tiny_coco]"/>
+    <let if="$(eval '\'$(var dataset)\' == \'objects365\'')" name="yolo_models" value="[yolo_v7_objects365]"/>
 
     <node pkg="yolo_performance" exec="processing_node.py" name="processing_node" output="screen">
         <param name="input_path" value="$(var input_path)"/>

@@ -45,7 +45,7 @@ class EgoNoiseReductionTestNode(rclpy.node.Node):
         request = SetOnOffFilterState.Request()
         request.is_filtering_all_messages = False
 
-        future = self.cli.call_async(request)
+        future = client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
 
 

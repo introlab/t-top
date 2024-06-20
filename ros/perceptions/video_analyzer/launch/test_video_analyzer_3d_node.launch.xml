@@ -6,7 +6,7 @@
         <arg name="rgb_camera.profile" value="1280x720x15" />
         <arg name="enable_depth" value="true" />
         <arg name="enable_color" value="true" />
-        <arg name="camera_namespace" value="camera_3d"/>
+        <arg name="camera_namespace" value=""/>
         <arg name="camera_name" value="camera_3d"/>
         <arg name="enable_sync" value="true"/>
         <arg name="align_depth.enable" value="true"/>
@@ -24,7 +24,7 @@
         <param name="pose_enabled" value="true"/>
         <param name="face_descriptor_enabled" value="true"/>
         <param name="semantic_segmentation_enabled" value="false"/>
-        <param name="cropped_image_enabled" value="false"/>
+        <param name="cropped_image_enabled" value="true"/>
 
         <param name="depth_mean_offset" value="2"/>
 

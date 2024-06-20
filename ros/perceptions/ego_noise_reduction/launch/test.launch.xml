@@ -13,7 +13,7 @@
         <param name="merge" value="false"/>
         <param name="gain" value="1.0"/>
         <param name="latency_us" value="64000"/>
-        <param param="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
+        <param name="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
 
         <remap from="audio_out" to="audio_input_before_ego_noise_signed_32_16000"/>
     </node>
@@ -31,7 +31,9 @@
         <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
     </node>
 
-    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml"/>
+    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml">
+        <arg name="odas_perception_delay" value="0"/>
+    </include>
 
     <node pkg="ego_noise_reduction" exec="test.py" name="test_node" output="screen"/>
 
