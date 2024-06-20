@@ -19,7 +19,7 @@ class CaptureVoiceNode(rclpy.node.Node):
         self._mean_size = self.declare_parameter('mean_size', 10).get_parameter_value().integer_value
 
         self._descriptors = []
-        self.audio_analysis = self.create_subscription(AudioAnalysis, 'audio_analysis', self._audio_analysis_cb, 1)
+        self._audio_analysis_sub = self.create_subscription(AudioAnalysis, 'audio_analysis', self._audio_analysis_cb, 1)
 
     def _audio_analysis_cb(self, msg):
         if len(msg.voice_descriptor) > 0:
@@ -35,7 +35,7 @@ class CaptureVoiceNode(rclpy.node.Node):
             size = len(self._descriptors)
 
             if size == self._mean_size:
-                self.audio_analysis.unregister()
+                self.destroy_subscription(self._audio_analysis_sub)
                 self._save_new_descriptor()
                 return
             else:
@@ -50,7 +50,7 @@ class CaptureVoiceNode(rclpy.node.Node):
         request = SetOnOffFilterState.Request()
         request.is_filtering_all_messages = False
 
-        future = self.cli.call_async(request)
+        future = client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
 
     def _save_new_descriptor(self):

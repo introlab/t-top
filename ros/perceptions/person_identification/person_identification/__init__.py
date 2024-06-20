@@ -62,6 +62,7 @@ def load_people():
 def save_people(people):
     verify_people(people)
 
+    os.makedirs(os.path.dirname(PEOPLE_FILE_PATH), exist_ok=True)
     with open(PEOPLE_FILE_PATH, 'w') as people_file:
         people = json.dump(people, people_file)
 

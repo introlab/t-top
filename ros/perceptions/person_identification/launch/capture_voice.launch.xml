@@ -2,7 +2,7 @@
     <arg name="name"/>
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
 
-    <node pkg="audio_utils" exec="capture_node" name="capture_node" output="screen">
+    <node pkg="audio_utils" exec="capture_node" name="capture_node">
         <param name="backend" value="pulse_audio"/>
         <param name="device" value="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input"/>
         <param name="format" value="signed_32"/>
@@ -12,7 +12,7 @@
         <param name="merge" value="false"/>
         <param name="gain" value="1.0"/>
         <param name="latency_us" value="64000"/>
-        <param param="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
+        <param name="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
 
         <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
     </node>

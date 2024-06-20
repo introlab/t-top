@@ -7,7 +7,7 @@
         <arg name="rgb_camera.profile" value="1280x720x15" />
         <arg name="enable_depth" value="true" />
         <arg name="enable_color" value="true" />
-        <arg name="camera_namespace" value="camera_3d"/>
+        <arg name="camera_namespace" value=""/>
         <arg name="camera_name" value="camera_3d"/>
         <arg name="enable_sync" value="true"/>
         <arg name="align_depth.enable" value="true"/>
@@ -39,7 +39,7 @@
 
     <node pkg="person_identification" exec="capture_face_node.py" name="capture_face_node" output="screen">
         <param name="name" value="$(var name)"/>
-        <param name="mean_size" value="10"/>
+        <param name="mean_size" value="100"/>
         <param name="face_sharpness_score_threshold" value="0.5"/>
     </node>
 </launch>

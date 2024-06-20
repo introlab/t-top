@@ -13,7 +13,7 @@ from face_following.lib_face_following_node import FaceFollowingNode
 class SpecificFaceFollowingNode(FaceFollowingNode):
     def __init__(self):
         super().__init__(node_name='specific_face_following_node', namespace='specific_face_following')
-        self._direction_frame_id = self.declare_parameter('direction_frame_id', 'odas').get_parameter_value().double_value
+        self._direction_frame_id = self.declare_parameter('direction_frame_id', 'odas').get_parameter_value().string_value
 
         self._target_name = None
 

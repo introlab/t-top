@@ -38,7 +38,7 @@ class CaptureFaceNode(rclpy.node.Node):
 
         while rclpy.ok():
             if len(self._descriptors) == self._mean_size:
-                self._video_analysis_sub.unregister()
+                self.destroy_subscription(self._video_analysis_sub)
                 self._save_new_descriptor()
                 return
             else:
@@ -54,7 +54,7 @@ class CaptureFaceNode(rclpy.node.Node):
         request.is_filtering_all_messages = False
         request.rate = 1
 
-        future = self.cli.call_async(request)
+        future = client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
 
     def _save_new_descriptor(self):
