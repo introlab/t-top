@@ -8,6 +8,8 @@
 
 using namespace std;
 
+constexpr chrono::seconds WEATHER_SERVICE_TIMEOUT(20);
+
 WeatherForecastState::WeatherForecastState(
     Language language,
     StateManager& stateManager,
@@ -16,6 +18,11 @@ WeatherForecastState::WeatherForecastState(
     std::type_index nextStateType)
     : TalkState(language, stateManager, desireSet, move(node), nextStateType)
 {
+    m_weatherClientCallbackGroup = m_node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+    m_weatherClient = m_node->create_client<cloud_data::srv::LocalWeatherForecast>(
+        "cloud_data/local_weather_forecast",
+        rmw_qos_profile_services_default,
+        m_weatherClientCallbackGroup);
 }
 
 string WeatherForecastState::generateEnglishText(const string& _)
@@ -101,15 +108,14 @@ string WeatherForecastState::generateFrenchText(const string& _)
 
 void WeatherForecastState::getLocalWeatherForecast(bool& ok, cloud_data::srv::LocalWeatherForecast::Response& response)
 {
-    auto client = m_node->create_client<cloud_data::srv::LocalWeatherForecast>("cloud_data/local_weather_forecast");
-
     auto request = make_shared<cloud_data::srv::LocalWeatherForecast::Request>();
     request->relative_day = 1;  // tomorow
 
-    auto result = client->async_send_request(request);
-    if (rclcpp::spin_until_future_complete(m_node, result) == rclcpp::FutureReturnCode::SUCCESS)
+    auto future = m_weatherClient->async_send_request(request);
+    auto status = future.wait_for(WEATHER_SERVICE_TIMEOUT);
+    if (status == future_status::ready)
     {
-        response = *result.get();
+        response = *future.get();
         ok = response.ok;
     }
     else

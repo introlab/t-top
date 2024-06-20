@@ -45,6 +45,7 @@ class CloudDataNode(rclpy.node.Node):
         return response
 
     def _handle_current_local_weather(self, request, response):
+        self.get_logger().info(f'Fetching current_local_weather')
         try:
             location = self._get_location()
             weather = self._get_weather(location.latitude, location.longitude)
@@ -79,9 +80,11 @@ class CloudDataNode(rclpy.node.Node):
             self.get_logger().error(f'An error occured while retrieving the local weather: {e}')
             response.ok = False
 
+        self.get_logger().info(f'Returning current_local_weather, ok: {response.ok}')
         return response
 
     def _handle_local_weather_forecast(self, request, response):
+        self.get_logger().info(f'Fetching local_weather_forecast')
         try:
             location = self._get_location()
             weather = self._get_weather(location.latitude, location.longitude)
@@ -127,6 +130,7 @@ class CloudDataNode(rclpy.node.Node):
             self.get_logger().error(f'An error occured while retrieving the local weather forecast: {e}')
             response.ok = False
 
+        self.get_logger().info(f'Returning local_weather_forecast, ok: {response.ok}')
         return response
 
     def _get_location(self):

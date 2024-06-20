@@ -7,6 +7,9 @@
 
 class WeatherForecastState : public TalkState
 {
+    rclcpp::CallbackGroup::SharedPtr m_weatherClientCallbackGroup;
+    rclcpp::Client<cloud_data::srv::LocalWeatherForecast>::SharedPtr m_weatherClient;
+
 public:
     WeatherForecastState(
         Language language,

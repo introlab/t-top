@@ -145,7 +145,9 @@ void startNode(
 
     stateManager.switchTo<IdleState>();
 
-    rclcpp::spin(node);
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    executor.add_node(node);
+    executor.spin();
 }
 
 int startNode()

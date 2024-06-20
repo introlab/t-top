@@ -32,6 +32,21 @@ using namespace std;
 constexpr bool WAIT_FOR_SERVICE = true;
 constexpr const char* NODE_NAME = "smart_speaker_smart_node";
 
+void logSongs(
+    rclcpp::Node::SharedPtr& node,
+    const vector<string>& songNames,
+    const vector<vector<string>>& songKeywords,
+    const vector<string>& songPaths)
+{
+    for (size_t i = 0; i < songNames.size(); i++)
+    {
+        RCLCPP_INFO_STREAM(node->get_logger(), "Song " << (i + 1));
+        RCLCPP_INFO_STREAM(node->get_logger(), "\tname=" << songNames[i]);
+        RCLCPP_INFO_STREAM(node->get_logger(), "\tkeywords=" << mergeStrings(songKeywords[i], ","));
+        RCLCPP_INFO_STREAM(node->get_logger(), "\tpath=" << songPaths[i]);
+    }
+}
+
 void startNode(
     bool recordSession,
     Language language,
@@ -111,7 +126,9 @@ void startNode(
         desireSet->addDesire(make_unique<Camera3dRecordingDesire>());
     }
 
-    rclcpp::spin(node);
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    executor.add_node(node);
+    executor.spin();
 }
 
 int startNode()
@@ -193,6 +210,7 @@ int startNode()
         [](auto& x) { return splitStrings(x, ";"); });
 
 
+    logSongs(node, songNames, splittedSongKeywords, songPaths);
     startNode(
         recordSession,
         language,

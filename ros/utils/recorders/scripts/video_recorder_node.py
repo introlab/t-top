@@ -361,8 +361,8 @@ class VideoRecorderConfiguration:
             'framerate': node.declare_parameter('video_stream_framerate', 0).get_parameter_value().integer_value,
             'codec': node.declare_parameter('video_stream_codec', '').get_parameter_value().string_value,
             'bitrate': node.declare_parameter('video_stream_bitrate', 0).get_parameter_value().integer_value,
-            'delay_s': node.declare_parameter('video_stream_delay_s', 0).get_parameter_value().double_value,
-            'language_code': node.declare_parameter('video_stream_language_code', '').get_parameter_value().string_value,
+            'delay_s': node.declare_parameter('video_stream_delay_s', 0.0).get_parameter_value().double_value,
+            'language_code': node.declare_parameter('video_stream_language_code', 'eng').get_parameter_value().string_value,
         }
 
         audio_stream_parameters = {
@@ -371,8 +371,8 @@ class VideoRecorderConfiguration:
             'channel_count': node.declare_parameter('audio_stream_channel_count', 0).get_parameter_value().integer_value,
             'sampling_frequency': node.declare_parameter('audio_stream_sampling_frequency', 0).get_parameter_value().integer_value,
             'codec': node.declare_parameter('audio_stream_codec', '').get_parameter_value().string_value,
-            'merge_channels': node.declare_parameter('audio_stream_merge_channels', False).get_parameter_value().bool_value,
-            'language_code': node.declare_parameter('audio_stream_language_code', '').get_parameter_value().string_value,
+            'merge_channels': node.declare_parameter('audio_stream_merge_channels', True).get_parameter_value().bool_value,
+            'language_code': node.declare_parameter('audio_stream_language_code', 'eng').get_parameter_value().string_value,
         }
 
         video_streams = [VideoStreamConfiguration.from_parameters(video_stream_parameters, 0)]
@@ -471,8 +471,8 @@ class VideoRecorder:
         }
         self._audio_subscribers = {
             audio_stream_configuration.name: node.create_subscription(
-                audio_stream_configuration.full_name,
                 AudioFrame,
+                audio_stream_configuration.full_name,
                 lambda msg: self._audio_cb(msg, audio_stream_configuration),
                 10,
             )
@@ -491,7 +491,7 @@ class VideoRecorder:
             )
             return
 
-        msg_timestamp_ns = msg.header.stamp.to_nsec()
+        msg_timestamp_ns = rclpy.time.Time.from_msg(msg.header.stamp).nanoseconds
         self._start_if_not_started(msg_timestamp_ns)
         if self._video_srcs[configuration.name] is None:
             return
@@ -506,7 +506,7 @@ class VideoRecorder:
         self._last_video_frame_timestamp_ns[configuration.name] = timestamp_ns
 
         if timestamp_ns >= 0:
-            get_logger().debug(f'Pushing image {msg.header.seq} for {configuration.name}')
+            get_logger().debug(f'Pushing image for {configuration.name}')
             self._video_srcs[configuration.name].emit(  # type: ignore
                 'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
@@ -530,7 +530,7 @@ class VideoRecorder:
             )
             return
 
-        msg_timestamp_ns = msg.header.stamp.to_nsec()
+        msg_timestamp_ns = rclpy.time.Time.from_msg(msg.header.stamp).nanoseconds
         self._start_if_not_started(msg_timestamp_ns)
         if self._audio_srcs[configuration.name] is None:
             return
@@ -539,9 +539,7 @@ class VideoRecorder:
         duration_ns = int(1 / msg.sampling_frequency * msg.frame_sample_count)
 
         if timestamp_ns >= 0:
-            get_logger().debug(
-                f'Pushing audio frame {msg.header.seq} for {configuration.name}'
-            )
+            get_logger().debug(f'Pushing audio frame for {configuration.name}')
             self._audio_srcs[configuration.name].emit(  # type: ignore
                 'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
@@ -850,6 +848,7 @@ class VideoRecorderNode(rclpy.node.Node):
         self._recorder_configuration = VideoRecorderConfiguration.from_parameters(self)
 
         self._filter_state = hbba_lite.OnOffHbbaFilterState(  # type: ignore
+            self,
             'video_recorder/filter_state'
         )
         self._filter_state.on_changed(self._on_filter_state_changed)
@@ -880,7 +879,7 @@ def main():
     Gst.init(None)
 
     video_recorder_node = VideoRecorderNode()
-    
+
     try:
         video_recorder_node.run()
     except KeyboardInterrupt:
