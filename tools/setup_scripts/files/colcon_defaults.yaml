@@ -1,0 +1,6 @@
+{
+    "build": {
+        "symlink-install": true,
+        "cmake-args": ["-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CXX_FLAGS=\"-march=native -ffast-math\"", "-DCMAKE_C_FLAGS=\"-march=native -ffast-math\""]
+    }
+}
