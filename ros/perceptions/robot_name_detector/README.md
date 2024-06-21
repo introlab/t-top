@@ -22,9 +22,9 @@ This node measures the sound level and detects the robot name.
  - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed, which must be signed_16, at 16000 Hz and 1 channel.
 
 #### Published Topics
- - `sound_rms` ([std_msgs/Float32](https://docs.ros2.org/foxy/api/std_msgs/msg/Float32.html)): The sound level.
- - `sound_presence` ([std_msgs/Bool](https://docs.ros2.org/foxy/api/std_msgs/msg/Bool.html)): Indicates if sound is presence.
- - `robot_name_detected` ([std_msgs/Empty](https://docs.ros2.org/foxy/api/std_msgs/msg/Empty.html)): Indicates that the robot name is detected.
+ - `sound_rms` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The sound level.
+ - `sound_presence` ([std_msgs/Bool](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Bool.html)): Indicates if sound is presence.
+ - `robot_name_detected` ([std_msgs/Empty](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Empty.html)): Indicates that the robot name is detected.
  - `robot_name_detector/set_led_colors` ([daemon_ros_client/LedColors](../../daemon_ros_client/msg/LedColors.msg)): The LED colors for the status.
 
 #### Services

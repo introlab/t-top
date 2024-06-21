@@ -24,6 +24,7 @@ find_package(t_top_hbba_lite REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(perception_msgs REQUIRED)
 
 add_executable(${PROJECT_NAME}_rss_node
   src/${PROJECT_NAME}_rss_node.cpp
@@ -53,20 +54,7 @@ ament_target_dependencies(${PROJECT_NAME}_rss_node
   tf2
   tf2_ros
   tf2_geometry_msgs
-)
-target_link_libraries(${PROJECT_NAME}_rss_node
-  ${hbba_lite_LIBRARIES}
-  ${behavior_msgs_LIBRARIES}
-  gecodeflatzinc
-  gecodedriver
-  gecodegist
-  gecodesearch
-  gecodeminimodel
-  gecodeset
-  gecodefloat
-  gecodeint
-  gecodekernel
-  gecodesupport
+  perception_msgs
 )
 install(TARGETS ${PROJECT_NAME}_rss_node DESTINATION lib/${PROJECT_NAME})
 
@@ -96,22 +84,7 @@ ament_target_dependencies(${PROJECT_NAME}_smart_node
   tf2
   tf2_ros
   tf2_geometry_msgs
-)
-target_link_libraries(${PROJECT_NAME}_smart_node
-  ${hbba_lite_LIBRARIES}
-  ${hbba_lite_msgs_LIBRARIES}
-  ${hbba_lite_srvs_LIBRARIES}
-  ${behavior_msgs_LIBRARIES}
-  gecodeflatzinc
-  gecodedriver
-  gecodegist
-  gecodesearch
-  gecodeminimodel
-  gecodeset
-  gecodefloat
-  gecodeint
-  gecodekernel
-  gecodesupport
+  perception_msgs
 )
 install(TARGETS ${PROJECT_NAME}_smart_node DESTINATION lib/${PROJECT_NAME})
 

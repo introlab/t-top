@@ -19,7 +19,7 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(hbba_lite REQUIRED)
+find_package(perception_msgs REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 
@@ -60,23 +60,8 @@ add_executable(${PROJECT_NAME}_node ${srcs} ${uis} ${moc_headers} ${other_header
 qt5_use_modules(${PROJECT_NAME}_node ${control_panel_components})
 ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
-  hbba_lite
   t_top_hbba_lite
-)
-target_link_libraries(${PROJECT_NAME}_node
-  ${control_panel_components_link}
-  ${hbba_lite_LIBRARIES}
-  ${behavior_msgs_LIBRARIES}
-  gecodeflatzinc
-  gecodedriver
-  gecodegist
-  gecodesearch
-  gecodeminimodel
-  gecodeset
-  gecodefloat
-  gecodeint
-  gecodekernel
-  gecodesupport
+  perception_msgs
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 

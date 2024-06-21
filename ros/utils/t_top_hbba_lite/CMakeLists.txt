@@ -31,30 +31,31 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(daemon_ros_client REQUIRED)
 
+file(GLOB_RECURSE HDR_FILES CONFIGURE_DEPENDS "include/t_top_hbba_lite/**.h")
+
 # C++ Libraries
 add_library(t_top_hbba_lite_cpp
   src/Desires.cpp
   src/Strategies.cpp
 )
-target_include_directories(t_top_hbba_lite_cpp PUBLIC include)
-ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
-install(TARGETS t_top_hbba_lite_cpp DESTINATION lib)
-
-ament_export_dependencies(rclcpp geometry_msgs hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs daemon_ros_client)
-ament_export_include_directories(include)
-ament_export_libraries(t_top_hbba_lite_cpp)
-
-install(
-  DIRECTORY include/
-  DESTINATION include
+target_include_directories(t_top_hbba_lite_cpp
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
+target_sources(t_top_hbba_lite_cpp PUBLIC FILE_SET HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include FILES ${HDR_FILES})
+ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
+
+ament_export_dependencies(rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
+ament_export_targets(export_t_top_hbba_lite_cpp HAS_LIBRARY_TARGET)
 
 install(
   TARGETS t_top_hbba_lite_cpp
+  EXPORT export_t_top_hbba_lite_cpp
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
+  FILE_SET HEADERS
 )
 
 # C++ Nodes
@@ -62,6 +63,6 @@ add_executable(set_head_pose_arbitration_node src/set_head_pose_arbitration_node
 ament_target_dependencies(set_head_pose_arbitration_node rclcpp geometry_msgs daemon_ros_client tf2)
 install(TARGETS set_head_pose_arbitration_node DESTINATION lib/${PROJECT_NAME})
 
-ament_export_dependencies(geometry_msgs hbba_lite nav_msgs perception_msgs sensor_msgs behavior_msgs std_msgs daemon_ros_client)
+ament_export_dependencies(rclcpp geometry_msgs daemon_ros_client tf2)
 
 ament_package()

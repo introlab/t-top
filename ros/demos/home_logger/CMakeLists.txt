@@ -23,6 +23,7 @@ find_package(cloud_data REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(recorders REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(perception_msgs REQUIRED)
 
 # C++ Library
 add_subdirectory(3rd_party/fmt)
@@ -54,6 +55,7 @@ ament_target_dependencies(home_logger_common
   rclcpp
   t_top_hbba_lite
   recorders
+  perception_msgs
 )
 target_link_libraries(home_logger_common ${recorders_LIBRARIES})
 
@@ -95,21 +97,8 @@ ament_target_dependencies(${PROJECT_NAME}_node
   tf2
 )
 target_link_libraries(${PROJECT_NAME}_node
-  ${hbba_lite_LIBRARIES}
-  ${behavior_msgs_LIBRARIES}
-  ${recorders_LIBRARIES}
   home_logger_common
   fmt
-  gecodeflatzinc
-  gecodedriver
-  gecodegist
-  gecodesearch
-  gecodeminimodel
-  gecodeset
-  gecodefloat
-  gecodeint
-  gecodekernel
-  gecodesupport
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 

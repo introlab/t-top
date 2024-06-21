@@ -22,11 +22,11 @@ This node uses RGB images, so the 3D positions are not set.
  - `cropped_image_enabled` (bool): Indicates to publish cropped images for each object, pose and face. The default value is false.
 
 #### Subscribed Topics
- - `image_raw` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/msg/Image.html)): The color image.
+ - `image_raw` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): The color image.
 
 #### Published Topics
  - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
- - `analysed_image` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/msg/Image.html)): A rendering of the video analysis.
+ - `analysed_image` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): A rendering of the video analysis.
 
 #### Services
  - `image_raw/filter_state` ([hbba_lite_srvs/SetThrottlingFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetThrottlingFilterState.srv)) The HBBA filter state service to enable, disable or throttle the processing.
@@ -54,13 +54,13 @@ This node uses RGB-D images, so the 3D positions are set.
  - `depth_mean_offset` (int): The rectangle offset when calulating the depth of the object. The deault value is 1.
 
 #### Subscribed Topics
- - `image_raw` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): The color image.
- - `depth_image_raw` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): The depth image.
- - `depth_camera_info` ([sensor_msgs/CameraInfo](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/CameraInfo.html)): The depth camera info used to preject 2D point in 3D.
+ - `image_raw` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): The color image.
+ - `depth_image_raw` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): The depth image.
+ - `depth_camera_info` ([sensor_msgs/CameraInfo](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/CameraInfo.html)): The depth camera info used to preject 2D point in 3D.
 
 #### Published Topics
  - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
- - `analysed_image` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): A rendering of the video analysis.
+ - `analysed_image` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): A rendering of the video analysis.
 
 #### Services
  - `image_raw/filter_state` ([hbba_lite_srvs/SetThrottlingFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetThrottlingFilterState.srv)) The HBBA filter state service to enable, disable or throttle the processing.
@@ -73,7 +73,7 @@ This node create a mosaic containing the objects in the video analysis.
  - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
 
 #### Published Topics
- - `video_analysis_mosaic` ([sensor_msgs/Image](https://docs.ros2.org/foxy/api/sensor_msgs/html/msg/Image.html)): The mosaic containing the objects in the video analysis.
+ - `video_analysis_mosaic` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): The mosaic containing the objects in the video analysis.
 
 ### `video_analysis_markers_node.py`
 This node create a marker array for the objects in the video analysis.
@@ -82,4 +82,4 @@ This node create a marker array for the objects in the video analysis.
  - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis containing the detected objects.
 
 #### Published Topics
- - `video_analysis_markers` ([visualization_msgs/MarkerArray](https://docs.ros2.org/foxy/api/visualization_msgs/html/msg/MarkerArray.html)): The marker array for the objects in the video analysis.
+ - `video_analysis_markers` ([visualization_msgs/MarkerArray](https://docs.ros.org/en/humble/p/visualization_msgs/interfaces/msg/MarkerArray.html)): The marker array for the objects in the video analysis.
