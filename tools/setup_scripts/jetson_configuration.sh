@@ -409,7 +409,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
     mkdir -p ~/deps
 
     cd ~/deps
-    git clone -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
+    clone_git -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
 	mkdir -p ~/deps/xtl/build
 	cd ~/deps/xtl/build
 	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
@@ -417,7 +417,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 	sudo cmake --install .
 
     cd ~/deps
-    git clone -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
+    clone_git -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
 	mkdir -p ~/deps/xsimd/build
 	cd ~/deps/xsimd/build
 	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
@@ -425,7 +425,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 	sudo cmake --install .
 
     cd ~/deps
-    git clone -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
+    clone_git -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
 	mkdir -p ~/deps/xtensor/build
 	cd ~/deps/xtensor/build
 	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
