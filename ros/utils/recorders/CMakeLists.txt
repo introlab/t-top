@@ -28,6 +28,7 @@ find_package(perception_msgs REQUIRED)
 find_package(behavior_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
 # C++ Library
@@ -82,6 +83,7 @@ ament_target_dependencies(perception_logger_node
   behavior_msgs
   tf2
   tf2_ros
+  tf2_msgs
   tf2_geometry_msgs
 )
 target_link_libraries(perception_logger_node perception_logger SQLiteCpp sqlite3 dl)

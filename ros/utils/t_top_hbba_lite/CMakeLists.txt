@@ -31,8 +31,6 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(daemon_ros_client REQUIRED)
 
-file(GLOB_RECURSE HDR_FILES CONFIGURE_DEPENDS "include/t_top_hbba_lite/**.h")
-
 # C++ Libraries
 add_library(t_top_hbba_lite_cpp
   src/Desires.cpp
@@ -55,6 +53,11 @@ install(
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
 
 # C++ Nodes
