@@ -119,9 +119,10 @@ class RobotStatusNode(rclpy.node.Node):
         status.is_camera_on = self.camera_enabled
         status.volume = self.volume
 
-        status.wifi_network = get_command_output(["iwgetid"])
-        if status.wifi_network != "":
-            wifi_interface_name = status.wifi_network.split()[0]
+        wifi_network_interface = get_command_output(["iwgetid"])
+        if wifi_network_interface != "":
+            wifi_interface_name = wifi_network_interface.split()[0]
+            status.wifi_network = wifi_network_interface.split('"')[1]
 
             wifi_usage = get_command_output(
                 ["iwconfig", wifi_interface_name])
@@ -141,6 +142,7 @@ class RobotStatusNode(rclpy.node.Node):
             self.bytes_sent = io_2[wifi_interface_name].bytes_sent
             self.bytes_recv = io_2[wifi_interface_name].bytes_recv
         else:
+            status.wifi_network = ""
             status.wifi_strength = 0
             status.local_ip = '127.0.0.1'
             status.upload_speed = 0
