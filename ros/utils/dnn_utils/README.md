@@ -14,7 +14,7 @@ This neural network classifies a sound to one class and extracts an embedding. I
 
 This neural network detects objects, classifies them and extracts embeddings for them. It takes as input a RGB image.
 The model is a modified version of `YOLOv4-tiny (COCO)` or `YOLOv7 (COCO)`.
-`YOLOv7 (COCO)` is training with [this repository](https://github.com/mamaheux/descriptor-yolov7).
+`YOLOv7 (COCO)` is trained with [this repository](https://github.com/mamaheux/descriptor-yolov7).
 
 ### `FaceDescriptorExtractor`
 
