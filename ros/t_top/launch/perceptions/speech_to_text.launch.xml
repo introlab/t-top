@@ -2,7 +2,7 @@
     <arg name="language"/> <!-- Options: fr or en -->
     <arg name="type"/> <!-- Options: google or whisper -->
     <arg name="whisper_model"/> <!-- Options: tiny, base, small, medium -->
-    <arg name="speech_to_text_perception_delay"/>
+    <arg name="speech_to_text_perception_delay" default="0"/>
     <let if="$(eval '\'$(var language)\' == \'en\'')" name="whisper_model_size" value="$(var whisper_model).en"/>
     <let if="$(eval '\'$(var language)\' == \'fr\'')" name="whisper_model_size" value="$(var whisper_model)"/>
 

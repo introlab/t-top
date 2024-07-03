@@ -29,18 +29,18 @@
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="slam" default="true"/>
 
-    <arg name="audio_analyzer_perception_delay"/>
-    <arg name="ego_noise_reduction_perception_delay"/>
-    <arg name="music_beat_detector_perception_delay"/>
-    <arg name="odas_perception_delay"/>
-    <arg name="person_identification_perception_delay"/>
-    <arg name="pose_classifier_perception_delay"/>
-    <arg name="robot_name_detector_perception_delay"/>
-    <arg name="rtabmap_perception_delay"/>
-    <arg name="speech_to_text_perception_delay"/>
-    <arg name="vad_perception_delay"/>
-    <arg name="video_analyser_3d_perception_delay"/>
-    <arg name="video_analyzer_2d_wide_perception_delay"/>
+    <arg name="audio_analyzer_perception_delay" default="0"/>
+    <arg name="ego_noise_reduction_perception_delay" default="0"/>
+    <arg name="music_beat_detector_perception_delay" default="0"/>
+    <arg name="odas_perception_delay" default="0"/>
+    <arg name="person_identification_perception_delay" default="0"/>
+    <arg name="pose_classifier_perception_delay" default="0"/>
+    <arg name="robot_name_detector_perception_delay" default="0"/>
+    <arg name="rtabmap_perception_delay" default="0"/>
+    <arg name="speech_to_text_perception_delay" default="0"/>
+    <arg name="vad_perception_delay" default="0"/>
+    <arg name="video_analyser_3d_perception_delay" default="0"/>
+    <arg name="video_analyzer_2d_wide_perception_delay" default="0"/>
 
     <!-- RTAB-Map -->
     <include if="$(var slam)" file="$(find-pkg-share t_top)/launch/perceptions/rtabmap.launch.xml">

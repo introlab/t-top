@@ -20,8 +20,8 @@
     <arg name="video_analyzer_pose_confidence_threshold"/>
 
     <arg name="visualization" default="false"/>
-    <arg name="video_analyser_3d_perception_delay"/>
-    <arg name="video_analyzer_2d_wide_perception_delay"/>
+    <arg name="video_analyser_3d_perception_delay" default="0"/>
+    <arg name="video_analyzer_2d_wide_perception_delay" default="0"/>
 
 
     <node pkg="video_analyzer" exec="video_analyzer_3d_node.py" name="video_analyzer_3d_node" launch-prefix="bash -c 'sleep $(var video_analyser_3d_perception_delay); $0 $@' ">

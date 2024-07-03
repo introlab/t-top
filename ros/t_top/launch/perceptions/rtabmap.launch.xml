@@ -8,7 +8,7 @@
     <let unless="$(var localization)" name="init_wm_with_all_nodes" value="'false'"/>
 
 
-    <arg name="rtabmap_perception_delay"/>
+    <arg name="rtabmap_perception_delay" default="0"/>
 
     <node pkg="rtabmap_sync" exec="rgbd_sync" name="rgbd_sync" launch-prefix="bash -c 'sleep $(var rtabmap_perception_delay); $0 $@' ">
         <remap from="rgb/image" to="/camera_3d/color/image_raw"/>

@@ -1,5 +1,5 @@
 <launch>
-    <arg name="music_beat_detector_perception_delay"/>
+    <arg name="music_beat_detector_perception_delay" default="0"/>
 
     <node pkg="hbba_lite" exec="on_off_hbba_filter_node" name="beat_detector_node_filter" launch-prefix="bash -c 'sleep $(var music_beat_detector_perception_delay); $0 $@' ">
         <param name="input_topic" value="audio_input_signed_16_16000"/>

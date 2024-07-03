@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="ego_noise_reduction_perception_delay"/>
+    <arg name="ego_noise_reduction_perception_delay" default="0"/>
 
     <node pkg="ego_noise_reduction" exec="ego_noise_reduction_node" name="ego_noise_reduction_node" respawn="true" launch-prefix="bash -c 'sleep $(var ego_noise_reduction_perception_delay); $0 $@' ">
         <param name="type" value="log_mmse"/>

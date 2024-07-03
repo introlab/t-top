@@ -3,7 +3,7 @@
     <arg name="gender"/> <!-- Options: female or male -->
     <arg name="voice_generator_type"/> <!-- Options: google or piper -->
     <arg name="speaking_rate"/> <!-- Range: [0.25, 4.0] -->
-    <arg name="talk_behavior_delay"/>
+    <arg name="talk_behavior_delay" default="0"/>
 
     <node pkg="talk" exec="talk_node.py" name="talk_node" launch-prefix="bash -c 'sleep $(var talk_behavior_delay); $0 $@' ">
         <param name="language" value="$(var language)"/>

@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="led_emotions_behavior_delay"/>
+    <arg name="led_emotions_behavior_delay" default="0"/>
 
     <node pkg="led_emotions" exec="led_emotions_node.py" name="led_emotions_node" launch-prefix="bash -c 'sleep $(var led_emotions_behavior_delay); $0 $@' ">
         <param name="led_patterns_file" value="$(find-pkg-share led_emotions)/led_patterns/led_patterns.json"/>

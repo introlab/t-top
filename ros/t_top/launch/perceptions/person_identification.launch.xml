@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="person_identification_perception_delay"/>
+    <arg name="person_identification_perception_delay" default="0"/>
 
     <node pkg="person_identification" exec="person_identification_node.py" name="person_identification_node" launch-prefix="bash -c 'sleep $(var person_identification_perception_delay); $0 $@' ">
         <param name="face_sharpness_score_threshold" value="0.5"/>

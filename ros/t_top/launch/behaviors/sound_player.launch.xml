@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="sound_player_behavior_delay"/>
+    <arg name="sound_player_behavior_delay" default="0"/>
 
     <node pkg="sound_player" exec="sound_player_node.py" name="sound_player_node" launch-prefix="bash -c 'sleep $(var sound_player_behavior_delay); $0 $@' ">
         <param name="sampling_frequency" value="16000"/>

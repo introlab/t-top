@@ -1,6 +1,6 @@
 <launch>
     <arg name="simulation"/>
-    <arg name="gesture_behavior_delay"/>
+    <arg name="gesture_behavior_delay" default="0"/>
 
     <node pkg="gesture" exec="gesture_node.py" name="gesture_node" launch-prefix="bash -c 'sleep $(var gesture_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>

@@ -1,7 +1,7 @@
 <launch>
     <arg name="simulation"/>
     <arg name="min_activity" default="0.1"/>
-    <arg name="sound_following_behavior_delay"/>
+    <arg name="sound_following_behavior_delay" default="0"/>
 
     <node pkg="sound_following" exec="sound_following_node.py" name="sound_following_node" launch-prefix="bash -c 'sleep $(var sound_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>

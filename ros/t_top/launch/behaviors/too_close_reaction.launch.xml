@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="too_close_reaction_behavior_delay"/>
+    <arg name="too_close_reaction_behavior_delay" default="0"/>
 
     <node pkg="too_close_reaction" exec="too_close_reaction_node.py" name="too_close_reaction_node" launch-prefix="bash -c 'sleep $(var too_close_reaction_behavior_delay); $0 $@' ">
         <param name="max_offset_m" value="0.015"/>

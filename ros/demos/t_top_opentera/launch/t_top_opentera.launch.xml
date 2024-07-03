@@ -2,8 +2,8 @@
     <arg name="online" default="false"/>
     <arg name="verify_ssl" default="false"/>
 
-    <let     if="$(arg verify_ssl)" name="stand_alone" value="false"/>
-    <let unless="$(arg verify_ssl)" name="stand_alone" value="true"/>
+    <let if="$(var verify_ssl)" name="stand_alone" value="false"/>
+    <let unless="$(var verify_ssl)" name="stand_alone" value="true"/>
 
     <group><include file="$(find-pkg-share t_top)/launch/opentera_teleop.launch.xml">
         <arg name="is_stand_alone" value="$(var stand_alone)"/>

@@ -2,7 +2,7 @@
     <arg name="odas_configuration_path" default="$(find-pkg-share t_top)/config/configuration_16SoundsUSB.cfg"/>
     <arg name="visualization" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
-    <arg name="odas_perception_delay"/>
+    <arg name="odas_perception_delay" default="0"/>
 
     <!-- ODAS -->
     <node unless="$(var use_echo_cancellation)" pkg="odas_ros" exec="odas_server_node.py" name="odas_server_node" respawn="true" launch-prefix="bash -c 'sleep $(var odas_perception_delay); $0 $@' ">

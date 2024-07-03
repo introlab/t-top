@@ -1,5 +1,5 @@
 <launch>
-    <arg name="dance_behavior_delay"/>
+    <arg name="dance_behavior_delay" default="0"/>
 
     <node pkg="dance" exec="head_dance_node.py" name="head_dance_node" launch-prefix="bash -c 'sleep $(var dance_behavior_delay); $0 $@' ">
         <param name="movement_file" value="$(find-pkg-share dance)/movements/head_movements.json"/>
