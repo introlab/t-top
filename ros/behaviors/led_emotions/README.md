@@ -15,7 +15,7 @@ This node makes T-Top express emotions with it LED strip.
 
 #### Subscribed Topics
 
-- `led_emotions/name` ([std_msgs/String](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html)): The emotion names.
+- `led_emotions/name` ([std_msgs/String](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/String.html)): The emotion names.
 
 #### Published Topics
 

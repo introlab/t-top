@@ -20,9 +20,9 @@ This node makes T-Top perform gestures.
 
 #### Published Topics
 
-- `gesture/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `gesture/set_head_pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/en/humble/p/geometry_msgs/interfaces/msg/PoseStamped.html)):
   The head pose.
-- `gesture/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `gesture/set_torso_orientation` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The
   torso orientation.
 - `gesture/done` ([behavior_msgs/Done](../behavior_msgs/msg/Done.msg)): Indicates that the gesture is finished.
 

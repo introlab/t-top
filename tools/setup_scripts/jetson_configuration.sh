@@ -393,9 +393,10 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
         imu_tools \
         rosbridge_suite \
         tf_transformations \
+	    joint_state_publisher_gui \
         > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 
-    sudo vcs import src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
+    sudo vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
     git -C ${ROS_ROOT}/src clone -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
 
     SKIP_KEYS="libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv xsimd xtensor xtl"
@@ -406,31 +407,13 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 	--rosdistro ${ROS_DISTRO} \
 	--skip-keys "$SKIP_KEYS"
 
-    mkdir -p ~/deps
-
-    cd ~/deps
+    cd ${ROS_ROOT}/src
     clone_git -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
-	mkdir -p ~/deps/xtl/build
-	cd ~/deps/xtl/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	sudo cmake --install .
-
-    cd ~/deps
     clone_git -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
-	mkdir -p ~/deps/xsimd/build
-	cd ~/deps/xsimd/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	sudo cmake --install .
-
-    cd ~/deps
     clone_git -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
-	mkdir -p ~/deps/xtensor/build
-	cd ~/deps/xtensor/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	sudo cmake --install .
+
+    sudo_apply_patch ${ROS_ROOT}/src/libg2o/CMakeLists.txt $PATCH_FILES_DIR/libg2o.patch
+    sudo_apply_patch ${ROS_ROOT}/src/octomap_msgs/CMakeLists.txt $PATCH_FILES_DIR/octomap_msgs.patch
 
     makestamp ros_ws_deps
 else
@@ -445,8 +428,7 @@ if [ $(checkstamp ros_ws_build) = "false" ] ; then
     cd ${ROS_ROOT}
 
     sudo colcon build \
-        --merge-install \
-        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF
 
     makestamp ros_ws_build
 else
@@ -700,7 +682,7 @@ if [ $(checkstamp ttop_ws_build) = "false" ] ; then
     cd $TTOP_REPO_PATH/../..
 
     mkdir -p ~/.colcon
-    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults.yaml ~/.colcon/defaults.yaml
+    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults.yaml $TTOP_REPO_PATH/../../colcon_defaults.yaml
 
     colcon build
 

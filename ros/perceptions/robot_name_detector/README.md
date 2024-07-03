@@ -19,7 +19,7 @@ This node measures the sound level and detects the robot name.
  - `inference_type` (string): Indicates where to run the neural network (cpu, torch_gpu or trt_gpu). The default value is cpu.
 
 #### Subscribed Topics
- - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed, which must be signed_16, at 16000 Hz and 1 channel.
+ - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed, which must be signed_16, at 16000 Hz and 1 channel.
 
 #### Published Topics
  - `sound_rms` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The sound level.

@@ -14,14 +14,14 @@ This node makes T-Top head dance on the beat. The moves are randomly chosen.
 
 #### Subscribed Topics
 
-- `bpm` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The bpm topic from the
+- `bpm` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The bpm topic from the
   beat_detector_node.
-- `beat` ([std_msgs/Bool](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Bool.html)): The beat topic from the
+- `beat` ([std_msgs/Bool](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Bool.html)): The beat topic from the
   beat_detector_node.
 
 #### Published Topics
 
-- `dance/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `dance/set_head_pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/en/humble/p/geometry_msgs/interfaces/msg/PoseStamped.html)):
   The head pose.
 
 #### Services
@@ -40,15 +40,15 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Subscribed Topics
 
-- `bpm` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The bpm topic from the
+- `bpm` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The bpm topic from the
   beat_detector_node.
-- `beat` ([std_msgs/Bool](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Bool.html)): The beat topic from the
+- `beat` ([std_msgs/Bool](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Bool.html)): The beat topic from the
   beat_detector_node.
 - `daemon/motor_status` ([daemon_ros_client/MotorStatus](../../daemon_ros_client/msg/MotorStatus.msg)): The motor status to get torso orientation.
 
 #### Published Topics
 
-- `dance/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `dance/set_torso_orientation` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The
   torso orientation.
 
 #### Services
@@ -67,7 +67,7 @@ This node makes T-Top torso dance on the beat. The moves are randomly chosen.
 
 #### Subscribed Topics
 
-- `beat` ([std_msgs/Bool](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Bool.html)): The beat topic from the
+- `beat` ([std_msgs/Bool](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Bool.html)): The beat topic from the
   beat_detector_node.
 
 #### Published Topics

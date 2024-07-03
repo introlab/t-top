@@ -25,9 +25,9 @@ This node makes T-Top talk and move its lips accordingly. It uses Google Cloud T
 
 #### Published Topics
 
-- `face/mouth_signal_scale` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)):
+- `face/mouth_signal_scale` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)):
   Indicates how much the mouth must be open.
-- `audio_out` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The
+- `audio_out` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/AudioFrame.msg)): The
   speech sound (mono, float format).
 - `talk/done` ([behavior_msgs/Done](../behavior_msgs/msg/Done.msg)): Indicates that the speech is finished.
 

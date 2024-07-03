@@ -19,7 +19,7 @@ This node plays sound files.
 
 #### Published Topics
 
-- `audio_out` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The
+- `audio_out` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/AudioFrame.msg)): The
   sound (mono, float format).
 - `sound_player/done` ([behavior_msgs/Done](../behavior_msgs/msg/Done.msg)): Indicates that the speech is finished.
 
