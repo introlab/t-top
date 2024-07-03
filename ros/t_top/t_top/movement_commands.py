@@ -129,7 +129,7 @@ class MovementCommands:
         torso_pose = self.current_torso_pose + steps_size_torso
 
         if abs(steps_size_torso) > 0:
-            self._torso_orientation_pub.publish(torso_pose)
+            self._torso_orientation_pub.publish(self._torso_msg(torso_pose))
 
             if should_sleep:
                 time.sleep(self._minTime)
@@ -165,9 +165,7 @@ class MovementCommands:
                 time.sleep(self._minTime)
 
     def _torso_msg(self, pose):
-        msg = Float32()
-        msg.data = pose
-        return msg
+        return Float32(data=pose)
 
     def move_torso(self, pose, should_wait=False, speed_rad_sec=1.0e10, stop_cb=None, timeout=float('inf')):
         if self._hbba_filter_state.is_filtering_all_messages or (stop_cb and stop_cb()):
