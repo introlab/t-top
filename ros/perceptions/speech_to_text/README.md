@@ -12,7 +12,7 @@ The node performs speech to text. It uses Google Cloud Speech-to-Text.
  - `language` (string): The language (en or fr). The default value is en.
 
 #### Subscribed Topics
- - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed.
+ - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed.
 
 #### Published Topics
  - `transcript` ([perception_msgs/Transcript](../perception_msgs/msg/Transcript.msg)): The text said.
@@ -34,8 +34,8 @@ The node performs speech to text. It uses [Faster Whisper](https://github.com/gu
 
 
 #### Subscribed Topics
- - `voice_activity` ([audio_utils_msgs/VoiceActivity](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/VoiceActivity.msg)): The output of the voice activity detector.
- - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed.
+ - `voice_activity` ([audio_utils_msgs/VoiceActivity](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/VoiceActivity.msg)): The output of the voice activity detector.
+ - `audio_in` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/AudioFrame.msg)): The sound topic processed.
 
 #### Published Topics
  - `transcript` ([perception_msgs/Transcript](../perception_msgs/msg/Transcript.msg)): The text said.

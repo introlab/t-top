@@ -1,0 +1,162 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0f754ff..7bf945c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,16 +1,17 @@
+ cmake_minimum_required(VERSION 3.14)
+ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
+ 
+-project(g2o)
++project(libg2o)
++find_package(ament_cmake REQUIRED)
+ 
+ include(CPack)
+ include(GNUInstallDirs)
+ 
+ # The library prefix
+-set(LIB_PREFIX g2o_)
++set(LIB_PREFIX libg2o_)
+ 
+-set(g2o_C_FLAGS)
+-set(g2o_CXX_FLAGS)
++set(libg2o_C_FLAGS)
++set(libg2o_CXX_FLAGS)
+ 
+ # default built type
+ if(NOT CMAKE_BUILD_TYPE)
+@@ -61,15 +62,15 @@ if(APPLE)
+ endif(APPLE)
+ 
+ # Set the output directory for the build executables and libraries
+-set(g2o_RUNTIME_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/bin CACHE PATH "Target for the binaries")
++set(g2o_RUNTIME_OUTPUT_DIRECTORY ${libg2o_SOURCE_DIR}/bin CACHE PATH "Target for the binaries")
+ if(WIN32)
+-  set(g2o_LIBRARY_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/bin CACHE PATH "Target for the libraries")
++  set(g2o_LIBRARY_OUTPUT_DIRECTORY ${libg2o_SOURCE_DIR}/bin CACHE PATH "Target for the libraries")
+ else(WIN32)
+-  set(g2o_LIBRARY_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/lib CACHE PATH "Target for the libraries")
++  set(g2o_LIBRARY_OUTPUT_DIRECTORY ${libg2o_SOURCE_DIR}/lib CACHE PATH "Target for the libraries")
+ endif(WIN32)
+-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
+-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
+-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${g2o_RUNTIME_OUTPUT_DIRECTORY})
++set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${libg2o_LIBRARY_OUTPUT_DIRECTORY})
++set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${libg2o_LIBRARY_OUTPUT_DIRECTORY})
++set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${libg2o_RUNTIME_OUTPUT_DIRECTORY})
+ 
+ # Set standard installation directories
+ set(RUNTIME_DESTINATION ${CMAKE_INSTALL_BINDIR})
+@@ -80,7 +81,7 @@ set(INCLUDES_INSTALL_DIR ${INCLUDES_DESTINATION}/g2o)
+ 
+ # Set search directory for looking for our custom CMake scripts to
+ # look for SuiteSparse, QGLViewer, and Eigen3.
+-list(APPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
++list(APPEND CMAKE_MODULE_PATH ${libg2o_SOURCE_DIR}/cmake_modules)
+ 
+ # Detect OS and define macros appropriately
+ if(WIN32)
+@@ -157,8 +158,8 @@ if(G2O_USE_OPENMP)
+   find_package(OpenMP)
+   if(OPENMP_FOUND)
+     set (G2O_OPENMP 1)
+-    set(g2o_C_FLAGS "${g2o_C_FLAGS} ${OpenMP_C_FLAGS}")
+-    set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS}")
++    set(libg2o_C_FLAGS "${libg2o_C_FLAGS} ${OpenMP_C_FLAGS}")
++    set(libg2o_CXX_FLAGS "${libg2o_CXX_FLAGS} -DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS}")
+     message(STATUS "Compiling with OpenMP support")
+   endif(OPENMP_FOUND)
+ endif(G2O_USE_OPENMP)
+@@ -358,8 +359,8 @@ endif()
+ option(BUILD_CODE_COVERAGE "Enable coverage reporting" OFF)
+ if(BUILD_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+   message(STATUS "Enabling coverage compiler flags")
+-  set(g2o_C_FLAGS "${g2o_C_FLAGS} --coverage")
+-  set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} --coverage")
++  set(libg2o_C_FLAGS "${libg2o_C_FLAGS} --coverage")
++  set(libg2o_CXX_FLAGS "${libg2o_CXX_FLAGS} --coverage")
+ endif()
+ 
+ # Compiler specific options for gcc
+@@ -390,8 +391,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
+     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+   endif()
+   # activate warnings !!!
+-  set(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall -W")
+-  set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -W")
++  set(libg2o_C_FLAGS "${libg2o_C_FLAGS} -Wall -W")
++  set(libg2o_CXX_FLAGS "${libg2o_CXX_FLAGS} -Wall -W")
+ endif(CMAKE_COMPILER_IS_GNUCXX)
+ 
+ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+@@ -409,11 +410,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   endif()
+ 
+   # activate all warnings
+-  #set(g2o_C_FLAGS "${g2o_C_FLAGS} -Weverything")
+-  #set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Weverything")
+-  set(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall")
+-  set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall")
+-  #set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -stdlib=libc++")
++  #set(libg2o_C_FLAGS "${libg2o_C_FLAGS} -Weverything")
++  #set(libg2o_CXX_FLAGS "${libg2o_CXX_FLAGS} -Weverything")
++  set(libg2o_C_FLAGS "${libg2o_C_FLAGS} -Wall")
++  set(libg2o_CXX_FLAGS "${libg2o_CXX_FLAGS} -Wall")
++  #set(libg2o_CXX_FLAGS "${libg2o_CXX_FLAGS} -Wall -stdlib=libc++")
+ endif()
+ 
+ if(MSVC)
+@@ -477,8 +478,8 @@ set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # specifying compiler flags
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${g2o_CXX_FLAGS}")
+-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${libg2o_CXX_FLAGS}")
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${libg2o_C_FLAGS}")
+ 
+ # Find Eigen3. If it defines the target, this is used. If not,
+ # fall back to the using the module form.
+@@ -491,7 +492,7 @@ else()
+ endif ()
+ 
+ # Set up the top-level include directories
+-include_directories(${g2o_SOURCE_DIR} ${PROJECT_BINARY_DIR})
++include_directories(${libg2o_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+ 
+ # Generate config.h
+ set(G2O_OPENGL_FOUND ${OPENGL_FOUND})
+@@ -503,11 +504,11 @@ set(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")
+ 
+ # Generate cmake configuration scripts
+ set(G2O_GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+-set(G2O_VERSION_CONFIG "${G2O_GENERATED_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+-set(G2O_PROJECT_CONFIG "${G2O_GENERATED_DIR}/${PROJECT_NAME}Config.cmake")
+-set(G2O_TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
+-set(G2O_CONFIG_INSTALL_DIR "lib/cmake/${PROJECT_NAME}")
+-set(G2O_NAMESPACE "${PROJECT_NAME}::")
++set(G2O_VERSION_CONFIG "${G2O_GENERATED_DIR}/g2oConfigVersion.cmake")
++set(G2O_PROJECT_CONFIG "${G2O_GENERATED_DIR}/g2oConfig.cmake")
++set(G2O_TARGETS_EXPORT_NAME "g2oTargets")
++set(G2O_CONFIG_INSTALL_DIR "lib/cmake/g2o")
++set(G2O_NAMESPACE "g2o::")
+ set(G2O_SRC_DIR "${PROJECT_SOURCE_DIR}")
+ set(G2O_VERSION 1.0.0)
+ 
+@@ -519,8 +520,8 @@ WRITE_BASIC_PACKAGE_VERSION_FILE(
+ configure_file(config.h.in "${PROJECT_BINARY_DIR}/g2o/config.h")
+ install(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION ${INCLUDES_DESTINATION}/g2o)
+ 
+-configure_file("${g2o_SOURCE_DIR}/cmake_modules/Config.cmake.in" "${G2O_PROJECT_CONFIG}" @ONLY)
+-configure_file("${g2o_SOURCE_DIR}/script/codecov.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/codecov.sh" @ONLY)
++configure_file("${libg2o_SOURCE_DIR}/cmake_modules/Config.cmake.in" "${G2O_PROJECT_CONFIG}" @ONLY)
++configure_file("${libg2o_SOURCE_DIR}/script/codecov.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/codecov.sh" @ONLY)
+ 
+ install(
+     FILES "${G2O_PROJECT_CONFIG}" "${G2O_VERSION_CONFIG}"
+@@ -551,3 +552,5 @@ endif()
+ 
+ # Include the subdirectories
+ add_subdirectory(g2o)
++
++ament_package()
+

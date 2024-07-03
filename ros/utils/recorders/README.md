@@ -26,8 +26,8 @@ This node records an image topic and an audio topic.
  - `audio_stream_language_code` (string): The audio stream language code.
 
 #### Subscribed Topics
- - `video_{video_stream_name}` ([sensor_msgs/Image](http://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/Image.html)): The image topic to record.
- - `audio_{audio_stream_name}` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/main/audio_utils_msgs/msg/AudioFrame.msg)): The audio topic to record.
+ - `video_{video_stream_name}` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): The image topic to record.
+ - `audio_{audio_stream_name}` ([audio_utils_msgs/AudioFrame](https://github.com/introlab/audio_utils/blob/ros2/audio_utils_msgs/msg/AudioFrame.msg)): The audio topic to record.
 
 #### Services
  - `video_recorder/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter state service to enable or disable the recording.

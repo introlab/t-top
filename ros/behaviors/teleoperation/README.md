@@ -28,7 +28,7 @@ This node allows T-Top to be teleoperated using twist commands.
 
 - `pose/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.
-- `teleop_do_action` ([opentera_webrtc_ros_msgs/SetString](https://github.com/introlab/opentera-webrtc-ros/blob/main/opentera_webrtc_ros_msgs/srv/SetString.srv)): The name of a specific action to do:
+- `teleop_do_action` ([opentera_webrtc_ros_msgs/SetString](https://github.com/introlab/opentera-webrtc-ros/blob/ros2/opentera_webrtc_ros_msgs/srv/SetString.srv)): The name of a specific action to do:
     - do_yes
     - do_no
     - do_maybe

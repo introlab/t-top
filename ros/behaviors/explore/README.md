@@ -21,11 +21,11 @@ This node makes T-Top explore its surrounding.
 
 #### Published Topics
 
-- `explore/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `explore/set_head_pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/en/humble/p/geometry_msgs/interfaces/msg/PoseStamped.html)):
   The head pose.
-- `explore/set_torso_orientation` ([std_msgs/Float32](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html)): The
+- `explore/set_torso_orientation` ([std_msgs/Float32](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Float32.html)): The
   torso orientation.
-- `explore/done` ([std_msgs/Empty](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Empty.html)): Indicates that the
+- `explore/done` ([std_msgs/Empty](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/Empty.html)): Indicates that the
   explore moves are finished.
 
 #### Services

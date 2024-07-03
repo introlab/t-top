@@ -17,11 +17,11 @@ This node makes T-Top move back its head when someone is too close to T-Top.
 
 #### Subscribed Topics
 
-- `depth_image_raw` ([sensor_msgs/Image](http://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/Image.html)): The depth image.
+- `depth_image_raw` ([sensor_msgs/Image](https://docs.ros.org/en/humble/p/sensor_msgs/interfaces/msg/Image.html)): The depth image.
 
 #### Published Topics
 
-- `too_close_reaction/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)):
+- `too_close_reaction/set_head_pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/en/humble/p/geometry_msgs/interfaces/msg/PoseStamped.html)):
   The head pose offset.
 
 #### Services

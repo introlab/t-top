@@ -15,4 +15,4 @@ This node applies priority arbitration to the head pose topic.
 
 #### Published Topics
 
-- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)): The output topic.
+- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/en/humble/p/geometry_msgs/interfaces/msg/PoseStamped.html)): The output topic.

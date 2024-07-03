@@ -12,6 +12,9 @@ export PYTHONIOENCODING=utf-8
 export PATH=/usr/local/cuda-11.4/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH
 
+SCRIPT=`realpath $0`
+SCRIPT_PATH=`dirname $SCRIPT`
+
 # set Python3 as default
 update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
@@ -126,6 +129,7 @@ rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
 	imu_tools \
 	rosbridge_suite \
 	tf_transformations \
+	joint_state_publisher_gui \
 > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 cat ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 
@@ -134,8 +138,8 @@ if [ -f src/ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall.vcsupdate ]; then
     echo "vcs pull src"
     vcs pull src
 else
-    echo "vcs import src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall"
-    vcs import src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
+    echo "vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall"
+    vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 fi
 
 touch src/ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall.vcsupdate
@@ -191,36 +195,21 @@ rosdep install -y \
 	--skip-keys "$SKIP_KEYS"
 
 # install xtl
-if [ ! -d "/tmp/xtl" ]; then
-	cd /tmp
+if [ ! -d "${ROS_ROOT}/src/xtl" ]; then
+	cd ${ROS_ROOT}/src
 	git clone -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
-	mkdir -p /tmp/xtl/build
-	cd /tmp/xtl/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	cmake --install .
 fi
 
 # install xsimd
-if [ ! -d "/tmp/xsimd" ]; then
-	cd /tmp
+if [ ! -d "${ROS_ROOT}/src/xsimd" ]; then
+	cd ${ROS_ROOT}/src
 	git clone -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
-	mkdir -p /tmp/xsimd/build
-	cd /tmp/xsimd/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	cmake --install .
 fi
 
 # install xtensor
-if [ ! -d "/tmp/xtensor" ]; then
-	cd /tmp
+if [ ! -d "${ROS_ROOT}/src/xtensor" ]; then
+	cd ${ROS_ROOT}/src
 	git clone -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
-	mkdir -p /tmp/xtensor/build
-	cd /tmp/xtensor/build
-	cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_INSTALL_PREFIX=$ROS_ROOT
-	cmake --build . --parallel $(nproc --ignore=1)
-	cmake --install .
 fi
 
 # install librealsense with CUDA support
@@ -246,16 +235,13 @@ fi
 
 cd ${ROS_ROOT}
 
-# build / install dependencies that are not well handled by some packages
-colcon build --packages-select ament_cmake ament_uncrustify ament_cmake_uncrustify ament_lint_common ament_index_cpp \
-	--merge-install \
-	--cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true
-
+# Apply the patch of libg2o
+sudo patch -u ${ROS_ROOT}/src/libg2o/CMakeLists.txt $SCRIPT_PATH/patch/libg2o.patch
+sudo patch -u ${ROS_ROOT}/src/octomap_msgs/CMakeLists.txt $SCRIPT_PATH/patch/octomap_msgs.patch
 
 # build the rest - for verbose, see https://answers.ros.org/question/363112/how-to-see-compiler-invocation-in-colcon-build
-colcon build \
-	--merge-install \
-	--cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true
+colcon build 
+    --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF
 
 # remove build files
 # rm -rf ${ROS_ROOT}/src
