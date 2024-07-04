@@ -427,6 +427,7 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_ws_build) = "false" ] ; then
     cd ${ROS_ROOT}
 
+    export ROS_VERSION=2
     sudo colcon build \
         --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF
 
