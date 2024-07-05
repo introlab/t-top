@@ -131,6 +131,7 @@ rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
 	rosbridge_suite \
 	tf_transformations \
 	joint_state_publisher_gui \
+	rqt_tf_tree \
 > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 cat ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 

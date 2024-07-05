@@ -394,6 +394,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
         rosbridge_suite \
         tf_transformations \
 	    joint_state_publisher_gui \
+        rqt_tf_tree \
         > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
 
     sudo vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
