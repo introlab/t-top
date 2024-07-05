@@ -16,3 +16,6 @@
 [submodule "ros/utils/recorders/3rd_party/SQLiteCpp"]
 	path = ros/utils/recorders/3rd_party/SQLiteCpp
 	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "ros/utils/opentera-webrtc-ros"]
+	path = ros/utils/opentera-webrtc-ros
+	url = https://github.com/introlab/opentera-webrtc-ros.git
