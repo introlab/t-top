@@ -59,10 +59,15 @@ ament_target_dependencies(${PROJECT_NAME}_node
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
+# Python Nodes
+install(PROGRAMS
+  scripts/nearest_face_following_orientation_replication_node.py
+  scripts/nearest_face_orientation_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # Launch files
-# install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
-
-
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

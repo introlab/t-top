@@ -42,7 +42,6 @@ class HeadRollImageRotationNode(rclpy.node.Node):
         rotated_color_image = cv2.warpAffine(color_image, rotation_matrix, (w, h))
 
         rotated_color_image_msg = self._cv_bridge.cv2_to_imgmsg(rotated_color_image, 'bgr8')
-        rotated_color_image_msg.header.seq = color_image_msg.header.seq
         rotated_color_image_msg.header.stamp = color_image_msg.header.stamp
         self._image_pub.publish(rotated_color_image_msg)
 
