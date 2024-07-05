@@ -65,7 +65,7 @@
     <!-- Behaviors -->
     <node pkg="connect4" exec="nearest_face_following_orientation_replication_node.py" name="nearest_face_following_orientation_replication_node">
         <param name="simulation" value="false"/>
-        <param name="control_frequency" value="30"/>
+        <param name="control_frequency" value="30.0"/>
         <param name="torso_control_alpha" value="0.2"/>
         <param name="head_control_alpha" value="0.1"/>
         <param name="head_control_pitch_up_alpha_gain" value="2.0"/>
