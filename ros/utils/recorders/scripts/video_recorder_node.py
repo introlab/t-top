@@ -442,6 +442,7 @@ class VideoRecorderConfiguration:
 
 class VideoRecorder:
     def __init__(self, node: rclpy.node.Node, configuration: VideoRecorderConfiguration):
+        self._node = node
         self._configuration = configuration
         os.makedirs(self._configuration.output_directory, exist_ok=True)
 
@@ -480,8 +481,8 @@ class VideoRecorder:
         }
 
     def close(self):
-        apply(rclpy.subscription.Subscription.destroy, self._image_subscribers.values())
-        apply(rclpy.subscription.Subscription.destroy, self._audio_subscribers.values())
+        apply(self._node.destroy_subscription, self._image_subscribers.values())
+        apply(self._node.destroy_subscription, self._audio_subscribers.values())
         self._stop_if_started()
 
     def _image_cb(self, msg: Image, configuration: VideoStreamConfiguration):

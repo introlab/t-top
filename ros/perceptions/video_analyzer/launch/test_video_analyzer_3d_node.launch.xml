@@ -2,8 +2,8 @@
     <arg name="neural_network_inference_type"/> <!-- Options: cpu, torch_gpu or trt_gpu -->
 
     <include file="$(find-pkg-share realsense2_camera)/launch/rs_launch.py">
-        <arg name="depth_module.profile" value="1280x720x15" />
-        <arg name="rgb_camera.profile" value="1280x720x15" />
+        <arg name="depth_module.depth_profile" value="1280,720,15" />
+        <arg name="rgb_camera.color_profile" value="1280,720,15" />
         <arg name="enable_depth" value="true" />
         <arg name="enable_color" value="true" />
         <arg name="camera_namespace" value=""/>
