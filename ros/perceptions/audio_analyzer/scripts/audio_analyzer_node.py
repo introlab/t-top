@@ -93,7 +93,6 @@ class AudioAnalyzerNode(rclpy.node.Node):
         audio_descriptor, audio_class_probabilities = self._audio_descriptor_extractor(audio_descriptor_buffer)
         audio_descriptor = audio_descriptor.tolist()
 
-        print('Voice prob:', audio_class_probabilities[self._voice_class_index].item())
         if audio_class_probabilities[self._voice_class_index].item() >= self._voice_probability_threshold:
             voice_descriptor_buffer = audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
             voice_descriptor = self._voice_descriptor_extractor(voice_descriptor_buffer).tolist()
@@ -120,6 +119,9 @@ class AudioAnalyzerNode(rclpy.node.Node):
     def _publish_audio_analysis(self, sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor, processing_time_s=0):
         with self._audio_direction_lock:
             frame_id, direction_x, direction_y, direction_z = self._audio_direction
+
+        if frame_id == '':
+            return
 
         msg = AudioAnalysis()
         msg.header.stamp = self.get_clock().now().to_msg()
