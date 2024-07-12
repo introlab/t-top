@@ -19,7 +19,7 @@ from daemon_ros_client.msg import MotorStatus
 class HeadRollImageRotationNode(rclpy.node.Node):
     def __init__(self):
         super().__init__('head_roll_image_rotation_node')
-
+        self._roll_angle_rad = 0.0
         self._cv_bridge = CvBridge()
 
         self._image_pub = self.create_publisher(Image, 'output_image', 1)
