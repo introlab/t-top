@@ -48,7 +48,6 @@ class AudioAnalyzerNode(rclpy.node.Node):
         self._audio_frames_lock = threading.Lock()
         self._audio_frames = []
         self._audio_analysis_count = 0
-        self._voice_frame_count = 0
 
         self._audio_direction_lock = threading.Lock()
         self._audio_direction = ('', 0.0, 0.0, 0.0)
@@ -90,18 +89,18 @@ class AudioAnalyzerNode(rclpy.node.Node):
     def _analyse(self):
         start_time = datetime.now()
         audio_buffer, sst_id = self._get_audio_buffer_and_sst_id()
+        if audio_buffer.size()[0] < self._audio_buffer_duration:
+            self._publish_audio_analysis(sst_id, audio_buffer, [], [], [])
+            return
+
         audio_descriptor_buffer = audio_buffer[-self._audio_descriptor_extractor.get_supported_duration():]
         audio_descriptor, audio_class_probabilities = self._audio_descriptor_extractor(audio_descriptor_buffer)
         audio_descriptor = audio_descriptor.tolist()
 
         voice_descriptor = []
         if audio_class_probabilities[self._voice_class_index].item() >= self._voice_probability_threshold:
-            self._voice_frame_count += 1
-            if self._voice_frame_count > (self._voice_descriptor_extractor.get_supported_duration() / self._audio_analysis_interval):
-                voice_descriptor_buffer = audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
-                voice_descriptor = self._voice_descriptor_extractor(voice_descriptor_buffer).tolist()
-        else:
-            self._voice_frame_count = 0
+            voice_descriptor_buffer = audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
+            voice_descriptor = self._voice_descriptor_extractor(voice_descriptor_buffer).tolist()
 
         audio_classes = self._get_audio_classes(audio_class_probabilities)
         processing_time_s = (datetime.now() - start_time).total_seconds()
@@ -112,7 +111,7 @@ class AudioAnalyzerNode(rclpy.node.Node):
             sst_id = self._sst_id
             audio_buffer = torch.cat(self._audio_frames, dim=0)
         if audio_buffer.size()[0] < self._audio_buffer_duration:
-            return torch.cat([torch.zeros(self._audio_buffer_duration - audio_buffer.size()[0]), audio_buffer], dim=0), sst_id
+            return audio_buffer, sst_id
         else:
             return audio_buffer[-self._audio_buffer_duration:], sst_id
 
@@ -120,7 +119,7 @@ class AudioAnalyzerNode(rclpy.node.Node):
         return [self._class_names[i] for i in range(len(self._class_names))
                 if audio_class_probabilities[i].item() >= self._class_probability_threshold]
 
-    def _publish_audio_analysis(self, sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor, processing_time_s=0):
+    def _publish_audio_analysis(self, sst_id, audio_buffer, audio_classes, audio_descriptor, voice_descriptor, processing_time_s=0.0):
         with self._audio_direction_lock:
             frame_id, direction_x, direction_y, direction_z = self._audio_direction
 
@@ -153,6 +152,7 @@ class AudioAnalyzerNode(rclpy.node.Node):
 
     def _sst_cb(self, sst):
         if len(sst.sources) == 0:
+            self._reset_sst(-1)
             return
 
         if len(sst.sources) > 1:
@@ -160,12 +160,17 @@ class AudioAnalyzerNode(rclpy.node.Node):
             return
 
         if sst.sources[0].id != self._sst_id:
-            self._sst_id = sst.sources[0].id
+            self._reset_sst(sst.sources[0].id)
             with self._audio_frames_lock:
                 self._audio_frames = []
 
         with self._audio_direction_lock:
             self._audio_direction = (sst.header.frame_id, sst.sources[0].x, sst.sources[0].y, sst.sources[0].z)
+
+    def _reset_sst(self, new_sst_id):
+            self._sst_id = new_sst_id
+            with self._audio_frames_lock:
+                self._audio_frames = []
 
     def run(self):
         rclpy.spin(self)
