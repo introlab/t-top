@@ -48,6 +48,7 @@ class AudioAnalyzerNode(rclpy.node.Node):
         self._audio_frames_lock = threading.Lock()
         self._audio_frames = []
         self._audio_analysis_count = 0
+        self._voice_frame_count = 0
 
         self._audio_direction_lock = threading.Lock()
         self._audio_direction = ('', 0.0, 0.0, 0.0)
@@ -93,11 +94,14 @@ class AudioAnalyzerNode(rclpy.node.Node):
         audio_descriptor, audio_class_probabilities = self._audio_descriptor_extractor(audio_descriptor_buffer)
         audio_descriptor = audio_descriptor.tolist()
 
+        voice_descriptor = []
         if audio_class_probabilities[self._voice_class_index].item() >= self._voice_probability_threshold:
-            voice_descriptor_buffer = audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
-            voice_descriptor = self._voice_descriptor_extractor(voice_descriptor_buffer).tolist()
+            self._voice_frame_count += 1
+            if self._voice_frame_count > (self._voice_descriptor_extractor.get_supported_duration() / self._audio_analysis_interval):
+                voice_descriptor_buffer = audio_buffer[-self._voice_descriptor_extractor.get_supported_duration():]
+                voice_descriptor = self._voice_descriptor_extractor(voice_descriptor_buffer).tolist()
         else:
-            voice_descriptor = []
+            self._voice_frame_count = 0
 
         audio_classes = self._get_audio_classes(audio_class_probabilities)
         processing_time_s = (datetime.now() - start_time).total_seconds()
