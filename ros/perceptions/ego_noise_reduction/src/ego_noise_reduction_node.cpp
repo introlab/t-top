@@ -27,7 +27,6 @@
 using namespace introlab;
 using namespace std;
 
-constexpr uint32_t AudioQueueSize = 100;
 constexpr uint32_t StatusQueueSize = 1;
 constexpr size_t HeadServoCount = 6;
 
@@ -57,6 +56,8 @@ struct EgoNoiseReductionNodeConfiguration
     float logMmseAlpha;
     float logMmseMaxAPosterioriSnr;
     float logMmseMinAPrioriSnr;
+
+    size_t audioQueueSize;
 
     EgoNoiseReductionNodeConfiguration(rclcpp::Node* node)
         : format(PcmAudioFrameFormat::Signed8),
@@ -98,6 +99,8 @@ struct EgoNoiseReductionNodeConfiguration
         logMmseAlpha = node->declare_parameter("log_mmse_alpha", 0.98f);
         logMmseMaxAPosterioriSnr = node->declare_parameter("log_mmse_max_a_posteriori_snr", 40.f);
         logMmseMinAPrioriSnr = node->declare_parameter("log_mmse_min_a_priori_snr", 0.003f);
+
+        audioQueueSize = node->declare_parameter("audio_queue_size", 1);
     }
 };
 
@@ -132,10 +135,10 @@ public:
           m_inputAudioFrame(m_configuration.channelCount, m_configuration.nFft),
           m_outputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft)
     {
-        m_audioPub = create_publisher<audio_utils_msgs::msg::AudioFrame>("audio_out", AudioQueueSize);
+        m_audioPub = create_publisher<audio_utils_msgs::msg::AudioFrame>("audio_out", m_configuration.audioQueueSize);
         m_audioSub = create_subscription<audio_utils_msgs::msg::AudioFrame>(
             "audio_in",
-            AudioQueueSize,
+            m_configuration.audioQueueSize,
             [this](const audio_utils_msgs::msg::AudioFrame::SharedPtr msg) { audioCallback(msg); });
 
         m_motorStatusSub = create_subscription<daemon_ros_client::msg::MotorStatus>(

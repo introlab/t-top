@@ -14,6 +14,7 @@ ros2 launch ego_noise_reduction data_gathering.launch
  - `n_fft` (int): The FFT frame size. The default value is `1024`.
  - `sampling_frequency` (int): The sampling frequency of the audio. The default value is `16000`.
  - `channel_count` (int): The channel count of the audio. The default value is `16`.
+ - `audio_queue_size` (int): The audio queue size. The default value is `1`.
 
 ### `test.py`
 This node tests the ego noise reduction.

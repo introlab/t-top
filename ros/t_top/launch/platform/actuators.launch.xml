@@ -16,6 +16,7 @@
         <param name="sampling_frequency" value="16000"/>
         <param name="frame_sample_count" value="1024"/>
         <param name="latency_us" value="64000"/>
+        <param name="queue_size" value="1"/>
 
         <remap from="audio_in" to="audio_output_float_16000"/>
     </node>
@@ -29,6 +30,7 @@
         <param name="sampling_frequency" value="48000"/>
         <param name="frame_sample_count" value="480"/>
         <param name="latency_us" value="100000"/>
+        <param name="queue_size" value="1"/>
 
         <remap from="audio_in" to="audio_webrtc_incoming_signed_16_48000"/>
     </node>

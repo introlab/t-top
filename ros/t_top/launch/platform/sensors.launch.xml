@@ -78,6 +78,7 @@
         <param name="merge" value="false"/>
         <param name="gain" value="1.0"/>
         <param name="latency_us" value="64000"/>
+        <param name="queue_size" value="1"/>
 
         <remap from="audio_out" to="audio_input_before_ego_noise_signed_32_16000"/>
 

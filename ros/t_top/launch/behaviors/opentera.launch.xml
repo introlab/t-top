@@ -37,6 +37,8 @@
     <include file="$(find-pkg-share opentera_webrtc_ros)/launch/ros_stream_client.launch.xml">
         <arg name="name" value="topic_streamer1"/>
         <arg name="is_stand_alone" value="$(var is_stand_alone)"/>
+        <arg name="video_queue_size" value="1"/>
+        <arg name="audio_queue_size" value="1"/>
         <arg name="can_send_audio_stream" value="true"/>
         <arg name="can_receive_audio_stream" value="true"/>
         <arg name="can_send_video_stream" value="true"/>
