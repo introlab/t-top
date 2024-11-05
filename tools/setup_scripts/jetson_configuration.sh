@@ -515,6 +515,7 @@ if [ $(checkstamp onnxruntime) = "false" ] ; then
     add_to_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
     
     sudo -H pip3 install packaging==23.1
+    mkdir -p ~/deps
     cd ~/deps
     clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
     cd onnxruntime
