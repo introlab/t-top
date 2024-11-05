@@ -198,7 +198,7 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Setting Python3 as default"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp python3_default) = "false" ] ; then
-    update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
     makestamp python3_default
 else
     SKIP_SECTION "Python3 is already the default, skipping"
