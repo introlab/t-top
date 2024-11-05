@@ -446,8 +446,10 @@ if [ $(checkstamp ros_ws_build) = "false" ] ; then
     add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
 
     export ROS_VERSION=2
-    sudo colcon build \
-        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF
+    sudo bash -c "export PATH=/usr/local/cuda-11.4/bin:$PATH; \
+        export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH; \
+	colcon build \
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF"
 
     makestamp ros_ws_build
 else
@@ -509,6 +511,9 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install ONNX Runtime"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp onnxruntime) = "false" ] ; then
+    add_to_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
+    add_to_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
+    
     sudo -H pip3 install packaging==23.1
     cd ~/deps
     clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
