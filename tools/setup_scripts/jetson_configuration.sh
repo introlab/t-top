@@ -304,6 +304,10 @@ ECHO_IN_BLUE ">> Install ROS2 build dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_build_deps) = "false" ] ; then
 
+    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+    sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+    sudo apt-get update
+
     sudo apt-get install -y --no-install-recommends \
 		build-essential \
 		libbullet-dev \
@@ -353,10 +357,6 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Generate ROS2 build workspace and install dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_ws_deps) = "false" ] ; then
-
-    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-    sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
-    sudo apt-get update
 
     if [ ! -f "/etc/ros/rosdep/sources.list.d/20-default.list" ] ; then
         sudo rosdep init
