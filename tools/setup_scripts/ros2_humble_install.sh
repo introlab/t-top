@@ -242,7 +242,7 @@ sudo patch -u ${ROS_ROOT}/src/libg2o/CMakeLists.txt $SCRIPT_PATH/patch/libg2o.pa
 sudo patch -u ${ROS_ROOT}/src/octomap_msgs/CMakeLists.txt $SCRIPT_PATH/patch/octomap_msgs.patch
 
 # build the rest - for verbose, see https://answers.ros.org/question/363112/how-to-see-compiler-invocation-in-colcon-build
-colcon build
+colcon build \
     --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF
 
 # remove build files
