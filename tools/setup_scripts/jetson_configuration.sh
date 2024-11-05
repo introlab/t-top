@@ -425,7 +425,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
     sudo_clone_git -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
     sudo_clone_git -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
     sudo_clone_git -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
-    sudo_clone_git -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
+    sudo_clone_git -b 0.23.10 https://github.com/xtensor-stack/xtensor.git --depth 1 --recurse-submodules
 
     sudo_apply_patch ${ROS_ROOT}/src/libg2o/CMakeLists.txt $PATCH_FILES_DIR/libg2o.patch
     sudo_apply_patch ${ROS_ROOT}/src/octomap_msgs/CMakeLists.txt $PATCH_FILES_DIR/octomap_msgs.patch
