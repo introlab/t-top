@@ -434,6 +434,9 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_ws_build) = "false" ] ; then
     cd ${ROS_ROOT}
 
+    add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
+    add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
+
     export ROS_VERSION=2
     sudo colcon build \
         --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF
@@ -622,8 +625,6 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
     cd audio
-    add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
-    add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
     sudo -H pip3 install kaldi_io==0.9.5
     sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
 
