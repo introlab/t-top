@@ -381,7 +381,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
     mkdir -p ${ROS_ROOT}/src
     cd ${ROS_ROOT}
 
-    sudo rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
+    sudo bash -c "rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
         launch_xml \
         launch_yaml \
         launch_testing \
@@ -409,7 +409,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
         tf_transformations \
 	    joint_state_publisher_gui \
         rqt_tf_tree \
-        > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
+        > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall"
 
     sudo vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
     sudo git -C ${ROS_ROOT}/src clone -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
