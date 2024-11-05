@@ -412,7 +412,6 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
         > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall"
 
     sudo vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
-    sudo git -C ${ROS_ROOT}/src clone -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
 
     SKIP_KEYS="libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv xsimd xtensor xtl"
     sudo rosdep update
@@ -423,6 +422,7 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 	--skip-keys "$SKIP_KEYS"
 
     cd ${ROS_ROOT}/src
+    sudo_clone_git -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
     sudo_clone_git -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
     sudo_clone_git -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
     sudo_clone_git -b 0.23.10 https://github.com/xtensor-stack/xtensor --depth 1 --recurse-submodules
