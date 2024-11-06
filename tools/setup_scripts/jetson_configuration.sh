@@ -355,7 +355,7 @@ if [ $(checkstamp ros_build_deps) = "false" ] ; then
 
     sudo python3 -m pip install --upgrade pip
     sudo pip3 install --no-cache-dir scikit-build
-    sudo pip3 install --upgrade --no-cache-dir --verbose cmake==3.22.1
+    sudo pip3 install --upgrade --no-cache-dir --verbose cmake==3.24.3
 
     # remove other versions of Python3
     # workaround for 'Could NOT find Python3 (missing: Python3_NumPy_INCLUDE_DIRS Development'
