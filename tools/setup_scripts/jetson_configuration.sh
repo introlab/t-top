@@ -657,9 +657,9 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install OpenTera-WebRTC ROS Python dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp opentera_deps) = "false" ] ; then
-    cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_client_ros
+    cd $TTOP_REPO_PATH/ros/utils/opentera-webrtc-ros/opentera_client_ros
     sudo -H pip3 install -r requirements.txt
-    cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_webrtc_ros
+    cd $TTOP_REPO_PATH/ros/utils/opentera-webrtc-ros/opentera_webrtc_ros
     sudo -H pip3 install -r requirements.txt
 
     makestamp opentera_deps
