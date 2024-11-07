@@ -645,6 +645,7 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd ~/deps
     clone_git https://github.com/NVIDIA-AI-IOT/torch2trt.git
     cd torch2trt
+    git checkout 36656b614f3fbc067ac673932e2200d7afdae712
     sudo -H python3 setup.py install --plugins
 
     makestamp pytorch
