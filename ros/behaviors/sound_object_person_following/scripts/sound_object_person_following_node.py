@@ -2,14 +2,16 @@
 
 from abc import ABC, abstractmethod
 import math
-import threading
 
 import numpy as np
 from scipy.optimize import dual_annealing
 
-import rospy
-from odas_ros.msg import OdasSstArrayStamped
-from video_analyzer.msg import VideoAnalysis
+import rclpy
+import rclpy.node
+import rclpy.executors
+
+from odas_ros_msgs.msg import OdasSstArrayStamped
+from perception_msgs.msg import VideoAnalysis
 
 from t_top import MovementCommands, vector_to_angles, HEAD_POSE_PITCH_INDEX, HEAD_ZERO_Z
 
@@ -43,27 +45,27 @@ class Follower(ABC):
 
 
 class SoundFollower(Follower):
-    def __init__(self, movement_commands):
+    def __init__(self, node, movement_commands):
+        self._node = node
         self._movement_commands = movement_commands
 
-        self._min_sst_activity = rospy.get_param('~min_sst_activity')
-        self._min_valid_sst_pitch = rospy.get_param('~min_valid_sst_pitch')
-        self._max_valid_sst_pitch = rospy.get_param('~max_valid_sst_pitch')
-        self._direction_frame_id = rospy.get_param('~direction_frame_id')
+        self._min_sst_activity = self._node.declare_parameter('min_sst_activity', 0.1).get_parameter_value().double_value
+        self._min_valid_sst_pitch = self._node.declare_parameter('min_valid_sst_pitch', -1.4).get_parameter_value().double_value
+        self._max_valid_sst_pitch = self._node.declare_parameter('max_valid_sst_pitch', 1.4).get_parameter_value().double_value
+        self._direction_frame_id = self._node.declare_parameter('direction_frame_id', 'odas').get_parameter_value().string_value
 
-        self._target_lock = threading.Lock()
         self._target = None
 
-        self._sst_sub = rospy.Subscriber('sst', OdasSstArrayStamped, self._sst_cb, queue_size=1)
+        self._sst_sub = self._node.create_subscription(OdasSstArrayStamped, 'sst', self._sst_cb, 1)
 
     def _sst_cb(self, sst):
         if self._movement_commands.is_filtering_all_messages:
             return
         if len(sst.sources) > 1:
-            rospy.logerr(f'Invalid sst (len(sst.sources)={len(sst.sources)})')
+            self._node.get_logger().error(f'Invalid sst (len(sst.sources)={len(sst.sources)})')
             return
         if sst.header.frame_id != self._direction_frame_id:
-            rospy.logerr(f'Invalid direction frame id ({sst.header.frame_id} != {self._direction_frame_id})')
+            self._node.get_logger().error(f'Invalid direction frame id ({sst.header.frame_id} != {self._direction_frame_id})')
             return
         if len(sst.sources) == 0 or sst.sources[0].activity < self._min_sst_activity:
             return
@@ -72,29 +74,27 @@ class SoundFollower(Follower):
         if pitch < self._min_valid_sst_pitch or pitch > self._max_valid_sst_pitch:
             return
 
-        with self._target_lock:
-            self._target = Target.from_sound_following(yaw)
+        self._target = Target.from_sound_following(yaw)
 
     @property
     def target(self):
-         with self._target_lock:
-            return self._target
+        return self._target
 
 
 class ObjectPersonFollower(Follower):
-    def __init__(self, camera_3d_calibration, movement_commands):
+    def __init__(self, node, camera_3d_calibration, movement_commands):
+        self._node = node
         self._camera_3d_calibration = camera_3d_calibration
         self._movement_commands = movement_commands
 
-        self._object_classes = set(rospy.get_param('~object_classes'))
-        self._padding = rospy.get_param('~padding')
-        self._target_lambda = rospy.get_param('~target_lambda')
+        self._object_classes = set(self._node.declare_parameter('object_classes', ['all']).get_parameter_value().string_array_value)
+        self._padding = self._node.declare_parameter('padding', 0.075).get_parameter_value().double_value
+        self._target_lambda = self._node.declare_parameter('target_lambda', 0.005).get_parameter_value().double_value
         _verify_padding(self._camera_3d_calibration, self._padding)
 
-        self._target_lock = threading.Lock()
         self._target = None
 
-        self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
+        self._video_analysis_sub = self._node.create_subscription(VideoAnalysis, 'video_analysis', self._video_analysis_cb, 1)
 
     def _video_analysis_cb(self, msg):
         if self._movement_commands.is_filtering_all_messages:
@@ -106,8 +106,7 @@ class ObjectPersonFollower(Follower):
         else:
             target = self._find_target(msg, person)
 
-        with self._target_lock:
-            self._target = target
+        self._target = target
 
     def _find_biggest_person(self, objects):
         person_area_pairs = [(o, o.width_2d * o.height_2d) for o in objects if o.object_class == PERSON_CLASS]
@@ -141,8 +140,7 @@ class ObjectPersonFollower(Follower):
 
     @property
     def target(self):
-         with self._target_lock:
-            return self._target
+        return self._target
 
 
 def _verify_padding(camera_3d_calibration, padding):
@@ -205,7 +203,7 @@ class BoundingBoxObjectPersonFollower(ObjectPersonFollower):
 class SemanticSegmentationObjectPersonFollower(ObjectPersonFollower):
     def _find_target(self, msg, person, eps=1e-6):
         if len(msg.semantic_segmentation) == 0:
-            rospy.logerr('The video analysis must have semantic segmentation.')
+            self._node.get_logger().error('The video analysis must have semantic segmentation.')
             return
 
         min_x, max_x, min_y, max_y = self._find_target_range(person)
@@ -246,39 +244,46 @@ class SemanticSegmentationObjectPersonFollower(ObjectPersonFollower):
             return np.isin(class_indexes, desired_class_indexes)
 
 
-class SoundObjectPersonFollowingNode:
+class SoundObjectPersonFollowingNode(rclpy.node.Node):
     def __init__(self):
-        self._simulation = rospy.get_param('~simulation')
-        self._rate = rospy.Rate(rospy.get_param('~control_frequency'))
-        self._torso_control_alpha = rospy.get_param('~torso_control_alpha')
-        self._torso_control_p_gain = rospy.get_param('~torso_control_p_gain')
-        self._head_control_p_gain = rospy.get_param('~head_control_p_gain')
-        self._min_head_pitch = rospy.get_param('~min_head_pitch_rad')
-        self._max_head_pitch = rospy.get_param('~max_head_pitch_rad')
-        self._object_person_follower_type = rospy.get_param('~object_person_follower_type')
+        super().__init__('sound_object_person_following_node')
+
+        self._simulation = self.declare_parameter('simulation', False).get_parameter_value().bool_value
+        self._control_frequency = self.declare_parameter('control_frequency', 30.0).get_parameter_value().double_value
+        self._torso_control_alpha = self.declare_parameter('torso_control_alpha', 0.2).get_parameter_value().double_value
+        self._torso_control_p_gain = self.declare_parameter('torso_control_p_gain', 0.45).get_parameter_value().double_value
+        self._head_control_p_gain = self.declare_parameter('head_control_p_gain', 0.45).get_parameter_value().double_value
+        self._min_head_pitch = self.declare_parameter('min_head_pitch_rad', -0.35).get_parameter_value().double_value
+        self._max_head_pitch = self.declare_parameter('max_head_pitch_rad', 0.35).get_parameter_value().double_value
+        self._object_person_follower_type = self.declare_parameter('object_person_follower_type', 'bounding_box').get_parameter_value().string_value
         self._camera_3d_calibration = Camera3dCalibration.load_json_file()
 
-        self._movement_commands = MovementCommands(self._simulation, namespace='sound_object_person_following')
-        self._sound_follower = SoundFollower(self._movement_commands)
+        self._movement_commands = MovementCommands(self, self._simulation, namespace='sound_object_person_following')
+        self._sound_follower = SoundFollower(self, self._movement_commands)
         if self._object_person_follower_type == 'bounding_box':
-            self._object_person_follower = BoundingBoxObjectPersonFollower(self._camera_3d_calibration, self._movement_commands)
+            self._object_person_follower = BoundingBoxObjectPersonFollower(self, self._camera_3d_calibration, self._movement_commands)
         elif self._object_person_follower_type == 'semantic_segmentation':
-            self._object_person_follower = SemanticSegmentationObjectPersonFollower(self._camera_3d_calibration, self._movement_commands)
+            self._object_person_follower = SemanticSegmentationObjectPersonFollower(self, self._camera_3d_calibration, self._movement_commands)
         else:
-            raise ValueError(f'Invalid object_person_follower_type (object_person_follower_type={object_person_follower_type})')
+            raise ValueError(f'Invalid object_person_follower_type (object_person_follower_type={self._object_person_follower_type})')
+
+        self._timer = self.create_timer(1 / self._control_frequency, self._timer_callback)
+
+    def _timer_callback(self):
+        if self._movement_commands.is_filtering_all_messages:
+            return
+
+        target = self._object_person_follower.target
+        if target is None:
+            target = self._sound_follower.target
+
+        if target is not None:
+            self._update_from_target(target)
 
     def run(self):
-        while not rospy.is_shutdown():
-            self._rate.sleep()
-            if self._movement_commands.is_filtering_all_messages:
-                continue
-
-            target = self._object_person_follower.target
-            if target is None:
-                target = self._sound_follower.target
-
-            if target is not None:
-                self._update_from_target(target)
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
     def _update_from_target(self, target):
         if target.yaw is not None:
@@ -312,13 +317,18 @@ class SoundObjectPersonFollowingNode:
 
 
 def main():
-    rospy.init_node('sound_object_person_following_node')
-    explore_node = SoundObjectPersonFollowingNode()
-    explore_node.run()
+    rclpy.init()
+    sound_object_person_following_node = SoundObjectPersonFollowingNode()
+
+    try:
+        sound_object_person_following_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        sound_object_person_following_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

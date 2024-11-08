@@ -3,6 +3,8 @@
 # ...
 uint64 relative_day
 ---
+bool ok
+
 string city
 string region
 string country_code

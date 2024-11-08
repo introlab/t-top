@@ -3,8 +3,6 @@
 
 #include "../common/WaitAnswerState.h"
 
-#include <std_msgs/String.h>
-
 #include <string>
 
 class SmartWaitAnswerState : public WaitAnswerState
@@ -20,7 +18,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::vector<std::vector<std::string>> songKeywords);
     ~SmartWaitAnswerState() override = default;
 

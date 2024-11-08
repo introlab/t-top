@@ -2,10 +2,10 @@
 
 import numpy as np
 
-import rospy
-from video_analyzer.msg import VideoAnalysis
+import rclpy
+import rclpy.node
 
-from pose_classifier.msg import PoseClassification, PoseClassifications
+from perception_msgs.msg import VideoAnalysis, PoseClassification, PoseClassifications
 
 
 NOSE_INDEX = 0
@@ -63,12 +63,14 @@ def vector_angle(v1, v2, eps=1e-9):
     return np.sign(c[2]) * abs_angle
 
 
-class PoseClassifierNode:
+class PoseClassifierNode(rclpy.node.Node):
     def __init__(self):
-        self._pose_confidence_threshold = rospy.get_param('~pose_confidence_threshold', 0.4)
+        super().__init__('pose_classifier_node')
 
-        self._pose_classification_pub = rospy.Publisher('pose_classification', PoseClassifications, queue_size=1)
-        self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
+        self._pose_confidence_threshold = self.declare_parameter('pose_confidence_threshold', 0.4).get_parameter_value().double_value
+
+        self._pose_classification_pub = self.create_publisher(PoseClassifications, 'pose_classification', 1)
+        self._video_analysis_sub = self.create_subscription(VideoAnalysis, 'video_analysis', self._video_analysis_cb, 1)
 
     def _video_analysis_cb(self, video_analysis_msg):
         pose_classifications_msg = PoseClassifications()
@@ -223,17 +225,22 @@ class PoseClassifierNode:
             return ''
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('pose_classifier_node')
+    rclpy.init()
     pose_classifier_node = PoseClassifierNode()
-    pose_classifier_node.run()
+
+    try:
+        pose_classifier_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        pose_classifier_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

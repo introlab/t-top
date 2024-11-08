@@ -3,20 +3,20 @@
 
 #include "../State.h"
 
-#include <std_msgs/Empty.h>
-#include <person_identification/PersonNames.h>
+#include <std_msgs/msg/empty.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 class RssIdleState : public State
 {
-    ros::Subscriber m_robotNameDetectedSubscriber;
-    ros::Subscriber m_personNamesSubscriber;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_robotNameDetectedSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
 
 public:
     RssIdleState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     ~RssIdleState() override = default;
 
     DECLARE_NOT_COPYABLE(RssIdleState);
@@ -28,8 +28,8 @@ protected:
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
 
 private:
-    void robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg);
-    void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
+    void robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
 };
 
 inline std::type_index RssIdleState::type() const

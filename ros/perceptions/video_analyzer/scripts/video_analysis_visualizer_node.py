@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-import traceback
-
 import numpy as np
-import cv2
 
-import rospy
+import rclpy
+import rclpy.node
+
+
 from cv_bridge import CvBridge
 
 from sensor_msgs.msg import Image
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
 
 def concatenate_horizontal(image0, image1):
@@ -32,12 +32,14 @@ def concatenate_vertical(image0, image1):
     return output
 
 
-class VideoAnalysisVisualizerNode:
+class VideoAnalysisVisualizerNode(rclpy.node.Node):
     def __init__(self):
+        super().__init__('video_analysis_visualizer_node')
+
         self._cv_bridge = CvBridge()
 
-        self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=10)
-        self._video_analysis_mosaic_pub = rospy.Publisher('video_analysis_mosaic', Image, queue_size=10)
+        self._video_analysis_sub = self.create_subscription(VideoAnalysis, 'video_analysis', self._video_analysis_cb, 10)
+        self._video_analysis_mosaic_pub = self.create_publisher(Image, 'video_analysis_mosaic', 10)
 
     def _video_analysis_cb(self, msg):
         objects = msg.objects
@@ -63,27 +65,33 @@ class VideoAnalysisVisualizerNode:
         face_image = None
         if len(o.person_pose_2d) > 0:
             pose_image = self._cv_bridge.imgmsg_to_cv2(o.person_pose_image, 'rgb8')
-            face_image = self._cv_bridge.imgmsg_to_cv2(o.face_image, 'rgb8')
-
             output = concatenate_horizontal(object_image, pose_image)
-            output = concatenate_horizontal(output, face_image)
+
+            if len(o.face_descriptor) > 0:
+                face_image = self._cv_bridge.imgmsg_to_cv2(o.face_image, 'rgb8')
+                output = concatenate_horizontal(output, face_image)
         else:
             output = object_image
 
         return output
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('video_analysis_visualizer_node')
+    rclpy.init()
     video_analysis_visualizer_node = VideoAnalysisVisualizerNode()
-    video_analysis_visualizer_node.run()
+
+    try:
+        video_analysis_visualizer_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analysis_visualizer_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

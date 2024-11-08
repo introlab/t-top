@@ -8,12 +8,13 @@
 #include <QLineEdit>
 #include <QVariant>
 
-#include <ros/ros.h>
-#include <sensor_msgs/Image.h>
-#include <video_analyzer/VideoAnalysis.h>
-#include <audio_analyzer/AudioAnalysis.h>
-#include <std_msgs/Empty.h>
-#include <person_identification/PersonNames.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <sensor_msgs/msg/image.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
+#include <perception_msgs/msg/audio_analysis.hpp>
+#include <std_msgs/msg/empty.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 
@@ -24,13 +25,14 @@ class PerceptionsTab : public QWidget
 {
     Q_OBJECT
 
-    ros::NodeHandle& m_nodeHandle;
-    ros::Subscriber m_analyzedImage3dSubscriber;
-    ros::Subscriber m_analyzedImage2dWideSubscriber;
-    ros::Subscriber m_videoAnalysis2dWideSubscriber;
-    ros::Subscriber m_audioAnalysisSubscriber;
-    ros::Subscriber m_robotNameDetectedSubscriber;
-    ros::Subscriber m_personNamesSubscriber;
+    rclcpp::Node::SharedPtr m_node;
+
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_analyzedImage3dSubscriber;
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_analyzedImage2dWideSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysis2dWideSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_robotNameDetectedSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_videoAnalyzer3dDesireId;
@@ -42,7 +44,7 @@ class PerceptionsTab : public QWidget
 
 public:
     PerceptionsTab(
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::shared_ptr<DesireSet> desireSet,
         bool camera2dWideEnabled,
         QWidget* parent = nullptr);
@@ -54,12 +56,12 @@ private slots:
     void onRobotNameDetectorButtonToggled(bool checked);
 
 private:
-    void analyzedImage3dSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
-    void analyzedImage2dWideSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg);
-    void videoAnalysis2dWideSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg);
-    void audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
-    void robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg);
-    void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
+    void analyzedImage3dSubscriberCallback(const sensor_msgs::msg::Image::SharedPtr msg);
+    void analyzedImage2dWideSubscriberCallback(const sensor_msgs::msg::Image::SharedPtr msg);
+    void videoAnalysis2dWideSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg);
+    void audioAnalysisSubscriberCallback(const perception_msgs::msg::AudioAnalysis::SharedPtr msg);
+    void robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
 
     void createUi();
 

@@ -32,7 +32,7 @@ public:
     IdleState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         AlarmManager& alarmManager,
         ReminderManager& reminderManager,
         Time sleepTime,
@@ -46,14 +46,14 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg) override;
+    void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) override;
     void onRobotNameDetected() override;
-    void onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg) override;
+    void onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg) override;
     void onEveryMinuteTimeout() override;
     void onEveryTenMinutesTimeout() override;
 
 private:
-    std::optional<Reminder> findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+    std::optional<Reminder> findReminder(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
     void switchToAlarmState(std::vector<std::unique_ptr<Alarm>> alarms);
 };
 

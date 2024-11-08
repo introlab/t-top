@@ -12,14 +12,14 @@ using namespace std;
 
 AllCommandExecutor::AllCommandExecutor(
     StateManager& stateManager,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     VolumeManager& volumeManager,
     AlarmManager& alarmManager,
     ReminderManager& reminderManager)
 {
     vector<unique_ptr<CommandExecutor>> executors;
 
-    executors.emplace_back(make_unique<WeatherCommandExecutor>(stateManager, nodeHandle));
+    executors.emplace_back(make_unique<WeatherCommandExecutor>(stateManager, node));
 
     executors.emplace_back(make_unique<IncreaseVolumeCommandExecutor>(stateManager, volumeManager));
     executors.emplace_back(make_unique<DecreaseVolumeCommandExecutor>(stateManager, volumeManager));

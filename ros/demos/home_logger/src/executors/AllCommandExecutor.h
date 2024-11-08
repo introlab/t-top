@@ -17,7 +17,7 @@ class AllCommandExecutor
 public:
     AllCommandExecutor(
         StateManager& stateManager,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         VolumeManager& volumeManager,
         AlarmManager& alarmManager,
         ReminderManager& reminderManager);

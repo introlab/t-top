@@ -4,14 +4,14 @@
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/utils/ClassMacros.h>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <memory>
 #include <numeric>
 #include <vector>
 #include <typeindex>
 
-constexpr double TIMEOUT_S = 30;
+constexpr int TIMEOUT_S = 30;
 constexpr uint64_t MAX_DESIRE_ID = std::numeric_limits<uint64_t>::max();  // TODO change to optional with C++17
 constexpr int FLOAT_NUMBER_PRECISION = 3;
 
@@ -50,7 +50,7 @@ class State
 protected:
     StateManager& m_stateManager;
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
+    rclcpp::Node::SharedPtr m_node;
 
     std::vector<uint64_t> m_desireIds;
 
@@ -59,7 +59,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     virtual ~State() = default;
 
     DECLARE_NOT_COPYABLE(State);

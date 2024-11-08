@@ -26,7 +26,7 @@ public:
     SleepState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         Time sleepTime,
         Time wakeUpTime);
     ~SleepState() override;

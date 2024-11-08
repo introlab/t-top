@@ -7,9 +7,8 @@
 
 using namespace std;
 
-GestureTab::GestureTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+GestureTab::GestureTab(shared_ptr<DesireSet> desireSet, QWidget* parent)
     : QWidget(parent),
-      m_nodeHandle(nodeHandle),
       m_desireSet(std::move(desireSet))
 {
     createUi();
@@ -50,7 +49,10 @@ void GestureTab::setEnabledAllButtons(bool enabled)
     m_maybeButton->setEnabled(enabled);
     m_originAllButton->setEnabled(enabled);
     m_originHeadButton->setEnabled(enabled);
+    m_slowOriginHeadButton->setEnabled(enabled);
     m_originTorsoButton->setEnabled(enabled);
+    m_thinkingButton->setEnabled(enabled);
+    m_sadButton->setEnabled(enabled);
 }
 
 void GestureTab::createUi()
@@ -70,8 +72,17 @@ void GestureTab::createUi()
     m_originHeadButton = new QPushButton("Origin Head");
     connect(m_originHeadButton, &QPushButton::clicked, this, [this]() { onGestureButtonClicked("origin_head"); });
 
+    m_slowOriginHeadButton = new QPushButton("Slow Origin Head");
+    connect(m_slowOriginHeadButton, &QPushButton::clicked, this, [this]() { onGestureButtonClicked("slow_origin_head"); });
+
     m_originTorsoButton = new QPushButton("Origin Torso");
     connect(m_originTorsoButton, &QPushButton::clicked, this, [this]() { onGestureButtonClicked("origin_torso"); });
+
+    m_thinkingButton = new QPushButton("Thinking");
+    connect(m_thinkingButton, &QPushButton::clicked, this, [this]() { onGestureButtonClicked("thinking"); });
+
+    m_sadButton = new QPushButton("Sad");
+    connect(m_sadButton, &QPushButton::clicked, this, [this]() { onGestureButtonClicked("sad"); });
 
     auto globalLayout = new QVBoxLayout;
     globalLayout->addWidget(m_yesButton);
@@ -79,7 +90,10 @@ void GestureTab::createUi()
     globalLayout->addWidget(m_maybeButton);
     globalLayout->addWidget(m_originAllButton);
     globalLayout->addWidget(m_originHeadButton);
+    globalLayout->addWidget(m_slowOriginHeadButton);
     globalLayout->addWidget(m_originTorsoButton);
+    globalLayout->addWidget(m_thinkingButton);
+    globalLayout->addWidget(m_sadButton);
     globalLayout->addStretch();
 
     setLayout(globalLayout);

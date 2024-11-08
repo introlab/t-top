@@ -31,7 +31,7 @@ public:
     WaitFaceDescriptorCommandParameterState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         float noseConfidenceThreshold);
     ~WaitFaceDescriptorCommandParameterState() override;
 
@@ -41,11 +41,11 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg) override;
+    void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) override;
     void onStateTimeout() override;
 
 private:
-    std::optional<FaceDescriptor> findNearestFaceDescriptor(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+    std::optional<FaceDescriptor> findNearestFaceDescriptor(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
     void switchState();
 };
 

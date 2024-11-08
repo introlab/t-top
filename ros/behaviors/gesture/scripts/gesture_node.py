@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import threading
+import rclpy
+import rclpy.node
+import rclpy.executors
 
-import rospy
-from gesture.msg import GestureName, Done
+from behavior_msgs.msg import GestureName, Done
 
 from t_top import MovementCommands
 
@@ -17,28 +18,27 @@ MOVE_THINKING_TIMEOUT = 5
 MOVE_SAD_TIMEOUT = 5
 
 
-class GestureNode:
+class GestureNode(rclpy.node.Node):
     def __init__(self):
-        self._simulation = rospy.get_param('~simulation')
+        super().__init__('gesture_node')
 
-        self._gesture_lock = threading.Lock()
-        self._movement_commands = MovementCommands(self._simulation, namespace='gesture')
+        self._simulation = self.declare_parameter('simulation', False).get_parameter_value().bool_value
+        self._movement_commands = MovementCommands(self, self._simulation, namespace='gesture')
 
-        self._done_pub = rospy.Publisher('gesture/done', Done, queue_size=5)
-        self._gesture_sub = rospy.Subscriber('gesture/name', GestureName, self._on_gesture_cb)
+        self._done_pub = self.create_publisher(Done, 'gesture/done', 5)
+        self._gesture_sub = self.create_subscription(GestureName, 'gesture/name', self._on_gesture_cb, 5)
 
     def _on_gesture_cb(self, msg):
-        with self._gesture_lock:
-            if self._movement_commands.is_filtering_all_messages:
-                return
+        if self._movement_commands.is_filtering_all_messages:
+            return
 
-            try:
-                ok = self._execute_gesture(msg.name)
-            except TimeoutError:
-                rospy.logerr(f'The {msg.name} gesture has timed out.')
-                ok = False
+        try:
+            ok = self._execute_gesture(msg.name)
+        except TimeoutError:
+            self.get_logger().error(f'The {msg.name} gesture has timed out.')
+            ok = False
 
-            self._done_pub.publish(Done(id=msg.id, ok=ok))
+        self._done_pub.publish(Done(id=msg.id, ok=ok))
 
     def _execute_gesture(self, name):
         if name == 'yes':
@@ -61,23 +61,30 @@ class GestureNode:
         elif name == 'sad':
             self._movement_commands.move_head_to_sad(timeout=MOVE_SAD_TIMEOUT)
         else:
-            rospy.logerr(f'Invalid gesture name ({name})')
+            self.get_logger().error(f'Invalid gesture name ({name})')
             return False
 
         return True
 
     def run(self):
-        rospy.spin()
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
 
 def main():
-    rospy.init_node('gesture_node')
+    rclpy.init()
     gesture_node = GestureNode()
-    gesture_node.run()
+
+    try:
+        gesture_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        gesture_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

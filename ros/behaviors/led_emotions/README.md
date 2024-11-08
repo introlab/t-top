@@ -10,11 +10,12 @@ This node makes T-Top express emotions with it LED strip.
 
 #### Parameters
 
+- `period_s` (double): The period in second of the animation timer. The default value is 0.0333.
 - `led_patterns_file` (string): The file path containing the LED patterns
 
 #### Subscribed Topics
 
-- `led_emotions/name` ([std_msgs/String](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/String.html)): The emotion names.
+- `led_emotions/name` ([std_msgs/String](https://docs.ros.org/en/humble/p/std_msgs/interfaces/msg/String.html)): The emotion names.
 
 #### Published Topics
 
@@ -22,5 +23,5 @@ This node makes T-Top express emotions with it LED strip.
 
 #### Services
 
-- `set_led_colors/filter_state` ([hbba_lite/SetOnOffFilterState](../../hbba_lite/srv/SetOnOffFilterState.srv)): The HBBA filter
+- `set_led_colors/filter_state` ([hbba_lite_srvs/SetOnOffFilterState](../../utils/hbba_lite/hbba_lite_srvs/srv/SetOnOffFilterState.srv)): The HBBA filter
   state service to enable or disable the behavior.

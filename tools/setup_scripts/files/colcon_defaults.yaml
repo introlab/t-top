@@ -1,0 +1,9 @@
+build:
+  cmake-args:
+    - -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    - --no-warn-unused-cli
+    - -DPYTHON_EXECUTABLE=/usr/bin/python3
+    - -DCMAKE_BUILD_TYPE=Release
+    - -DCMAKE_CXX_FLAGS=-march=native -ffast-math
+    - -DCMAKE_C_FLAGS=-march=native -ffast-math
+  symlink-install: true

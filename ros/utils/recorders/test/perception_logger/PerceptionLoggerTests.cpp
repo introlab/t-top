@@ -120,6 +120,6 @@ TEST(PerceptionLoggerTests, timestamp_constructor_shouldSetAttributes)
     Timestamp t0(5);
     EXPECT_EQ(t0.unixEpochMs, 5);
 
-    Timestamp t1(ros::Time(5.2));
+    Timestamp t1(rclcpp::Time(static_cast<uint64_t>(5.2 * 1e9)));
     EXPECT_EQ(t1.unixEpochMs, 5200);
 }

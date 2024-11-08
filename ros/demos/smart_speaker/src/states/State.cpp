@@ -6,12 +6,12 @@ State::State(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
+    rclcpp::Node::SharedPtr node)
     : m_enabled(false),
       m_language(language),
       m_stateManager(stateManager),
       m_desireSet(move(desireSet)),
-      m_nodeHandle(nodeHandle),
+      m_node(move(node)),
       m_previousStageType(typeid(State))
 {
 }

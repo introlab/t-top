@@ -12,8 +12,8 @@ SmartThankYouState::SmartThankYouState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : TalkState(language, stateManager, desireSet, nodeHandle, type_index(typeid(AfterTaskDelayState)))
+    rclcpp::Node::SharedPtr node)
+    : TalkState(language, stateManager, desireSet, move(node), type_index(typeid(AfterTaskDelayState)))
 {
 }
 

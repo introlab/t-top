@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import threading
 import math
 
 import numpy as np
 import cv2
 
-import rospy
+import rclpy
+import rclpy.node
+
 import message_filters
 from cv_bridge import CvBridge
 
@@ -17,7 +18,6 @@ from sound_object_person_following import Camera3dCalibration
 
 MIN_MATCH_COUNT = 5
 LOWES_RATIO_THRESHOLD = 0.7
-INACTIVE_SLEEP_DURATION = 1.0
 
 
 class Match:
@@ -32,9 +32,11 @@ class Match:
         self.destination_height = destination_height
 
 
-class CalibrateSoundObjectPersonFollowingNode:
+class CalibrateSoundObjectPersonFollowingNode(rclpy.node.Node):
     def __init__(self):
-        self._match_count = rospy.get_param('~match_count')
+        super().__init__('calibrate_sound_object_person_following_node')
+
+        self._match_count = self.declare_parameter('match_count', 100).get_parameter_value().integer_value
         if self._match_count < 1:
             raise ValueError('match_count must be at least 1.')
 
@@ -42,19 +44,17 @@ class CalibrateSoundObjectPersonFollowingNode:
         self._orb = cv2.ORB_create()
         self._matcher = cv2.BFMatcher()
 
-        self._matches_lock = threading.Lock()
         self._matches = []
 
-        self._calibration_lock = threading.Lock()
         try:
             self._calibration = Camera3dCalibration.load_json_file()
         except FileNotFoundError:
             self._calibration = None
 
-        self._camera_2d_wide_cropped_image_pub = rospy.Publisher('camera_2d_wide/cropped_image', Image, queue_size=1)
+        self._camera_2d_wide_cropped_image_pub = self.create_publisher(Image, 'camera_2d_wide/cropped_image', 1)
 
-        camera_3d_image_sub = message_filters.Subscriber('camera_3d/color/image_raw', Image)
-        camera_2d_wide_image_sub = message_filters.Subscriber('camera_2d_wide/image_rect', Image)
+        camera_3d_image_sub = message_filters.Subscriber(self, Image, 'camera_3d/color/image_raw')
+        camera_2d_wide_image_sub = message_filters.Subscriber(self, Image, 'camera_2d_wide/image_rect')
         self._image_ts = message_filters.ApproximateTimeSynchronizer([camera_3d_image_sub, camera_2d_wide_image_sub], 10, 0.1)
         self._image_ts.registerCallback(self._image_cb)
 
@@ -62,16 +62,12 @@ class CalibrateSoundObjectPersonFollowingNode:
         camera_3d_image = self._cv_bridge.imgmsg_to_cv2(camera_3d_image_msg, 'bgr8')
         camera_2d_wide_image = self._cv_bridge.imgmsg_to_cv2(camera_2d_wide_image_msg, 'bgr8')
 
-        with self._calibration_lock:
-            calibration = self._calibration
-
-        if calibration is None:
+        if self._calibration is None:
             match = self._match_images(camera_3d_image, camera_2d_wide_image)
             if match is not None:
-                with self._matches_lock:
-                    self._matches.append(match)
+                self._matches.append(match)
         else:
-            self._publish_camera_2d_wide_cropped_image(camera_2d_wide_image, calibration)
+            self._publish_camera_2d_wide_cropped_image(camera_2d_wide_image, self._calibration)
 
     def _match_images(self, source_image, destination_image):
         source_keypoints, source_descriptors = self._orb.detectAndCompute(source_image, None)
@@ -84,7 +80,7 @@ class CalibrateSoundObjectPersonFollowingNode:
                 good_matches.append(m)
 
         if len(good_matches) < MIN_MATCH_COUNT:
-            rospy.logwarn(f'Not enough ORB feature matches (count={len(good_matches)})')
+            self.get_logger().warn(f'Not enough ORB feature matches (count={len(good_matches)})')
             return None
         else:
             source_points = np.float32([source_keypoints[m.queryIdx].pt for m in good_matches]).reshape(-1,1,2)
@@ -106,18 +102,16 @@ class CalibrateSoundObjectPersonFollowingNode:
         self._camera_2d_wide_cropped_image_pub.publish(self._cv_bridge.cv2_to_imgmsg(camera_2d_wide_image_cropped, 'bgr8'))
 
     def run(self):
-        while not rospy.is_shutdown():
-            with self._matches_lock, self._calibration_lock:
-                match_count = len(self._matches)
-                has_calibration = self._calibration is not None
+        while rclpy.ok():
+            has_calibration = self._calibration is not None
 
-            if match_count >= self._match_count and not has_calibration:
+            if len(self._matches) >= self._match_count and not has_calibration:
                 self._calibration = self._find_transform(self._matches)
             else:
                 if not has_calibration:
-                    rospy.loginfo(f'Match count: {len(self._matches)}')
+                    self.get_logger().info(f'Match count: {len(self._matches)}')
 
-                rospy.sleep(INACTIVE_SLEEP_DURATION)
+                rclpy.spin_once(self)
 
     def _find_transform(self, matches):
         source_points = np.concatenate([x.source_points for x in self._matches])
@@ -136,8 +130,8 @@ class CalibrateSoundObjectPersonFollowingNode:
         width = source_width / destination_width * scale
         height = source_height / destination_height * scale
 
-        rospy.loginfo('******* Results *******')
-        rospy.loginfo(f'scale={scale}, center_x={center_x}, center_y={center_y}, width={width}, height={height}, rotation={rotation}')
+        self.get_logger().info('******* Results *******')
+        self.get_logger().info(f'scale={scale}, center_x={center_x}, center_y={center_y}, width={width}, height={height}, rotation={rotation}')
 
         calibration = Camera3dCalibration(center_x, center_y, width, height)
         calibration.save_json_file()
@@ -145,13 +139,18 @@ class CalibrateSoundObjectPersonFollowingNode:
 
 
 def main():
-    rospy.init_node('calibrate_sound_object_person_following_node')
-    explore_node = CalibrateSoundObjectPersonFollowingNode()
-    explore_node.run()
+    rclpy.init()
+    calibrate_sound_object_person_following_node = CalibrateSoundObjectPersonFollowingNode()
+
+    try:
+        calibrate_sound_object_person_following_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        calibrate_sound_object_person_following_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

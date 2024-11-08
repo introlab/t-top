@@ -1,3 +1,5 @@
+#include "StringUtils.h"
+
 #include "states/StateManager.h"
 
 #include "states/smart/SmartIdleState.h"
@@ -13,7 +15,7 @@
 #include "states/smart/SmartThankYouState.h"
 #include "states/common/AfterTaskDelayState.h"
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/core/RosFilterPool.h>
@@ -28,11 +30,27 @@
 using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
+constexpr const char* NODE_NAME = "smart_speaker_smart_node";
+
+void logSongs(
+    rclcpp::Node::SharedPtr& node,
+    const vector<string>& songNames,
+    const vector<vector<string>>& songKeywords,
+    const vector<string>& songPaths)
+{
+    for (size_t i = 0; i < songNames.size(); i++)
+    {
+        RCLCPP_INFO_STREAM(node->get_logger(), "Song " << (i + 1));
+        RCLCPP_INFO_STREAM(node->get_logger(), "\tname=" << songNames[i]);
+        RCLCPP_INFO_STREAM(node->get_logger(), "\tkeywords=" << mergeStrings(songKeywords[i], ","));
+        RCLCPP_INFO_STREAM(node->get_logger(), "\tpath=" << songPaths[i]);
+    }
+}
 
 void startNode(
     bool recordSession,
     Language language,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     double personDistanceThreshold,
     const std::string& personDistanceFrameId,
     double noseConfidenceThreshold,
@@ -43,10 +61,10 @@ void startNode(
     const vector<string>& songPaths,
     bool singleTaskPerPerson,
     bool useAfterTaskDelayDurationTopic,
-    const ros::Duration& afterTaskDelayDuration)
+    const chrono::milliseconds& afterTaskDelayDurationMs)
 {
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
+    auto filterPool = make_shared<RosFilterPool>(node, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createCamera3dRecordingStrategy(filterPool));
@@ -54,58 +72,52 @@ void startNode(
     strategies.emplace_back(createFastVideoAnalyzer3dStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
-    strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createFaceAnimationStrategy(filterPool, node));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
-    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, nodeHandle));
-    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, nodeHandle));
+    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, node));
+    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, node));
     strategies.emplace_back(createDanceStrategy(filterPool));
-    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
+    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, node));
 
     auto solver = make_unique<GecodeSolver>();
-    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(nodeHandle);
+    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(node);
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
-    StateManager stateManager;
+    StateManager stateManager(node);
     type_index askOtherTaskStateType(typeid(SmartAskOtherTaskState));
 
     stateManager.addState(make_unique<SmartIdleState>(
         language,
         stateManager,
         desireSet,
-        nodeHandle,
+        node,
         personDistanceThreshold,
         personDistanceFrameId,
         noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance));
-    stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, nodeHandle, songNames));
+    stateManager.addState(make_unique<SmartAskTaskState>(language, stateManager, desireSet, node, songNames));
+    stateManager.addState(make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, node, songKeywords));
+    stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, node));
     stateManager.addState(
-        make_unique<SmartWaitAnswerState>(language, stateManager, desireSet, nodeHandle, songKeywords));
-    stateManager.addState(make_unique<SmartValidTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(
-        make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
+        make_unique<InvalidTaskState>(language, stateManager, desireSet, node, askOtherTaskStateType));
 
     stateManager.addState(
-        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, askOtherTaskStateType));
-    stateManager.addState(make_unique<DancePlayedSongState>(
-        language,
-        stateManager,
-        desireSet,
-        nodeHandle,
-        askOtherTaskStateType,
-        songPaths));
+        make_unique<CurrentWeatherState>(language, stateManager, desireSet, node, askOtherTaskStateType));
+    stateManager.addState(
+        make_unique<DancePlayedSongState>(language, stateManager, desireSet, node, askOtherTaskStateType, songPaths));
 
     stateManager.addState(
-        make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, nodeHandle, singleTaskPerPerson));
-    stateManager.addState(make_unique<SmartThankYouState>(language, stateManager, desireSet, nodeHandle));
+        make_unique<SmartAskOtherTaskState>(language, stateManager, desireSet, node, singleTaskPerPerson));
+    stateManager.addState(make_unique<SmartThankYouState>(language, stateManager, desireSet, node));
     stateManager.addState(make_unique<AfterTaskDelayState>(
         language,
         stateManager,
         desireSet,
-        nodeHandle,
+        node,
         typeid(SmartIdleState),
         useAfterTaskDelayDurationTopic,
-        afterTaskDelayDuration));
+        afterTaskDelayDurationMs));
 
     stateManager.switchTo<SmartIdleState>();
 
@@ -114,175 +126,123 @@ void startNode(
         desireSet->addDesire(make_unique<Camera3dRecordingDesire>());
     }
 
-    ros::spin();
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    executor.add_node(node);
+    executor.spin();
 }
 
-bool getSongStrings(ros::NodeHandle& privateNodeHandle, vector<string>& values, const std::string& key)
+int startNode()
 {
-    string value;
+    auto node = rclcpp::Node::make_shared(NODE_NAME);
 
-    XmlRpc::XmlRpcValue songs;
-    privateNodeHandle.getParam("songs", songs);
-    if (songs.getType() != XmlRpc::XmlRpcValue::TypeArray)
-    {
-        ROS_ERROR("Invalid songs format");
-        return false;
-    }
+    bool recordSession = node->declare_parameter("record_session", false);
 
-    for (size_t i = 0; i < songs.size(); i++)
-    {
-        if (!songs[i].hasMember(key) || (value = static_cast<string>(songs[i][key])).empty())
-        {
-            ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
-            return false;
-        }
-
-        values.emplace_back(move(value));
-    }
-
-    return values.size() > 0;
-}
-
-bool getSongVectors(ros::NodeHandle& privateNodeHandle, vector<vector<string>>& values, const std::string& key)
-{
-    vector<string> value;
-
-    XmlRpc::XmlRpcValue songs;
-    privateNodeHandle.getParam("songs", songs);
-    if (songs.getType() != XmlRpc::XmlRpcValue::TypeArray)
-    {
-        ROS_ERROR("Invalid songs format");
-        return false;
-    }
-
-    for (size_t i = 0; i < songs.size(); i++)
-    {
-        if (!songs[i].hasMember(key) || songs[i][key].getType() != XmlRpc::XmlRpcValue::TypeArray)
-        {
-            ROS_ERROR_STREAM("Invalid songs[" << i << "] " << key);
-            return false;
-        }
-
-        for (size_t j = 0; j < songs[i][key].size(); j++)
-        {
-            value.emplace_back(songs[i][key][j]);
-        }
-
-        values.emplace_back(move(value));
-    }
-
-    return values.size() > 0;
-}
-
-int startNode(int argc, char** argv)
-{
-    ros::init(argc, argv, "smart_speaker_smart_node");
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
-
-    bool recordSession;
-    if (!privateNodeHandle.getParam("record_session", recordSession))
-    {
-        ROS_ERROR("The parameter record_session must be set.");
-        return -1;
-    }
-
-    string languageString;
+    string languageString = node->declare_parameter("language", "");
     Language language;
-    privateNodeHandle.param<std::string>("language", languageString, "");
     if (!languageFromString(languageString, language))
     {
-        ROS_ERROR("Language must be English (language=en) or French (language=fr).");
+        RCLCPP_ERROR(node->get_logger(), "Language must be English (language=en) or French (language=fr).");
         return -1;
     }
 
-    double personDistanceThreshold = -1.0;
-    if (!privateNodeHandle.getParam("person_distance_threshold", personDistanceThreshold) ||
-        personDistanceThreshold < 0.0)
+    double personDistanceThreshold = node->declare_parameter("person_distance_threshold", -1.0);
+    if (personDistanceThreshold < 0.0)
     {
-        ROS_ERROR("The parameter person_distance_threshold must be set and greater than 0.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter person_distance_threshold must be set and greater than 0.");
         return -1;
     }
 
-    std::string personDistanceFrameId;
-    if (!privateNodeHandle.getParam("person_distance_frame_id", personDistanceFrameId) || personDistanceFrameId == "")
+    std::string personDistanceFrameId = node->declare_parameter("person_distance_frame_id", "");
+    if (personDistanceFrameId == "")
     {
-        ROS_ERROR("The parameter person_distance_frame_id must be set and not empty.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter person_distance_frame_id must be set and not empty.");
         return -1;
     }
 
-    double noseConfidenceThreshold = -1.0;
-    if (!privateNodeHandle.getParam("nose_confidence_threshold", noseConfidenceThreshold) ||
-        noseConfidenceThreshold < 0.0)
+    double noseConfidenceThreshold = node->declare_parameter("nose_confidence_threshold", -1.0);
+    if (noseConfidenceThreshold < 0.0)
     {
-        ROS_ERROR("The parameter nose_confidence_threshold must be set and not empty.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter nose_confidence_threshold must be set and not empty.");
         return -1;
     }
 
-    int videoAnalysisMessageCountThreshold = -1;
-    if (!privateNodeHandle.getParam("video_analysis_message_count_threshold", videoAnalysisMessageCountThreshold) ||
-        videoAnalysisMessageCountThreshold < 1)
+    int videoAnalysisMessageCountThreshold = node->declare_parameter("video_analysis_message_count_threshold", -1);
+    if (videoAnalysisMessageCountThreshold < 1)
     {
-        ROS_ERROR("The parameter video_analysis_message_count_threshold must be set and greater than 0.");
+        RCLCPP_ERROR(
+            node->get_logger(),
+            "The parameter video_analysis_message_count_threshold must be set and greater than 0.");
         return -1;
     }
 
-    int videoAnalysisMessageCountTolerance = -1;
-    if (!privateNodeHandle.getParam("video_analysis_message_count_tolerance", videoAnalysisMessageCountTolerance) ||
-        videoAnalysisMessageCountTolerance < 0)
+    int videoAnalysisMessageCountTolerance = node->declare_parameter("video_analysis_message_count_tolerance", -1);
+    if (videoAnalysisMessageCountTolerance < 0)
     {
-        ROS_ERROR("The parameter video_analysis_message_count_tolerance must be set and greater than or equal to 0.");
+        RCLCPP_ERROR(
+            node->get_logger(),
+            "The parameter video_analysis_message_count_tolerance must be set and greater than or equal to 0.");
         return -1;
     }
 
-    bool singleTaskPerPerson = false;
-    privateNodeHandle.param("single_task_per_person", singleTaskPerPerson, false);
+    bool singleTaskPerPerson = node->declare_parameter("single_task_per_person", false);
+    bool useAfterTaskDelayDurationTopic = node->declare_parameter("use_after_task_delay_duration_topic", false);
 
-    bool useAfterTaskDelayDurationTopic = false;
-    privateNodeHandle.param("use_after_task_delay_duration_topic", useAfterTaskDelayDurationTopic, false);
+    double afterTaskDelayDurationS = node->declare_parameter("after_task_delay_duration_s", 0.0);
+    chrono::milliseconds afterTaskDelayDurationMs(static_cast<int>(afterTaskDelayDurationS * 1000));
 
-    double afterTaskDelayDurationS;
-    privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
-    ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
-
-    vector<string> songNames;
-    vector<vector<string>> songKeywords;
-    vector<string> songPaths;
-    if (!getSongStrings(privateNodeHandle, songNames, "name") ||
-        !getSongVectors(privateNodeHandle, songKeywords, "keywords") ||
-        !getSongStrings(privateNodeHandle, songPaths, "path"))
+    vector<string> songNames = node->declare_parameter("song_names", vector<string>{});
+    vector<string> songKeywords = node->declare_parameter("song_keywords", vector<string>{});
+    vector<string> songPaths = node->declare_parameter("song_paths", vector<string>{});
+    if (songNames.size() != songKeywords.size() || songNames.size() != songPaths.size() || songNames.size() < 1)
     {
+        RCLCPP_ERROR(
+            node->get_logger(),
+            "The parameters song_names, song_keywords and song_paths must have the same size and contain at least one "
+            "item.");
         return -1;
     }
 
+    vector<vector<string>> splittedSongKeywords;
+    std::transform(
+        songKeywords.begin(),
+        songKeywords.end(),
+        std::back_inserter(splittedSongKeywords),
+        [](auto& x) { return splitStrings(x, ";"); });
+
+
+    logSongs(node, songNames, splittedSongKeywords, songPaths);
     startNode(
         recordSession,
         language,
-        nodeHandle,
+        node,
         personDistanceThreshold,
         personDistanceFrameId,
         noseConfidenceThreshold,
         videoAnalysisMessageCountThreshold,
         videoAnalysisMessageCountTolerance,
         songNames,
-        songKeywords,
+        splittedSongKeywords,
         songPaths,
         singleTaskPerPerson,
         useAfterTaskDelayDurationTopic,
-        afterTaskDelayDuration);
+        afterTaskDelayDurationMs);
 
     return 0;
 }
 
 int main(int argc, char** argv)
 {
+    rclcpp::init(argc, argv);
+
     try
     {
-        return startNode(argc, argv);
+        return startNode();
     }
     catch (const std::exception& e)
     {
-        ROS_ERROR_STREAM("Smart speaker crashed (" << e.what() << ")");
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger(NODE_NAME), "Smart speaker crashed (" << e.what() << ")");
         return -1;
     }
+
+    rclcpp::shutdown();
 }

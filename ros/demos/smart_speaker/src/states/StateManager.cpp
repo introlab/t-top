@@ -2,7 +2,7 @@
 
 using namespace std;
 
-StateManager::StateManager() : m_currentState(nullptr) {}
+StateManager::StateManager(rclcpp::Node::SharedPtr node) : m_currentState(nullptr), m_node(move(node)) {}
 
 StateManager::~StateManager()
 {

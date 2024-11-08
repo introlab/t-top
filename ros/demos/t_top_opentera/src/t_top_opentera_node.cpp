@@ -3,128 +3,151 @@
 #include <hbba_lite/core/HbbaLite.h>
 #include <hbba_lite/core/RosFilterPool.h>
 #include <memory>
-#include <opentera_webrtc_ros_msgs/SetString.h>
-#include <ros/ros.h>
-#include <std_srvs/SetBool.h>
+#include <opentera_webrtc_ros_msgs/srv/set_string.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <std_srvs/srv/set_bool.hpp>
 #include <t_top_hbba_lite/Strategies.h>
+#include <optional>
 
-using namespace std;
+#include "utils.h"
 
 constexpr bool WAIT_FOR_SERVICE = true;
 
 class Node
 {
 public:
-    explicit Node(ros::NodeHandle& nodeHandle);
-    ~Node() = default;
+    Node();
 
-    static void run() { ros::spin(); }
+    void run()
+    {
+        rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+        executor.add_node(m_node);
+        executor.spin();
+    }
+
+    rclcpp::Logger get_logger() const { return m_node->get_logger(); }
 
 private:
-    ros::NodeHandle& m_nodeHandle;
+    std::shared_ptr<rclcpp::Node> m_node;
     std::shared_ptr<DesireSet> m_desireSet;
     std::shared_ptr<RosFilterPool> m_filterPool;
 
     std::unique_ptr<HbbaLite> m_hbbaLite;
 
-    optional<uint64_t> m_activeMovementModeId;
+    std::optional<uint64_t> m_activeMovementModeId;
 
-    ros::ServiceServer m_setMovementModeService;
-    ros::ServiceServer m_listActiveStrategiesService;
-    ros::ServiceServer m_listActiveDesiresService;
+    rclcpp::Service<opentera_webrtc_ros_msgs::srv::SetString>::SharedPtr m_setMovementModeService;
+    rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr m_listActiveStrategiesService;
+    rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr m_listActiveDesiresService;
 
-    bool listActiveStrategiesCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response);
-    bool listActiveDesiresCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response);
+    void listActiveStrategiesCb(
+        const std_srvs::srv::SetBool::Request::ConstSharedPtr& request,
+        const std_srvs::srv::SetBool::Response::SharedPtr& response);
+    void listActiveDesiresCb(
+        const std_srvs::srv::SetBool::Request::ConstSharedPtr& request,
+        const std_srvs::srv::SetBool::Response::SharedPtr& response);
 
-    bool setMovementModeCb(
-        opentera_webrtc_ros_msgs::SetString::Request& request,
-        opentera_webrtc_ros_msgs::SetString::Response& response);
+    void setMovementModeCb(
+        const opentera_webrtc_ros_msgs::srv::SetString::Request::ConstSharedPtr& request,
+        const opentera_webrtc_ros_msgs::srv::SetString::Response::SharedPtr& response);
 
     template<typename MovementMode>
     void setMovementModeDesire();
+
+    std::vector<std::unique_ptr<BaseStrategy>> makeStrategies();
 };
 
-Node::Node(ros::NodeHandle& nodeHandle)
-    : m_nodeHandle{nodeHandle},
-      m_desireSet{make_shared<DesireSet>()},
-      m_filterPool{make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE)}
+std::vector<std::unique_ptr<BaseStrategy>> Node::makeStrategies()
 {
-    vector<unique_ptr<BaseStrategy>> strategies;
+    std::vector<std::unique_ptr<BaseStrategy>> strategies;
+
     strategies.emplace_back(createTelepresenceStrategy(m_filterPool));
     strategies.emplace_back(createTeleoperationStrategy(m_filterPool));
     strategies.emplace_back(createSoundFollowingStrategy(m_filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(m_filterPool));
 
-    m_hbbaLite = make_unique<HbbaLite>(
-        m_desireSet,
-        move(strategies),
-        std::unordered_map<std::string, uint16_t>{{"sound", 1}},
-        make_unique<GecodeSolver>());
+    return strategies;
+}
 
-    auto telepresenceDesire = make_unique<TelepresenceDesire>();
+Node::Node()
+    : m_node{std::make_shared<rclcpp::Node>("t_top_opentera_node")},
+      m_desireSet{std::make_shared<DesireSet>()},
+      m_filterPool{std::make_shared<RosFilterPool>(m_node, WAIT_FOR_SERVICE)},
+      m_hbbaLite{std::make_unique<HbbaLite>(
+          m_desireSet,
+          makeStrategies(),
+          std::unordered_map<std::string, uint16_t>{{"sound", 1}},
+          std::make_unique<GecodeSolver>())},
+      m_activeMovementModeId{},
+      m_setMovementModeService{m_node->create_service<opentera_webrtc_ros_msgs::srv::SetString>(
+          "set_movement_mode",
+          bind_this<opentera_webrtc_ros_msgs::srv::SetString>(this, &Node::setMovementModeCb))},
+      m_listActiveStrategiesService{m_node->create_service<std_srvs::srv::SetBool>(
+          "hbba/list_active_strategies",
+          bind_this<std_srvs::srv::SetBool>(this, &Node::listActiveStrategiesCb))},
+      m_listActiveDesiresService{m_node->create_service<std_srvs::srv::SetBool>(
+          "hbba/list_active_desires",
+          bind_this<std_srvs::srv::SetBool>(this, &Node::listActiveDesiresCb))}
+{
+    auto telepresenceDesire = std::make_unique<TelepresenceDesire>();
     m_desireSet->addDesire(std::move(telepresenceDesire));
 
     setMovementModeDesire<TeleoperationDesire>();
+}
 
-    m_setMovementModeService = m_nodeHandle.advertiseService("set_movement_mode", &Node::setMovementModeCb, this);
-
-    m_listActiveStrategiesService =
-        m_nodeHandle.advertiseService("hbba/list_active_strategies", &Node::listActiveStrategiesCb, this);
-    m_listActiveDesiresService =
-        m_nodeHandle.advertiseService("hbba/list_active_desires", &Node::listActiveDesiresCb, this);
-};
-
-bool Node::listActiveStrategiesCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response)
+void Node::listActiveStrategiesCb(
+    [[maybe_unused]] const std_srvs::srv::SetBool::Request::ConstSharedPtr& request,
+    const std_srvs::srv::SetBool::Response::SharedPtr& response)
 {
-    response.message = "";
-    response.success = true;
+    response->message = "";
+    response->success = true;
 
     for (const auto& strategy : m_hbbaLite->getActiveStrategies())
     {
-        response.message += strategy + ";";
+        response->message += strategy + ";";
     }
-
-    return true;
 }
-bool Node::listActiveDesiresCb(std_srvs::SetBool::Request& request, std_srvs::SetBool::Response& response)
+void Node::listActiveDesiresCb(
+    [[maybe_unused]] const std_srvs::srv::SetBool::Request::ConstSharedPtr& request,
+    const std_srvs::srv::SetBool::Response::SharedPtr& response)
 {
-    response.message = "";
-    response.success = true;
+    response->message = "";
+    response->success = true;
 
     for (const auto& desire : m_hbbaLite->getActiveDesireNames())
     {
-        response.message += desire + ";";
+        response->message += desire + ";";
     }
-
-    return true;
 }
 
-bool Node::setMovementModeCb(
-    opentera_webrtc_ros_msgs::SetString::Request& request,
-    opentera_webrtc_ros_msgs::SetString::Response& response)
+void Node::setMovementModeCb(
+    const opentera_webrtc_ros_msgs::srv::SetString::Request::ConstSharedPtr& request,
+    const opentera_webrtc_ros_msgs::srv::SetString::Response::SharedPtr& response)
 {
-    response.message = "";
-    response.success = true;
+    response->success = false;
+    response->message = "Unknown movement mode";
 
-    if (request.data == "teleop")
+    const auto set_success = [&response]()
+    {
+        response->message = "";
+        response->success = true;
+    };
+
+    if (request->data == "teleop")
     {
         setMovementModeDesire<TeleoperationDesire>();
+        set_success();
     }
-    else if (request.data == "sound")
+    else if (request->data == "sound")
     {
         setMovementModeDesire<SoundFollowingDesire>();
+        set_success();
     }
-    else if (request.data == "face")
+    else if (request->data == "face")
     {
         setMovementModeDesire<NearestFaceFollowingDesire>();
+        set_success();
     }
-    else
-    {
-        response.success = false;
-        response.message = "Unknown movement mode";
-    }
-
-    return true;
 }
 
 template<typename MovementMode>
@@ -136,19 +159,25 @@ void Node::setMovementModeDesire()
         m_desireSet->removeDesire(m_activeMovementModeId.value());
     }
 
-    auto movementModeDesire = make_unique<MovementMode>();
+    auto movementModeDesire = std::make_unique<MovementMode>();
     m_activeMovementModeId = movementModeDesire->id();
     m_desireSet->addDesire(std::move(movementModeDesire));
 }
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "t_top_opentera_node");
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
+    rclcpp::init(argc, argv);
 
-    Node node{nodeHandle};
-    Node::run();
+    Node node;
+
+    try
+    {
+        node.run();
+    }
+    catch (const std::exception& e)
+    {
+        RCLCPP_ERROR_STREAM(node.get_logger(), "T-Top OpenTera Node crashed (" << e.what() << ")");
+    }
 
     return 0;
 }

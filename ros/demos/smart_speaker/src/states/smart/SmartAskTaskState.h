@@ -15,7 +15,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::vector<std::string> songNames);
     ~SmartAskTaskState() override = default;
 

@@ -3,14 +3,17 @@
 #include <perception_logger/sqlite/SQLiteSpeechLogger.h>
 #include <perception_logger/sqlite/SQLiteHbbaStrategyStateLogger.h>
 
-#include <ros/ros.h>
-#include <tf/transform_listener.h>
+#include <rclcpp/rclcpp.hpp>
+#include <tf2/exceptions.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <video_analyzer/VideoAnalysis.h>
-#include <audio_analyzer/AudioAnalysis.h>
-#include <talk/Text.h>
-#include <speech_to_text/Transcript.h>
-#include <hbba_lite/StrategyState.h>
+#include <perception_msgs/msg/video_analysis.hpp>
+#include <perception_msgs/msg/audio_analysis.hpp>
+#include <behavior_msgs/msg/text.hpp>
+#include <perception_msgs/msg/transcript.hpp>
+#include <hbba_lite_msgs/msg/strategy_state.hpp>
 
 #include <memory>
 #include <sstream>
@@ -41,74 +44,87 @@ struct PerceptionLoggerNodeConfiguration
     string frameId;
 };
 
-class PerceptionLoggerNode
+class PerceptionLoggerNode : public rclcpp::Node
 {
-    ros::NodeHandle& m_nodeHandle;
-    PerceptionLoggerNodeConfiguration m_configuration;
+    string m_databasePath;
+    string m_frameId;
 
-    SQLite::Database m_database;
+    unique_ptr<SQLite::Database> m_database;
     unique_ptr<VideoAnalysisLogger> m_videoAnalysisLogger;
     unique_ptr<AudioAnalysisLogger> m_audioAnalysisLogger;
     unique_ptr<SpeechLogger> m_speechLogger;
     unique_ptr<HbbaStrategyStateLogger> m_hbbaStrategyStateLogger;
 
-    tf::TransformListener m_listener;
+    unique_ptr<tf2_ros::Buffer> m_tfBuffer;
+    shared_ptr<tf2_ros::TransformListener> m_tfListener;
 
-    ros::Subscriber m_videoAnalysis3dSubscriber;
-    ros::Subscriber m_audioAnalysisSubscriber;
-    ros::Subscriber m_talkTextSubscriber;
-    ros::Subscriber m_speechToTextTranscriptSubscriber;
-    ros::Subscriber m_hbbaStrategyStateSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysis3dSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::Text>::SharedPtr m_talkTextSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextTranscriptSubscriber;
+    rclcpp::Subscription<hbba_lite_msgs::msg::StrategyState>::SharedPtr m_hbbaStrategyStateSubscriber;
 
 public:
-    PerceptionLoggerNode(ros::NodeHandle& nodeHandle, PerceptionLoggerNodeConfiguration configuration)
-        : m_nodeHandle(nodeHandle),
-          m_configuration(move(configuration)),
-          m_database(m_configuration.databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE)
+    PerceptionLoggerNode() : rclcpp::Node("perception_logger_node")
     {
-        m_videoAnalysisLogger = make_unique<SQLiteVideoAnalysisLogger>(m_database);
-        m_audioAnalysisLogger = make_unique<SQLiteAudioAnalysisLogger>(m_database);
-        m_speechLogger = make_unique<SQLiteSpeechLogger>(m_database);
-        m_hbbaStrategyStateLogger = make_unique<SQLiteHbbaStrategyStateLogger>(m_database);
+        m_databasePath = declare_parameter("database_path", "");
+        m_frameId = declare_parameter("frame_id", "");
 
-        m_videoAnalysis3dSubscriber =
-            m_nodeHandle.subscribe("video_analysis", 10, &PerceptionLoggerNode::videoAnalysisSubscriberCallback, this);
-        m_audioAnalysisSubscriber =
-            m_nodeHandle.subscribe("audio_analysis", 10, &PerceptionLoggerNode::audioAnalysisSubscriberCallback, this);
-        m_talkTextSubscriber =
-            m_nodeHandle.subscribe("talk/text", 10, &PerceptionLoggerNode::talkTextSubscriberCallback, this);
-        m_speechToTextTranscriptSubscriber = m_nodeHandle.subscribe(
+        m_database = std::make_unique<SQLite::Database>(m_databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+
+        m_videoAnalysisLogger = std::make_unique<SQLiteVideoAnalysisLogger>(*m_database);
+        m_audioAnalysisLogger = std::make_unique<SQLiteAudioAnalysisLogger>(*m_database);
+        m_speechLogger = std::make_unique<SQLiteSpeechLogger>(*m_database);
+        m_hbbaStrategyStateLogger = std::make_unique<SQLiteHbbaStrategyStateLogger>(*m_database);
+
+        m_videoAnalysis3dSubscriber = create_subscription<perception_msgs::msg::VideoAnalysis>(
+            "video_analysis",
+            10,
+            [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
+        m_audioAnalysisSubscriber = create_subscription<perception_msgs::msg::AudioAnalysis>(
+            "audio_analysis",
+            10,
+            [this](const perception_msgs::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
+        m_talkTextSubscriber = create_subscription<behavior_msgs::msg::Text>(
+            "talk/text",
+            10,
+            [this](const behavior_msgs::msg::Text::SharedPtr msg) { talkTextSubscriberCallback(msg); });
+        m_speechToTextTranscriptSubscriber = create_subscription<perception_msgs::msg::Transcript>(
             "speech_to_text/transcript",
             10,
-            &PerceptionLoggerNode::speechToTextTranscriptSubscriberCallback,
-            this);
-        m_hbbaStrategyStateSubscriber = m_nodeHandle.subscribe(
+            [this](const perception_msgs::msg::Transcript::SharedPtr msg)
+            { speechToTextTranscriptSubscriberCallback(msg); });
+        m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite_msgs::msg::StrategyState>(
             "hbba_strategy_state_log",
             10,
-            &PerceptionLoggerNode::hbbaStrategyStateSubscriberCallback,
-            this);
+            [this](const hbba_lite_msgs::msg::StrategyState::SharedPtr msg) { hbbaStrategyStateSubscriberCallback(msg); });
+
+        m_tfBuffer = std::make_unique<tf2_ros::Buffer>(get_clock());
+        m_tfListener = std::make_shared<tf2_ros::TransformListener>(*m_tfBuffer);
     }
 
     virtual ~PerceptionLoggerNode() {}
 
-    void videoAnalysisSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+    void videoAnalysisSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
     {
         if (!msg->contains_3d_positions)
         {
-            ROS_ERROR("The video analysis must contain 3d positions.");
+            RCLCPP_ERROR(get_logger(), "The video analysis must contain 3d positions.");
             return;
         }
 
-        tf::StampedTransform transform;
+        geometry_msgs::msg::TransformStamped transformMsg;
         try
         {
-            m_listener.lookupTransform(m_configuration.frameId, msg->header.frame_id, msg->header.stamp, transform);
+            transformMsg = m_tfBuffer->lookupTransform(m_frameId, msg->header.frame_id, msg->header.stamp);
         }
-        catch (tf::TransformException ex)
+        catch (tf2::TransformException& ex)
         {
-            ROS_ERROR("%s", ex.what());
+            RCLCPP_ERROR(get_logger(), "%s", ex.what());
             return;
         }
+        tf2::Stamped<tf2::Transform> transform;
+        tf2::convert(transformMsg, transform);
 
         for (auto& object : msg->objects)
         {
@@ -116,12 +132,13 @@ public:
         }
     }
 
-    void audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
+    void audioAnalysisSubscriberCallback(const perception_msgs::msg::AudioAnalysis::SharedPtr msg)
     {
-        if (msg->header.frame_id != m_configuration.frameId)
+        if (msg->header.frame_id != m_frameId)
         {
-            ROS_ERROR_STREAM(
-                "Invalid direction frame id (" << msg->header.frame_id << " ! = " << m_configuration.frameId);
+            RCLCPP_ERROR_STREAM(
+                get_logger(),
+                "Invalid direction frame id (" << msg->header.frame_id << " ! = " << m_frameId);
             return;
         }
         if (msg->audio_classes.empty())
@@ -132,40 +149,42 @@ public:
         m_audioAnalysisLogger->log(msgToAnalysis(msg));
     }
 
-    void talkTextSubscriberCallback(const talk::Text::ConstPtr& msg)
+    void talkTextSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg)
     {
-        m_speechLogger->log(Speech(ros::Time::now(), SpeechSource::ROBOT, msg->text));
+        m_speechLogger->log(Speech(get_clock()->now(), SpeechSource::ROBOT, msg->text));
     }
 
-    void speechToTextTranscriptSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
+    void speechToTextTranscriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
     {
         if (msg->is_final)
         {
-            m_speechLogger->log(Speech(ros::Time::now(), SpeechSource::HUMAN, msg->text));
+            m_speechLogger->log(Speech(get_clock()->now(), SpeechSource::HUMAN, msg->text));
         }
     }
 
-    void hbbaStrategyStateSubscriberCallback(const hbba_lite::StrategyState::ConstPtr& msg)
+    void hbbaStrategyStateSubscriberCallback(const hbba_lite_msgs::msg::StrategyState::SharedPtr msg)
     {
         m_hbbaStrategyStateLogger->log(
-            HbbaStrategyState(ros::Time::now(), msg->desire_type_name, msg->strategy_type_name, msg->enabled));
+            HbbaStrategyState(get_clock()->now(), msg->desire_type_name, msg->strategy_type_name, msg->enabled));
     }
 
-    void run() { ros::spin(); }
+    void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    static Position pointToPosition(const geometry_msgs::Point& point, const tf::StampedTransform& transform)
+    static Position
+        pointToPosition(const geometry_msgs::msg::Point& point, const tf2::Stamped<tf2::Transform>& transform)
     {
-        tf::Point transformedPoint = transform * tf::Point(point.x, point.y, point.z);
+        tf2::Vector3 transformedPoint = transform * tf2::Vector3(point.x, point.y, point.z);
         return Position{transformedPoint.x(), transformedPoint.y(), transformedPoint.z()};
     }
 
-    static ImagePosition pointToImagePosition(const geometry_msgs::Point& point)
+    static ImagePosition pointToImagePosition(const geometry_msgs::msg::Point& point)
     {
         return ImagePosition{point.x, point.y};
     }
 
-    static BoundingBox centreWidthHeightToBoundingBox(const geometry_msgs::Point& centre, double width, double height)
+    static BoundingBox
+        centreWidthHeightToBoundingBox(const geometry_msgs::msg::Point& centre, double width, double height)
     {
         return BoundingBox{pointToImagePosition(centre), width, height};
     }
@@ -177,9 +196,9 @@ private:
     }
 
     static VideoAnalysis msgToAnalysis(
-        const video_analyzer::VideoAnalysisObject& msg,
-        const ros::Time& timestamp,
-        const tf::StampedTransform& transform)
+        const perception_msgs::msg::VideoAnalysisObject& msg,
+        const rclcpp::Time& timestamp,
+        const tf2::Stamped<tf2::Transform>& transform)
     {
         Position position = pointToPosition(msg.center_3d, transform);
         VideoAnalysis videoAnalysis{
@@ -209,7 +228,7 @@ private:
                 std::begin(msg.person_pose_3d),
                 std::end(msg.person_pose_3d),
                 std::back_inserter(videoAnalysis.personPose.value()),
-                [&transform](const geometry_msgs::Point& point) { return pointToPosition(point, transform); });
+                [&transform](const geometry_msgs::msg::Point& point) { return pointToPosition(point, transform); });
         }
         if (!msg.person_pose_confidence.empty())
         {
@@ -225,10 +244,10 @@ private:
         return videoAnalysis;
     }
 
-    static AudioAnalysis msgToAnalysis(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
+    static AudioAnalysis msgToAnalysis(const perception_msgs::msg::AudioAnalysis::SharedPtr msg)
     {
         AudioAnalysis audioAnalysis(
-            msg->header.stamp,
+            rclcpp::Time(msg->header.stamp),
             Direction{msg->direction_x, msg->direction_y, msg->direction_z},
             msg->tracking_id,
             mergeClasses(msg->audio_classes));
@@ -244,26 +263,12 @@ private:
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "perception_logger_node");
+    rclcpp::init(argc, argv);
 
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
+    auto node = make_shared<PerceptionLoggerNode>();
+    node->run();
 
-    PerceptionLoggerNodeConfiguration configuration;
-
-    if (!privateNodeHandle.getParam("database_path", configuration.databasePath))
-    {
-        ROS_ERROR("The parameter database_path is required.");
-        return -1;
-    }
-    if (!privateNodeHandle.getParam("frame_id", configuration.frameId))
-    {
-        ROS_ERROR("The parameter frame_id is required.");
-        return -1;
-    }
-
-    PerceptionLoggerNode node(nodeHandle, configuration);
-    node.run();
+    rclcpp::shutdown();
 
     return 0;
 }

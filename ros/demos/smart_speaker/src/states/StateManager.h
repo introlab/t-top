@@ -3,7 +3,7 @@
 
 #include "State.h"
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <hbba_lite/utils/ClassMacros.h>
 
@@ -15,8 +15,10 @@ class StateManager
     std::unordered_map<std::type_index, std::unique_ptr<State>> m_states;
     State* m_currentState;
 
+    rclcpp::Node::SharedPtr m_node;
+
 public:
-    StateManager();
+    StateManager(rclcpp::Node::SharedPtr node);
     virtual ~StateManager();
 
     DECLARE_NOT_COPYABLE(StateManager);
@@ -40,12 +42,12 @@ inline void StateManager::switchTo(std::type_index stateType, const std::string&
     std::type_index previousStageType(typeid(State));
     if (m_currentState != nullptr)
     {
-        ROS_INFO("Disabling %s", m_currentState->type().name());
+        RCLCPP_INFO(m_node->get_logger(), "Disabling %s", m_currentState->type().name());
         m_currentState->disable();
         previousStageType = m_currentState->type();
     }
 
-    ROS_INFO("Enabling %s (%s)", stateType.name(), parameter.c_str());
+    RCLCPP_INFO(m_node->get_logger(), "Enabling %s (%s)", stateType.name(), parameter.c_str());
     m_currentState = m_states.at(stateType).get();
     m_currentState->enable(parameter, previousStageType);
 }

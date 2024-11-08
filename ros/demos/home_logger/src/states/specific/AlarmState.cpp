@@ -22,10 +22,10 @@ string AlarmStateParameter::toString() const
 AlarmState::AlarmState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     AlarmManager& alarmManager,
     string alarmPath)
-    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+    : SoundFaceFollowingState(stateManager, move(desireSet), move(node)),
       m_alarmManager(alarmManager),
       m_alarmPath(move(alarmPath))
 {

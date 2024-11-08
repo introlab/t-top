@@ -27,12 +27,22 @@ gi.require_version('Gst', '1.0')
 from gi.repository import Gst  # type: ignore
 from gi.repository import GLib  # type: ignore
 
-import rospy
+import rclpy
+import rclpy.node
+import rclpy.logging
+import rclpy.subscription
 
-from audio_utils.msg import AudioFrame
+from audio_utils_msgs.msg import AudioFrame
 from sensor_msgs.msg import Image
 
 import hbba_lite
+
+
+NODE_NAME = 'video_recorder_node'
+
+
+def get_logger():
+    return rclpy.logging.get_logger(NODE_NAME)
 
 
 def apply(func: Callable, iter: Iterable) -> None:
@@ -184,28 +194,28 @@ class VideoStreamConfiguration:
         sould_exit = False
         if 'name' not in parameters:
             debug_str = f'at index |{index}|'
-            rospy.logerr(f'Video stream parameters {debug_str} must have a name')
+            get_logger().error(f'Video stream parameters {debug_str} must have a name')
             sould_exit = True
         else:
             debug_str = f'for name |{parameters["name"]}|'
 
         if 'format' not in parameters:
-            rospy.logerr(f'Video stream parameters {debug_str} must have a format')
+            get_logger().error(f'Video stream parameters {debug_str} must have a format')
             sould_exit = True
         if 'width' not in parameters:
-            rospy.logerr(f'Video stream parameters {debug_str} must have a width')
+            get_logger().error(f'Video stream parameters {debug_str} must have a width')
             sould_exit = True
         if 'height' not in parameters:
-            rospy.logerr(f'Video stream parameters {debug_str} must have a height')
+            get_logger().error(f'Video stream parameters {debug_str} must have a height')
             sould_exit = True
         if 'framerate' not in parameters:
-            rospy.logerr(f'Video stream parameters {debug_str} must have a framerate')
+            get_logger().error(f'Video stream parameters {debug_str} must have a framerate')
             sould_exit = True
         if 'codec' not in parameters:
-            rospy.logerr(f'Video stream parameters {debug_str} must have a codec')
+            get_logger().error(f'Video stream parameters {debug_str} must have a codec')
             sould_exit = True
         if 'bitrate' not in parameters:
-            rospy.logerr(f'Video stream parameters {debug_str} must have a bitrate')
+            get_logger().error(f'Video stream parameters {debug_str} must have a bitrate')
             sould_exit = True
 
         if sould_exit:
@@ -263,26 +273,26 @@ class AudioStreamConfiguration:
         sould_exit = False
         if 'name' not in parameters:
             debug_str = f'at index |{index}|'
-            rospy.logerr(f'Audio stream parameters {debug_str} must have a name')
+            get_logger().error(f'Audio stream parameters {debug_str} must have a name')
             sould_exit = True
         else:
             debug_str = f'for name |{parameters["name"]}|'
 
         if 'format' not in parameters:
-            rospy.logerr(f'Audio stream parameters {debug_str} must have a format')
+            get_logger().error(f'Audio stream parameters {debug_str} must have a format')
             sould_exit = True
         if 'channel_count' not in parameters:
-            rospy.logerr(
+            get_logger().error(
                 f'Audio stream parameters {debug_str} must have a channel_count'
             )
             sould_exit = True
         if 'sampling_frequency' not in parameters:
-            rospy.logerr(
+            get_logger().error(
                 f'Audio stream parameters {debug_str} must have a sampling_frequency'
             )
             sould_exit = True
         if 'codec' not in parameters:
-            rospy.logerr(f'Audio stream parameters {debug_str} must have a codec')
+            get_logger().error(f'Audio stream parameters {debug_str} must have a codec')
             sould_exit = True
 
         if sould_exit:
@@ -338,34 +348,51 @@ class VideoRecorderConfiguration:
         )
 
     @staticmethod
-    def from_parameters() -> 'VideoRecorderConfiguration':
+    def from_parameters(node: rclpy.node.Node) -> 'VideoRecorderConfiguration':
 
-        output_directory = cast(str, rospy.get_param('~output_directory'))
-        filename_prefix = cast(
-            str, rospy.get_param('~filename_prefix', '')  # type: ignore
-        )
-        video_streams = [
-            VideoStreamConfiguration.from_parameters(video_stream, index) for index, video_stream in enumerate(rospy.get_param(f'~video_streams'))  # type: ignore
-        ]
-        audio_streams = [
-            AudioStreamConfiguration.from_parameters(audio_stream, index) for index, audio_stream in enumerate(rospy.get_param(f'~audio_streams'))  # type: ignore
-        ]
+        output_directory = node.declare_parameter('output_directory', '').get_parameter_value().string_value
+        filename_prefix = node.declare_parameter('filename_prefix', '').get_parameter_value().string_value
+
+        video_stream_parameters = {
+            'name': node.declare_parameter('video_stream_name', '').get_parameter_value().string_value,
+            'format': node.declare_parameter('video_stream_format', '').get_parameter_value().string_value,
+            'width': node.declare_parameter('video_stream_width', 0).get_parameter_value().integer_value,
+            'height': node.declare_parameter('video_stream_height', 0).get_parameter_value().integer_value,
+            'framerate': node.declare_parameter('video_stream_framerate', 0).get_parameter_value().integer_value,
+            'codec': node.declare_parameter('video_stream_codec', '').get_parameter_value().string_value,
+            'bitrate': node.declare_parameter('video_stream_bitrate', 0).get_parameter_value().integer_value,
+            'delay_s': node.declare_parameter('video_stream_delay_s', 0.0).get_parameter_value().double_value,
+            'language_code': node.declare_parameter('video_stream_language_code', 'eng').get_parameter_value().string_value,
+        }
+
+        audio_stream_parameters = {
+            'name': node.declare_parameter('audio_stream_name', '').get_parameter_value().string_value,
+            'format': node.declare_parameter('audio_stream_format', '').get_parameter_value().string_value,
+            'channel_count': node.declare_parameter('audio_stream_channel_count', 0).get_parameter_value().integer_value,
+            'sampling_frequency': node.declare_parameter('audio_stream_sampling_frequency', 0).get_parameter_value().integer_value,
+            'codec': node.declare_parameter('audio_stream_codec', '').get_parameter_value().string_value,
+            'merge_channels': node.declare_parameter('audio_stream_merge_channels', True).get_parameter_value().bool_value,
+            'language_code': node.declare_parameter('audio_stream_language_code', 'eng').get_parameter_value().string_value,
+        }
+
+        video_streams = [VideoStreamConfiguration.from_parameters(video_stream_parameters, 0)]
+        audio_streams = [AudioStreamConfiguration.from_parameters(audio_stream_parameters, 0)]
 
         streams_count = len(video_streams) + len(audio_streams)
         if streams_count < 1:
-            rospy.logerr(f'At least one video or audio stream must be specified')
+            get_logger().error(f'At least one video or audio stream must be specified')
             sys.exit(os.EX_CONFIG)
 
         video_names = [video_stream.name for video_stream in video_streams]
         if len(duplicates := get_duplicates(video_names)) > 0:
-            rospy.logerr(
+            get_logger().error(
                 f'Video stream names must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
 
         audio_names = [audio_stream.name for audio_stream in audio_streams]
         if len(duplicates := get_duplicates(audio_names)) > 0:
-            rospy.logerr(
+            get_logger().error(
                 f'Audio stream names must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
@@ -374,7 +401,7 @@ class VideoRecorderConfiguration:
             video_stream.language_code for video_stream in video_streams
         ]
         if len(duplicates := get_duplicates(video_lang_codes)) > 0:
-            rospy.logerr(
+            get_logger().error(
                 f'Video language codes must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
@@ -383,7 +410,7 @@ class VideoRecorderConfiguration:
             audio_stream.language_code for audio_stream in audio_streams
         ]
         if len(duplicates := get_duplicates(audio_lang_codes)) > 0:
-            rospy.logerr(
+            get_logger().error(
                 f'Audio language codes must be unique, duplicates found: {duplicates}'
             )
             sys.exit(os.EX_CONFIG)
@@ -391,13 +418,13 @@ class VideoRecorderConfiguration:
         should_exit = False
         for stream_name in itertools.chain(video_names, audio_names):
             if not VideoRecorderConfiguration._is_valid_name(stream_name):
-                rospy.logerr(
+                get_logger().error(
                     f'Stream names must only contain alphanumeric ascii characters and underscores; invalid name: {stream_name}'
                 )
                 should_exit = True
         for lang_code in itertools.chain(video_lang_codes, audio_lang_codes):
             if not VideoRecorderConfiguration._is_valid_language_code(lang_code):
-                rospy.logerr(
+                get_logger().error(
                     'Language codes must be ISO 639-3 codes, and should be a 3-letter code (see https://iso639-3.sil.org/code_tables/639/data)'
                     f'; invalid language code: {lang_code}'
                 )
@@ -414,7 +441,8 @@ class VideoRecorderConfiguration:
 
 
 class VideoRecorder:
-    def __init__(self, configuration: VideoRecorderConfiguration):
+    def __init__(self, node: rclpy.node.Node, configuration: VideoRecorderConfiguration):
+        self._node = node
         self._configuration = configuration
         os.makedirs(self._configuration.output_directory, exist_ok=True)
 
@@ -434,39 +462,37 @@ class VideoRecorder:
         self._clear_sources_lists()
 
         self._image_subscribers = {
-            video_stream_configuration.name: rospy.Subscriber(
-                video_stream_configuration.full_name,
+            video_stream_configuration.name: node.create_subscription(
                 Image,
-                self._image_cb,
-                video_stream_configuration,
-                queue_size=10,
+                video_stream_configuration.full_name,
+                lambda msg: self._image_cb(msg, video_stream_configuration),
+                10,
             )
             for video_stream_configuration in self._configuration.video_streams
         }
         self._audio_subscribers = {
-            audio_stream_configuration.name: rospy.Subscriber(
-                audio_stream_configuration.full_name,
+            audio_stream_configuration.name: node.create_subscription(
                 AudioFrame,
-                self._audio_cb,
-                audio_stream_configuration,
-                queue_size=10,
+                audio_stream_configuration.full_name,
+                lambda msg: self._audio_cb(msg, audio_stream_configuration),
+                10,
             )
             for audio_stream_configuration in self._configuration.audio_streams
         }
 
     def close(self):
-        apply(rospy.Subscriber.unregister, self._image_subscribers.values())
-        apply(rospy.Subscriber.unregister, self._audio_subscribers.values())
+        apply(self._node.destroy_subscription, self._image_subscribers.values())
+        apply(self._node.destroy_subscription, self._audio_subscribers.values())
         self._stop_if_started()
 
     def _image_cb(self, msg: Image, configuration: VideoStreamConfiguration):
         if not VideoRecorder._verify_image_msg(configuration, msg):
-            rospy.logerr(
+            get_logger().error(
                 f'Invalid image (encoding={msg.encoding}, width={msg.width}, height={msg.height})'
             )
             return
 
-        msg_timestamp_ns = msg.header.stamp.to_nsec()
+        msg_timestamp_ns = rclpy.time.Time.from_msg(msg.header.stamp).nanoseconds
         self._start_if_not_started(msg_timestamp_ns)
         if self._video_srcs[configuration.name] is None:
             return
@@ -481,7 +507,7 @@ class VideoRecorder:
         self._last_video_frame_timestamp_ns[configuration.name] = timestamp_ns
 
         if timestamp_ns >= 0:
-            rospy.logdebug(f'Pushing image {msg.header.seq} for {configuration.name}')
+            get_logger().debug(f'Pushing image for {configuration.name}')
             self._video_srcs[configuration.name].emit(  # type: ignore
                 'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
@@ -500,12 +526,12 @@ class VideoRecorder:
 
     def _audio_cb(self, msg: AudioFrame, configuration: AudioStreamConfiguration):
         if not VideoRecorder._verify_audio_frame_msg(configuration, msg):
-            rospy.logerr(
+            get_logger().error(
                 f'Invalid audio frame (format={msg.format}, channel_count={msg.channel_count}, sampling_frequency={msg.sampling_frequency})'
             )
             return
 
-        msg_timestamp_ns = msg.header.stamp.to_nsec()
+        msg_timestamp_ns = rclpy.time.Time.from_msg(msg.header.stamp).nanoseconds
         self._start_if_not_started(msg_timestamp_ns)
         if self._audio_srcs[configuration.name] is None:
             return
@@ -514,9 +540,7 @@ class VideoRecorder:
         duration_ns = int(1 / msg.sampling_frequency * msg.frame_sample_count)
 
         if timestamp_ns >= 0:
-            rospy.logdebug(
-                f'Pushing audio frame {msg.header.seq} for {configuration.name}'
-            )
+            get_logger().debug(f'Pushing audio frame for {configuration.name}')
             self._audio_srcs[configuration.name].emit(  # type: ignore
                 'push-buffer',
                 VideoRecorder.data_to_gst_buffer(msg.data, timestamp_ns, duration_ns),
@@ -560,7 +584,7 @@ class VideoRecorder:
                 + '  '.join(f'{p} ! mux.' for p in video_and_audio_pipelines)
             )
 
-            rospy.loginfo(f'Launching gstreamer pipeline: {pipeline_str}')
+            get_logger().info(f'Launching gstreamer pipeline: {pipeline_str}')
 
             try:
                 pipeline = Gst.parse_launch(pipeline_str)
@@ -588,7 +612,7 @@ class VideoRecorder:
                 self._audio_srcs = audio_srcs
                 self._bus = bus
             except GLib.Error as e:  # type: ignore
-                rospy.loginfo(f'GStreamer pipeline failed({e})')
+                get_logger().info(f'GStreamer pipeline failed({e})')
                 sys.exit(-2)
 
             graph_export(self._pipeline, 'started')
@@ -605,7 +629,7 @@ class VideoRecorder:
 
             apply(lambda s: s.emit('end-of-stream'), self._video_srcs.values())  # type: ignore
             apply(lambda s: s.emit('end-of-stream'), self._audio_srcs.values())  # type: ignore
-            rospy.loginfo('Sent EOS to all sources')
+            get_logger().info('Sent EOS to all sources')
 
             if self._bus:
                 self._bus.timed_pop_filtered(  # type: ignore
@@ -613,7 +637,7 @@ class VideoRecorder:
                 )
                 self._bus.remove_watch()
 
-            rospy.loginfo('Received EOS on the bus')
+            get_logger().info('Received EOS on the bus')
 
             self._pipeline.set_state(Gst.State.NULL)
             self._pipeline = None
@@ -625,44 +649,44 @@ class VideoRecorder:
     def _on_bus_message_cb(self, bus, msg):
         def message_to_string(msg: Gst.Message) -> Tuple[str, Callable]:
             if msg.type == Gst.MessageType.EOS:
-                return 'End-of-stream', rospy.loginfo
+                return 'End-of-stream', get_logger().info
             elif msg.type == Gst.MessageType.WARNING:
                 err, debug = msg.parse_warning()
-                return f'Warning: |{err}|: {debug}', rospy.logwarn
+                return f'Warning: |{err}|: {debug}', get_logger().warn
             elif msg.type == Gst.MessageType.ERROR:
                 err, debug = msg.parse_error()
-                return f'Bus call: Error: |{err}|: {debug}', rospy.logerr
+                return f'Bus call: Error: |{err}|: {debug}', get_logger().error
             elif msg.type == Gst.MessageType.BUFFERING:
                 percent = msg.parse_buffering()
-                return f'Buffering ({percent}%)', rospy.loginfo
+                return f'Buffering ({percent}%)', get_logger().info
             elif msg.type == Gst.MessageType.STATE_CHANGED:
                 old_state, new_state, pending_state = msg.parse_state_changed()
                 return (
                     f'Element |{msg.src.get_name()}| (of type |{type(msg.src).__name__}|) state changed from |{old_state.value_nick}| to |{new_state.value_nick}| '
                     f'(pending |{pending_state.value_nick}|)'
-                ), rospy.loginfo
+                ), get_logger().info
             elif msg.type == Gst.MessageType.STREAM_START:
-                return 'Stream started', rospy.loginfo
+                return 'Stream started', get_logger().info
             elif msg.type == Gst.MessageType.STREAM_STATUS:
                 status_type, owner = msg.parse_stream_status()
                 return (
                     f'Stream status; status: |{status_type.value_nick}|, owner: |{type(owner).__name__}|',
-                    rospy.loginfo,
+                    get_logger().info,
                 )
             elif msg.type == Gst.MessageType.LATENCY:
-                return 'Latency', rospy.loginfo
+                return 'Latency', get_logger().info
             elif msg.type == Gst.MessageType.NEW_CLOCK:
                 clock = msg.parse_new_clock()
                 return (
                     f'New clock; sync: |{clock.is_synced()}|, resolution: |{clock.get_resolution()}|',
-                    rospy.loginfo,
+                    get_logger().info,
                 )
             elif msg.type == Gst.MessageType.ASYNC_DONE:
-                return 'Async done', rospy.loginfo
+                return 'Async done', get_logger().info
             else:
                 return (
                     f'Unknow message of type |{Gst.MessageType.get_name(msg.type).upper().replace("-", "_")}|',
-                    rospy.loginfo,
+                    get_logger().info,
                 )
 
         msg_str, log_func = message_to_string(msg)
@@ -681,7 +705,7 @@ class VideoRecorder:
 
     @staticmethod
     def _get_filename(configuration: VideoRecorderConfiguration) -> str:
-        now = datetime.datetime.utcfromtimestamp(rospy.Time.now().to_sec())
+        now = datetime.datetime.now()
         filename_us = configuration.filename_prefix + now.strftime('%Y-%m-%d_%H-%M-%S.%f')
         filename_ms = filename_us[:-3]
         return filename_ms
@@ -702,7 +726,7 @@ class VideoRecorder:
                 f' ! {encoder} name={encoder}_{configuration.full_name} bitrate={bitrate}'
             )
         else:
-            rospy.logwarn('NVIDIA hardware encoder are not available.')
+            get_logger().warn('NVIDIA hardware encoder are not available.')
 
             encoder = configuration.codec.software_encoder
             bitrate_attribute = configuration.codec.get_software_bitrate_attribute()
@@ -816,13 +840,16 @@ class VideoRecorder:
         }
 
 
-class VideoRecorderNode:
+class VideoRecorderNode(rclpy.node.Node):
     def __init__(self):
+        super().__init__(NODE_NAME)
+
         self._recorder_lock = threading.Lock()
         self._recorder = None
-        self._recorder_configuration = VideoRecorderConfiguration.from_parameters()
+        self._recorder_configuration = VideoRecorderConfiguration.from_parameters(self)
 
         self._filter_state = hbba_lite.OnOffHbbaFilterState(  # type: ignore
+            self,
             'video_recorder/filter_state'
         )
         self._filter_state.on_changed(self._on_filter_state_changed)
@@ -833,12 +860,12 @@ class VideoRecorderNode:
                 self._recorder.close()
                 self._recorder = None
             elif not next_is_filtering_all_messages and self._recorder is None:
-                self._recorder = VideoRecorder(self._recorder_configuration)
+                self._recorder = VideoRecorder(self, self._recorder_configuration)
 
     def run(self):
         try:
-            rospy.spin()
-        except rospy.ROSInterruptException:
+            rclpy.spin(self)
+        except KeyboardInterrupt:
             pass
         finally:
             with self._recorder_lock:
@@ -848,16 +875,21 @@ class VideoRecorderNode:
 
 
 def main():
-    rospy.init_node('video_recorder_node')
+    rclpy.init()
 
     Gst.init(None)
 
     video_recorder_node = VideoRecorderNode()
-    video_recorder_node.run()
+
+    try:
+        video_recorder_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_recorder_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

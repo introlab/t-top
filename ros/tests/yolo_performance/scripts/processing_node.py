@@ -8,7 +8,8 @@ import torch
 
 from tqdm import tqdm
 
-import rospy
+import rclpy
+import rclpy.node
 
 from dnn_utils import Yolo
 
@@ -57,14 +58,16 @@ class Performance:
 
 
 def main():
-    rospy.init_node('processing_node')
+    rclpy.init()
 
-    input_path = rospy.get_param('~input_path')
+    node = rclpy.node.Node('processing_node')
+
+    input_path = node.declare_parameter('input_path', '').get_parameter_value().string_value
     output_path = os.path.join(input_path, '..', 'results')
-    yolo_models = rospy.get_param('~yolo_models')
-    confidence_threshold = rospy.get_param('~confidence_threshold')
-    nms_threshold = rospy.get_param('~nms_threshold')
-    inference_type = rospy.get_param('~neural_network_inference_type')
+    yolo_models = node.declare_parameter('yolo_models', ['yolo_v4_coco']).get_parameter_value().string_array_value
+    confidence_threshold = node.declare_parameter('confidence_threshold', 0.5).get_parameter_value().double_value
+    nms_threshold = node.declare_parameter('nms_threshold', 0.5).get_parameter_value().double_value
+    inference_type = node.declare_parameter('neural_network_inference_type', 'cpu').get_parameter_value().string_value
 
     setups, classes = _load_setups_classes(input_path)
     performances_by_setup_by_model = _init_performances(yolo_models, setups, classes)
@@ -188,5 +191,5 @@ def _get_bbox(object):
 if __name__ == '__main__':
     try:
         main()
-    except rospy.ROSInterruptException:
+    except KeyboardInterrupt:
         pass

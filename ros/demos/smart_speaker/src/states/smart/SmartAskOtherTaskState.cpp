@@ -14,9 +14,9 @@ SmartAskOtherTaskState::SmartAskOtherTaskState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     bool singleTaskPerPerson)
-    : TalkState(language, stateManager, desireSet, nodeHandle, type_index(typeid(SmartWaitAnswerState))),
+    : TalkState(language, stateManager, desireSet, move(node), type_index(typeid(SmartWaitAnswerState))),
       m_singleTaskPerPerson(singleTaskPerPerson)
 {
 }

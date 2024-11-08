@@ -5,7 +5,8 @@
 #include <home_logger_common/language/StringResources.h>
 
 #include <t_top_hbba_lite/Desires.h>
-#include <tf/transform_listener.h>
+
+#include <tf2/LinearMath/Vector3.h>
 
 using namespace std;
 
@@ -32,9 +33,9 @@ string WaitFaceDescriptorCommandParameterStateParameter::toString() const
 WaitFaceDescriptorCommandParameterState::WaitFaceDescriptorCommandParameterState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     float noseConfidenceThreshold)
-    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+    : SoundFaceFollowingState(stateManager, move(desireSet), move(node)),
       m_noseConfidenceThreshold(noseConfidenceThreshold)
 {
 }
@@ -74,7 +75,7 @@ void WaitFaceDescriptorCommandParameterState::onDisabling()
 }
 
 void WaitFaceDescriptorCommandParameterState::onVideoAnalysisReceived(
-    const video_analyzer::VideoAnalysis::ConstPtr& msg)
+    const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     auto faceDescriptor = findNearestFaceDescriptor(msg);
     if (faceDescriptor.has_value())
@@ -94,7 +95,7 @@ void WaitFaceDescriptorCommandParameterState::onStateTimeout()
 }
 
 optional<FaceDescriptor> WaitFaceDescriptorCommandParameterState::findNearestFaceDescriptor(
-    const video_analyzer::VideoAnalysis::ConstPtr& msg)
+    const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;
 
@@ -111,7 +112,7 @@ optional<FaceDescriptor> WaitFaceDescriptorCommandParameterState::findNearestFac
         }
 
         auto nosePoint = object.person_pose_3d[PERSON_POSE_NOSE_INDEX];
-        float distance = tf::Vector3(nosePoint.x, nosePoint.y, nosePoint.z).length();
+        float distance = tf2::Vector3(nosePoint.x, nosePoint.y, nosePoint.z).length();
         if (distance < nearestDistance)
         {
             nearestDistance = distance;

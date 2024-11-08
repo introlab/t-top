@@ -3,17 +3,19 @@
 
 #include "../common/TalkState.h"
 
-#include <cloud_data/LocalWeatherForecast.h>
-#include <talk/Done.h>
+#include <cloud_data/srv/local_weather_forecast.hpp>
 
 class WeatherForecastState : public TalkState
 {
+    rclcpp::CallbackGroup::SharedPtr m_weatherClientCallbackGroup;
+    rclcpp::Client<cloud_data::srv::LocalWeatherForecast>::SharedPtr m_weatherClient;
+
 public:
     WeatherForecastState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::type_index nextStateType);
     ~WeatherForecastState() override = default;
 
@@ -27,7 +29,7 @@ protected:
     std::string generateFrenchText(const std::string& _) override;
 
 private:
-    void getLocalWeatherForecast(bool& ok, cloud_data::LocalWeatherForecast& srv);
+    void getLocalWeatherForecast(bool& ok, cloud_data::srv::LocalWeatherForecast::Response& response);
 };
 
 inline std::type_index WeatherForecastState::type() const

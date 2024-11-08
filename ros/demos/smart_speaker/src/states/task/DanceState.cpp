@@ -10,9 +10,9 @@ DanceState::DanceState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     type_index nextStateType)
-    : State(language, stateManager, desireSet, nodeHandle),
+    : State(language, stateManager, desireSet, move(node)),
       m_nextStateType(nextStateType)
 {
 }
@@ -31,22 +31,21 @@ void DanceState::enable(const string& parameter, const type_index& previousStage
     m_desireSet->addDesire(move(danceDesire));
     m_desireSet->addDesire(move(faceAnimationDesire));
 
-    constexpr bool oneshot = true;
-    m_timeoutTimer =
-        m_nodeHandle.createTimer(ros::Duration(DANCE_TIMEOUT_S), &DanceState::timeoutTimerCallback, this, oneshot);
+    m_timeoutTimer = m_node->create_wall_timer(chrono::seconds(DANCE_TIMEOUT_S), [this]() { timeoutTimerCallback(); });
 }
 
 void DanceState::disable()
 {
     State::disable();
 
-    if (m_timeoutTimer.isValid())
+    if (m_timeoutTimer)
     {
-        m_timeoutTimer.stop();
+        m_timeoutTimer->cancel();
+        m_timeoutTimer = nullptr;
     }
 }
 
-void DanceState::timeoutTimerCallback(const ros::TimerEvent& event)
+void DanceState::timeoutTimerCallback()
 {
     if (!enabled())
     {

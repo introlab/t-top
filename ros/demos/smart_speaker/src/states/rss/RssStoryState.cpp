@@ -18,10 +18,10 @@ RssStoryState::RssStoryState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     const std::string& englishStoryPath,
     const std::string& frenchStoryPath)
-    : State(language, stateManager, desireSet, nodeHandle),
+    : State(language, stateManager, desireSet, move(node)),
       m_talkDesireId(MAX_DESIRE_ID),
       m_faceAnimationDesireId(MAX_DESIRE_ID)
 {

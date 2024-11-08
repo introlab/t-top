@@ -3,20 +3,20 @@
 
 #include "../State.h"
 
-constexpr double DANCE_TIMEOUT_S = 60;
+constexpr int DANCE_TIMEOUT_S = 60;
 
 class DanceState : public State
 {
     std::type_index m_nextStateType;
 
-    ros::Timer m_timeoutTimer;
+    rclcpp::TimerBase::SharedPtr m_timeoutTimer;
 
 public:
     DanceState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::type_index nextStateType);
     ~DanceState() override = default;
 
@@ -30,7 +30,7 @@ protected:
     void disable() override;
 
 private:
-    void timeoutTimerCallback(const ros::TimerEvent& event);
+    void timeoutTimerCallback();
 };
 
 inline std::type_index DanceState::type() const

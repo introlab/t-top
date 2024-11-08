@@ -3,11 +3,12 @@
 
 #include "../State.h"
 
-#include <tf/transform_listener.h>
+#include <tf2/exceptions.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
 
-#include <std_msgs/Empty.h>
-#include <person_identification/PersonNames.h>
-#include <video_analyzer/VideoAnalysis.h>
+#include <perception_msgs/msg/person_names.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
 
 class SmartIdleState : public State
 {
@@ -20,17 +21,18 @@ class SmartIdleState : public State
     size_t m_videoAnalysisValidMessageCount;
     size_t m_videoAnalysisInvalidMessageCount;
 
-    tf::TransformListener m_tfListener;
+    std::unique_ptr<tf2_ros::Buffer> m_tfBuffer;
+    std::shared_ptr<tf2_ros::TransformListener> m_tfListener;
 
-    ros::Subscriber m_personNamesSubscriber;
-    ros::Subscriber m_videoAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysisSubscriber;
 
 public:
     SmartIdleState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         double personDistanceThreshold,
         std::string personDistanceFrameId,
         double noseConfidenceThreshold,
@@ -47,11 +49,13 @@ protected:
     void enable(const std::string& parameter, const std::type_index& previousStageType) override;
 
 private:
-    void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
-    void videoAnalysisSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
+    void videoAnalysisSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg);
 
-    double personNameDistance(const person_identification::PersonName& name);
-    double faceDistance(const video_analyzer::VideoAnalysisObject& object, const tf::StampedTransform& transform);
+    double personNameDistance(const perception_msgs::msg::PersonName& name);
+    double faceDistance(
+        const perception_msgs::msg::VideoAnalysisObject& object,
+        const tf2::Stamped<tf2::Transform>& transform);
 };
 
 inline std::type_index SmartIdleState::type() const

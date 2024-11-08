@@ -7,10 +7,10 @@
 #include <QLineEdit>
 #include <QVariant>
 
-#include <ros/ros.h>
-#include <talk/Done.h>
-#include <speech_to_text/Transcript.h>
-#include <audio_utils/VoiceActivity.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <perception_msgs/msg/transcript.hpp>
+#include <audio_utils_msgs/msg/voice_activity.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 
@@ -21,9 +21,10 @@ class SpeechTab : public QWidget, public DesireSetObserver
 {
     Q_OBJECT
 
-    ros::NodeHandle& m_nodeHandle;
-    ros::Subscriber m_speechToTextSubscriber;
-    ros::Subscriber m_vadSubscriber;
+    rclcpp::Node::SharedPtr m_node;
+
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
+    rclcpp::Subscription<audio_utils_msgs::msg::VoiceActivity>::SharedPtr m_vadSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_talkDesireId;
@@ -31,7 +32,7 @@ class SpeechTab : public QWidget, public DesireSetObserver
     QVariant m_vadDesireId;
 
 public:
-    SpeechTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    SpeechTab(rclcpp::Node::SharedPtr node, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
     ~SpeechTab() override;
 
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
@@ -42,8 +43,8 @@ private slots:
     void onVadButtonToggled(bool checked);
 
 private:
-    void speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg);
-    void vadSubscriberCallback(const audio_utils::VoiceActivity::ConstPtr& msg);
+    void speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
+    void vadSubscriberCallback(const audio_utils_msgs::msg::VoiceActivity::SharedPtr msg);
 
     void createUi();
 

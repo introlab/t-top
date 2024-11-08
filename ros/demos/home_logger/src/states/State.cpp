@@ -15,11 +15,11 @@ string StateParameter::toString() const
 StateType::StateType(type_index type) : m_type(type) {}
 
 
-State::State(StateManager& stateManager, shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle)
+State::State(StateManager& stateManager, shared_ptr<DesireSet> desireSet, rclcpp::Node::SharedPtr node)
     : m_enabled(false),
       m_stateManager(stateManager),
       m_desireSet(desireSet),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
 }
 
@@ -45,19 +45,17 @@ void State::disable()
 
 void State::onDesireSetChanged(const vector<unique_ptr<Desire>>& desires) {}
 
-void State::onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg) {}
+void State::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg) {}
 
 void State::onRobotNameDetected() {}
 
-void State::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg) {}
+void State::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) {}
 
-void State::onAudioAnalysisReceived(const audio_analyzer::AudioAnalysis::ConstPtr& msg) {}
+void State::onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg) {}
 
-void State::onPersonNamesDetected(const person_identification::PersonNames::ConstPtr& msg) {}
+void State::onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg) {}
 
-void State::onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg)
-{
-}
+void State::onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg) {}
 
 void State::onStateTimeout() {}
 
@@ -66,7 +64,7 @@ void State::onEveryMinuteTimeout() {}
 void State::onEveryTenMinutesTimeout() {}
 
 
-bool containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+bool containsAtLeastOnePerson(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     for (auto& object : msg->objects)
     {

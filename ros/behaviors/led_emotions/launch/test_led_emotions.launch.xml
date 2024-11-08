@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="led_emotions" exec="led_emotions_node.py" name="led_emotions_node">
+        <param name="led_patterns_file" value="$(find-pkg-share led_emotions)/led_patterns/led_patterns.json"/>
+    </node>
+</launch>

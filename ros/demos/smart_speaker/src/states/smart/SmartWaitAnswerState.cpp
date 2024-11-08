@@ -29,9 +29,9 @@ SmartWaitAnswerState::SmartWaitAnswerState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     vector<vector<string>> songKeywords)
-    : WaitAnswerState(language, stateManager, desireSet, nodeHandle),
+    : WaitAnswerState(language, stateManager, desireSet, move(node)),
       m_songKeywords(move(songKeywords))
 {
     if (m_songKeywords.size() == 0)
@@ -82,7 +82,7 @@ void SmartWaitAnswerState::switchStateAfterTranscriptReceived(const std::string&
     }
     else if (isFinal)
     {
-        ROS_WARN_STREAM("Invalid task (" << text << ")");
+        RCLCPP_WARN_STREAM(m_node->get_logger(), "Invalid task (" << text << ")");
         m_stateManager.switchTo<InvalidTaskState>();
     }
 }

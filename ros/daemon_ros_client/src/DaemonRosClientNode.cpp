@@ -2,25 +2,38 @@
 #include "QtUtils.h"
 
 
-DaemonRosClientNode::DaemonRosClientNode(int &argc, char* argv[], ros::NodeHandle& nodeHandle, DaemonRosClientNodeConfiguration configuration)
-   : QCoreApplication(argc, argv), m_websocketProtocolWrapper(nullptr), m_nodeHandle(nodeHandle), m_configuration(move(configuration))
+DaemonRosClientNode::DaemonRosClientNode() : rclcpp::Node("daemon_ros_client_node"), m_tfBroadcaster(*this)
 {
-    initWebSocketProtocolWrapper();
+    m_baseLinkTorsoBaseDeltaZ = declare_parameter<double>("base_link_torso_base_delta_z", 0.0);
+
     initROS();
+    initWebSocketProtocolWrapper();
 }
 
 void DaemonRosClientNode::initROS()
 {
-    m_baseStatusPub = m_nodeHandle.advertise<daemon_ros_client::BaseStatus>("daemon/base_status", PubQueueSize);
-    m_startButtonPressedPub = m_nodeHandle.advertise<std_msgs::Empty>("daemon/start_button_pressed", PubQueueSize);
-    m_stopButtonPressedPub = m_nodeHandle.advertise<std_msgs::Empty>("daemon/stop_button_pressed", PubQueueSize);
-    m_imuPub = m_nodeHandle.advertise<sensor_msgs::Imu>("daemon/imu/data_raw", PubQueueSize);
-    m_motorStatusPub = m_nodeHandle.advertise<daemon_ros_client::MotorStatus>("daemon/motor_status", PubQueueSize);
+    m_baseStatusPub = create_publisher<daemon_ros_client::msg::BaseStatus>("daemon/base_status", PubQueueSize);
+    m_startButtonPressedPub = create_publisher<std_msgs::msg::Empty>("daemon/start_button_pressed", PubQueueSize);
+    m_stopButtonPressedPub = create_publisher<std_msgs::msg::Empty>("daemon/stop_button_pressed", PubQueueSize);
+    m_imuPub = create_publisher<sensor_msgs::msg::Imu>("daemon/imu/data_raw", PubQueueSize);
+    m_motorStatusPub = create_publisher<daemon_ros_client::msg::MotorStatus>("daemon/motor_status", PubQueueSize);
 
-    m_setVolumeSub = m_nodeHandle.subscribe("daemon/set_volume", SubQueueSize, &DaemonRosClientNode::setVolumeCallback, this);
-    m_setLedColorsSub = m_nodeHandle.subscribe("daemon/set_led_colors", SubQueueSize, &DaemonRosClientNode::setLedColorsCallback, this);
-    m_setTorsoOrientationSub = m_nodeHandle.subscribe("daemon/set_torso_orientation", SubQueueSize, &DaemonRosClientNode::setTorsoOrientationCallback, this);
-    m_setHeadPoseSub = m_nodeHandle.subscribe("daemon/set_head_pose", SubQueueSize, &DaemonRosClientNode::setHeadPoseCallback, this);
+    m_setVolumeSub = create_subscription<std_msgs::msg::UInt8>(
+        "daemon/set_volume",
+        SubQueueSize,
+        [this](const std_msgs::msg::UInt8::SharedPtr msg) { setVolumeCallback(msg); });
+    m_setLedColorsSub = create_subscription<daemon_ros_client::msg::LedColors>(
+        "daemon/set_led_colors",
+        SubQueueSize,
+        [this](const daemon_ros_client::msg::LedColors::SharedPtr msg) { setLedColorsCallback(msg); });
+    m_setTorsoOrientationSub = create_subscription<std_msgs::msg::Float32>(
+        "daemon/set_torso_orientation",
+        SubQueueSize,
+        [this](const std_msgs::msg::Float32::SharedPtr msg) { setTorsoOrientationCallback(msg); });
+    m_setHeadPoseSub = create_subscription<geometry_msgs::msg::PoseStamped>(
+        "daemon/set_head_pose",
+        SubQueueSize,
+        [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg) { setHeadPoseCallback(msg); });
 }
 
 void DaemonRosClientNode::initWebSocketProtocolWrapper()
@@ -30,13 +43,33 @@ void DaemonRosClientNode::initWebSocketProtocolWrapper()
 
     // Connect only useful signals
     // WARNING Using direct connection, handleXXX functions must be thread safe)
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newBaseStatus, this, &DaemonRosClientNode::handleBaseStatus, Qt::DirectConnection);
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newButtonPressed, this, &DaemonRosClientNode::handleButtonPressed, Qt::DirectConnection);
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newImuData, this, &DaemonRosClientNode::handleImuData, Qt::DirectConnection);
-    connect(m_websocketProtocolWrapper, &WebSocketProtocolWrapper::newMotorStatus, this, &DaemonRosClientNode::handleMotorStatus, Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newBaseStatus,
+        this,
+        &DaemonRosClientNode::handleBaseStatus,
+        Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newButtonPressed,
+        this,
+        &DaemonRosClientNode::handleButtonPressed,
+        Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newImuData,
+        this,
+        &DaemonRosClientNode::handleImuData,
+        Qt::DirectConnection);
+    connect(
+        m_websocketProtocolWrapper,
+        &WebSocketProtocolWrapper::newMotorStatus,
+        this,
+        &DaemonRosClientNode::handleMotorStatus,
+        Qt::DirectConnection);
 }
 
-void DaemonRosClientNode::setVolumeCallback(const std_msgs::UInt8::ConstPtr& msg)
+void DaemonRosClientNode::setVolumeCallback(const std_msgs::msg::UInt8::SharedPtr& msg)
 {
     SetVolumePayload payload;
     payload.volume = msg->data;
@@ -51,10 +84,10 @@ void DaemonRosClientNode::setVolumeCallback(const std_msgs::UInt8::ConstPtr& msg
         });
 }
 
-void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::LedColors::ConstPtr& msg)
+void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::msg::LedColors::SharedPtr& msg)
 {
     SetLedColorsPayload payload;
-    for (size_t i  = 0; i < SetLedColorsPayload::LED_COUNT; i++)
+    for (size_t i = 0; i < SetLedColorsPayload::LED_COUNT; i++)
     {
         payload.colors[i].red = msg->colors[i].red;
         payload.colors[i].green = msg->colors[i].green;
@@ -71,7 +104,7 @@ void DaemonRosClientNode::setLedColorsCallback(const daemon_ros_client::LedColor
         });
 }
 
-void DaemonRosClientNode::setTorsoOrientationCallback(const std_msgs::Float32::ConstPtr& msg)
+void DaemonRosClientNode::setTorsoOrientationCallback(const std_msgs::msg::Float32::SharedPtr& msg)
 {
     SetTorsoOrientationPayload payload;
     payload.torsoOrientation = msg->data;
@@ -86,11 +119,11 @@ void DaemonRosClientNode::setTorsoOrientationCallback(const std_msgs::Float32::C
         });
 }
 
-void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::msg::PoseStamped::SharedPtr& msg)
 {
     if (msg->header.frame_id != HEAD_POSE_FRAME_ID)
     {
-        ROS_ERROR_STREAM("Invalid head pose frame id (" << msg->header.frame_id << ")");
+        RCLCPP_ERROR_STREAM(get_logger(), "Invalid head pose frame id (" << msg->header.frame_id << ")");
         return;
     }
 
@@ -116,8 +149,8 @@ void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::PoseStamped::
 void DaemonRosClientNode::handleBaseStatus(Device source, const BaseStatusPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
-    daemon_ros_client::BaseStatus msg;
-    msg.header.stamp = ros::Time::now();
+    daemon_ros_client::msg::BaseStatus msg;
+    msg.header.stamp = get_clock()->now();
     msg.is_psu_connected = payload.isPsuConnected;
     msg.has_charger_error = payload.hasChargerError;
     msg.is_battery_charging = payload.isBatteryCharging;
@@ -134,7 +167,7 @@ void DaemonRosClientNode::handleBaseStatus(Device source, const BaseStatusPayloa
     msg.volume = payload.volume;
     msg.maximum_volume = payload.maximumVolume;
 
-    m_baseStatusPub.publish(msg);
+    m_baseStatusPub->publish(msg);
 }
 
 void DaemonRosClientNode::handleButtonPressed(Device source, const ButtonPressedPayload& payload)
@@ -143,13 +176,13 @@ void DaemonRosClientNode::handleButtonPressed(Device source, const ButtonPressed
     switch (payload.button)
     {
         case Button::START:
-            m_startButtonPressedPub.publish(std_msgs::Empty());
+            m_startButtonPressedPub->publish(std_msgs::msg::Empty());
             break;
         case Button::STOP:
-            m_stopButtonPressedPub.publish(std_msgs::Empty());
+            m_stopButtonPressedPub->publish(std_msgs::msg::Empty());
             break;
         default:
-            ROS_ERROR_STREAM("Not handled buttons (" << static_cast<int>(payload.button) << ")");
+            RCLCPP_ERROR_STREAM(get_logger(), "Not handled buttons (" << static_cast<int>(payload.button) << ")");
             break;
     }
 }
@@ -157,31 +190,31 @@ void DaemonRosClientNode::handleButtonPressed(Device source, const ButtonPressed
 void DaemonRosClientNode::handleImuData(Device source, const ImuDataPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
-    sensor_msgs::Imu msg;
-    msg.header.stamp = ros::Time::now();
+    sensor_msgs::msg::Imu msg;
+    msg.header.stamp = get_clock()->now();
     msg.header.frame_id = "dynamixel_control_imu";
     msg.orientation.x = 0;
     msg.orientation.y = 0;
     msg.orientation.z = 0;
     msg.orientation.w = 0;
-    msg.orientation_covariance.assign(-1.0);
+    msg.orientation_covariance.fill(-1.0);
     msg.angular_velocity.x = payload.angularRateX;
     msg.angular_velocity.y = payload.angularRateY;
     msg.angular_velocity.z = payload.angularRateZ;
-    msg.angular_velocity_covariance.assign(0.0);
+    msg.angular_velocity_covariance.fill(0.0);
     msg.linear_acceleration.x = payload.accelerationX;
     msg.linear_acceleration.y = payload.accelerationY;
     msg.linear_acceleration.z = payload.accelerationZ;
-    msg.linear_acceleration_covariance.assign(0.0);
+    msg.linear_acceleration_covariance.fill(0.0);
 
-    m_imuPub.publish(msg);
+    m_imuPub->publish(msg);
 }
 
 void DaemonRosClientNode::handleMotorStatus(Device source, const MotorStatusPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
-    daemon_ros_client::MotorStatus msg;
-    msg.header.stamp = ros::Time::now();
+    daemon_ros_client::msg::MotorStatus msg;
+    msg.header.stamp = get_clock()->now();
 
     msg.torso_orientation = payload.torsoOrientation;
     msg.torso_servo_speed = payload.torsoServoSpeed;
@@ -210,19 +243,19 @@ void DaemonRosClientNode::handleMotorStatus(Device source, const MotorStatusPayl
 
     sendTorsoTf(msg.header.stamp, msg.torso_orientation);
     sendHeadTf(msg.header.stamp, msg.head_pose);
-    m_motorStatusPub.publish(msg);
+    m_motorStatusPub->publish(msg);
 }
 
-void DaemonRosClientNode::sendTorsoTf(const ros::Time& stamp, float torsoOrientation)
+void DaemonRosClientNode::sendTorsoTf(const rclcpp::Time& stamp, float torsoOrientation)
 {
-    geometry_msgs::TransformStamped transformStamped;
+    geometry_msgs::msg::TransformStamped transformStamped;
 
     transformStamped.header.stamp = stamp;
     transformStamped.header.frame_id = "base_link";
     transformStamped.child_frame_id = "torso_base";
     transformStamped.transform.translation.x = 0;
     transformStamped.transform.translation.y = 0;
-    transformStamped.transform.translation.z = m_configuration.baseLinkTorsoBaseDeltaZ;
+    transformStamped.transform.translation.z = m_baseLinkTorsoBaseDeltaZ;
 
     tf2::Quaternion q;
     q.setRPY(0, 0, torsoOrientation);
@@ -234,9 +267,9 @@ void DaemonRosClientNode::sendTorsoTf(const ros::Time& stamp, float torsoOrienta
     m_tfBroadcaster.sendTransform(transformStamped);
 }
 
-void DaemonRosClientNode::sendHeadTf(const ros::Time& stamp, const geometry_msgs::Pose& pose)
+void DaemonRosClientNode::sendHeadTf(const rclcpp::Time& stamp, const geometry_msgs::msg::Pose& pose)
 {
-    geometry_msgs::TransformStamped transformStamped;
+    geometry_msgs::msg::TransformStamped transformStamped;
 
     transformStamped.header.stamp = stamp;
     transformStamped.header.frame_id = HEAD_POSE_FRAME_ID;
@@ -256,7 +289,7 @@ void DaemonRosClientNode::sendHeadTf(const ros::Time& stamp, const geometry_msgs
 void DaemonRosClientNode::cleanup()
 {
     SetLedColorsPayload payload;
-    for (size_t i  = 0; i < SetLedColorsPayload::LED_COUNT; i++)
+    for (size_t i = 0; i < SetLedColorsPayload::LED_COUNT; i++)
     {
         payload.colors[i].red = 0;
         payload.colors[i].green = 0;

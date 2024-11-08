@@ -5,7 +5,8 @@ import uuid
 
 import cv2
 
-import rospy
+import rclpy
+import rclpy.node
 
 from cv_bridge import CvBridge
 
@@ -16,12 +17,14 @@ MAX_WINDOW_SIZE = 600
 ENTER_KEY_CODE = 13
 
 
-class ImageGatheringNode:
+class ImageGatheringNode(rclpy.node.Node):
     def __init__(self):
-        self._output_path = os.path.expanduser(rospy.get_param('~output_path'))
-        self._image_count = rospy.get_param('~image_count')
-        self._setups = rospy.get_param('~setups')
-        self._classes = rospy.get_param('~classes')
+        super().__init__('image_gathering_node')
+
+        self._output_path = os.path.expanduser(self.declare_parameter('output_path', '').get_parameter_value().string_value)
+        self._image_count = self.declare_parameter('image_count', 100).get_parameter_value().integer_value
+        self._setups = self.declare_parameter('setups', ['1m']).get_parameter_value().string_array_value
+        self._classes = self.declare_parameter('classes', ['people']).get_parameter_value().string_array_value
 
         self._current_image_index = 0
         self._current_class_index = 0
@@ -32,7 +35,7 @@ class ImageGatheringNode:
         self._create_output_directories()
 
         self._cv_bridge = CvBridge()
-        self._image_sub = rospy.Subscriber('image_raw', Image, self._image_cb, queue_size=1)
+        self._image_sub = self.create_subscription(Image, 'image_raw', self._image_cb, 1)
 
     def _create_output_directories(self):
         for s in self._setups:
@@ -46,7 +49,7 @@ class ImageGatheringNode:
 
         if self._is_waiting and pressed_key == ENTER_KEY_CODE:
             self._is_waiting = False
-            print('Gathering images')
+            self.get_logger().info('Gathering images')
         elif not self._is_waiting and self._current_image_index < self._image_count:
             self._save_image(color_image)
             self._current_image_index += 1
@@ -61,7 +64,8 @@ class ImageGatheringNode:
             if self._current_class_index < len(self._classes):
                 self._print_current_class()
             else:
-                rospy.signal_shutdown("The gathering is finished.")
+                self.get_logger().info('The gathering is finished.')
+                rclpy.shutdown()
 
     def _display_image(self, color_image):
         scale = min(MAX_WINDOW_SIZE / color_image.shape[0], MAX_WINDOW_SIZE / color_image.shape[1])
@@ -76,25 +80,29 @@ class ImageGatheringNode:
         cv2.imwrite(path, color_image)
 
     def _print_current_class(self):
-        print()
-        print(f'Waiting for {self._classes[self._current_class_index]} - {self._setups[self._current_setup_index]}')
-        print(f'Make sure only the object and at most one person are visible.')
-        print(f'Press enter to continue')
+        self.get_logger().info('')
+        self.get_logger().info(f'Waiting for {self._classes[self._current_class_index]} - {self._setups[self._current_setup_index]}')
+        self.get_logger().info(f'Make sure only the object and at most one person are visible.')
+        self.get_logger().info(f'Press enter to continue')
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('image_gathering_node')
+    rclpy.init()
     image_gathering_node = ImageGatheringNode()
-    image_gathering_node.run()
 
-    cv2.destroyAllWindows()
+    try:
+        image_gathering_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        image_gathering_node.destroy_node()
+        cv2.destroyAllWindows()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

@@ -32,7 +32,7 @@ public:
     WaitCommandParameterState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     ~WaitCommandParameterState() override;
 
 protected:
@@ -41,7 +41,7 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg) override;
+    void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg) override;
     void onStateTimeout() override;
 
 private:

@@ -19,13 +19,13 @@ constexpr chrono::hours GREATING_INTERVAL(4);
 IdleState::IdleState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     AlarmManager& alarmManager,
     ReminderManager& reminderManager,
     Time sleepTime,
     Time wakeUpTime,
     float faceDescriptorThreshold)
-    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+    : SoundFaceFollowingState(stateManager, move(desireSet), move(node)),
       m_alarmManager(alarmManager),
       m_reminderManager(reminderManager),
       m_sleepTime(sleepTime),
@@ -73,7 +73,7 @@ void IdleState::onDisabling()
     }
 }
 
-void IdleState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+void IdleState::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     SoundFaceFollowingState::onVideoAnalysisReceived(msg);
 
@@ -119,7 +119,7 @@ void IdleState::onRobotNameDetected()
         StateType::get<WaitCommandState>()));
 }
 
-void IdleState::onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg)
+void IdleState::onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg)
 {
     m_chargeNeeded = msg->state_of_charge <= LOW_STATE_OF_CHARGE && !msg->is_psu_connected;
 }
@@ -147,7 +147,7 @@ void IdleState::onEveryTenMinutesTimeout()
     m_todayReminders = m_reminderManager.listReminders(Date::now());
 }
 
-optional<Reminder> IdleState::findReminder(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+optional<Reminder> IdleState::findReminder(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     for (auto& object : msg->objects)
     {

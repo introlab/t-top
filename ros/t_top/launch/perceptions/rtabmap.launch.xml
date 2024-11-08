@@ -1,0 +1,55 @@
+<launch>
+    <arg name="localization" default="false"/>
+    <let if="$(var localization)" name="rtabmap_args" value=""/>
+    <let unless="$(var localization)" name="rtabmap_args" value="-d"/>
+    <let if="$(var localization)" name="incremental_memory" value="'false'"/>
+    <let unless="$(var localization)" name="incremental_memory" value="'true'"/>
+    <let if="$(var localization)" name="init_wm_with_all_nodes" value="'true'"/>
+    <let unless="$(var localization)" name="init_wm_with_all_nodes" value="'false'"/>
+
+
+    <arg name="rtabmap_perception_delay" default="0"/>
+
+    <node pkg="rtabmap_sync" exec="rgbd_sync" name="rgbd_sync" launch-prefix="bash -c 'sleep $(var rtabmap_perception_delay); $0 $@' ">
+        <remap from="rgb/image" to="/camera_3d/color/image_raw"/>
+        <remap from="depth/image" to="/camera_3d/aligned_depth_to_color/image_raw"/>
+        <remap from="rgb/camera_info" to="/camera_3d/aligned_depth_to_color/camera_info"/>
+        <param name="approx_sync" value="true"/>
+    </node>
+    <node pkg="hbba_lite" exec="on_off_hbba_filter_node" name="rtabmap_filter" launch-prefix="bash -c 'sleep $(var rtabmap_perception_delay); $0 $@' ">
+        <param name="input_topic" value="rgbd_image"/>
+        <param name="output_topic" value="rgbd_image_filtered"/>
+        <param name="state_service" value="rtabmap/filter_state"/>
+    </node>
+    <node name="rtabmap" pkg="rtabmap_slam" exec="rtabmap" args="$(var rtabmap_args)" launch-prefix="bash -c 'sleep $(var rtabmap_perception_delay); $0 $@' ">
+        <param name="odom_frame_id" value="base_link"/>
+        <param name="subscribe_depth" value="false"/>
+        <param name="subscribe_rgbd" value="true"/>
+        <param name="subscribe_rgb" value="false"/>
+
+        <param name="queue_size" value="10"/>
+
+        <param name="map_always_update" value="true"/>
+        <param name="map_filter_radius" value="0.1"/>
+        <param name="map_filter_angle" value="10.0"/>
+        <param name="gen_depth" value="false"/>
+
+        <param name="RGBD/AngularUpdate" value="'0'"/>
+        <param name="RGBD/LinearUpdate" value="'0'"/>
+        <param name="RGBD/OptimizeFromGraphEnd" value="'false'"/>
+
+        <!-- Occupancy Grid -->
+        <param name="Grid/NormalsSegmentation" value="'false'"/>
+        <param name="Grid/MaxObstacleHeight" value="'0.1'"/>
+        <param name="Grid/MinGroundHeight" value="'-0.1'"/>
+        <param name="Grid/MaxGroundHeight" value="'0.01'"/>
+        <param name="Grid/3D" value="'true'"/>
+        <param name="Grid/RayTracing" value="'true'"/>
+
+        <!-- localization mode -->
+        <param name="Mem/IncrementalMemory" value="$(var incremental_memory)"/>
+        <param name="Mem/InitWMWithAllNodes" value="$(var init_wm_with_all_nodes)"/>
+        <remap from="rgbd_image" to="rgbd_image_filtered"/>
+    </node>
+
+</launch>

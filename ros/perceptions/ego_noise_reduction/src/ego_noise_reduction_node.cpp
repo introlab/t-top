@@ -6,16 +6,17 @@
 #include <MusicBeatDetector/Utils/Data/PcmAudioFrame.h>
 #include <MusicBeatDetector/Utils/Exception/InvalidValueException.h>
 
-#include <ros/ros.h>
-#include <std_msgs/Float32.h>
-#include <std_msgs/Int32.h>
-#include <std_msgs/Int32MultiArray.h>
+#include <rclcpp/rclcpp.hpp>
 
-#include <daemon_ros_client/MotorStatus.h>
+#include <std_msgs/msg/float32.hpp>
+#include <std_msgs/msg/int32.hpp>
+#include <std_msgs/msg/int32_multi_array.hpp>
+
+#include <daemon_ros_client/msg/motor_status.hpp>
 
 #include <hbba_lite/filters/FilterState.h>
 
-#include <audio_utils/AudioFrame.h>
+#include <audio_utils_msgs/msg/audio_frame.hpp>
 
 #include <armadillo>
 
@@ -26,9 +27,10 @@
 using namespace introlab;
 using namespace std;
 
-constexpr uint32_t AudioQueueSize = 100;
 constexpr uint32_t StatusQueueSize = 1;
 constexpr size_t HeadServoCount = 6;
+
+constexpr const char* NODE_NAME = "ego_noise_reduction_node";
 
 struct EgoNoiseReductionNodeConfiguration
 {
@@ -55,7 +57,9 @@ struct EgoNoiseReductionNodeConfiguration
     float logMmseMaxAPosterioriSnr;
     float logMmseMinAPrioriSnr;
 
-    EgoNoiseReductionNodeConfiguration()
+    size_t audioQueueSize;
+
+    EgoNoiseReductionNodeConfiguration(rclcpp::Node* node)
         : format(PcmAudioFrameFormat::Signed8),
           channelCount(0),
           samplingFrequency(0),
@@ -71,45 +75,76 @@ struct EgoNoiseReductionNodeConfiguration
           logMmseMaxAPosterioriSnr(0.f),
           logMmseMinAPrioriSnr(0.f)
     {
+        typeString = node->declare_parameter("type", "log_mmse");
+        type = StftNoiseRemover::parseType(typeString);
+
+        formatString = node->declare_parameter("format", "signed_32");
+        format = parseFormat(formatString);
+
+        channelCount = node->declare_parameter("channel_count", 16);
+        samplingFrequency = node->declare_parameter("sampling_frequency", 16000);
+        frameSampleCount = node->declare_parameter("frame_sample_count", 1024);
+        nFft = node->declare_parameter("n_fft", 1024);
+
+        noiseDirectory = node->declare_parameter("noise_directory", "");
+
+        noiseEstimatorEpsilon = node->declare_parameter("noise_estimator_epsilon", 4.f);
+        noiseEstimatorAlpha = node->declare_parameter("noise_estimator_alpha", 0.9f);
+        noiseEstimatorDelta = node->declare_parameter("noise_estimator_delta", 0.9f);
+
+        spectralSubstractionAlpha0 = node->declare_parameter("spectral_subtraction_alpha0", 5.f);
+        spectralSubstractionGamma = node->declare_parameter("spectral_subtraction_gamma", 0.1f);
+        spectralSubstractionBeta = node->declare_parameter("spectral_subtraction_beta", 0.01f);
+
+        logMmseAlpha = node->declare_parameter("log_mmse_alpha", 0.98f);
+        logMmseMaxAPosterioriSnr = node->declare_parameter("log_mmse_max_a_posteriori_snr", 40.f);
+        logMmseMinAPrioriSnr = node->declare_parameter("log_mmse_min_a_priori_snr", 0.003f);
+
+        audioQueueSize = node->declare_parameter("audio_queue_size", 1);
     }
 };
 
-class EgoNoiseReductionNode
+class EgoNoiseReductionNode : public rclcpp::Node
 {
-    ros::NodeHandle& m_nodeHandle;
     EgoNoiseReductionNodeConfiguration m_configuration;
 
     OnOffHbbaFilterState m_filterState;
-    ros::Publisher m_audioPub;
-    ros::Subscriber m_audioSub;
+    rclcpp::Publisher<audio_utils_msgs::msg::AudioFrame>::SharedPtr m_audioPub;
+    rclcpp::Subscription<audio_utils_msgs::msg::AudioFrame>::SharedPtr m_audioSub;
 
-    ros::Subscriber m_motorStatusSub;
+    rclcpp::Subscription<daemon_ros_client::msg::MotorStatus>::SharedPtr m_motorStatusSub;
 
     PcmAudioFrame m_inputPcmAudioFrame;
     size_t m_inputPcmAudioFrameIndex;
     PackedAudioFrame<float> m_inputAudioFrame;
     PcmAudioFrame m_outputPcmAudioFrame;
 
-    std::queue<ros::Time> m_timestampQueue;
-    audio_utils::AudioFrame m_audioFrameMsg;
+    std::queue<rclcpp::Time> m_timestampQueue;
+    audio_utils_msgs::msg::AudioFrame m_audioFrameMsg;
 
     shared_ptr<WeightedAverageWithAPrioriNoiseEstimator> m_noiseEstimator;
     unique_ptr<StftNoiseRemover> m_noiseRemover;
 
 public:
-    EgoNoiseReductionNode(ros::NodeHandle& nodeHandle, EgoNoiseReductionNodeConfiguration configuration)
-        : m_nodeHandle(nodeHandle),
-          m_configuration(move(configuration)),
-          m_filterState(m_nodeHandle, "ego_noise_reduction/filter_state"),
+    EgoNoiseReductionNode()
+        : rclcpp::Node(NODE_NAME),
+          m_configuration(this),
+          m_filterState(*this, "ego_noise_reduction/filter_state"),
           m_inputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft),
           m_inputPcmAudioFrameIndex(0),
           m_inputAudioFrame(m_configuration.channelCount, m_configuration.nFft),
           m_outputPcmAudioFrame(m_configuration.format, m_configuration.channelCount, m_configuration.nFft)
     {
-        m_audioPub = m_nodeHandle.advertise<audio_utils::AudioFrame>("audio_out", AudioQueueSize);
-        m_audioSub = m_nodeHandle.subscribe("audio_in", AudioQueueSize, &EgoNoiseReductionNode::audioCallback, this);
+        m_audioPub = create_publisher<audio_utils_msgs::msg::AudioFrame>("audio_out", m_configuration.audioQueueSize);
+        m_audioSub = create_subscription<audio_utils_msgs::msg::AudioFrame>(
+            "audio_in",
+            m_configuration.audioQueueSize,
+            [this](const audio_utils_msgs::msg::AudioFrame::SharedPtr msg) { audioCallback(msg); });
 
-        m_motorStatusSub = m_nodeHandle.subscribe("daemon/motor_status", StatusQueueSize, &EgoNoiseReductionNode::motorStatusCallback, this);
+        m_motorStatusSub = create_subscription<daemon_ros_client::msg::MotorStatus>(
+            "daemon/motor_status",
+            StatusQueueSize,
+            [this](const daemon_ros_client::msg::MotorStatus::SharedPtr msg) { motorStatusCallback(msg); });
 
         m_audioFrameMsg.format = m_configuration.formatString;
         m_audioFrameMsg.channel_count = m_configuration.channelCount;
@@ -118,7 +153,7 @@ public:
         m_audioFrameMsg.data.resize(
             size(m_configuration.format, m_configuration.channelCount, m_configuration.frameSampleCount));
 
-        m_noiseEstimator = make_shared<WeightedAverageWithAPrioriNoiseEstimator>(
+        m_noiseEstimator = std::make_shared<WeightedAverageWithAPrioriNoiseEstimator>(
             m_configuration.channelCount,
             m_configuration.nFft,
             m_configuration.samplingFrequency,
@@ -129,17 +164,18 @@ public:
         m_noiseRemover = createNoiseRemover();
     }
 
-    void run() { ros::spin(); }
+    void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    void audioCallback(const audio_utils::AudioFrame::ConstPtr& msg)
+    void audioCallback(const audio_utils_msgs::msg::AudioFrame::SharedPtr msg)
     {
         if (msg->format != m_configuration.formatString || msg->channel_count != m_configuration.channelCount ||
             msg->sampling_frequency != m_configuration.samplingFrequency ||
             msg->frame_sample_count != m_configuration.frameSampleCount ||
             msg->data.size() != size(m_configuration.format, msg->channel_count, msg->frame_sample_count))
         {
-            ROS_ERROR(
+            RCLCPP_ERROR(
+                get_logger(),
                 "Not supported audio frame (msg->format=%s, msg->channel_count=%d,"
                 "sampling_frequency=%d, frame_sample_count=%d, data_size=%lu)",
                 msg->format.c_str(),
@@ -178,13 +214,13 @@ private:
         {
             m_audioFrameMsg.header.stamp = m_timestampQueue.front();
             memcpy(m_audioFrameMsg.data.data(), frame.data() + i, m_audioFrameMsg.data.size());
-            m_audioPub.publish(m_audioFrameMsg);
+            m_audioPub->publish(m_audioFrameMsg);
 
             m_timestampQueue.pop();
         }
     }
 
-    void motorStatusCallback(const daemon_ros_client::MotorStatus::ConstPtr& msg)
+    void motorStatusCallback(const daemon_ros_client::msg::MotorStatus::SharedPtr msg)
     {
         if (m_filterState.isFilteringAllMessages())
         {
@@ -206,7 +242,7 @@ private:
         switch (m_configuration.type)
         {
             case StftNoiseRemover::Type::SpectralSubtraction:
-                return make_unique<SpectralSubtractionNoiseRemover>(
+                return std::make_unique<SpectralSubtractionNoiseRemover>(
                     m_configuration.channelCount,
                     m_configuration.nFft,
                     m_noiseEstimator,
@@ -214,7 +250,7 @@ private:
                     m_configuration.spectralSubstractionGamma,
                     m_configuration.spectralSubstractionBeta);
             case StftNoiseRemover::Type::LogMmse:
-                return make_unique<LogMmseNoiseRemover>(
+                return std::make_unique<LogMmseNoiseRemover>(
                     m_configuration.channelCount,
                     m_configuration.nFft,
                     m_noiseEstimator,
@@ -229,76 +265,20 @@ private:
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "ego_noise_reduction_node");
-
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
-
-    EgoNoiseReductionNodeConfiguration configuration;
+    rclcpp::init(argc, argv);
 
     try
     {
-        if (!privateNodeHandle.getParam("type", configuration.typeString))
-        {
-            ROS_ERROR("The parameter type must be spectral_subtraction or log_mmse.");
-            return -1;
-        }
-        configuration.type = StftNoiseRemover::parseType(configuration.typeString);
-
-        if (!privateNodeHandle.getParam("format", configuration.formatString))
-        {
-            ROS_ERROR("The parameter format is required.");
-            return -1;
-        }
-        configuration.format = parseFormat(configuration.formatString);
-
-        if (!privateNodeHandle.getParam("channel_count", configuration.channelCount))
-        {
-            ROS_ERROR("The parameter channel_count is required.");
-            return -1;
-        }
-        if (!privateNodeHandle.getParam("sampling_frequency", configuration.samplingFrequency))
-        {
-            ROS_ERROR("The parameter sampling_frequency is required.");
-            return -1;
-        }
-        if (!privateNodeHandle.getParam("frame_sample_count", configuration.frameSampleCount))
-        {
-            ROS_ERROR("The parameter frame_sample_count is required.");
-            return -1;
-        }
-        if (!privateNodeHandle.getParam("n_fft", configuration.nFft) ||
-            (configuration.nFft % configuration.frameSampleCount) != 0)
-        {
-            ROS_ERROR("The parameter n_fft is required. It must be a multiple of frame_sample_count.");
-            return -1;
-        }
-        if (!privateNodeHandle.getParam("noise_directory", configuration.noiseDirectory))
-        {
-            ROS_ERROR("The parameter noise_directory is required.");
-            return -1;
-        }
-
-        configuration.noiseEstimatorEpsilon = privateNodeHandle.param("noise_estimator_epsilon", 4.f);
-        configuration.noiseEstimatorAlpha = privateNodeHandle.param("noise_estimator_alpha", 0.9f);
-        configuration.noiseEstimatorDelta = privateNodeHandle.param("noise_estimator_delta", 0.9f);
-
-        configuration.spectralSubstractionAlpha0 = privateNodeHandle.param("spectral_subtraction_alpha0", 5.f);
-        configuration.spectralSubstractionGamma = privateNodeHandle.param("spectral_subtraction_gamma", 0.1f);
-        configuration.spectralSubstractionBeta = privateNodeHandle.param("spectral_subtraction_beta", 0.01f);
-
-        configuration.logMmseAlpha = privateNodeHandle.param("log_mmse_alpha", 0.98f);
-        configuration.logMmseMaxAPosterioriSnr = privateNodeHandle.param("log_mmse_max_a_posteriori_snr", 40.f);
-        configuration.logMmseMinAPrioriSnr = privateNodeHandle.param("log_mmse_min_a_priori_snr", 0.003f);
-
-        EgoNoiseReductionNode node(nodeHandle, configuration);
-        node.run();
+        auto node = std::make_shared<EgoNoiseReductionNode>();
+        node->run();
     }
     catch (const std::exception& e)
     {
-        ROS_ERROR_STREAM(e.what());
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger(NODE_NAME), e.what());
         return -1;
     }
+
+    rclcpp::shutdown();
 
     return 0;
 }

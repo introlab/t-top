@@ -6,7 +6,8 @@ import numpy as np
 
 import torch
 
-import rospy
+import rclpy
+import rclpy.node
 
 from dnn_utils import DescriptorYolo, Yolo, PoseEstimator, FaceDescriptorExtractor
 from dnn_utils import MulticlassAudioDescriptorExtractor, VoiceDescriptorExtractor, TTopKeywordSpotter
@@ -178,7 +179,7 @@ def test_ttop_keyword_spotter():
     print('mean(abs(cpu_class_probabilities - torch_gpu_class_probabilities)) =',
           mean_abs_diff(cpu_class_probabilities, torch_gpu_class_probabilities))
     print('mean(abs(cpu_class_probabilities - trt_gpu_class_probabilities))) =',
-          mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
+         mean_abs_diff(cpu_class_probabilities, trt_gpu_class_probabilities))
 
 
 def test_semantic_segmentation_network(dataset):
@@ -201,27 +202,32 @@ def test_semantic_segmentation_network(dataset):
 
 
 def main():
-    rospy.init_node('dnn_utils_test', disable_signals=True)
+    rclpy.init()
+    node = rclpy.node.Node('dnn_utils_test')
 
-    launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
-    launch_test(test_descriptor_yolo, 'yolo_v7_coco')
-    launch_test(test_yolo, 'yolo_v4_coco')
-    launch_test(test_yolo, 'yolo_v4_tiny_coco')
-    launch_test(test_yolo, 'yolo_v7_coco')
-    launch_test(test_yolo, 'yolo_v7_tiny_coco')
-    launch_test(test_yolo, 'yolo_v7_objects365')
-    launch_test(test_pose_estimator)
-    launch_test(test_face_descriptor_extractor)
-    launch_test(test_multiclass_audio_descriptor_extractor)
-    launch_test(test_voice_descriptor_extractor)
-    launch_test(test_ttop_keyword_spotter)
-    launch_test(test_semantic_segmentation_network, 'coco')
-    launch_test(test_semantic_segmentation_network, 'kitchen_open_images')
-    launch_test(test_semantic_segmentation_network, 'person_other_open_images')
+    try:
+        launch_test(test_descriptor_yolo, 'yolo_v4_tiny_coco')
+        launch_test(test_descriptor_yolo, 'yolo_v7_coco')
+        launch_test(test_yolo, 'yolo_v4_coco')
+        launch_test(test_yolo, 'yolo_v4_tiny_coco')
+        launch_test(test_yolo, 'yolo_v7_coco')
+        launch_test(test_yolo, 'yolo_v7_tiny_coco')
+        launch_test(test_yolo, 'yolo_v7_objects365')
+        launch_test(test_pose_estimator)
+        launch_test(test_face_descriptor_extractor)
+        launch_test(test_multiclass_audio_descriptor_extractor)
+        launch_test(test_voice_descriptor_extractor)
+        launch_test(test_ttop_keyword_spotter)
+        launch_test(test_semantic_segmentation_network, 'coco')
+        launch_test(test_semantic_segmentation_network, 'kitchen_open_images')
+        launch_test(test_semantic_segmentation_network, 'person_other_open_images')
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

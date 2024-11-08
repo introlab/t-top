@@ -32,8 +32,8 @@ string WaitCommandParameterStateParameter::toString() const
 WaitCommandParameterState::WaitCommandParameterState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+    rclcpp::Node::SharedPtr node)
+    : SoundFaceFollowingState(stateManager, move(desireSet), move(node)),
       m_transcriptReceived(false)
 {
 }
@@ -69,7 +69,7 @@ void WaitCommandParameterState::onDisabling()
     }
 }
 
-void WaitCommandParameterState::onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg)
+void WaitCommandParameterState::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg)
 {
     m_transcriptReceived = true;
     m_parameterResponse = msg->text;

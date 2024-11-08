@@ -9,9 +9,9 @@
 using namespace std;
 
 
-daemon_ros_client::LedColor color(uint8_t r, uint8_t g, uint8_t b)
+daemon_ros_client::msg::LedColor color(uint8_t r, uint8_t g, uint8_t b)
 {
-    daemon_ros_client::LedColor c;
+    daemon_ros_client::msg::LedColor c;
     c.red = r;
     c.green = g;
     c.blue = b;
@@ -19,10 +19,7 @@ daemon_ros_client::LedColor color(uint8_t r, uint8_t g, uint8_t b)
 }
 
 
-LedTab::LedTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
-    : QWidget(parent),
-      m_nodeHandle(nodeHandle),
-      m_desireSet(std::move(desireSet))
+LedTab::LedTab(shared_ptr<DesireSet> desireSet, QWidget* parent) : QWidget(parent), m_desireSet(std::move(desireSet))
 {
     createUi();
 }
@@ -54,7 +51,7 @@ void LedTab::onConstantAnimationButtonToggled(bool checked)
         uncheckOtherAnimationButtons(m_constantAnimationButton);
 
         auto desire =
-            make_unique<LedAnimationDesire>("constant", vector<daemon_ros_client::LedColor>{color(255, 255, 255)});
+            make_unique<LedAnimationDesire>("constant", vector<daemon_ros_client::msg::LedColor>{color(255, 255, 255)});
         m_ledAnimationDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }
@@ -72,7 +69,7 @@ void LedTab::onRotatingSinAnimationButtonToggled(bool checked)
         uncheckOtherAnimationButtons(m_rotatingSinAnimationButton);
 
         auto desire =
-            make_unique<LedAnimationDesire>("rotating_sin", vector<daemon_ros_client::LedColor>{color(0, 255, 0)});
+            make_unique<LedAnimationDesire>("rotating_sin", vector<daemon_ros_client::msg::LedColor>{color(0, 255, 0)});
         m_ledAnimationDesireId = static_cast<qint64>(desire->id());
         m_desireSet->addDesire(std::move(desire));
     }

@@ -1,28 +1,30 @@
-#include <ros/ros.h>
-#include <geometry_msgs/Pose.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <tf/transform_broadcaster.h>
+#include <rclcpp/rclcpp.hpp>
 
-#include <daemon_ros_client/MotorStatus.h>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+
+#include <daemon_ros_client/msg/motor_status.hpp>
 
 #include <unordered_set>
 #include <optional>
 
 using namespace std;
 
+constexpr const char* NODE_NAME = "set_head_pose_arbitration_node";
 constexpr const char* HEAD_POSE_FRAME_ID = "stewart_base";
 
 struct Topic
 {
     string name;
     int priority;
-    ros::Duration timeout;
+    rclcpp::Duration timeout;
 };
 
 
-geometry_msgs::Pose defaultPose()
+geometry_msgs::msg::Pose defaultPose()
 {
-    geometry_msgs::Pose pose;
+    geometry_msgs::msg::Pose pose;
 
     pose.position.x = 0.0;
     pose.position.y = 0.0;
@@ -37,95 +39,137 @@ geometry_msgs::Pose defaultPose()
 }
 
 
-class ArbitrationNode
+class ArbitrationNode : public rclcpp::Node
 {
-    ros::NodeHandle& m_nodeHandle;
-    vector<ros::Subscriber> m_subscribers;
-    ros::Publisher m_publisher;
-    bool m_hasAdvertised;
+    vector<rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr> m_subscribers;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_publisher;
 
     vector<Topic> m_topics;
     optional<int> m_currentTopicIndex;
-    ros::Time m_lastMessageTime;
+    rclcpp::Time m_lastMessageTime;
 
-    vector<geometry_msgs::Pose> m_offsets;
+    vector<geometry_msgs::msg::Pose> m_offsets;
 
-    ros::Subscriber m_motorStatusSubscriber;
-    optional<geometry_msgs::PoseStamped> m_lastPose;
+    rclcpp::Subscription<daemon_ros_client::msg::MotorStatus>::SharedPtr m_motorStatusSubscriber;
+    optional<geometry_msgs::msg::PoseStamped> m_lastPose;
 
 public:
-    ArbitrationNode(ros::NodeHandle& nodeHandle, vector<Topic> topics, vector<string> offsetTopics, bool latch)
-        : m_nodeHandle(nodeHandle),
-          m_hasAdvertised(false),
-          m_topics(move(topics)),
-          m_lastMessageTime(ros::Time::now())
+    ArbitrationNode() : rclcpp::Node(NODE_NAME), m_lastMessageTime(get_clock()->now())
     {
-        for (size_t i = 0; i < m_topics.size(); i++)
+        m_topics = convertToTopics(
+            declare_parameter("topics", vector<string>{}),
+            declare_parameter("priorities", vector<int64_t>{}),
+            declare_parameter("timeout_s", vector<double>{}));
+        if (!hasUniquePriority(m_topics))
         {
-            m_subscribers.emplace_back(m_nodeHandle.subscribe<geometry_msgs::PoseStamped>(
-                m_topics[i].name,
-                1,
-                [this, i](const geometry_msgs::PoseStamped::ConstPtr& msg) { callback(i, msg); }));
+            throw std::runtime_error("The topic priorities must be unique.");
         }
 
+        for (size_t i = 0; i < m_topics.size(); i++)
+        {
+            m_subscribers.emplace_back(create_subscription<geometry_msgs::msg::PoseStamped>(
+                m_topics[i].name,
+                1,
+                [this, i](const geometry_msgs::msg::PoseStamped::SharedPtr msg) { callback(i, msg); }));
+        }
+
+        auto offsetTopics = declare_parameter("offset_topics", vector<string>{});
         for (size_t i = 0; i < offsetTopics.size(); i++)
         {
-            m_subscribers.emplace_back(m_nodeHandle.subscribe<geometry_msgs::PoseStamped>(
+            m_subscribers.emplace_back(create_subscription<geometry_msgs::msg::PoseStamped>(
                 offsetTopics[i],
                 1,
-                [this, i](const geometry_msgs::PoseStamped::ConstPtr& msg) { offsetCallback(i, msg); }));
+                [this, i](const geometry_msgs::msg::PoseStamped::SharedPtr msg) { offsetCallback(i, msg); }));
             m_offsets.emplace_back(defaultPose());
         }
 
-        m_publisher = m_nodeHandle.advertise<geometry_msgs::PoseStamped>("daemon/set_head_pose", 1, latch);
+        m_publisher = create_publisher<geometry_msgs::msg::PoseStamped>("daemon/set_head_pose", 1);
 
-        m_motorStatusSubscriber =
-            m_nodeHandle.subscribe("daemon/motor_status", 1, &ArbitrationNode::motorStatusCallback, this);
+        m_motorStatusSubscriber = create_subscription<daemon_ros_client::msg::MotorStatus>(
+            "daemon/motor_status",
+            1,
+            [this](const daemon_ros_client::msg::MotorStatus::SharedPtr msg) { motorStatusCallback(msg); });
     }
 
-    void run() { ros::spin(); }
+    void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    void callback(size_t i, const geometry_msgs::PoseStamped::ConstPtr& msg)
+    vector<Topic>
+        convertToTopics(const vector<string>& topics, const vector<int64_t>& priorities, const vector<double>& timeoutS)
+    {
+        if (topics.size() != priorities.size() || topics.size() != timeoutS.size())
+        {
+            throw std::runtime_error("The topics, priorities, timeout_s parameters must have the same size.");
+        }
+
+        vector<Topic> convertedTopics;
+        for (size_t i = 0; i < topics.size(); i++)
+        {
+            auto expandedTopic = rclcpp::expand_topic_or_service_name(topics[i], get_name(), get_namespace(), false);
+            auto timeout = chrono::duration<double, std::ratio<1>>(timeoutS[i]);
+            convertedTopics.emplace_back(Topic{expandedTopic, static_cast<int>(priorities[i]), timeout});
+        }
+
+        return convertedTopics;
+    }
+
+    bool hasUniquePriority(const vector<Topic>& topics)
+    {
+        unordered_set<int> priorities;
+
+        for (auto& topic : topics)
+        {
+            if (priorities.count(topic.priority) > 0)
+            {
+                return false;
+            }
+
+            priorities.insert(topic.priority);
+        }
+
+        return true;
+    }
+
+    void callback(size_t i, const geometry_msgs::msg::PoseStamped::SharedPtr msg)
     {
         if (msg->header.frame_id != HEAD_POSE_FRAME_ID)
         {
-            ROS_ERROR_STREAM("Invalid head pose frame id (" << msg->header.frame_id << ")");
+            RCLCPP_ERROR_STREAM(get_logger(), "Invalid head pose frame id (" << msg->header.frame_id << ")");
             return;
         }
 
         if (m_currentTopicIndex == nullopt || m_topics[i].priority <= m_topics[*m_currentTopicIndex].priority ||
-            (ros::Time::now() - m_lastMessageTime) > m_topics[*m_currentTopicIndex].timeout)
+            (get_clock()->now() - m_lastMessageTime) > m_topics[*m_currentTopicIndex].timeout)
         {
             m_currentTopicIndex = i;
-            m_lastMessageTime = ros::Time::now();
-            m_publisher.publish(applyOffsets(*msg));
+            m_lastMessageTime = get_clock()->now();
+            m_publisher->publish(applyOffsets(*msg));
             m_lastPose = *msg;
         }
     }
 
-    void offsetCallback(size_t i, const geometry_msgs::PoseStamped::ConstPtr& msg)
+    void offsetCallback(size_t i, const geometry_msgs::msg::PoseStamped::SharedPtr msg)
     {
         if (msg->header.frame_id != HEAD_POSE_FRAME_ID)
         {
-            ROS_ERROR_STREAM("Invalid head pose frame id (" << msg->header.frame_id << ")");
+            RCLCPP_ERROR_STREAM(get_logger(), "Invalid head pose frame id (" << msg->header.frame_id << ")");
             return;
         }
 
         m_offsets[i] = msg->pose;
         if (m_lastPose.has_value())
         {
-            m_publisher.publish(applyOffsets(*m_lastPose));
+            m_publisher->publish(applyOffsets(*m_lastPose));
         }
     }
 
-    geometry_msgs::PoseStamped applyOffsets(const geometry_msgs::PoseStamped& inputMsg)
+    geometry_msgs::msg::PoseStamped applyOffsets(const geometry_msgs::msg::PoseStamped& inputMsg)
     {
         double x = inputMsg.pose.position.x;
         double y = inputMsg.pose.position.y;
         double z = inputMsg.pose.position.z;
 
-        tf::Quaternion rotation(
+        tf2::Quaternion rotation(
             inputMsg.pose.orientation.x,
             inputMsg.pose.orientation.y,
             inputMsg.pose.orientation.z,
@@ -138,10 +182,10 @@ private:
             z += offset.position.z;
 
             rotation *=
-                tf::Quaternion(offset.orientation.x, offset.orientation.y, offset.orientation.z, offset.orientation.w);
+                tf2::Quaternion(offset.orientation.x, offset.orientation.y, offset.orientation.z, offset.orientation.w);
         }
 
-        geometry_msgs::PoseStamped outputMsg;
+        geometry_msgs::msg::PoseStamped outputMsg;
         outputMsg.header = inputMsg.header;
         outputMsg.pose.position.x = x;
         outputMsg.pose.position.y = y;
@@ -153,11 +197,11 @@ private:
         return outputMsg;
     }
 
-    void motorStatusCallback(const daemon_ros_client::MotorStatus::ConstPtr& msg)
+    void motorStatusCallback(const daemon_ros_client::msg::MotorStatus::SharedPtr msg)
     {
         if (m_lastPose == nullopt)
         {
-            m_lastPose = geometry_msgs::PoseStamped();
+            m_lastPose = geometry_msgs::msg::PoseStamped();
             m_lastPose->header.frame_id = msg->head_pose_frame_id;
             m_lastPose->pose = msg->head_pose;
         }
@@ -165,91 +209,22 @@ private:
 };
 
 
-bool getTopics(ros::NodeHandle& privateNodeHandle, vector<Topic>& topics)
-{
-    vector<string> value;
-
-    XmlRpc::XmlRpcValue xmlTopics;
-    privateNodeHandle.getParam("topics", xmlTopics);
-    if (xmlTopics.getType() != XmlRpc::XmlRpcValue::TypeArray)
-    {
-        ROS_ERROR("Invalid topics format");
-        return false;
-    }
-
-    for (size_t i = 0; i < xmlTopics.size(); i++)
-    {
-        if (xmlTopics[i].getType() != XmlRpc::XmlRpcValue::TypeStruct ||
-            xmlTopics[i]["name"].getType() != XmlRpc::XmlRpcValue::TypeString ||
-            xmlTopics[i]["priority"].getType() != XmlRpc::XmlRpcValue::TypeInt ||
-            xmlTopics[i]["timeout_s"].getType() != XmlRpc::XmlRpcValue::TypeDouble)
-        {
-            ROS_ERROR_STREAM("Invalid topics[" << i << "]: name must be a string and priority must be a int and.");
-            return false;
-        }
-
-        topics.emplace_back(Topic{
-            static_cast<string>(xmlTopics[i]["name"]),
-            static_cast<int>(xmlTopics[i]["priority"]),
-            ros::Duration(static_cast<double>(xmlTopics[i]["timeout_s"]))});
-    }
-
-    return topics.size() > 0;
-}
-
-bool hasUniquePriorities(const vector<Topic>& topics)
-{
-    unordered_set<int> priorities;
-
-    for (auto& topic : topics)
-    {
-        if (priorities.count(topic.priority) > 0)
-        {
-            return false;
-        }
-
-        priorities.insert(topic.priority);
-    }
-
-    return true;
-}
-
-
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "arbitration_node");
+    rclcpp::init(argc, argv);
 
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
-
-    vector<Topic> topics;
-    if (!getTopics(privateNodeHandle, topics))
+    try
     {
-        ROS_ERROR("The parameter topics must be set, not empty and valid.");
+        auto node = std::make_shared<ArbitrationNode>();
+        node->run();
+        rclcpp::shutdown();
+    }
+    catch (const std::exception& e)
+    {
+        RCLCPP_ERROR(rclcpp::get_logger(NODE_NAME), "%s", e.what());
+        rclcpp::shutdown();
         return -1;
     }
-    if (!hasUniquePriorities(topics))
-    {
-        ROS_ERROR("The topic priorities must be unique.");
-        return -1;
-    }
-
-    vector<string> offsetTopics;
-    if (!privateNodeHandle.getParam("offset_topics", offsetTopics))
-    {
-        ROS_ERROR("The parameter offset_topics must be set.");
-        return false;
-    }
-
-    bool latch;
-    if (!privateNodeHandle.getParam("latch", latch))
-    {
-        ROS_ERROR("The parameter latch is required.");
-        return -1;
-    }
-
-    ArbitrationNode node(nodeHandle, topics, offsetTopics, latch);
-    node.run();
 
     return 0;
 }

@@ -1,0 +1,8 @@
+<launch>
+    <arg name="pose_classifier_perception_delay" default="0"/>
+    <node pkg="pose_classifier" exec="pose_classifier_node.py" name="pose_classifier_node" output="screen" launch-prefix="bash -c 'sleep $(var pose_classifier_perception_delay); $0 $@' ">
+        <param name="pose_confidence_threshold" value="0.4"/>
+
+        <remap from="video_analysis" to="camera_2d_wide/video_analysis"/>
+    </node>
+</launch>

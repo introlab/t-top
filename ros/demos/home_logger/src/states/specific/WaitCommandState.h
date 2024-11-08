@@ -15,7 +15,7 @@ class WaitCommandState : public SoundFaceFollowingState
     std::optional<uint64_t> m_speechToTextDesireId;
 
 public:
-    WaitCommandState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);
+    WaitCommandState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, rclcpp::Node::SharedPtr node);
     ~WaitCommandState() override;
 
 protected:
@@ -24,7 +24,7 @@ protected:
     void onEnabling(const StateParameter& parameter, const StateType& previousStateType) override;
     void onDisabling() override;
 
-    void onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg) override;
+    void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg) override;
     void onStateTimeout() override;
 
 private:

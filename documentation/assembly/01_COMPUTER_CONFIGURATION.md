@@ -712,3 +712,12 @@ export GOOGLE_APPLICATION_CREDENTIALS="[Path to the service account JSON keyfile
 ```bash
 export OPEN_WEATHER_MAP_API_KEY="[The key]"
 ```
+
+### C. Setup a Different ROS2 Domain on Each Robot
+
+1. Add the following line to `~/.bashrc`
+
+```bash
+# Avoid default=0 and make sure each robot has a different domain ID.
+export ROS_DOMAIN_ID=[1...101]
+```

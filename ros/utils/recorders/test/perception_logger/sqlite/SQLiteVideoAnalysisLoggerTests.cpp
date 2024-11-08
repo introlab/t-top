@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "comparisons.h"
+#include "../comparisons.h"
 
 using namespace std;
 

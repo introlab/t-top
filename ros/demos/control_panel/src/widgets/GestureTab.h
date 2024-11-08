@@ -5,9 +5,6 @@
 #include <QPushButton>
 #include <QVariant>
 
-#include <ros/ros.h>
-#include <gesture/Done.h>
-
 #include <hbba_lite/core/DesireSet.h>
 
 #include <memory>
@@ -17,13 +14,11 @@ class GestureTab : public QWidget, public DesireSetObserver
 {
     Q_OBJECT
 
-    ros::NodeHandle& m_nodeHandle;
-
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_gestureDesireId;
 
 public:
-    GestureTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    GestureTab(std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
     ~GestureTab() override;
 
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _) override;
@@ -42,7 +37,10 @@ private:
     QPushButton* m_maybeButton;
     QPushButton* m_originAllButton;
     QPushButton* m_originHeadButton;
+    QPushButton* m_slowOriginHeadButton;
     QPushButton* m_originTorsoButton;
+    QPushButton* m_thinkingButton;
+    QPushButton* m_sadButton;
 };
 
 #endif

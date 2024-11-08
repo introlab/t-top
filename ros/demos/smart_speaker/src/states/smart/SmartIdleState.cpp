@@ -7,6 +7,10 @@
 
 #include <t_top_hbba_lite/Desires.h>
 
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <geometry_msgs/msg/twist.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <algorithm>
 #include <limits>
 #include <cmath>
@@ -17,13 +21,13 @@ SmartIdleState::SmartIdleState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     double personDistanceThreshold,
     std::string personDistanceFrameId,
     double noseConfidenceThreshold,
     size_t videoAnalysisMessageCountThreshold,
     size_t videoAnalysisMessageCountTolerance)
-    : State(language, stateManager, desireSet, nodeHandle),
+    : State(language, stateManager, desireSet, move(node)),
       m_personDistanceThreshold(personDistanceThreshold),
       m_personDistanceFrameId(personDistanceFrameId),
       m_noseConfidenceThreshold(noseConfidenceThreshold),
@@ -32,11 +36,18 @@ SmartIdleState::SmartIdleState(
       m_videoAnalysisValidMessageCount(0),
       m_videoAnalysisInvalidMessageCount(0)
 {
-    m_personNamesSubscriber =
-        nodeHandle.subscribe("person_names", 1, &SmartIdleState::personNamesSubscriberCallback, this);
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 
-    m_videoAnalysisSubscriber =
-        nodeHandle.subscribe("video_analysis", 1, &SmartIdleState::videoAnalysisSubscriberCallback, this);
+    m_videoAnalysisSubscriber = m_node->create_subscription<perception_msgs::msg::VideoAnalysis>(
+        "video_analysis",
+        1,
+        [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg) { videoAnalysisSubscriberCallback(msg); });
+
+    m_tfBuffer = make_unique<tf2_ros::Buffer>(m_node->get_clock());
+    m_tfListener = make_shared<tf2_ros::TransformListener>(*m_tfBuffer);
 }
 
 void SmartIdleState::enable(const string& parameter, const type_index& previousStageType)
@@ -57,7 +68,7 @@ void SmartIdleState::enable(const string& parameter, const type_index& previousS
     m_desireSet->addDesire(move(faceAnimationDesire));
 }
 
-void SmartIdleState::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
+void SmartIdleState::personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     if (!enabled() || msg->names.size() == 0)
     {
@@ -75,7 +86,7 @@ void SmartIdleState::personNamesSubscriberCallback(const person_identification::
     }
 }
 
-void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+void SmartIdleState::videoAnalysisSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
 {
     if (!enabled() || msg->objects.size() == 0)
     {
@@ -83,20 +94,22 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
     }
     if (!msg->contains_3d_positions)
     {
-        ROS_ERROR("The video analysis must contain 3d positions.");
+        RCLCPP_ERROR(m_node->get_logger(), "The video analysis must contain 3d positions.");
         return;
     }
 
-    tf::StampedTransform transform;
+    geometry_msgs::msg::TransformStamped transformMsg;
     try
     {
-        m_tfListener.lookupTransform(m_personDistanceFrameId, msg->header.frame_id, msg->header.stamp, transform);
+        transformMsg = m_tfBuffer->lookupTransform(m_personDistanceFrameId, msg->header.frame_id, msg->header.stamp);
     }
-    catch (tf::TransformException& ex)
+    catch (tf2::TransformException& ex)
     {
-        ROS_ERROR("%s", ex.what());
+        RCLCPP_ERROR(m_node->get_logger(), "%s", ex.what());
         return;
     }
+    tf2::Stamped<tf2::Transform> transform;
+    tf2::convert(transformMsg, transform);
 
     bool faceFound = false;
     for (auto& object : msg->objects)
@@ -125,7 +138,7 @@ void SmartIdleState::videoAnalysisSubscriberCallback(const video_analyzer::Video
     }
 }
 
-double SmartIdleState::personNameDistance(const person_identification::PersonName& name)
+double SmartIdleState::personNameDistance(const perception_msgs::msg::PersonName& name)
 {
     if (name.position_3d.size() == 0)
     {
@@ -134,23 +147,25 @@ double SmartIdleState::personNameDistance(const person_identification::PersonNam
 
     try
     {
-        tf::StampedTransform transform;
-        m_tfListener.lookupTransform(m_personDistanceFrameId, name.frame_id, ros::Time(0), transform);
+        geometry_msgs::msg::TransformStamped transformMsg =
+            m_tfBuffer->lookupTransform(m_personDistanceFrameId, name.frame_id, tf2::TimePointZero);
+        tf2::Stamped<tf2::Transform> transform;
+        tf2::convert(transformMsg, transform);
 
-        tf::Vector3 p(name.position_3d[0].x, name.position_3d[0].y, name.position_3d[0].z);
+        tf2::Vector3 p(name.position_3d[0].x, name.position_3d[0].y, name.position_3d[0].z);
         p = transform * p;
         return p.length();
     }
-    catch (tf::TransformException& ex)
+    catch (tf2::TransformException& ex)
     {
-        ROS_ERROR("%s", ex.what());
+        RCLCPP_ERROR(m_node->get_logger(), "%s", ex.what());
         return numeric_limits<double>::infinity();
     }
 }
 
 double SmartIdleState::faceDistance(
-    const video_analyzer::VideoAnalysisObject& object,
-    const tf::StampedTransform& transform)
+    const perception_msgs::msg::VideoAnalysisObject& object,
+    const tf2::Stamped<tf2::Transform>& transform)
 {
     constexpr size_t PERSON_POSE_NOSE_INDEX = 0;
 
@@ -162,7 +177,7 @@ double SmartIdleState::faceDistance(
     }
 
     auto nosePoint = object.person_pose_3d[PERSON_POSE_NOSE_INDEX];
-    tf::Vector3 p(nosePoint.x, nosePoint.y, nosePoint.z);
+    tf2::Vector3 p(nosePoint.x, nosePoint.y, nosePoint.z);
     p = transform * p;
     return p.length();
 }

@@ -10,8 +10,8 @@ ValidTaskState::ValidTaskState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : State(language, stateManager, desireSet, nodeHandle),
+    rclcpp::Node::SharedPtr node)
+    : State(language, stateManager, desireSet, move(node)),
       m_talkDesireId(MAX_DESIRE_ID),
       m_gestureDesireId(MAX_DESIRE_ID)
 {

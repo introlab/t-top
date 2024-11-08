@@ -3,24 +3,27 @@
 
 #include <t_top_hbba_lite/Desires.h>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <hbba_lite/core/Strategy.h>
 
-#include <led_animations/Done.h>
-#include <talk/Done.h>
-#include <gesture/Done.h>
-#include <sound_player/Done.h>
+#include <std_msgs/msg/string.hpp>
+
+#include <behavior_msgs/msg/led_animation.hpp>
+#include <behavior_msgs/msg/text.hpp>
+#include <behavior_msgs/msg/gesture_name.hpp>
+#include <behavior_msgs/msg/done.hpp>
+#include <behavior_msgs/msg/sound_file.hpp>
 
 #include <memory>
 
 class FaceAnimationStrategy : public Strategy<FaceAnimationDesire>
 {
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_animationPublisher;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_animationPublisher;
 
 public:
-    FaceAnimationStrategy(uint16_t utility, std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle);
+    FaceAnimationStrategy(uint16_t utility, std::shared_ptr<FilterPool> filterPool, std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(FaceAnimationStrategy);
     DECLARE_NOT_MOVABLE(FaceAnimationStrategy);
@@ -34,11 +37,11 @@ protected:
 
 class LedEmotionStrategy : public Strategy<LedEmotionDesire>
 {
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_emotionPublisher;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_emotionPublisher;
 
 public:
-    LedEmotionStrategy(uint16_t utility, std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle);
+    LedEmotionStrategy(uint16_t utility, std::shared_ptr<FilterPool> filterPool, std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(LedEmotionStrategy);
     DECLARE_NOT_MOVABLE(LedEmotionStrategy);
@@ -52,16 +55,16 @@ protected:
 class LedAnimationStrategy : public Strategy<LedAnimationDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_animationPublisher;
-    ros::Subscriber m_animationDoneSubscriber;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_animationPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_animationDoneSubscriber;
 
 public:
     LedAnimationStrategy(
         uint16_t utility,
         std::shared_ptr<FilterPool> filterPool,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(LedAnimationStrategy);
     DECLARE_NOT_MOVABLE(LedAnimationStrategy);
@@ -72,19 +75,19 @@ protected:
     void onEnabling(const LedAnimationDesire& desire) override;
 
 private:
-    void animationDoneSubscriberCallback(const led_animations::Done::ConstPtr& msg);
+    void animationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 class SpecificFaceFollowingStrategy : public Strategy<SpecificFaceFollowingDesire>
 {
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_targetNamePublisher;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_targetNamePublisher;
 
 public:
     SpecificFaceFollowingStrategy(
         uint16_t utility,
         std::shared_ptr<FilterPool> filterPool,
-        ros::NodeHandle& nodeHandle);
+        std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(SpecificFaceFollowingStrategy);
     DECLARE_NOT_MOVABLE(SpecificFaceFollowingStrategy);
@@ -98,16 +101,16 @@ protected:
 class TalkStrategy : public Strategy<TalkDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_talkPublisher;
-    ros::Subscriber m_talkDoneSubscriber;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<behavior_msgs::msg::Text>::SharedPtr m_talkPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
 
 public:
     TalkStrategy(
         uint16_t utility,
         std::shared_ptr<FilterPool> filterPool,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(TalkStrategy);
     DECLARE_NOT_MOVABLE(TalkStrategy);
@@ -118,22 +121,22 @@ protected:
     void onEnabling(const TalkDesire& desire) override;
 
 private:
-    void talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg);
+    void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 class GestureStrategy : public Strategy<GestureDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_gesturePublisher;
-    ros::Subscriber m_gestureDoneSubscriber;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<behavior_msgs::msg::GestureName>::SharedPtr m_gesturePublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_gestureDoneSubscriber;
 
 public:
     GestureStrategy(
         uint16_t utility,
         std::shared_ptr<FilterPool> filterPool,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(GestureStrategy);
     DECLARE_NOT_MOVABLE(GestureStrategy);
@@ -144,22 +147,22 @@ protected:
     void onEnabling(const GestureDesire& desire) override;
 
 private:
-    void gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg);
+    void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 class PlaySoundStrategy : public Strategy<PlaySoundDesire>
 {
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_pathPublisher;
-    ros::Subscriber m_soundDoneSubscriber;
+    std::shared_ptr<rclcpp::Node> m_node;
+    rclcpp::Publisher<behavior_msgs::msg::SoundFile>::SharedPtr m_pathPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_soundDoneSubscriber;
 
 public:
     PlaySoundStrategy(
         uint16_t utility,
         std::shared_ptr<FilterPool> filterPool,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        std::shared_ptr<rclcpp::Node> node);
 
     DECLARE_NOT_COPYABLE(PlaySoundStrategy);
     DECLARE_NOT_MOVABLE(PlaySoundStrategy);
@@ -170,7 +173,7 @@ protected:
     void onEnabling(const PlaySoundDesire& desire) override;
 
 private:
-    void soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg);
+    void soundDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
 std::unique_ptr<BaseStrategy>
@@ -202,14 +205,16 @@ std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterP
 std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle,
+    std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createLedEmotionStrategy(std::shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createLedEmotionStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    std::shared_ptr<rclcpp::Node> node,
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createLedAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createSoundFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
@@ -217,31 +222,32 @@ std::unique_ptr<BaseStrategy>
     createNearestFaceFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     std::shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle,
+    std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createSoundObjectPersonFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTalkStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createGestureStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createDanceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createPlaySoundStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
 
 std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
-std::unique_ptr<BaseStrategy> createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>
+    createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
 
 #endif

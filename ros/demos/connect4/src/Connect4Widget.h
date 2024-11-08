@@ -8,11 +8,12 @@
 #include <QNetworkReply>
 #include <QTimer>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <hbba_lite/core/DesireSet.h>
-#include <std_msgs/Empty.h>
-#include <opentera_webrtc_ros_msgs/PeerImage.h>
-#include <opentera_webrtc_ros_msgs/OpenTeraEvent.h>
+#include <std_msgs/msg/empty.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <opentera_webrtc_ros_msgs/msg/peer_image.hpp>
+#include <opentera_webrtc_ros_msgs/msg/open_tera_event.hpp>
 
 #include <atomic>
 #include <memory>
@@ -21,19 +22,21 @@ class Connect4Widget : public QWidget
 {
     Q_OBJECT
 
-    ros::NodeHandle& m_nodeHandle;
+    rclcpp::Node::SharedPtr m_node;
     std::shared_ptr<DesireSet> m_desireSet;
 
     std::atomic_bool m_enabled;
 
-    ros::Subscriber m_startButtonPressedSub;
-    ros::Subscriber m_stopButtonPressedSub;
-    ros::Subscriber m_remoteImageSub;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_startButtonPressedSub;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_stopButtonPressedSub;
+    rclcpp::Subscription<opentera_webrtc_ros_msgs::msg::PeerImage>::SharedPtr m_remoteImageSub;
+    rclcpp::Subscription<opentera_webrtc_ros_msgs::msg::OpenTeraEvent>::SharedPtr m_openteraEventSubscriber;
 
-    ros::Publisher  m_volumePub;
+    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr  m_volumePub;
+
     QTimer* m_setVolumeTimer;
 
-    ros::Subscriber m_openteraEventSubscriber;
+
     QString m_connect4ManagerWebSocketUrl;
     QString m_connect4ManagerWebSocketPassword;
     QString m_observedParticipantName;
@@ -43,7 +46,7 @@ class Connect4Widget : public QWidget
     QWebSocket* m_connect4ManagerWebSocket;
 
 public:
-    Connect4Widget(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    Connect4Widget(rclcpp::Node::SharedPtr node, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
 
 private Q_SLOTS:
     void onSetVolumeTimerTimeout();
@@ -57,13 +60,13 @@ private Q_SLOTS:
     void onConnect4ManagerWebSocketTextMessageReceived(const QString& message);
 
 private:
-    void startButtonPressedCallback(const std_msgs::EmptyConstPtr& msg);
-    void stopButtonPressedCallback(const std_msgs::EmptyConstPtr& msg);
-    void remoteImageCallback(const opentera_webrtc_ros_msgs::PeerImageConstPtr& msg);
+    void startButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg);
+    void stopButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg);
+    void remoteImageCallback(const opentera_webrtc_ros_msgs::msg::PeerImage::SharedPtr msg);
 
     void setVolume(float volume);
 
-    void openteraEventCallback(const opentera_webrtc_ros_msgs::OpenTeraEventConstPtr& msg);
+    void openteraEventCallback(const opentera_webrtc_ros_msgs::msg::OpenTeraEvent::SharedPtr msg);
     bool sendConnect4ManagerEvent(const QString& event, const QJsonObject& data);
 
     QString getParticipantName(const std::string& deviceName, const std::string& sessionParameters);

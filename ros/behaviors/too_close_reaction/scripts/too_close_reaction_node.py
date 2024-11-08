@@ -2,7 +2,9 @@
 import numpy as np
 import cv2
 
-import rospy
+import rclpy
+import rclpy.node
+
 from cv_bridge import CvBridge
 
 from geometry_msgs.msg import PoseStamped
@@ -11,24 +13,26 @@ from sensor_msgs.msg import Image
 import hbba_lite
 
 
-class TooCloseReactionNode:
+class TooCloseReactionNode(rclpy.node.Node):
     def __init__(self):
-        self._max_offset_m = rospy.get_param('~max_offset_m', 0.01)
-        self._too_close_start_distance_m = rospy.get_param('~too_close_start_distance_m', 0.5)
-        self._too_close_end_distance_m = rospy.get_param('~too_close_end_distance_m', 0.25)
-        self._pixel_ratio = rospy.get_param('~pixel_ratio', 0.01)
+        super().__init__('too_close_reaction_node')
+
+        self._max_offset_m = self.declare_parameter('max_offset_m', 0.01).get_parameter_value().double_value
+        self._too_close_start_distance_m = self.declare_parameter('too_close_start_distance_m', 0.5).get_parameter_value().double_value
+        self._too_close_end_distance_m = self.declare_parameter('too_close_end_distance_m', 0.25).get_parameter_value().double_value
+        self._pixel_ratio = self.declare_parameter('pixel_ratio', 0.01).get_parameter_value().double_value
 
         self._cv_bridge = CvBridge()
 
         self._current_offset_m = 0.0
 
-        self._head_pose_pub = rospy.Publisher('too_close_reaction/set_head_pose', PoseStamped, queue_size=1)
-        self._depth_image_sub = hbba_lite.OnOffHbbaSubscriber('depth_image_raw', Image, self._image_cb, queue_size=1)
+        self._head_pose_pub = self.create_publisher(PoseStamped, 'too_close_reaction/set_head_pose', 1)
+        self._depth_image_sub = hbba_lite.OnOffHbbaSubscriber(self, Image, 'depth_image_raw', self._image_cb, 1)
         self._depth_image_sub.on_filter_state_changed(self._hbba_filter_state_cb)
 
     def _image_cb(self, msg):
         if msg.encoding != '16UC1':
-            rospy.logerr('Invalid depth image encoding')
+            self.get_logger().error('Invalid depth image encoding')
 
         depth_image = self._cv_bridge.imgmsg_to_cv2(msg, '16UC1')
         distance_m = self._compute_distance(depth_image) - self._current_offset_m
@@ -63,29 +67,34 @@ class TooCloseReactionNode:
         pose_msg = PoseStamped()
         pose_msg.header.frame_id = 'stewart_base'
 
-        pose_msg.pose.position.x = -offset_m
-        pose_msg.pose.position.y = 0
-        pose_msg.pose.position.z = 0
+        pose_msg.pose.position.x = float(-offset_m)
+        pose_msg.pose.position.y = 0.0
+        pose_msg.pose.position.z = 0.0
 
-        pose_msg.pose.orientation.x = 0
-        pose_msg.pose.orientation.y = 0
-        pose_msg.pose.orientation.z = 0
-        pose_msg.pose.orientation.w = 1
+        pose_msg.pose.orientation.x = 0.0
+        pose_msg.pose.orientation.y = 0.0
+        pose_msg.pose.orientation.z = 0.0
+        pose_msg.pose.orientation.w = 1.0
 
         self._head_pose_pub.publish(pose_msg)
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('too_close_reaction_node')
+    rclpy.init()
     too_close_reaction_node = TooCloseReactionNode()
-    too_close_reaction_node.run()
+
+    try:
+        too_close_reaction_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        too_close_reaction_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

@@ -9,8 +9,8 @@ using namespace std;
 SoundFaceFollowingState::SoundFaceFollowingState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : State(stateManager, move(desireSet), nodeHandle),
+    rclcpp::Node::SharedPtr node)
+    : State(stateManager, move(desireSet), move(node)),
       m_followingDesireType(DesireType::null()),
       m_videoAnalysisWithoutPersonCount(0)
 {
@@ -29,7 +29,7 @@ void SoundFaceFollowingState::onDisabling()
     setFollowingDesire(nullptr);
 }
 
-void SoundFaceFollowingState::onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+void SoundFaceFollowingState::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg)
 {
     bool containsAPerson = containsAtLeastOnePerson(msg);
 

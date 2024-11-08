@@ -12,9 +12,11 @@
 #include <QTabWidget>
 #include <QLCDNumber>
 
-#include <ros/ros.h>
-#include <std_msgs/Float32MultiArray.h>
-#include <daemon_ros_client/BaseStatus.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <std_msgs/msg/u_int8.hpp>
+
+#include <daemon_ros_client/msg/base_status.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 
@@ -25,15 +27,16 @@ class ControlPanel : public QWidget
 {
     Q_OBJECT
 
-    ros::NodeHandle& m_nodeHandle;
-    ros::Publisher m_volumePublisher;
-    ros::Subscriber m_baseStatusSubscriber;
+    rclcpp::Node::SharedPtr m_node;
+
+    rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr m_volumePublisher;
+    rclcpp::Subscription<daemon_ros_client::msg::BaseStatus>::SharedPtr m_baseStatusSubscriber;
 
     std::shared_ptr<DesireSet> m_desireSet;
 
 public:
     ControlPanel(
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::shared_ptr<DesireSet> desireSet,
         bool camera2dWideEnabled,
         QWidget* parent = nullptr);
@@ -42,7 +45,7 @@ private slots:
     void onVolumeChanged(int volume);
 
 private:
-    void baseStatusSubscriberCallback(const daemon_ros_client::BaseStatus::ConstPtr& msg);
+    void baseStatusSubscriberCallback(const daemon_ros_client::msg::BaseStatus::SharedPtr msg);
 
     void createUi(bool camera2dWideEnabled);
 

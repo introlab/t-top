@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import os
-import threading
+import time
 from datetime import datetime
 
 import numpy as np
@@ -10,83 +10,84 @@ from scipy import signal
 
 import librosa
 
-import rospy
-import rospkg
+import rclpy
+import rclpy.node
+import rclpy.executors
+
 from std_msgs.msg import Float32
-from talk.msg import Text, Done, Statistics
-from audio_utils.msg import AudioFrame
+from behavior_msgs.msg import Text, Done, Statistics
+from audio_utils_msgs.msg import AudioFrame
 
 import hbba_lite
+import time_utils
 
 from talk.lib_voice_generator import Language, Gender
 from talk.lib_voice_generator import GoogleVoiceGenerator, PiperVoiceGenerator, CachedVoiceGenerator
 
 
-class TalkNode:
+class TalkNode(rclpy.node.Node):
     def __init__(self):
-        language = Language.from_name(rospy.get_param('~language'))
-        gender = Gender.from_name(rospy.get_param('~gender'))
-        speaking_rate = rospy.get_param('~speaking_rate')
-        generator_type = rospy.get_param('~generator_type')
-        cache_size = rospy.get_param('~cache_size')
+        super().__init__('talk_node')
 
-        self._mouth_signal_gain = rospy.get_param('~mouth_signal_gain')
-        self._sampling_frequency = rospy.get_param('~sampling_frequency')
-        self._frame_sample_count = rospy.get_param('~frame_sample_count')
-        self._done_delay_s = rospy.get_param('~done_delay_s', 0.5)
+        language = Language.from_name(self.declare_parameter('language', 'en').get_parameter_value().string_value)
+        gender = Gender.from_name(self.declare_parameter('gender', 'male').get_parameter_value().string_value)
+        speaking_rate = self.declare_parameter('speaking_rate', 1.0).get_parameter_value().double_value
+        generator_type = self.declare_parameter('generator_type', 'piper').get_parameter_value().string_value
+        cache_size = self.declare_parameter('cache_size', 2000).get_parameter_value().integer_value
 
-        self._rospack = rospkg.RosPack()
-        self._pkg_path = self._rospack.get_path('talk')
-        audio_directory_path = os.path.join(self._pkg_path, 'audio_files')
+        self._mouth_signal_gain = self.declare_parameter('mouth_signal_gain', 0.04).get_parameter_value().double_value
+        self._sampling_frequency = self.declare_parameter('sampling_frequency', 16000).get_parameter_value().integer_value
+        self._frame_sample_count = self.declare_parameter('frame_sample_count', 1024).get_parameter_value().integer_value
+        self._done_delay_s = self.declare_parameter('done_delay_s', 0.5).get_parameter_value().double_value
+
+        audio_directory_path = os.path.join(os.environ['HOME'], '.ros', 't-top', 'talk', 'audio_files')
 
         if generator_type == 'google':
             self._voice_generator = GoogleVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
         elif generator_type == 'piper':
-            self._voice_generator = PiperVoiceGenerator(audio_directory_path, language, gender, speaking_rate)
+            self._voice_generator = PiperVoiceGenerator(self, audio_directory_path, language, gender, speaking_rate)
         else:
             raise ValueError(f'Invalid generator type ({generator_type})')
 
         if cache_size > 0:
             self._voice_generator = CachedVoiceGenerator(self._voice_generator, cache_size)
 
-        self._mouth_signal_scale_pub = rospy.Publisher('face/mouth_signal_scale', Float32, queue_size=5)
-        self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
-        self._done_talking_pub = rospy.Publisher('talk/done', Done, queue_size=5)
-        self._stats_pub = rospy.Publisher('talk/statistics', Statistics, queue_size=5)
+        self._mouth_signal_scale_pub = self.create_publisher(Float32, 'face/mouth_signal_scale', 5)
+        self._audio_pub = hbba_lite.OnOffHbbaPublisher(self, AudioFrame, 'audio_out', 5)
+        self._done_talking_pub = self.create_publisher(Done, 'talk/done', 5)
+        self._stats_pub = self.create_publisher(Statistics, 'talk/statistics', 5)
 
-        self._text_sub_lock = threading.Lock()
-        self._text_sub = rospy.Subscriber('talk/text', Text, self._on_text_received_cb, queue_size=1)
+        self._text_sub = self.create_subscription(Text, 'talk/text', self._on_text_received_cb, 1)
 
     def _on_text_received_cb(self, msg):
-        with self._text_sub_lock:
-            if self._audio_pub.is_filtering_all_messages:
-                return
+        if self._audio_pub.is_filtering_all_messages:
+            return
 
-            try:
-                if msg.text != '':
-                    start_time = datetime.now()
-                    file_path = self._voice_generator.generate(msg.text)
-                    frames = self._load_frames(file_path)
-                    processing_time_s = (datetime.now() - start_time).total_seconds()
+        try:
+            if msg.text != '':
+                start_time = datetime.now()
+                file_path = self._voice_generator.generate(msg.text)
+                frames = self._load_frames(file_path)
+                processing_time_s = (datetime.now() - start_time).total_seconds()
 
-                    self._publish_stats(msg.text, frames, processing_time_s)
+                self._publish_stats(msg.text, frames, processing_time_s)
 
-                    self._play_audio(frames)
-                    self._voice_generator.delete_generated_file(file_path)
-                    rospy.sleep(self._done_delay_s)
+                self._play_audio(frames)
+                self._voice_generator.delete_generated_file(file_path)
+                time.sleep(self._done_delay_s)
 
-                ok = True
-            except Exception as e:
-                rospy.logerr(f'Unable to talk ({e})')
-                ok = False
+            ok = True
+        except Exception as e:
+            self.get_logger().error(f'Unable to talk ({e})')
+            ok = False
 
-            self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
+        self._done_talking_pub.publish(Done(id=msg.id, ok=ok))
 
     def _publish_stats(self, text, frames, processing_time_s):
         stats = Statistics()
         stats.text = text
         stats.processing_time_s = processing_time_s
-        stats.header.stamp = rospy.Time.now()
+        stats.header.stamp = self.get_clock().now().to_msg()
         stats.total_samples_count = 0
 
         for frame in frames:
@@ -106,7 +107,7 @@ class TalkNode:
         audio_frame.sampling_frequency = self._sampling_frequency
         audio_frame.frame_sample_count = self._frame_sample_count
 
-        rate = rospy.Rate(self._sampling_frequency / self._frame_sample_count)
+        rate = time_utils.Rate(self._sampling_frequency / self._frame_sample_count)
         for frame in frames:
             if self._audio_pub.is_filtering_all_messages:
                 break
@@ -124,9 +125,10 @@ class TalkNode:
             mouth_signal_msg.data = max(0.0, min(mouth_signal[0] * self._mouth_signal_gain, 1.0))
             self._mouth_signal_scale_pub.publish(mouth_signal_msg)
 
-            audio_frame.header.stamp = rospy.Time.now()
+            audio_frame.header.stamp = self.get_clock().now().to_msg()
             audio_frame.data = frame.tobytes()
             self._audio_pub.publish(audio_frame)
+
             rate.sleep()
 
         mouth_signal_msg.data = 0.0
@@ -134,6 +136,7 @@ class TalkNode:
 
     def _load_frames(self, file_path):
         waveform, _ = librosa.load(file_path, sr=self._sampling_frequency, res_type='kaiser_fast')
+        waveform = librosa.to_mono(waveform)
         pad = (self._frame_sample_count - (waveform.shape[0] % self._frame_sample_count)) % self._frame_sample_count
         waveform = np.pad(waveform, (0, pad), 'constant', constant_values=0)
         frames = np.split(waveform, np.arange(self._frame_sample_count, len(waveform), self._frame_sample_count))
@@ -156,17 +159,28 @@ class TalkNode:
         return mouth_signal_filter_sos, mouth_signal_filter_zi
 
     def run(self):
-        rospy.spin()
+        executer_thread_count = self._voice_generator.executer_thread_count
+        if executer_thread_count == 1:
+            rclpy.spin(self)
+        else:
+            executor = rclpy.executors.MultiThreadedExecutor(num_threads=executer_thread_count)
+            executor.add_node(self)
+            executor.spin()
 
 
 def main():
-    rospy.init_node('talk_node')
+    rclpy.init()
     talk_node = TalkNode()
-    talk_node.run()
+
+    try:
+        talk_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        talk_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

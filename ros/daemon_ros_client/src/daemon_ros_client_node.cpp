@@ -1,5 +1,8 @@
 
 #include "DaemonRosClientNode.h"
+
+#include <QCoreApplication>
+
 #include <signal.h>
 #include <unistd.h>
 
@@ -28,31 +31,27 @@ void catchUnixSignals(std::initializer_list<int> quitSignals)
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "daemon_ros_client_node");
+    QCoreApplication app(argc, argv);
 
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
+    rclcpp::init(argc, argv);
 
-    DaemonRosClientNodeConfiguration configuration;
-
-    if (!privateNodeHandle.getParam("base_link_torso_base_delta_z", configuration.baseLinkTorsoBaseDeltaZ))
-    {
-        ROS_ERROR("The parameter base_link_torso_base_delta_z is required.");
-        return -1;
-    }
-
-    // Run ROS in background
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
+    auto node = std::make_shared<DaemonRosClientNode>();
 
     catchUnixSignals({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
 
+    // Run ROS in background
+    rclcpp::executors::SingleThreadedExecutor rosExecutor;
+    rosExecutor.add_node(node);
+    std::thread spinThread([&rosExecutor]() { rosExecutor.spin(); });
+
     // Initialize and start Qt App
-    DaemonRosClientNode app(argc, argv, nodeHandle, configuration);
-    app.exec();
+    int returnCode = app.exec();
 
-    app.cleanup();
+    node->cleanup();
+    rosExecutor.cancel();
+    spinThread.join();
 
-    // Stop ROS spinner
-    spinner.stop();
+    rclcpp::shutdown();
+
+    return returnCode;
 }

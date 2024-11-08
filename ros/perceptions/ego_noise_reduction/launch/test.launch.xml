@@ -1,0 +1,58 @@
+<launch>
+    <arg name="output_directory"/>
+
+    <include file="$(find-pkg-share t_top)/launch/platform/daemon_ros_client.launch.xml"/>
+
+    <node pkg="audio_utils" exec="capture_node" name="capture_node" output="screen">
+        <param name="backend" value="pulse_audio"/>
+        <param name="device" value="alsa_input.usb-IntRoLab_16SoundsUSB_Audio_2.0-00.multichannel-input"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="merge" value="false"/>
+        <param name="gain" value="1.0"/>
+        <param name="latency_us" value="64000"/>
+        <param name="channel_map" value="[front-left, front-right, rear-left, rear-right, front-center, lfe, side-left, side-right, aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7]"/>
+
+        <remap from="audio_out" to="audio_input_before_ego_noise_signed_32_16000"/>
+    </node>
+
+    <node pkg="ego_noise_reduction" exec="ego_noise_reduction_node" name="ego_noise_reduction_node">
+        <param name="type" value="log_mmse"/>
+        <param name="format" value="signed_32"/>
+        <param name="channel_count" value="16"/>
+        <param name="sampling_frequency" value="16000"/>
+        <param name="frame_sample_count" value="1024"/>
+        <param name="n_fft" value="1024"/>
+        <param name="noise_directory" value="$(find-pkg-share ego_noise_reduction)/noise_data"/>
+
+        <remap from="audio_in" to="audio_input_before_ego_noise_signed_32_16000"/>
+        <remap from="audio_out" to="audio_input_before_odas_signed_32_16000"/>
+    </node>
+
+    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml">
+        <arg name="odas_perception_delay" value="0"/>
+    </include>
+
+    <node pkg="ego_noise_reduction" exec="test.py" name="test_node" output="screen"/>
+
+    <node pkg="audio_utils" exec="raw_file_writer_node.py" name="before_raw_file_writer_node">
+        <param name="output_path" value="$(var output_directory)/before.raw"/>
+
+        <remap from="audio_in" to="audio_input_before_ego_noise_signed_32_16000"/>
+    </node>
+
+    <node pkg="audio_utils" exec="raw_file_writer_node.py" name="after_raw_file_writer_node">
+        <param name="output_path" value="$(var output_directory)/after.raw"/>
+
+        <remap from="audio_in" to="audio_input_before_odas_signed_32_16000"/>
+    </node>
+
+    <node pkg="audio_utils" exec="raw_file_writer_node.py" name="odas_raw_file_writer_node">
+        <param name="output_path" value="$(var output_directory)/odas.raw"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+    </node>
+
+</launch>

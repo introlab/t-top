@@ -1,127 +1,34 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(ego_noise_reduction)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  audio_utils
-  roscpp
-  rospy
-  std_msgs
-  hbba_lite
-  t_top
-  daemon_ros_client
-)
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(audio_utils REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(hbba_lite REQUIRED)
+find_package(t_top REQUIRED)
+find_package(daemon_ros_client REQUIRED)
 
-################################################
-## Declare ROS messages, services and actions ##
-################################################
-
-## To declare and build messages, services or actions from within this
-## package, follow these steps:
-## * Let MSG_DEP_SET be the set of packages whose message types you use in
-##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
-## * In the file package.xml:
-##   * add a build_depend tag for "message_generation"
-##   * add a build_depend and a exec_depend tag for each package in MSG_DEP_SET
-##   * If MSG_DEP_SET isn't empty the following dependency has been pulled in
-##     but can be declared for certainty nonetheless:
-##     * add a exec_depend tag for "message_runtime"
-## * In this file (CMakeLists.txt):
-##   * add "message_generation" and every package in MSG_DEP_SET to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * add "message_runtime" and every package in MSG_DEP_SET to
-##     catkin_package(CATKIN_DEPENDS ...)
-##   * uncomment the add_*_files sections below as needed
-##     and list every .msg/.srv/.action file to be processed
-##   * uncomment the generate_messages entry below
-##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
-
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
-
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
-
-## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
-
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
-
-################################################
-## Declare ROS dynamic reconfigure parameters ##
-################################################
-
-## To declare and build dynamic reconfigure parameters within this
-## package, follow these steps:
-## * In the file package.xml:
-##   * add a build_depend and a exec_depend tag for "dynamic_reconfigure"
-## * In this file (CMakeLists.txt):
-##   * add "dynamic_reconfigure" to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * uncomment the "generate_dynamic_reconfigure_options" section below
-##     and list every .cfg file to be processed
-
-## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
-
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ego_noise_reduction
-#  CATKIN_DEPENDS audio_utils roscpp rospy std_msgs
-#  DEPENDS system_lib
-)
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
+# C++ Library
 include_directories(
   include
-  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -134,103 +41,61 @@ add_library(${PROJECT_NAME} STATIC
   src/${PROJECT_NAME}/WeightedAverageWithAPrioriNoiseEstimator.cpp
   src/${PROJECT_NAME}/NoiseMagnitudeDatabase.cpp
 )
+ament_target_dependencies(${PROJECT_NAME} audio_utils)
+target_link_libraries(${PROJECT_NAME} ${audio_utils_LIBRARIES})
+install(DIRECTORY include DESTINATION include)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ament_export_dependencies(rclcpp audio_utils)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/ego_noise_reduction_node.cpp)
-
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
+# C++ Nodes
+add_executable(ego_noise_reduction_node src/ego_noise_reduction_node.cpp)
+ament_target_dependencies(ego_noise_reduction_node rclcpp std_msgs daemon_ros_client hbba_lite hbba_lite_srvs audio_utils)
+target_link_libraries(ego_noise_reduction_node
   ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+  ${audio_utils_LIBRARIES}
+  ${hbba_lite_LIBRARIES}
+  ${hbba_lite_srvs_LIBRARIES}
 )
+install(TARGETS ego_noise_reduction_node DESTINATION lib/${PROJECT_NAME})
 
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-catkin_install_python(PROGRAMS
+# Python Nodes
+install(PROGRAMS
   scripts/data_gathering.py
   scripts/test.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-## Mark executables for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+# Launch files
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
-## Mark libraries for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-)
+# Noise files
+install(DIRECTORY noise_data DESTINATION share/${PROJECT_NAME})
 
-## Mark cpp header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
-  PATTERN ".svn" EXCLUDE
-)
+# Tests
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test
+    test/ego_noise_reduction/MathTests.cpp
+    test/ego_noise_reduction/StftNoiseRemoverTests.cpp
+    test/ego_noise_reduction/SpectralSubtractionNoiseRemoverTests.cpp
+    test/ego_noise_reduction/LogMmseNoiseRemoverTests.cpp
+    test/ego_noise_reduction/NoiseEstimatorTests.cpp
+    test/ego_noise_reduction/WeightedAverageNoiseEstimatorTests.cpp
+    test/ego_noise_reduction/WeightedAverageWithAPrioriNoiseEstimatorTests.cpp
+    test/ego_noise_reduction/NoiseMagnitudeDatabaseTests.cpp
+    test/ego_noise_reduction/TestUtils.cpp
+    test/ego_noise_reduction/main.cpp
+  )
+  ament_target_dependencies(${PROJECT_NAME}_test rclcpp audio_utils)
+  target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME} ${audio_utils_LIBRARIES})
 
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test
-  test/ego_noise_reduction/MathTests.cpp
-  test/ego_noise_reduction/StftNoiseRemoverTests.cpp
-  test/ego_noise_reduction/SpectralSubtractionNoiseRemoverTests.cpp
-  test/ego_noise_reduction/LogMmseNoiseRemoverTests.cpp
-  test/ego_noise_reduction/NoiseEstimatorTests.cpp
-  test/ego_noise_reduction/WeightedAverageNoiseEstimatorTests.cpp
-  test/ego_noise_reduction/WeightedAverageWithAPrioriNoiseEstimatorTests.cpp
-  test/ego_noise_reduction/NoiseMagnitudeDatabaseTests.cpp
-  test/ego_noise_reduction/TestUtils.cpp
-  test/ego_noise_reduction/main.cpp
-)
-if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME} ${catkin_LIBRARIES})
-
-  add_custom_command(TARGET ${PROJECT_NAME}-test POST_BUILD
+  add_custom_command(TARGET ${PROJECT_NAME}_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/test/ego_noise_reduction/resources $<TARGET_FILE_DIR:${PROJECT_NAME}-test>/resources
+    ${PROJECT_SOURCE_DIR}/test/ego_noise_reduction/resources $<TARGET_FILE_DIR:${PROJECT_NAME}_test>/resources
   )
 endif()
 
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+ament_package()

@@ -10,9 +10,9 @@ TalkState::TalkState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     type_index nextStateType)
-    : State(language, stateManager, desireSet, nodeHandle),
+    : State(language, stateManager, desireSet, move(node)),
       m_nextStateType(nextStateType),
       m_talkDesireId(MAX_DESIRE_ID)
 {

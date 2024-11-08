@@ -1,0 +1,127 @@
+<launch>
+    <arg name="signaling_server_hostname" default="localhost"/>
+    <arg name="signaling_server_port" default="8080"/>
+    <arg name="signaling_server_password" default="abc"/>
+    <arg name="is_stand_alone" default="false"/>
+    <arg name="verify_ssl" default="true"/>
+    <arg name="use_outgoing_face_cropping" default="false"/>
+    <arg name="use_incoming_face_cropping" default="false"/>
+    <arg name="use_robot_gui" default="true"/>
+
+    <let if="$(var use_outgoing_face_cropping)" name="input_camera_topic" value="/face_camera/image_raw"/>
+    <let unless="$(var use_outgoing_face_cropping)" name="input_camera_topic" value="/camera_3d/color/image_raw"/>
+
+    <!-- Remapped topics -->
+    <let if="$(var use_outgoing_face_cropping)" name="outgoing_camera_topic" value="face_camera/image_raw"/>
+    <let unless="$(var use_outgoing_face_cropping)" name="outgoing_camera_topic" value="/camera_3d/color/image_raw"/>
+    <let if="$(var use_incoming_face_cropping)" name="incoming_camera_topic" value="/face_webrtc_image"/>
+    <let unless="$(var use_incoming_face_cropping)" name="incoming_camera_topic" value="/webrtc_image"/>
+
+    <!-- Signaling server (if stand_alone)-->
+    <include if="$(var is_stand_alone)" file="$(find-pkg-share opentera_webrtc_demos)/launch/opentera_signaling_server.launch.xml">
+        <arg name="signaling_server_port" value="$(var signaling_server_port)" />
+        <arg name="signaling_server_password" value="$(var signaling_server_password)" />
+        <arg name="signaling_server_robot_type" value="TTOP" />
+        <arg name="python_executable" value="python3.8" />
+        <arg name="use_tls" value="true" />
+        <arg name="certificate" value="~/.ros/opentera/certs/server-cert.pem" />
+        <arg name="key" value="~/.ros/opentera/certs/server-key.pem" />
+    </include>
+
+    <!-- OpenTera Client (if not stand_alone)-->
+    <include unless="$(var is_stand_alone)" file="$(find-pkg-share opentera_client_ros)/launch/client.launch.xml">
+        <arg name="opentera_client_config_file" value="~/.ros/opentera/client_config.json"/>
+    </include>
+
+    <!-- Front camera -->
+    <include file="$(find-pkg-share opentera_webrtc_ros)/launch/ros_stream_client.launch.xml">
+        <arg name="name" value="topic_streamer1"/>
+        <arg name="is_stand_alone" value="$(var is_stand_alone)"/>
+        <arg name="video_queue_size" value="1"/>
+        <arg name="audio_queue_size" value="1"/>
+        <arg name="can_send_audio_stream" value="true"/>
+        <arg name="can_receive_audio_stream" value="true"/>
+        <arg name="can_send_video_stream" value="true"/>
+        <arg name="can_receive_video_stream" value="true"/>
+        <arg name="is_screen_cast" value="false"/>
+        <arg name="needs_denoising" value="false"/>
+        <arg name="server_url" value="https://localhost:$(var signaling_server_port)"/>
+        <arg name="client_name" value="Robot Camera"/>
+        <arg name="room_name" value="VideoConf"/>
+        <arg name="room_password" value="$(var signaling_server_password)"/>
+        <arg name="input_camera_topic" value="$(var input_camera_topic)"/>
+        <arg name="input_audio_topic" value="/audio_webrtc_outgoing_signed_16_48000"/>
+        <arg name="output_audio_mixed_topic" value="/audio_webrtc_incoming_signed_16_48000"/>
+        <arg name="verify_ssl" value="$(var verify_ssl)"/>
+        <arg name="forced_video_codecs" value="[vp8]"/>
+    </include>
+
+    <!-- Data Channel  -->
+    <include file="$(find-pkg-share opentera_webrtc_ros)/launch/ros_data_channel_client.launch.xml">
+        <arg name="name" value="data_streamer"/>
+        <arg name="is_stand_alone" value="$(var is_stand_alone)"/>
+
+        <arg name="server_url" value="https://localhost:$(var signaling_server_port)"/>
+        <arg name="client_name" value="Robot Data Channel"/>
+        <arg name="room_name" value="Teleop"/>
+        <arg name="room_password" value="$(var signaling_server_password)"/>
+        <arg name="verify_ssl" value="$(var verify_ssl)"/>
+    </include>
+
+    <!-- Json Message Handler -->
+    <include file="$(find-pkg-share opentera_webrtc_ros)/launch/ros_json_data_handler.launch.xml">
+        <arg name="name" value="json_data_handler"/>
+        <arg name="input_topic" value="/webrtc_data_incoming"/>
+        <arg name="linear_multiplier" value="0.5"/>
+        <arg name="angular_multiplier" value="0.35"/>
+        <arg name="cmd_vel_topic" value="/teleoperation/cmd_vel"/>
+    </include>
+
+    <!-- Audio resampling for audio going to webrtc -->
+    <node pkg="audio_utils" exec="resampling_node.py" name="resampling_node">
+        <param name="input_format" value="signed_16"/>
+        <param name="output_format" value="signed_16"/>
+        <param name="channel_count" value="1"/>
+        <param name="input_sampling_frequency" value="16000"/>
+        <param name="output_sampling_frequency" value="48000"/>
+        <param name="input_frame_sample_count" value="1024"/>
+
+        <remap from="audio_in" to="audio_input_signed_16_16000"/>
+        <remap from="audio_out" to="audio_webrtc_outgoing_signed_16_48000"/>
+    </node>
+
+    <!-- Robot status -->
+    <node name="robot_status" exec="robot_status.py" pkg="t_top" />
+
+    <!-- Face cropping local -->
+    <node if="$(var use_outgoing_face_cropping)" pkg="t_top" exec="head_roll_image_rotation_node.py" name="head_roll_image_rotation_node">
+        <remap from="input_image" to="/camera_3d/color/image_raw"/>
+        <remap from="output_image" to="/camera_3d/color/rotated_image_raw"/>
+    </node>
+    <include if="$(var use_outgoing_face_cropping)" file="$(find-pkg-share face_cropping)/launch/face_cropping.launch.xml" >
+        <arg name="output" value="screen"/>
+        <arg name="input_camera_topic" value="/camera_3d/color/rotated_image_raw"/>
+        <arg name="output_camera_topic" value="/face_camera/image_raw"/>
+
+        <arg name="face_detection_model" value="small_yunet_0.5_640"/>
+        <arg name="use_gpu_if_available" value="true"/>
+    </include>
+
+    <!-- Face cropping webrtc -->
+    <include if="$(var use_incoming_face_cropping)" file="$(find-pkg-share face_cropping)/launch/face_cropping_webrtc.launch.xml" >
+        <arg name="output" value="screen"/>
+        <arg name="input_camera_topic" value="/webrtc_image"/>
+        <arg name="output_camera_topic" value="/face_webrtc_image"/>
+
+        <arg name="face_detection_model" value="small_yunet_0.5_640"/>
+        <arg name="use_gpu_if_available" value="true"/>
+    </include>
+
+    <!-- OpenTera Robot GUI -->
+    <node if="$(var use_robot_gui)" pkg="opentera_webrtc_robot_gui" exec="opentera_webrtc_robot_gui_node" name="robot_gui" respawn="true">
+        <remap from="/front_camera/image_raw" to="$(var outgoing_camera_topic)"/>
+        <remap from="/webrtc_image" to="$(var incoming_camera_topic)" />
+        <param name="device_properties_path" value="$(find-pkg-share opentera_webrtc_robot_gui)/resources/DeviceProperties.json"/>
+    </node>
+
+</launch>

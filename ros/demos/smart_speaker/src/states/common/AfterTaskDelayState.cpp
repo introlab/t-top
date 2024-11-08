@@ -8,19 +8,21 @@ AfterTaskDelayState::AfterTaskDelayState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     type_index nextStateType,
     bool useAfterTaskDelayDurationTopic,
-    ros::Duration duration)
-    : State(language, stateManager, desireSet, nodeHandle),
+    std::chrono::milliseconds durationMs)
+    : State(language, stateManager, desireSet, move(node)),
       m_nextStateType(nextStateType),
       m_useAfterTaskDelayDurationTopic(useAfterTaskDelayDurationTopic),
-      m_duration(duration)
+      m_durationMs(durationMs)
 {
     if (m_useAfterTaskDelayDurationTopic)
     {
-        m_readySubscriber =
-            nodeHandle.subscribe("after_task_delay_state_ready", 1, &AfterTaskDelayState::readyCallback, this);
+        m_startButtonSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
+            "daemon/start_button_pressed",
+            1,
+            [this](const std_msgs::msg::Empty::SharedPtr msg) { startButtonCallback(msg); });
     }
 }
 
@@ -30,9 +32,7 @@ void AfterTaskDelayState::enable(const string& parameter, const type_index& prev
 
     if (!m_useAfterTaskDelayDurationTopic)
     {
-        constexpr bool oneshot = true;
-        m_timeoutTimer =
-            m_nodeHandle.createTimer(m_duration, &AfterTaskDelayState::timeoutTimerCallback, this, oneshot);
+        m_timeoutTimer = m_node->create_wall_timer(m_durationMs, [this]() { timeoutTimerCallback(); });
     }
 }
 
@@ -40,13 +40,14 @@ void AfterTaskDelayState::disable()
 {
     State::disable();
 
-    if (m_timeoutTimer.isValid())
+    if (m_timeoutTimer)
     {
-        m_timeoutTimer.stop();
+        m_timeoutTimer->cancel();
+        m_timeoutTimer = nullptr;
     }
 }
 
-void AfterTaskDelayState::readyCallback(const std_msgs::Empty::ConstPtr& msg)
+void AfterTaskDelayState::startButtonCallback(const std_msgs::msg::Empty::SharedPtr msg)
 {
     if (!enabled() || !m_useAfterTaskDelayDurationTopic)
     {
@@ -56,7 +57,7 @@ void AfterTaskDelayState::readyCallback(const std_msgs::Empty::ConstPtr& msg)
     m_stateManager.switchTo(m_nextStateType);
 }
 
-void AfterTaskDelayState::timeoutTimerCallback(const ros::TimerEvent& event)
+void AfterTaskDelayState::timeoutTimerCallback()
 {
     if (!enabled())
     {

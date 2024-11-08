@@ -3,27 +3,27 @@
 
 #include "../State.h"
 
-#include <std_msgs/Empty.h>
+#include <std_msgs/msg/empty.hpp>
 
 class AfterTaskDelayState : public State
 {
     std::type_index m_nextStateType;
 
     bool m_useAfterTaskDelayDurationTopic;
-    ros::Duration m_duration;
+    std::chrono::milliseconds m_durationMs;
 
-    ros::Subscriber m_readySubscriber;
-    ros::Timer m_timeoutTimer;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_startButtonSubscriber;
+    rclcpp::TimerBase::SharedPtr m_timeoutTimer;
 
 public:
     AfterTaskDelayState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::type_index nextStateType,
         bool useAfterTaskDelayDurationTopic,
-        ros::Duration duration);
+        std::chrono::milliseconds durationMs);
     ~AfterTaskDelayState() override = default;
 
     DECLARE_NOT_COPYABLE(AfterTaskDelayState);
@@ -36,8 +36,8 @@ protected:
     void disable() override;
 
 private:
-    void readyCallback(const std_msgs::Empty::ConstPtr& msg);
-    void timeoutTimerCallback(const ros::TimerEvent& event);
+    void startButtonCallback(const std_msgs::msg::Empty::SharedPtr msg);
+    void timeoutTimerCallback();
 };
 
 inline std::type_index AfterTaskDelayState::type() const

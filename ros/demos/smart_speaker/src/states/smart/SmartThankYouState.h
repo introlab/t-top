@@ -2,9 +2,6 @@
 #define SMART_SPEAKER_STATES_SMART_SMART_THANK_YOU_STATE_H
 
 #include "../common/TalkState.h"
-
-#include <talk/Done.h>
-
 #include <string>
 #include <vector>
 
@@ -15,7 +12,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     ~SmartThankYouState() override = default;
 
     DECLARE_NOT_COPYABLE(SmartThankYouState);

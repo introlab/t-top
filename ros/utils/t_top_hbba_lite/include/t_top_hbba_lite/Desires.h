@@ -4,7 +4,7 @@
 #include <hbba_lite/core/Desire.h>
 #include <hbba_lite/core/DesireSet.h>
 
-#include <daemon_ros_client/LedColor.h>
+#include <daemon_ros_client/msg/led_color.hpp>
 
 #include <string>
 #include <limits>
@@ -199,7 +199,7 @@ class LedAnimationDesire : public Desire
     std::string m_name;
     double m_durationS;
     double m_speed;
-    std::vector<daemon_ros_client::LedColor> m_colors;
+    std::vector<daemon_ros_client::msg::LedColor> m_colors;
 
 public:
     /**
@@ -207,7 +207,7 @@ public:
      */
     explicit LedAnimationDesire(
         std::string name,
-        std::vector<daemon_ros_client::LedColor> colors = {},
+        std::vector<daemon_ros_client::msg::LedColor> colors = {},
         double speed = 1.0,
         double durationS = std::numeric_limits<double>::infinity(),
         uint16_t intensity = 1);
@@ -218,7 +218,7 @@ public:
     const std::string& name() const;
     double durationS() const;
     double speed() const;
-    const std::vector<daemon_ros_client::LedColor>& colors() const;
+    const std::vector<daemon_ros_client::msg::LedColor>& colors() const;
 };
 
 inline const std::string& LedAnimationDesire::name() const
@@ -236,7 +236,7 @@ inline double LedAnimationDesire::speed() const
     return m_speed;
 }
 
-inline const std::vector<daemon_ros_client::LedColor>& LedAnimationDesire::colors() const
+inline const std::vector<daemon_ros_client::msg::LedColor>& LedAnimationDesire::colors() const
 {
     return m_colors;
 }

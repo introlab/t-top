@@ -5,10 +5,16 @@ import math
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
-import rospy
-import tf
+import rclpy
+import rclpy.node
+
+from tf2_ros import TransformException
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+import tf2_geometry_msgs
+
 from geometry_msgs.msg import PointStamped, Point, Vector3
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 from std_msgs.msg import String
 
 from t_top import vector_to_angles
@@ -19,30 +25,36 @@ PERSON_POSE_LEFT_EYE_INDEX = 1
 PERSON_POSE_RIGHT_EYE_INDEX = 2
 
 
-class NearestFaceOrientationNode:
+class NearestFaceOrientationNode(rclpy.node.Node):
     def __init__(self):
-        self._nose_confidence_threshold = rospy.get_param('~nose_confidence_threshold')
-        self._pitch_offset_rad = rospy.get_param('~pitch_offset_rad')
-        self._filter_alpha = rospy.get_param('~filter_alpha')
-        self._roll_dead_zone = rospy.get_param('~roll_dead_zone')
+        super().__init__('nearest_face_orientation_node')
+
+        self._nose_confidence_threshold = self.declare_parameter('nose_confidence_threshold', 0.4).get_parameter_value().double_value
+        self._pitch_offset_rad = self.declare_parameter('pitch_offset_rad', -0.8).get_parameter_value().double_value
+        self._filter_alpha = self.declare_parameter('filter_alpha', 0.65).get_parameter_value().double_value
+        self._roll_dead_zone = self.declare_parameter('roll_dead_zone', 0.05).get_parameter_value().double_value
 
         self._roll = 0.0
         self._pitch = 0.0
 
-        self._tf_listener = tf.TransformListener()
+        self._tf_buffer = Buffer()
+        self._tf_listener = TransformListener(self._tf_buffer, self)
 
-        self._face_orientation_pub = rospy.Publisher('face_orientation', String, queue_size=1)
-        self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=1)
+        self._face_orientation_pub = self.create_publisher(String, 'face_orientation', 1)
+        self._video_analysis_sub = self.create_subscription(VideoAnalysis, 'video_analysis', self._video_analysis_cb, 1)
 
     def _video_analysis_cb(self, msg):
         if not msg.contains_3d_positions:
-            rospy.logerr('The video analysis must contain 3d positions.')
+            self.get_logger().error('The video analysis must contain 3d positions.')
             return
 
-        self._update_nearest_face_orientation(msg.objects, msg.header)
-        msg = String()
-        msg.data = f'{self._roll},{self._pitch}'
-        self._face_orientation_pub.publish(msg)
+        try:
+            self._update_nearest_face_orientation(msg.objects, msg.header)
+            msg = String()
+            msg.data = f'{self._roll},{self._pitch}'
+            self._face_orientation_pub.publish(msg)
+        except TransformException as e:
+            self.get_logger().error(f'Could not transform: {e}')
 
     def _update_nearest_face_orientation(self, objects, header):
         poses = []
@@ -97,7 +109,8 @@ class NearestFaceOrientationNode:
         temp_in_point.point.y = point.y
         temp_in_point.point.z = point.z
 
-        stewart_base_point = self._tf_listener.transformPoint('/stewart_base', temp_in_point)
+        transform = self._tf_buffer.lookup_transform('stewart_base', header.frame_id, rclpy.time.Time.from_msg(header.stamp))
+        stewart_base_point = tf2_geometry_msgs.do_transform_point(temp_in_point, transform)
 
         point.x = stewart_base_point.point.x
         point.y = stewart_base_point.point.y
@@ -113,7 +126,7 @@ class NearestFaceOrientationNode:
     def _vector_to_yaw(self, vector):
         vector = np.array([vector.x, vector.y, vector.z])
         vector /= np.linalg.norm(vector)
-        
+
         return np.arctan2(vector[0], vector[1])
 
     def _rotate_point_yaw(self, point, yaw):
@@ -141,17 +154,22 @@ class NearestFaceOrientationNode:
         return roll, pitch
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('nearest_face_orientation_node')
+    rclpy.init()
     nearest_face_orientation_node = NearestFaceOrientationNode()
-    nearest_face_orientation_node.run()
+
+    try:
+        nearest_face_orientation_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        nearest_face_orientation_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

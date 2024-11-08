@@ -15,8 +15,8 @@ RssValidTaskState::RssValidTaskState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : ValidTaskState(language, stateManager, desireSet, nodeHandle)
+    rclcpp::Node::SharedPtr node)
+    : ValidTaskState(language, stateManager, desireSet, move(node))
 {
 }
 
@@ -44,7 +44,7 @@ void RssValidTaskState::switchState(const string& task)
     }
     else
     {
-        ROS_ERROR_STREAM("Invalid task (" << task << ")");
+        RCLCPP_ERROR_STREAM(m_node->get_logger(), "Invalid task (" << task << ")");
         m_stateManager.switchTo<RssIdleState>();
     }
 }

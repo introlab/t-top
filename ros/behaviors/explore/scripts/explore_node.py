@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
+import rclpy.node
+import rclpy.executors
+
 from std_msgs.msg import Empty
 
 from t_top import MovementCommands, HEAD_ZERO_Z
@@ -9,49 +12,59 @@ from t_top import MovementCommands, HEAD_ZERO_Z
 INACTIVE_SLEEP_DURATION = 0.1
 
 
-class ExploreNode:
+class ExploreNode(rclpy.node.Node):
     def __init__(self):
-        self._simulation = rospy.get_param('~simulation')
-        self._rate = rospy.Rate(rospy.get_param('~explore_frequency'))
-        self._torso_speed = rospy.get_param('~torso_speed_rad_sec')
-        self._head_speed = rospy.get_param('~head_speed_rad_sec')
+        super().__init__('explore_node')
 
-        self._movement_commands = MovementCommands(self._simulation, namespace='explore')
-        self._done_pub = rospy.Publisher('explore/done', Empty, queue_size=5)
+        self._simulation = self.declare_parameter('simulation', False).get_parameter_value().bool_value
+        self._explore_frequency = self.declare_parameter('explore_frequency', 0.00833333333).get_parameter_value().double_value
+        self._torso_speed = self.declare_parameter('torso_speed_rad_sec', 0.5).get_parameter_value().double_value
+        self._head_speed = self.declare_parameter('head_speed_rad_sec', 0.5).get_parameter_value().double_value
+
+        self._timer = self.create_timer(1 / self._explore_frequency, self._timer_callback)
+
+        self._movement_commands = MovementCommands(self, self._simulation, namespace='explore')
+        self._done_pub = self.create_publisher(Empty, 'explore/done', 5)
+
+    def _timer_callback(self):
+        if self._movement_commands.is_filtering_all_messages:
+            return
+
+        self._movement_commands.move_torso(0, should_wait=True, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, -0.3, 0], should_wait=True, speed_rad_sec=self._head_speed)
+        self._movement_commands.move_torso(1.57, should_wait=False, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_torso(3.14, should_wait=True, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, 0.15, 0], should_wait=True, speed_rad_sec=self._head_speed)
+        self._movement_commands.move_torso(1.57, should_wait=False, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_torso(0, should_wait=False, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_torso(-1.57, should_wait=False, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_torso(-3.14, should_wait=True, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, -0.3, 0], should_wait=True, speed_rad_sec=self._head_speed)
+        self._movement_commands.move_torso(-1.57, should_wait=False, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_torso(0, should_wait=True, speed_rad_sec=self._torso_speed)
+        self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait=True, speed_rad_sec=self._head_speed)
+
+        self._done_pub.publish(Empty())
 
     def run(self):
-        while not rospy.is_shutdown():
-            if self._movement_commands.is_filtering_all_messages:
-                rospy.sleep(INACTIVE_SLEEP_DURATION)
-                continue
-
-            self._movement_commands.move_torso(0, should_wait=True, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, -0.3, 0], should_wait=True, speed_rad_sec=self._head_speed)
-            self._movement_commands.move_torso(1.57, should_wait=False, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_torso(3.14, should_wait=True, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, 0.15, 0], should_wait=True, speed_rad_sec=self._head_speed)
-            self._movement_commands.move_torso(1.57, should_wait=False, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_torso(0, should_wait=False, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_torso(-1.57, should_wait=False, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_torso(-3.14, should_wait=True, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, -0.3, 0], should_wait=True, speed_rad_sec=self._head_speed)
-            self._movement_commands.move_torso(-1.57, should_wait=False, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_torso(0, should_wait=True, speed_rad_sec=self._torso_speed)
-            self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, 0, 0], should_wait=True, speed_rad_sec=self._head_speed)
-
-            self._done_pub.publish(Empty())
-
-            self._rate.sleep()
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
 
 def main():
-    rospy.init_node('explore_node')
+    rclpy.init()
     explore_node = ExploreNode()
-    explore_node.run()
+
+    try:
+        explore_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        explore_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

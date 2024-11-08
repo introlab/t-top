@@ -1,7 +1,8 @@
-#include <piper_ros/GenerateSpeechFromText.h>
+#include <behavior_srvs/srv/generate_speech_from_text.hpp>
 
-#include <ros/ros.h>
-#include <ros/package.h>
+#include <rclcpp/rclcpp.hpp>
+
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include <piper.hpp>
 
@@ -53,12 +54,11 @@ std::optional<Gender> genderFromString(const std::string& str)
 }
 
 
-class PiperNode
+class PiperNode : public rclcpp::Node
 {
     bool m_useGpuIfAvailable;
 
-    ros::NodeHandle m_nodeHandle;
-    ros::ServiceServer m_generateSpeechFromTextService;
+    rclcpp::Service<behavior_srvs::srv::GenerateSpeechFromText>::SharedPtr m_generateSpeechFromTextService;
 
     piper::PiperConfig m_piperConfig;
     piper::Voice m_englishFemaleVoice;
@@ -67,8 +67,10 @@ class PiperNode
     piper::Voice m_frenchMaleVoice;
 
 public:
-    explicit PiperNode(bool useGpuIfAvailable) : m_useGpuIfAvailable(useGpuIfAvailable)
+    explicit PiperNode() : rclcpp::Node("piper_node")
     {
+        m_useGpuIfAvailable = declare_parameter("use_gpu_if_available", false);
+
         m_piperConfig.useESpeak = true;
         m_piperConfig.eSpeakDataPath = ESPEAK_NG_DATA_PATH;
 
@@ -79,19 +81,22 @@ public:
 
         piper::initialize(m_piperConfig);
 
-
-        m_generateSpeechFromTextService = m_nodeHandle.advertiseService(
+        m_generateSpeechFromTextService = create_service<behavior_srvs::srv::GenerateSpeechFromText>(
             "piper/generate_speech_from_text",
-            &PiperNode::generateSpeechFromTextServiceCallback,
-            this);
+                [this] (
+                const std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Request> request,
+                std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Response> response)
+                {
+                    generateSpeechFromTextServiceCallback(request, response);
+                });
     }
 
-    void run() { ros::spin(); }
+    void run() { rclcpp::spin(shared_from_this()); }
 
 private:
     piper::Voice loadVoice(const char* filename)
     {
-        std::string modelFolder = ros::package::getPath("piper_ros") + "/models/";
+        std::string modelFolder = ament_index_cpp::get_package_share_directory("piper_ros") + "/models/";
 
         piper::Voice voice;
         voice.session.options.SetInterOpNumThreads(1);
@@ -109,7 +114,7 @@ private:
 #else
         if (m_useGpuIfAvailable)
         {
-            ROS_WARN("CUDA is not supported.");
+            RCLCPP_WARN(get_logger(), "CUDA is not supported.");
         }
 #endif
 
@@ -124,30 +129,26 @@ private:
         return voice;
     }
 
-    bool generateSpeechFromTextServiceCallback(
-        piper_ros::GenerateSpeechFromText::Request& request,
-        piper_ros::GenerateSpeechFromText::Response& response)
+    void generateSpeechFromTextServiceCallback(
+        const std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Request> request,
+        std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Response> response)
     {
-        std::optional<Language> language = languageFromString(request.language);
+        std::optional<Language> language = languageFromString(request->language);
         if (language == std::nullopt)
         {
-            response.ok = false;
-            response.message = "Invalid language";
-            return true;
+            response->ok = false;
+            response->message = "Invalid language";
         }
 
-        std::optional<Gender> gender = genderFromString(request.gender);
+        std::optional<Gender> gender = genderFromString(request->gender);
         if (gender == std::nullopt)
         {
-            response.ok = false;
-            response.message = "Invalid gender";
-            return true;
+            response->ok = false;
+            response->message = "Invalid gender";
         }
 
-        generateSpeechFromText(*language, *gender, request.length_scale, request.text, request.path);
-        response.ok = true;
-
-        return true;
+        generateSpeechFromText(*language, *gender, request->length_scale, request->text, request->path);
+        response->ok = true;
     }
 
     void generateSpeechFromText(
@@ -194,19 +195,12 @@ private:
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "piper_node");
+    rclcpp::init(argc, argv);
 
-    ros::NodeHandle privateNodeHandle("~");
+    auto node = std::make_shared<PiperNode>();
+    node->run();
 
-    bool useGpuIfAvailable;
-    if (!privateNodeHandle.getParam("use_gpu_if_available", useGpuIfAvailable))
-    {
-        ROS_ERROR("The parameter use_gpu_if_available is required.");
-        return -1;
-    }
-
-    PiperNode node(useGpuIfAvailable);
-    node.run();
+    rclcpp::shutdown();
 
     return 0;
 }

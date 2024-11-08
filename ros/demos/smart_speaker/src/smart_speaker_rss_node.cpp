@@ -15,7 +15,7 @@
 
 #include "states/common/AfterTaskDelayState.h"
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/core/RosFilterPool.h>
@@ -30,18 +30,19 @@
 using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
+constexpr const char* NODE_NAME = "smart_speaker_rss_node";
 
 void startNode(
     Language language,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     const string& englishStoryPath,
     const string& frenchStoryPath,
     const string& songPath,
     bool useAfterTaskDelayDurationTopic,
-    const ros::Duration& afterTaskDelayDuration)
+    const chrono::milliseconds& afterTaskDelayDurationMs)
 {
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
+    auto filterPool = make_shared<RosFilterPool>(node, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
     strategies.emplace_back(createRobotNameDetectorStrategy(filterPool));
@@ -51,42 +52,41 @@ void startNode(
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
     strategies.emplace_back(createExploreStrategy(filterPool));
-    strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createFaceAnimationStrategy(filterPool, node));
     strategies.emplace_back(createSoundFollowingStrategy(filterPool));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
-    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, nodeHandle));
-    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, nodeHandle));
+    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, node));
+    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, node));
     strategies.emplace_back(createDanceStrategy(filterPool));
-    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
+    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, node));
 
     auto solver = make_unique<GecodeSolver>();
-    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(nodeHandle);
+    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(node);
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
-    StateManager stateManager;
+    StateManager stateManager(node);
     type_index idleStateType(typeid(RssIdleState));
     type_index afterTaskDelayStateType(typeid(AfterTaskDelayState));
 
-    stateManager.addState(make_unique<RssIdleState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<RssWaitPersonIdentificationState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<RssAskTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<RssWaitAnswerState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<RssValidTaskState>(language, stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, nodeHandle, idleStateType));
+    stateManager.addState(make_unique<RssIdleState>(language, stateManager, desireSet, node));
+    stateManager.addState(make_unique<RssWaitPersonIdentificationState>(language, stateManager, desireSet, node));
+    stateManager.addState(make_unique<RssAskTaskState>(language, stateManager, desireSet, node));
+    stateManager.addState(make_unique<RssWaitAnswerState>(language, stateManager, desireSet, node));
+    stateManager.addState(make_unique<RssValidTaskState>(language, stateManager, desireSet, node));
+    stateManager.addState(make_unique<InvalidTaskState>(language, stateManager, desireSet, node, idleStateType));
 
     stateManager.addState(
-        make_unique<CurrentWeatherState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+        make_unique<CurrentWeatherState>(language, stateManager, desireSet, node, afterTaskDelayStateType));
     stateManager.addState(
-        make_unique<WeatherForecastState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+        make_unique<WeatherForecastState>(language, stateManager, desireSet, node, afterTaskDelayStateType));
     stateManager.addState(
-        make_unique<RssStoryState>(language, stateManager, desireSet, nodeHandle, englishStoryPath, frenchStoryPath));
-    stateManager.addState(
-        make_unique<DanceState>(language, stateManager, desireSet, nodeHandle, afterTaskDelayStateType));
+        make_unique<RssStoryState>(language, stateManager, desireSet, node, englishStoryPath, frenchStoryPath));
+    stateManager.addState(make_unique<DanceState>(language, stateManager, desireSet, node, afterTaskDelayStateType));
     stateManager.addState(make_unique<DancePlayedSongState>(
         language,
         stateManager,
         desireSet,
-        nodeHandle,
+        node,
         afterTaskDelayStateType,
         vector<string>{songPath}));
 
@@ -94,83 +94,80 @@ void startNode(
         language,
         stateManager,
         desireSet,
-        nodeHandle,
+        node,
         idleStateType,
         useAfterTaskDelayDurationTopic,
-        afterTaskDelayDuration));
+        afterTaskDelayDurationMs));
 
     stateManager.switchTo<RssIdleState>();
 
-    ros::spin();
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    executor.add_node(node);
+    executor.spin();
 }
 
-int startNode(int argc, char** argv)
+int startNode()
 {
-    ros::init(argc, argv, "smart_speaker_rss_node");
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
+    auto node = rclcpp::Node::make_shared(NODE_NAME);
 
-    string languageString;
+    string languageString = node->declare_parameter("language", "");
     Language language;
-    privateNodeHandle.param<std::string>("language", languageString, "");
     if (!languageFromString(languageString, language))
     {
-        ROS_ERROR("Language must be English (language=en) or French (language=fr).");
+        RCLCPP_ERROR(node->get_logger(), "Language must be English (language=en) or French (language=fr).");
         return -1;
     }
 
-    string englishStoryPath;
-    privateNodeHandle.param<std::string>("story_path_en", englishStoryPath, "");
+    string englishStoryPath = node->declare_parameter("story_path_en", "");
     if (englishStoryPath == "")
     {
-        ROS_ERROR("A valid path must be set for the English story.");
+        RCLCPP_ERROR(node->get_logger(), "A valid path must be set for the English story.");
         return -1;
     }
 
-    string frenchStoryPath;
-    privateNodeHandle.param<std::string>("story_path_fr", frenchStoryPath, "");
+    string frenchStoryPath = node->declare_parameter("story_path_fr", "");
     if (frenchStoryPath == "")
     {
-        ROS_ERROR("A valid path must be set for the French story.");
+        RCLCPP_ERROR(node->get_logger(), "A valid path must be set for the French story.");
         return -1;
     }
 
-    string songPath;
-    privateNodeHandle.param<std::string>("song_path", songPath, "");
+    string songPath = node->declare_parameter("song_path", "");
     if (songPath == "")
     {
-        ROS_ERROR("A valid path must be set for the song.");
+        RCLCPP_ERROR(node->get_logger(), "A valid path must be set for the song.");
         return -1;
     }
 
-    bool useAfterTaskDelayDurationTopic = false;
-    privateNodeHandle.param("use_after_task_delay_duration_topic", useAfterTaskDelayDurationTopic, false);
-
-    double afterTaskDelayDurationS;
-    privateNodeHandle.param("after_task_delay_duration_s", afterTaskDelayDurationS, 0.0);
-    ros::Duration afterTaskDelayDuration(afterTaskDelayDurationS);
+    bool useAfterTaskDelayDurationTopic = node->declare_parameter("use_after_task_delay_duration_topic", false);
+    double afterTaskDelayDurationS = node->declare_parameter("after_task_delay_duration_s", 0.0);
+    chrono::milliseconds afterTaskDelayDurationMs(static_cast<int>(afterTaskDelayDurationS * 1000));
 
     startNode(
         language,
-        nodeHandle,
+        node,
         englishStoryPath,
         frenchStoryPath,
         songPath,
         useAfterTaskDelayDurationTopic,
-        afterTaskDelayDuration);
+        afterTaskDelayDurationMs);
 
     return 0;
 }
 
 int main(int argc, char** argv)
 {
+    rclcpp::init(argc, argv);
+
     try
     {
-        return startNode(argc, argv);
+        return startNode();
     }
     catch (const std::exception& e)
     {
-        ROS_ERROR_STREAM("Smart speaker crashed (" << e.what() << ")");
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger(NODE_NAME), "Smart speaker crashed (" << e.what() << ")");
         return -1;
     }
+
+    rclcpp::shutdown();
 }

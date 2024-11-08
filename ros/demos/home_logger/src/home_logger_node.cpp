@@ -17,7 +17,7 @@
 #include <home_logger_common/language/Formatter.h>
 #include <home_logger_common/managers/AlarmManager.h>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/core/RosFilterPool.h>
@@ -28,11 +28,13 @@
 #include <t_top_hbba_lite/Strategies.h>
 
 #include <memory>
+#include <thread>
 
 using namespace std;
 
 constexpr bool WAIT_FOR_SERVICE = true;
-constexpr double STARTUP_DELAY_S = 30.0;
+constexpr int STARTUP_DELAY_S = 30;
+constexpr const char* NODE_NAME = "home_logger_node";
 
 void loadResources(Language language, const string& englishStringResourcePath, const string& frenchStringResourcesPath)
 {
@@ -51,7 +53,7 @@ void loadResources(Language language, const string& englishStringResourcePath, c
 }
 
 void startNode(
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     Language language,
     const string& englishStringResourcePath,
     const string& frenchStringResourcesPath,
@@ -69,7 +71,7 @@ void startNode(
     Formatter::initialize(language);
 
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(nodeHandle, WAIT_FOR_SERVICE);
+    auto filterPool = make_shared<RosFilterPool>(node, WAIT_FOR_SERVICE);
 
     vector<unique_ptr<BaseStrategy>> strategies;
     if (recordSession)
@@ -86,52 +88,44 @@ void startNode(
     strategies.emplace_back(createAudioAnalyzerStrategy(filterPool));
     strategies.emplace_back(createSpeechToTextStrategy(filterPool));
 
-    strategies.emplace_back(createFaceAnimationStrategy(filterPool, nodeHandle));
+    strategies.emplace_back(createFaceAnimationStrategy(filterPool, node));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createSoundFollowingStrategy(filterPool));
-    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, nodeHandle));
-    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, nodeHandle));
-    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, nodeHandle));
+    strategies.emplace_back(createTalkStrategy(filterPool, desireSet, node));
+    strategies.emplace_back(createGestureStrategy(filterPool, desireSet, node));
+    strategies.emplace_back(createPlaySoundStrategy(filterPool, desireSet, node));
 
     auto solver = make_unique<GecodeSolver>();
-    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(nodeHandle);
+    auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(node);
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
-    VolumeManager volumeManager(nodeHandle);
+    VolumeManager volumeManager(node);
     SQLite::Database database(databasePath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     AlarmManager alarmManager(database);
     ReminderManager reminderManager(database);
 
-    StateManager stateManager(desireSet, nodeHandle);
-    stateManager.addState(make_unique<TalkState>(stateManager, desireSet, nodeHandle));
+    StateManager stateManager(desireSet, node);
+    stateManager.addState(make_unique<TalkState>(stateManager, desireSet, node));
 
     stateManager.addState(make_unique<IdleState>(
         stateManager,
         desireSet,
-        nodeHandle,
+        node,
         alarmManager,
         reminderManager,
         sleepTime,
         wakeUpTime,
         faceDescriptorThreshold));
-    stateManager.addState(make_unique<SleepState>(stateManager, desireSet, nodeHandle, sleepTime, wakeUpTime));
-    stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<ExecuteCommandState>(
-        stateManager,
-        desireSet,
-        nodeHandle,
-        volumeManager,
-        alarmManager,
-        reminderManager));
-    stateManager.addState(make_unique<WaitCommandParameterState>(stateManager, desireSet, nodeHandle));
-    stateManager.addState(make_unique<WaitFaceDescriptorCommandParameterState>(
-        stateManager,
-        desireSet,
-        nodeHandle,
-        noseConfidenceThreshold));
+    stateManager.addState(make_unique<SleepState>(stateManager, desireSet, node, sleepTime, wakeUpTime));
+    stateManager.addState(make_unique<WaitCommandState>(stateManager, desireSet, node));
+    stateManager.addState(
+        make_unique<ExecuteCommandState>(stateManager, desireSet, node, volumeManager, alarmManager, reminderManager));
+    stateManager.addState(make_unique<WaitCommandParameterState>(stateManager, desireSet, node));
+    stateManager.addState(
+        make_unique<WaitFaceDescriptorCommandParameterState>(stateManager, desireSet, node, noseConfidenceThreshold));
 
-    stateManager.addState(make_unique<AlarmState>(stateManager, desireSet, nodeHandle, alarmManager, alarmPath));
-    stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, nodeHandle, reminderManager));
+    stateManager.addState(make_unique<AlarmState>(stateManager, desireSet, node, alarmManager, alarmPath));
+    stateManager.addState(make_unique<TellReminderState>(stateManager, desireSet, node, reminderManager));
 
 
     if (recordSession)
@@ -151,117 +145,99 @@ void startNode(
 
     stateManager.switchTo<IdleState>();
 
-    ros::spin();
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    executor.add_node(node);
+    executor.spin();
 }
 
-int startNode(int argc, char** argv)
+int startNode()
 {
-    ros::init(argc, argv, "home_logger_node");
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
+    auto node = rclcpp::Node::make_shared(NODE_NAME);
 
-    string languageString;
+    string languageString = node->declare_parameter("language", "");
     Language language;
-    privateNodeHandle.param<string>("language", languageString, "");
     if (!languageFromString(languageString, language))
     {
-        ROS_ERROR("Language must be English (language=en) or French (language=fr).");
+        RCLCPP_ERROR(node->get_logger(), "Language must be English (language=en) or French (language=fr).");
         return -1;
     }
 
-    string englishStringResourcePath;
-    if (!privateNodeHandle.getParam("english_string_resource_path", englishStringResourcePath))
+    string englishStringResourcePath = node->declare_parameter("english_string_resource_path", "");
+    if (englishStringResourcePath == "")
     {
-        ROS_ERROR("The parameter english_string_resource_path must be set.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter english_string_resource_path must be set.");
         return -1;
     }
-    string frenchStringResourcesPath;
-    if (!privateNodeHandle.getParam("french_string_resources_path", frenchStringResourcesPath))
+    string frenchStringResourcesPath = node->declare_parameter("french_string_resources_path", "");
+    if (frenchStringResourcesPath == "")
     {
-        ROS_ERROR("The parameter french_string_resources_path must be set.");
-        return -1;
-    }
-
-    string databasePath;
-    if (!privateNodeHandle.getParam("database_path", databasePath))
-    {
-        ROS_ERROR("The parameter database_path is required.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter french_string_resources_path must be set.");
         return -1;
     }
 
-    int sleepTimeHour;
-    int sleepTimeMinute;
-    int wakeUpTimeHour;
-    int wakeUpTimeMinute;
-    if (!privateNodeHandle.getParam("sleep_time_hour", sleepTimeHour))
+    string databasePath = node->declare_parameter("database_path", "");
+    if (databasePath == "")
     {
-        ROS_ERROR("The parameter sleep_time_hour must be set.");
-        return -1;
-    }
-    if (!privateNodeHandle.getParam("sleep_time_minute", sleepTimeMinute))
-    {
-        ROS_ERROR("The parameter sleep_time_minute must be set.");
-        return -1;
-    }
-    if (!privateNodeHandle.getParam("wake_up_time_hour", wakeUpTimeHour))
-    {
-        ROS_ERROR("The parameter wake_up_time_hour must be set.");
-        return -1;
-    }
-    if (!privateNodeHandle.getParam("wake_up_time_minute", wakeUpTimeMinute))
-    {
-        ROS_ERROR("The parameter wake_up_time_minute must be set.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter database_path is required.");
         return -1;
     }
 
-    string alarmPath;
-    if (!privateNodeHandle.getParam("alarm_path", alarmPath))
+    int sleepTimeHour = node->declare_parameter("sleep_time_hour", -1);
+    int sleepTimeMinute = node->declare_parameter("sleep_time_minute", -1);
+    int wakeUpTimeHour = node->declare_parameter("wake_up_time_hour", -1);
+    int wakeUpTimeMinute = node->declare_parameter("wake_up_time_minute", -1);
+    if (sleepTimeHour == -1)
     {
-        ROS_ERROR("The parameter alarm_path must be set.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter sleep_time_hour must be set.");
+        return -1;
+    }
+    if (sleepTimeMinute == -1)
+    {
+        RCLCPP_ERROR(node->get_logger(), "The parameter sleep_time_minute must be set.");
+        return -1;
+    }
+    if (wakeUpTimeHour == -1)
+    {
+        RCLCPP_ERROR(node->get_logger(), "The parameter wake_up_time_hour must be set.");
+        return -1;
+    }
+    if (wakeUpTimeMinute == -1)
+    {
+        RCLCPP_ERROR(node->get_logger(), "The parameter wake_up_time_minute must be set.");
         return -1;
     }
 
-    float faceDescriptorThreshold;
-    if (!privateNodeHandle.getParam("face_descriptor_threshold", faceDescriptorThreshold))
+    string alarmPath = node->declare_parameter("alarm_path", "");
+    if (alarmPath == "")
     {
-        ROS_ERROR("The parameter face_descriptor_threshold must be set.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter alarm_path must be set.");
         return -1;
     }
 
-    float noseConfidenceThreshold;
-    if (!privateNodeHandle.getParam("nose_confidence_threshold", noseConfidenceThreshold))
+    float faceDescriptorThreshold = node->declare_parameter("face_descriptor_threshold", -1.f);
+    if (faceDescriptorThreshold == -1.f)
     {
-        ROS_ERROR("The parameter nose_confidence_threshold must be set.");
+        RCLCPP_ERROR(node->get_logger(), "The parameter face_descriptor_threshold must be set.");
+        return -1;
+    }
+
+    float noseConfidenceThreshold = node->declare_parameter("nose_confidence_threshold", -1.f);
+    if (noseConfidenceThreshold == -1.f)
+    {
+        RCLCPP_ERROR(node->get_logger(), "The parameter nose_confidence_threshold must be set.");
         return -1;
     }
 
 
-    bool camera2dWideEnabled;
-    if (!privateNodeHandle.getParam("camera_2d_wide_enabled", camera2dWideEnabled))
-    {
-        ROS_ERROR("The parameter camera_2d_wide_enabled must be set.");
-        return -1;
-    }
+    bool camera2dWideEnabled = node->declare_parameter("camera_2d_wide_enabled", false);
+    bool recordSession = node->declare_parameter("record_session", false);
+    bool logPerceptions = node->declare_parameter("log_perceptions", false);
 
-    bool recordSession;
-    if (!privateNodeHandle.getParam("record_session", recordSession))
-    {
-        ROS_ERROR("The parameter record_session must be set.");
-        return -1;
-    }
-
-    bool logPerceptions;
-    if (!privateNodeHandle.getParam("log_perceptions", logPerceptions))
-    {
-        ROS_ERROR("The parameter log_perceptions must be set.");
-        return -1;
-    }
-
-    ROS_INFO("Waiting nodes.");
-    ros::Duration(STARTUP_DELAY_S).sleep();
+    RCLCPP_INFO(node->get_logger(), "Waiting nodes.");
+    this_thread::sleep_for(chrono::seconds(STARTUP_DELAY_S));
 
     startNode(
-        nodeHandle,
+        node,
         language,
         englishStringResourcePath,
         frenchStringResourcesPath,
@@ -280,13 +256,17 @@ int startNode(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+    rclcpp::init(argc, argv);
+
     try
     {
-        return startNode(argc, argv);
+        return startNode();
     }
     catch (const exception& e)
     {
-        ROS_ERROR_STREAM("Home logger crashed (" << e.what() << ")");
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger(NODE_NAME), "Home logger crashed (" << e.what() << ")");
         return -1;
     }
+
+    rclcpp::shutdown();
 }

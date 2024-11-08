@@ -1,9 +1,9 @@
 #include <home_logger_common/language/StringResources.h>
 #include <home_logger_common/language/Formatter.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 void loadFrenchStringResources()
 {

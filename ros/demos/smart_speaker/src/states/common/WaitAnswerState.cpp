@@ -23,12 +23,14 @@ WaitAnswerState::WaitAnswerState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : State(language, stateManager, desireSet, nodeHandle),
+    rclcpp::Node::SharedPtr node)
+    : State(language, stateManager, desireSet, move(node)),
       m_transcriptReceived(false)
 {
-    m_speechToTextSubscriber =
-        nodeHandle.subscribe("speech_to_text/transcript", 1, &WaitAnswerState::speechToTextSubscriberCallback, this);
+    m_speechToTextSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
+        "speech_to_text/transcript",
+        1,
+        [this](const perception_msgs::msg::Transcript::SharedPtr msg) { speechToTextSubscriberCallback(msg); });
 }
 
 void WaitAnswerState::enable(const string& parameter, const type_index& previousStageType)
@@ -50,21 +52,21 @@ void WaitAnswerState::enable(const string& parameter, const type_index& previous
     m_desireSet->addDesire(move(faceAnimationDesire));
 
     constexpr bool ONE_SHOT = true;
-    m_timeoutTimer =
-        m_nodeHandle.createTimer(ros::Duration(TIMEOUT_S), &WaitAnswerState::timeoutTimerCallback, this, ONE_SHOT);
+    m_timeoutTimer = m_node->create_wall_timer(chrono::seconds(TIMEOUT_S), [this]() { timeoutTimerCallback(); });
 }
 
 void WaitAnswerState::disable()
 {
     State::disable();
 
-    if (m_timeoutTimer.isValid())
+    if (m_timeoutTimer)
     {
-        m_timeoutTimer.stop();
+        m_timeoutTimer->cancel();
+        m_timeoutTimer = nullptr;
     }
 }
 
-void WaitAnswerState::speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
+void WaitAnswerState::speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
 {
     if (!enabled())
     {
@@ -75,7 +77,7 @@ void WaitAnswerState::speechToTextSubscriberCallback(const speech_to_text::Trans
     switchStateAfterTranscriptReceived(msg->text, msg->is_final);
 }
 
-void WaitAnswerState::timeoutTimerCallback(const ros::TimerEvent& event)
+void WaitAnswerState::timeoutTimerCallback()
 {
     if (!enabled())
     {

@@ -8,11 +8,13 @@ import numpy as np
 
 from faster_whisper import WhisperModel
 
-import rospy
-from speech_to_text.msg import Transcript
+import rclpy
+import rclpy.node
+
+from perception_msgs.msg import Transcript
 
 from audio_utils import get_format_information, convert_audio_data_to_numpy_frames
-from audio_utils.msg import AudioFrame, VoiceActivity
+from audio_utils_msgs.msg import AudioFrame, VoiceActivity
 
 import hbba_lite
 
@@ -22,15 +24,17 @@ SUPPORTED_CHANNEL_COUNT = 1
 SUPPORTED_SAMPLING_FREQUENCY = 16000
 
 
-class WhisperSpeechToTextNode:
+class WhisperSpeechToTextNode(rclpy.node.Node):
     def __init__(self):
-        self._language = rospy.get_param('~language')
-        self._model_size = rospy.get_param('~model_size')
-        self._device = rospy.get_param('~device')
-        self._compute_type = rospy.get_param('~compute_type')
+        super().__init__('whisper_speech_to_text_node')
 
-        self._prebuffering_frame_count = rospy.get_param('~prebuffering_frame_count', 4)
-        self._minimum_voice_sequence_size = rospy.get_param('~minimum_voice_sequence_size', 8000)
+        self._language = self.declare_parameter('language', 'en').get_parameter_value().string_value
+        self._model_size = self.declare_parameter('model_size', 'base.en').get_parameter_value().string_value
+        self._device = self.declare_parameter('device', 'cpu').get_parameter_value().string_value
+        self._compute_type = self.declare_parameter('compute_type', 'float32').get_parameter_value().string_value
+
+        self._prebuffering_frame_count = self.declare_parameter('prebuffering_frame_count', 4).get_parameter_value().integer_value
+        self._minimum_voice_sequence_size = self.declare_parameter('minimum_voice_sequence_size', 8000).get_parameter_value().integer_value
 
         if self._language not in SUPPORTED_LANGUAGES:
             raise ValueError(f'Invalid language ({self._language})')
@@ -38,15 +42,12 @@ class WhisperSpeechToTextNode:
         self._model = WhisperModel(self._model_size, device=self._device, compute_type=self._compute_type)
 
         self._is_voice = False
-        self._frames_lock = threading.Lock()
         self._frames = []
         self._voice_sequence_queue = queue.Queue()
 
-        rospy.on_shutdown(self._shutdown_cb)
-
-        self._text_pub = rospy.Publisher('transcript', Transcript, queue_size=10)
-        self._voice_activity_pub = rospy.Subscriber('voice_activity', VoiceActivity, self._voice_activity_cb, queue_size=10)
-        self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
+        self._text_pub = self.create_publisher(Transcript, 'transcript', 10)
+        self._voice_activity_pub = self.create_subscription(VoiceActivity, 'voice_activity', self._voice_activity_cb, 10)
+        self._audio_sub = hbba_lite.OnOffHbbaSubscriber(self, AudioFrame, 'audio_in', self._audio_cb, 10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
 
     def _voice_activity_cb(self, msg):
@@ -58,17 +59,16 @@ class WhisperSpeechToTextNode:
 
     def _audio_cb(self, msg):
         if msg.channel_count != SUPPORTED_CHANNEL_COUNT or msg.sampling_frequency != SUPPORTED_SAMPLING_FREQUENCY:
-            rospy.logerr('Invalid audio frame (msg.channel_count={}, msg.sampling_frequency={}})'
+            self.get_logger().error('Invalid audio frame (msg.channel_count={}, msg.sampling_frequency={}})'
                          .format(msg.channel_count, msg.sampling_frequency))
             return
 
         input_format_information = get_format_information(msg.format)
         frame = convert_audio_data_to_numpy_frames(input_format_information, msg.channel_count, msg.data)[0]
 
-        with self._frames_lock:
-            self._frames.append(frame.astype(np.float32))
-            if not self._is_voice and len(self._frames) > self._prebuffering_frame_count:
-                self._frames = self._frames[-self._prebuffering_frame_count:]
+        self._frames.append(frame.astype(np.float32))
+        if not self._is_voice and len(self._frames) > self._prebuffering_frame_count:
+            self._frames = self._frames[-self._prebuffering_frame_count:]
 
     def _filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
@@ -76,18 +76,24 @@ class WhisperSpeechToTextNode:
             self._put_frames_in_voice_sequence_queue()
 
     def _put_frames_in_voice_sequence_queue(self):
-        with self._frames_lock:
-            if len(self._frames) > 0:
-                self._voice_sequence_queue.put(np.concatenate(self._frames))
-                self._frames.clear()
-
-    def _shutdown_cb(self):
-        self._voice_sequence_queue.put(None)
+        if len(self._frames) > 0:
+            self._voice_sequence_queue.put(np.concatenate(self._frames))
+            self._frames.clear()
 
     def run(self):
+        speech_to_text_thread = threading.Thread(target=self._speech_to_text_thread_run)
+        speech_to_text_thread.start()
+
+        try:
+            rclpy.spin(self)
+        finally:
+            self._voice_sequence_queue.put(None)
+            speech_to_text_thread.join()
+
+    def _speech_to_text_thread_run(self):
         self._warm_up_model()
 
-        while not rospy.is_shutdown():
+        while rclpy.ok():
             voice_sequence = self._voice_sequence_queue.get()
             if voice_sequence is None:
                 break
@@ -115,13 +121,18 @@ class WhisperSpeechToTextNode:
 
 
 def main():
-    rospy.init_node('whisper_speech_to_text_node')
+    rclpy.init()
     whisper_speech_to_text_node = WhisperSpeechToTextNode()
-    whisper_speech_to_text_node.run()
+
+    try:
+        whisper_speech_to_text_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        whisper_speech_to_text_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

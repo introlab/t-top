@@ -42,12 +42,12 @@ string ExecuteCommandStateParameter::toString() const
 ExecuteCommandState::ExecuteCommandState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     VolumeManager& volumeManager,
     AlarmManager& alarmManager,
     ReminderManager& reminderManager)
-    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
-      m_allCommandExecutor(stateManager, nodeHandle, volumeManager, alarmManager, reminderManager),
+    : SoundFaceFollowingState(stateManager, move(desireSet), node),
+      m_allCommandExecutor(stateManager, node, volumeManager, alarmManager, reminderManager),
       m_allCommandParametersAsker(stateManager)
 {
 }

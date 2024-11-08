@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import json
 import random
 
-import rospy
+import rclpy
+import rclpy.node
 
 from std_msgs.msg import Bool
 from daemon_ros_client.msg import LedColors
@@ -9,16 +12,19 @@ from daemon_ros_client.msg import LedColors
 import hbba_lite
 
 
-class LedDanceNode:
+class LedDanceNode(rclpy.node.Node):
     def __init__(self):
-        with open(rospy.get_param('~led_colors_file'), 'r') as f:
+        super().__init__('led_dance_node')
+
+        led_colors_file = self.declare_parameter('led_colors_file', '').get_parameter_value().string_value
+        with open(led_colors_file, 'r') as f:
             self._none_led_colors, self._dance_led_colors = self._load_led_colors(json.load(f))
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('dance/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher(self, LedColors, 'dance/set_led_colors', 1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 
-        self._beat_sub = rospy.Subscriber('beat', Bool, self._beat_cb, queue_size=1)
+        self._beat_sub = self.create_subscription(Bool, 'beat', self._beat_cb, 1)
 
     def _load_led_colors(self, json_dict):
         none_led_colors = LedColors()
@@ -49,17 +55,22 @@ class LedDanceNode:
             self._led_colors_pub.publish(random.choice(self._dance_led_colors))
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('led_dance_node')
+    rclpy.init()
     led_dance_node = LedDanceNode()
-    led_dance_node.run()
+
+    try:
+        led_dance_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        led_dance_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

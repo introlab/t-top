@@ -3,7 +3,7 @@
 
 #include <perception_logger/BinarySerialization.h>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 struct __attribute__((packed)) Position
 {
@@ -130,10 +130,7 @@ struct Timestamp
 
     explicit Timestamp(int64_t unixEpochMs) : unixEpochMs(unixEpochMs) {}
 
-    Timestamp(const ros::Time& time)
-        : unixEpochMs{static_cast<int64_t>(time.sec) * 1'000 + static_cast<int64_t>(time.nsec) / 1'000'000}
-    {
-    }
+    Timestamp(const rclcpp::Time& time) : unixEpochMs{static_cast<int64_t>(time.seconds() * 1'000)} {}
 };
 
 #endif

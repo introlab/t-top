@@ -6,9 +6,11 @@ import time
 import datetime
 import numpy as np
 
-import rospy
-from speech_to_text.msg import Transcript
-from audio_utils.msg import AudioFrame
+import rclpy
+import rclpy.node
+
+from perception_msgs.msg import Transcript
+from audio_utils_msgs.msg import AudioFrame
 import hbba_lite
 
 from google.cloud import speech
@@ -19,28 +21,29 @@ SUPPORTED_AUDIO_FORMAT = 'signed_16'
 SUPPORTED_CHANNEL_COUNT = 1
 
 
-class GoogleSpeechToTextNode:
+class GoogleSpeechToTextNode(rclpy.node.Node):
     def __init__(self):
-        self._sampling_frequency = rospy.get_param('~sampling_frequency', 16000)
-        self._frame_sample_count = rospy.get_param('~frame_sample_count', 92)
-        self._request_frame_count = rospy.get_param('~request_frame_count', 20)
-        self._language_code = self._convert_language_to_language_code(rospy.get_param('~language'))
+        super().__init__('google_speech_to_text_node')
+
+        self._sampling_frequency = self.declare_parameter('sampling_frequency', 16000).get_parameter_value().integer_value
+        self._frame_sample_count = self.declare_parameter('frame_sample_count', 92).get_parameter_value().integer_value
+        self._request_frame_count = self.declare_parameter('request_frame_count', 20).get_parameter_value().integer_value
+
+        language = self.declare_parameter('language', 'en').get_parameter_value().string_value
+        self._language_code = self._convert_language_to_language_code(language)
 
         self._sleeping_duration = (self._request_frame_count *
                                    self._frame_sample_count / self._sampling_frequency)
 
         self._is_enabled = False
 
-        self._buffer_lock = threading.Lock()
         self._buffer = self._create_request_frame_buffer()
         self._current_buffer_index = 0
         self._request_frame_queue = queue.Queue()
         self._total_samples_count = 0
 
-        rospy.on_shutdown(self._shutdown_cb)
-
-        self._text_pub = rospy.Publisher('transcript', Transcript, queue_size=10)
-        self._audio_sub = hbba_lite.OnOffHbbaSubscriber('audio_in', AudioFrame, self._audio_cb, queue_size=10)
+        self._text_pub = self.create_publisher(Transcript, 'transcript', 10)
+        self._audio_sub = hbba_lite.OnOffHbbaSubscriber(self, AudioFrame, 'audio_in', self._audio_cb, 10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
 
         self._speech_client = speech.SpeechClient()
@@ -59,38 +62,42 @@ class GoogleSpeechToTextNode:
                 msg.channel_count != SUPPORTED_CHANNEL_COUNT or \
                 msg.sampling_frequency != self._sampling_frequency or \
                 msg.frame_sample_count != self._frame_sample_count:
-            rospy.logerr('Invalid audio frame (msg.format={}, msg.channel_count={}, msg.sampling_frequency={}, msg.frame_sample_count={}})'
-                         .format(msg.format, msg.channel_count, msg.sampling_frequency, msg.frame_sample_count))
+            self.get_logger().error(
+                f'Invalid audio frame (msg.format={msg.format}, msg.channel_count={msg.channel_count}' +
+                f', msg.sampling_frequency={msg.sampling_frequency}, msg.frame_sample_count={msg.frame_sample_count})')
             return
 
-        with self._buffer_lock:
-            audio_frame = np.frombuffer(msg.data, dtype=np.int16)
-            self._buffer[self._current_buffer_index:self._current_buffer_index +
-                         self._frame_sample_count] = audio_frame
+        audio_frame = np.frombuffer(msg.data, dtype=np.int16)
+        self._buffer[self._current_buffer_index:self._current_buffer_index +
+                        self._frame_sample_count] = audio_frame
 
-            self._current_buffer_index += self._frame_sample_count
+        self._current_buffer_index += self._frame_sample_count
 
-            if self._current_buffer_index >= self._buffer.shape[0]:
-                self._current_buffer_index = 0
-                self._request_frame_queue.put(self._buffer.copy())
+        if self._current_buffer_index >= self._buffer.shape[0]:
+            self._current_buffer_index = 0
+            self._request_frame_queue.put(self._buffer.copy())
 
     def _filter_state_changed_cb(self, previous_is_filtering_all_messages, new_is_filtering_all_messages):
-        with self._buffer_lock:
-            if previous_is_filtering_all_messages and not new_is_filtering_all_messages:
-                self._current_buffer_index = 0
-                while not self._request_frame_queue.empty():
-                    self._request_frame_queue.get_nowait()
-                self._is_enabled = True
-            elif not previous_is_filtering_all_messages and new_is_filtering_all_messages:
-                self._is_enabled = False
-                self._request_frame_queue.put(None)
-
-    def _shutdown_cb(self):
-        self._filter_state_changed_cb(
-            self._audio_sub.is_filtering_all_messages, True)
+        if previous_is_filtering_all_messages and not new_is_filtering_all_messages:
+            self._current_buffer_index = 0
+            while not self._request_frame_queue.empty():
+                self._request_frame_queue.get_nowait()
+            self._is_enabled = True
+        elif not previous_is_filtering_all_messages and new_is_filtering_all_messages:
+            self._is_enabled = False
+            self._request_frame_queue.put(None)
 
     def run(self):
-        while not rospy.is_shutdown():
+        speech_to_text_thread = threading.Thread(target=self._speech_to_text_thread_run)
+        speech_to_text_thread.start()
+
+        rclpy.spin(self)
+
+        self._filter_state_changed_cb(self._audio_sub.is_filtering_all_messages, True)
+        speech_to_text_thread.join()
+
+    def _speech_to_text_thread_run(self):
+        while rclpy.ok():
             if not self._is_enabled:
                 time.sleep(self._sleeping_duration)
                 continue
@@ -131,29 +138,34 @@ class GoogleSpeechToTextNode:
         self._total_samples_count = 0
         while self._is_enabled:
             audio_content = self._request_frame_queue.get()
-            self._total_samples_count += audio_content.shape[0]
             if audio_content is None:
                 break
-
+                
+            self._total_samples_count += audio_content.shape[0]
             yield speech.StreamingRecognizeRequest(audio_content=audio_content.tobytes())
 
 
 def main():
-    rospy.init_node('google_speech_to_text_node')
+    rclpy.init()
+
     google_speech_to_text_node = GoogleSpeechToTextNode()
 
-    while not rospy.is_shutdown():
-        try:
-            google_speech_to_text_node.run()
-        except (core_exceptions.InvalidArgument,
-                core_exceptions.Unknown,
-                core_exceptions.DeadlineExceeded,
-                core_exceptions.OutOfRange) as e:
-            rospy.logerr(f'google_speech_to_text_node has failed ({e})')
+    try:
+        while rclpy.ok():
+            try:
+                google_speech_to_text_node.run()
+            except (core_exceptions.InvalidArgument,
+                    core_exceptions.Unknown,
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.OutOfRange) as e:
+                google_speech_to_text_node.get_logger().error(f'google_speech_to_text_node has failed ({e})')
+    except KeyboardInterrupt:
+        pass
+    finally:
+        google_speech_to_text_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

@@ -1,4 +1,6 @@
 ---
+bool ok
+
 string city
 string region
 string country_code

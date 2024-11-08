@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
+import rclpy.node
 
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
-from video_analyzer.msg import VideoAnalysis
+from perception_msgs.msg import VideoAnalysis
 
-class VideoAnalysisMarkersNode:
+class VideoAnalysisMarkersNode(rclpy.node.Node):
     def __init__(self):
-        self._video_analysis_sub = rospy.Subscriber('video_analysis', VideoAnalysis, self._video_analysis_cb, queue_size=10)
-        self._video_analysis_markers_pub = rospy.Publisher('video_analysis_markers', MarkerArray, queue_size=10)
+        super().__init__('video_analysis_markers_node')
+
+        self._video_analysis_sub = self.create_subscription(VideoAnalysis, 'video_analysis', self._video_analysis_cb, 10)
+        self._video_analysis_markers_pub = self.create_publisher(MarkerArray, 'video_analysis_markers', 10)
 
     def _delete_markers(self):
         markerArray = MarkerArray()
@@ -19,6 +22,8 @@ class VideoAnalysisMarkersNode:
         self._video_analysis_markers_pub.publish(markerArray)
 
     def _create_marker(self, header, tag, type, pose, ID, scale, rgb, points=[], name=''):
+        scale = float(scale)
+
         marker = Marker()
         marker.header.stamp = header.stamp
         marker.header.frame_id = header.frame_id
@@ -27,17 +32,17 @@ class VideoAnalysisMarkersNode:
         marker.type = type
         marker.action = Marker.ADD
         marker.pose.position = pose
-        marker.pose.orientation.x = 0
-        marker.pose.orientation.y = 0
-        marker.pose.orientation.z = 0
-        marker.pose.orientation.w = 1
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = 0.0
+        marker.pose.orientation.w = 1.0
         marker.scale.x = scale
         marker.scale.y = scale
         marker.scale.z = scale
         marker.color.a = 1.0
-        marker.color.r = rgb[0]
-        marker.color.g = rgb[1]
-        marker.color.b = rgb[2]
+        marker.color.r = float(rgb[0])
+        marker.color.g = float(rgb[1])
+        marker.color.b = float(rgb[2])
         marker.points = points
         marker.text = name
 
@@ -45,7 +50,7 @@ class VideoAnalysisMarkersNode:
 
     def _video_analysis_cb(self, msg):
         if not msg.contains_3d_positions:
-            rospy.logerr('The video analysis must contain 3d positions.')
+            self.get_logger().error('The video analysis must contain 3d positions.')
             return
 
         self._delete_markers()
@@ -79,17 +84,22 @@ class VideoAnalysisMarkersNode:
         self._video_analysis_markers_pub.publish(markerArray)
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('video_analysis_markers_node')
+    rclpy.init()
     video_analysis_markers_node = VideoAnalysisMarkersNode()
-    video_analysis_markers_node.run()
+
+    try:
+        video_analysis_markers_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analysis_markers_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

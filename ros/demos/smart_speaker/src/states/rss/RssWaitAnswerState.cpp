@@ -30,8 +30,8 @@ RssWaitAnswerState::RssWaitAnswerState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : WaitAnswerState(language, stateManager, desireSet, nodeHandle)
+    rclcpp::Node::SharedPtr node)
+    : WaitAnswerState(language, stateManager, desireSet, move(node))
 {
     switch (language)
     {

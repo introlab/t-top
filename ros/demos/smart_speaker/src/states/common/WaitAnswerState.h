@@ -3,12 +3,12 @@
 
 #include "../State.h"
 
-#include <speech_to_text/Transcript.h>
+#include <perception_msgs/msg/transcript.hpp>
 
 class WaitAnswerState : public State
 {
-    ros::Subscriber m_speechToTextSubscriber;
-    ros::Timer m_timeoutTimer;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
+    rclcpp::TimerBase::SharedPtr m_timeoutTimer;
 
     bool m_transcriptReceived;
 
@@ -17,7 +17,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     ~WaitAnswerState() override = default;
 
     DECLARE_NOT_COPYABLE(WaitAnswerState);
@@ -31,8 +31,8 @@ protected:
     virtual void switchStateAfterTimeout(bool transcriptReceived) = 0;
 
 private:
-    void speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg);
-    void timeoutTimerCallback(const ros::TimerEvent& event);
+    void speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
+    void timeoutTimerCallback();
 };
 
 #endif

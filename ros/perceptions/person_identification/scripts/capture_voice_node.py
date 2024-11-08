@@ -1,75 +1,80 @@
 #!/usr/bin/env python3
 
-import threading
-
 import numpy as np
 
-import rospy
-from hbba_lite.srv import SetOnOffFilterState
-from audio_analyzer.msg import AudioAnalysis
+import rclpy
+import rclpy.node
+
+from hbba_lite_srvs.srv import SetOnOffFilterState
+from perception_msgs.msg import AudioAnalysis
 
 import person_identification
 
 
-INACTIVE_SLEEP_DURATION = 0.1
-
-
-class CaptureVoiceNode:
+class CaptureVoiceNode(rclpy.node.Node):
     def __init__(self):
-        self._name = rospy.get_param('~name')
-        self._mean_size = rospy.get_param('~mean_size')
+        super().__init__('capture_voice_node')
 
-        self._descriptors_lock = threading.Lock()
+        self._name = self.declare_parameter('name', '').get_parameter_value().string_value
+        self._mean_size = self.declare_parameter('mean_size', 10).get_parameter_value().integer_value
+
         self._descriptors = []
-        self.audio_analysis = rospy.Subscriber('audio_analysis', AudioAnalysis, self._audio_analysis_cb, queue_size=1)
+        self._audio_analysis_sub = self.create_subscription(AudioAnalysis, 'audio_analysis', self._audio_analysis_cb, 1)
 
     def _audio_analysis_cb(self, msg):
         if len(msg.voice_descriptor) > 0:
-            with self._descriptors_lock:
-                self._descriptors.append(msg.voice_descriptor)
-            print('voice')
+            self._descriptors.append(msg.voice_descriptor)
+            self.get_logger().info('voice')
         else:
-            print('no voice')
+            self.get_logger().info('no voice')
 
     def run(self):
         self.enable_audio_analyzer()
 
-        while not rospy.is_shutdown():
-            with self._descriptors_lock:
-                size = len(self._descriptors)
+        while rclpy.ok():
+            size = len(self._descriptors)
 
             if size == self._mean_size:
-                self.audio_analysis.unregister()
+                self.destroy_subscription(self._audio_analysis_sub)
                 self._save_new_descriptor()
                 return
             else:
-                rospy.sleep(INACTIVE_SLEEP_DURATION)
+                rclpy.spin_once(self)
 
     def enable_audio_analyzer(self):
         AUDIO_ANALYZER_FILTER_STATE_SERVICE = 'audio_analyzer/filter_state'
 
-        rospy.wait_for_service(AUDIO_ANALYZER_FILTER_STATE_SERVICE)
-        filter_state = rospy.ServiceProxy(AUDIO_ANALYZER_FILTER_STATE_SERVICE, SetOnOffFilterState)
-        filter_state(is_filtering_all_messages=False)
+        client = self.create_client(SetOnOffFilterState, AUDIO_ANALYZER_FILTER_STATE_SERVICE)
+        client.wait_for_service()
+
+        request = SetOnOffFilterState.Request()
+        request.is_filtering_all_messages = False
+
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
 
     def _save_new_descriptor(self):
-        with self._descriptors_lock:
-            descriptor = np.array(self._descriptors).mean(axis=0).tolist()
-            people = person_identification.load_people()
-            person_identification.add_person(people, self._name, {'voice': descriptor})
-            person_identification.save_people(people)
+        descriptor = np.array(self._descriptors).mean(axis=0).tolist()
+        people = person_identification.load_people()
+        person_identification.add_person(people, self._name, {'voice': descriptor})
+        person_identification.save_people(people)
 
-        rospy.loginfo('*********************** FINISHED ***********************')
+        self.get_logger().info('*********************** FINISHED ***********************')
 
 
 def main():
-    rospy.init_node('capture_voice_node')
+    rclpy.init()
     capture_voice_node = CaptureVoiceNode()
-    capture_voice_node.run()
+
+    try:
+        capture_voice_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        capture_voice_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

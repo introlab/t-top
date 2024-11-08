@@ -24,9 +24,9 @@ string TellReminderStateParameter::toString() const
 TellReminderState::TellReminderState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     ReminderManager& reminderManager)
-    : TalkState(stateManager, desireSet, nodeHandle),
+    : TalkState(stateManager, desireSet, move(node)),
       m_reminderManager(reminderManager)
 {
 }

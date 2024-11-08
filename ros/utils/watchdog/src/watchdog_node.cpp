@@ -1,131 +1,126 @@
-#include <ros/ros.h>
-#include <ros/network.h>
-#include <ros/xmlrpc_manager.h>
-#include <xmlrpcpp/XmlRpc.h>
-
-#include <topic_tools/shape_shifter.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <sys/types.h>
 #include <signal.h>
 
-using namespace std;
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
-constexpr bool ONE_SHOT = true;
+using namespace std;
+namespace fs = std::filesystem;
+
+string readFile(const fs::path& path)
+{
+    std::ifstream t(path);
+    std::stringstream ss;
+    ss << t.rdbuf();
+    return ss.str();
+}
 
 bool getNodePid(const string& nodeName, int& pid)
 {
-    XmlRpc::XmlRpcValue req;
-    req[0] = ros::this_node::getName();
-    req[1] = nodeName;
+    auto arg = "__node:=" + nodeName;
 
-    XmlRpc::XmlRpcValue resp;
-    XmlRpc::XmlRpcValue payload;
-    if (!ros::master::execute("lookupNode", req, resp, payload, true))
+    for (const auto& entry : fs::directory_iterator("/proc"))
     {
-        ROS_ERROR_STREAM("Failed to lookup the watched node (" << nodeName << ").");
-        return false;
+        if (readFile(entry.path() / "cmdline").find(arg) != string::npos)
+        {
+            pid = stoi(entry.path().filename());
+            return true;
+        }
     }
 
-    string peerHost;
-    uint32_t peerPort;
-    if (!ros::network::splitURI(static_cast<std::string>(resp[2]), peerHost, peerPort))
-    {
-        ROS_ERROR_STREAM("Invalid API URI (" << resp[2] << ")");
-        return false;
-    }
-
-    XmlRpc::XmlRpcClient c(peerHost.c_str(), peerPort, "/");
-    XmlRpc::XmlRpcValue req2;
-    XmlRpc::XmlRpcValue resp2;
-    req2[0] = ros::this_node::getName();
-    c.execute("getPid", req2, resp2);
-    if (c.isFault() || !resp2.valid() || static_cast<int>(resp2[0]) != 1)
-    {
-        ROS_ERROR_STREAM("Failed to fetch the pid of " << nodeName << ".");
-        return false;
-    }
-
-    pid = static_cast<int>(resp2[2]);
-    return true;
+    return false;
 }
 
-void killNode(const string& nodeName)
+class WatchdogNode : public rclcpp::Node
 {
-    int pid;
-    if (getNodePid(nodeName, pid))
-    {
-        ROS_ERROR_STREAM("Killing PID: " << pid);
-        kill(pid, SIGINT);
-    }
-}
-
-class WatchdogNode
-{
-    ros::NodeHandle& m_nodeHandle;
-
     string m_nodeName;
-    ros::Duration m_timeoutDuration;
+    string m_topic;
+    chrono::milliseconds m_timeoutDuration;
 
-    ros::Time m_lastStartupTime;
+    rclcpp::TimerBase::SharedPtr m_initTimer;
 
-    ros::Subscriber m_subscriber;
-    ros::Timer m_messageTimer;
+    rclcpp::GenericSubscription::SharedPtr m_subscriber;
+    rclcpp::TimerBase::SharedPtr m_messageTimer;
 
 public:
-    WatchdogNode(ros::NodeHandle& nodeHandle, string nodeName, ros::Duration timeoutDuration)
-        : m_nodeHandle(nodeHandle),
-          m_nodeName(move(nodeName)),
-          m_timeoutDuration(timeoutDuration)
+    WatchdogNode() : rclcpp::Node("watchdog_node")
     {
-        m_lastStartupTime = ros::Time::now();
+        m_nodeName = declare_parameter("node_name", "");
+        m_topic = rclcpp::expand_topic_or_service_name(declare_parameter("topic", ""), get_name(), get_namespace(), false);
+        RCLCPP_INFO_STREAM(get_logger(), "Listening on: " << m_topic);
 
-        m_subscriber = nodeHandle.subscribe("topic", 1, &WatchdogNode::topicCallback, this);
+        double timeoutDurationS = declare_parameter("timeout_duration_s", 60.0);
+        m_timeoutDuration = chrono::milliseconds(static_cast<int>(timeoutDurationS * 1000));
+
+        m_initTimer = create_wall_timer(std::chrono::seconds(1), [this]() { initTimerCallback(); });
     }
 
-    void run() { ros::spin(); }
+    void run() { rclcpp::spin(shared_from_this()); }
 
 private:
-    void topicCallback(const ros::MessageEvent<topic_tools::ShapeShifter>& msgEvent)
+    void initTimerCallback()
     {
-        if (m_messageTimer.isValid())
+        auto all_topics_and_types = get_topic_names_and_types();
+        auto it = all_topics_and_types.find(m_topic);
+        if (it == all_topics_and_types.end() || it->second.empty())
         {
-            m_messageTimer.stop();
+            return;
         }
 
-        m_messageTimer =
-            m_nodeHandle.createTimer(m_timeoutDuration, &WatchdogNode::messageTimerCallback, this, ONE_SHOT);
+        RCLCPP_INFO_STREAM(get_logger(), "Topic type found: " << it->second[0]);
+
+        m_subscriber = create_generic_subscription(m_topic, it->second[0], 1,
+            [this](std::shared_ptr<rclcpp::SerializedMessage> msg)
+            {
+                topicCallback();
+            });
+
+        m_initTimer->cancel();
     }
 
-    void messageTimerCallback(const ros::TimerEvent&)
+    void topicCallback()
     {
-        ROS_ERROR_STREAM("The node '" << m_nodeName << "' is no longer responding. The node will be respawned.");
+        if (m_messageTimer)
+        {
+            m_messageTimer->reset();
+        }
+        else
+        {
+            m_messageTimer = create_wall_timer(m_timeoutDuration, [this]() { messageTimerCallback(); });
+        }
+    }
+
+    void messageTimerCallback()
+    {
+        RCLCPP_ERROR_STREAM(get_logger(), "The node '" << m_nodeName << "' is no longer responding. The node will be respawned.");
         killNode(m_nodeName);
+
+        m_messageTimer->cancel();
+        m_messageTimer = nullptr;
+    }
+
+    void killNode(const string& nodeName)
+    {
+        int pid;
+        if (getNodePid(nodeName, pid))
+        {
+            RCLCPP_ERROR_STREAM(get_logger(), "Killing PID: " << pid);
+            kill(pid, SIGINT);
+        }
     }
 };
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "beat_detector_node");
+    rclcpp::init(argc, argv);
 
-    ros::NodeHandle nodeHandle;
-    ros::NodeHandle privateNodeHandle("~");
+    auto node = std::make_shared<WatchdogNode>();
+    node->run();
 
-    string nodeName;
-    double timeoutDurationS;
-
-    if (!privateNodeHandle.getParam("node_name", nodeName))
-    {
-        ROS_ERROR("The parameter node_name is required.");
-        return -1;
-    }
-    if (!privateNodeHandle.getParam("timeout_duration_s", timeoutDurationS))
-    {
-        ROS_ERROR("The parameter timeout_duration_s is required.");
-        return -1;
-    }
-
-    WatchdogNode node(nodeHandle, nodeName, ros::Duration(timeoutDurationS));
-    node.run();
+    rclcpp::shutdown();
 
     return 0;
 }

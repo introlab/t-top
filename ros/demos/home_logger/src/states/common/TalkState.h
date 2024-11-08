@@ -39,7 +39,7 @@ class TalkState : public State
     std::optional<uint64_t> m_faceAnimationDesireId;
 
 public:
-    TalkState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);
+    TalkState(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, rclcpp::Node::SharedPtr node);
     ~TalkState() override;
 
 protected:

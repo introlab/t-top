@@ -1,0 +1,80 @@
+<launch>
+    <arg name="visualization" default="false"/>
+    <arg name="simulation" default="false"/>
+    <arg name="camera_2d_wide_enabled" default="false"/>
+    <arg name="use_echo_cancellation" default="true"/>
+    <arg name="ec_volume_percent" default="90" />
+    <arg name="rviz" default="false"/>
+    <arg name="neural_network_inference_type" default="trt_gpu"/>
+    <arg name="is_stand_alone" default="false"/>
+    <arg name="verify_ssl" default="true"/>
+
+
+    <!-- Platform nodes -->
+    <include file="$(find-pkg-share t_top)/launch/platform.launch.xml">
+        <arg name="use_echo_cancellation" value="$(var use_echo_cancellation)"/>
+        <arg name="camera_2d_wide_enabled" value="false"/>
+        <arg name="opentera_playback_node_enabled" value="true"/>
+    </include>
+
+    <!-- Perceptions -->
+    <include file="$(find-pkg-share t_top)/launch/perceptions/ego_noise_reduction.launch.xml">
+
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml">
+        <arg name="visualization" value="$(var visualization)"/>
+        <arg name="rviz" value="$(var rviz)"/>
+        <arg name="use_echo_cancellation" value="$(var use_echo_cancellation)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/perceptions/video_analyzer.launch.xml">
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="neural_network_inference_type" value="$(var neural_network_inference_type)"/>
+
+        <arg name="video_analyzer_confidence_threshold" value="0.5"/>
+        <arg name="video_analyzer_nms_threshold" value="0.5"/>
+        <arg name="video_analyzer_person_probability_threshold" value="0.75"/>
+        <arg name="video_analyzer_pose_confidence_threshold" value="0.4"/>
+
+        <arg name="video_analyzer_3d_use_descriptor_yolo" value="false"/>
+        <arg name="video_analyzer_3d_yolo_model" value="yolo_v7_tiny_coco"/>
+        <arg name="video_analyzer_3d_pose_enabled" value="true"/>
+        <arg name="video_analyzer_3d_face_descriptor_enabled" value="true"/>
+        <arg name="video_analyzer_3d_cropped_image_enabled" value="false"/>
+
+        <arg name="video_analyzer_2d_wide_use_descriptor_yolo" value="false"/>
+        <arg name="video_analyzer_2d_wide_yolo_model" value="yolo_v7_coco"/>
+        <arg name="video_analyzer_2d_wide_pose_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_cropped_image_enabled" value="false"/>
+
+        <arg name="visualization" value="$(var visualization)"/>
+    </include>
+
+
+    <!-- Behaviors -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/teleoperation.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/behaviors/opentera.launch.xml">
+        <arg name="is_stand_alone" value="$(var is_stand_alone)"/>
+        <arg name="verify_ssl" value="$(var verify_ssl)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/behaviors/sound_following.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/behaviors/face_following.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/behaviors/sound_object_person_following.launch.xml">
+        <arg name="simulation" value="$(var simulation)"/>
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="min_sst_activity" value="0.3"/>
+    </include>
+
+</launch>

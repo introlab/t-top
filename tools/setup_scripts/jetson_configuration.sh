@@ -1,5 +1,16 @@
 #! /usr/bin/bash
 
+export ROS_DISTRO=humble
+export ROS_PACKAGE=desktop_full
+export ROS_ROOT=/opt/ros/$ROS_DISTRO
+export ROS_PYTHON_VERSION=3
+export DEBIAN_FRONTEND=noninteractive
+export PYTHONIOENCODING=utf-8
+
+# Required for jetpack to find cuda
+export PATH=/usr/local/cuda-11.4/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH
+
 set -e
 
 BLUE='\033[0;34m'
@@ -87,6 +98,14 @@ clone_git () {
     fi
 }
 
+sudo_clone_git () {
+    # arg 1: git clone command
+    local FOLDER=$(echo $@ | perl -pe 's|.*/(.*)\.git.*|$1|')
+    if [ ! -d "$FOLDER/.git" ] ; then
+        sudo git clone $@
+    fi
+}
+
 apply_patch () {
     patch --dry-run -uN $@ | grep --quiet --no-messages "previously applied.*Skipping patch" || patch -u $@
 }
@@ -147,12 +166,61 @@ sudo apt autoremove -y
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Installing tools"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp install_tools) = "false" ] ; then
+    sudo apt install -y htop python3-pip perl rsync scons
+    sudo apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        wget \
+        gnupg2 \
+        lsb-release \
+        ca-certificates \
+        git \
+        libgtk-3-dev \
+        libglfw3-dev \
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        build-essential \
+        cmake \
+        cmake-curses-gui \
+        libssl-dev \
+        libusb-1.0-0-dev \
+        libudev-dev \
+        pkg-config
+    sudo -H pip3 install -U jetson-stats
+    makestamp install_tools
+else
+    SKIP_SECTION "Tools already installed, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Setting System Locale to en_US.UTF-8"
+ECHO_IN_BLUE "###############################################################"
+sudo update-locale LANG=en_US.UTF-8
+ECHO_IN_BLUE "###############################################################\n"
+
+ECHO_IN_BLUE "###############################################################"
+ECHO_IN_BLUE ">> Setting Python3 as default"
+ECHO_IN_BLUE "###############################################################"
+if [ $(checkstamp python3_default) = "false" ] ; then
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    makestamp python3_default
+else
+    SKIP_SECTION "Python3 is already the default, skipping"
+fi
+ECHO_IN_BLUE "###############################################################\n"
+
+
+ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Cloning the T-Top repo"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_repo) = "false" ] ; then
     mkdir -p ~/t-top_ws/src
     cd ~/t-top_ws/src
-    clone_git --recurse-submodules https://github.com/introlab/t-top.git
+    clone_git --recurse-submodules https://github.com/introlab/t-top.git -b ros2
     makestamp ttop_repo
 else
     SKIP_SECTION "T-Top repo already cloned, skipping"
@@ -237,7 +305,7 @@ ECHO_IN_BLUE ">> Installing NPM and Node"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp node) = "false" ] ; then
     sudo apt install -y curl software-properties-common
-    curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
     sudo apt install -y nodejs
     makestamp node
 else
@@ -246,121 +314,53 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Installing tools"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp install_tools) = "false" ] ; then
-    sudo apt install -y htop python3-pip perl rsync scons
-    sudo -H pip3 install -U jetson-stats
-    makestamp install_tools
-else
-    SKIP_SECTION "Tools already installed, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Updating CMake"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp cmake) = "false" ] ; then
-    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-    sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
-    sudo apt update
-    sudo apt install -y cmake
-    makestamp cmake
-else
-    SKIP_SECTION "CMake already installed, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Cloning Librealsense 2"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp librealsense_clone) = "false" ] ; then
-    mkdir -p ~/deps
-    cd ~/deps
-    clone_git https://github.com/jetsonhacks/buildLibrealsense2Xavier.git
-    makestamp librealsense_clone
-else
-    SKIP_SECTION "Librealsense 2 already cloned, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Patching Librealsense 2"
-ECHO_IN_BLUE "###############################################################"
-cd ~/deps/buildLibrealsense2Xavier
-apply_patch installLibrealsense.sh $PATCH_FILES_DIR/installLibrealsense.patch
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Building and installing Librealsense 2"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp librealsense_build) = "false" ] ; then
-    cd ~/deps/buildLibrealsense2Xavier
-    # Installed later on, but will cause a failure if installed now
-    sudo apt autoremove -y libapriltag-dev
-    yes | ./installLibrealsense.sh
-    makestamp librealsense_build
-else
-    SKIP_SECTION "Librealsense 2 already built, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Install ROS build dependencies"
+ECHO_IN_BLUE ">> Install ROS2 build dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_build_deps) = "false" ] ; then
 
-    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-    curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-    sudo apt update
+    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+    sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+    sudo apt-get update
 
-    sudo apt install -y \
-        python3-rosdep \
-        python3-rosinstall-generator \
-        python3-vcstool \
-        python3-catkin-tools \
-        build-essential \
-        libboost-all-dev \
-        libpoco-dev python3-empy \
-        libtinyxml-dev \
-        libtinyxml2-dev \
-        qt5-default \
-        sip-dev \
-        python3-sip \
-        python3-sip-dbg \
-        python3-sip-dev \
-        python3-pyqt5 \
-        python3-nose \
-        python3-twisted \
-        python3-serial \
-        python3-autobahn \
-        python3-tornado \
-        python3-bson \
-        python3-qt-binding \
-        libcurl4-gnutls-dev \
-        libgtest-dev \
-        liblz4-dev \
-        libfltk1.3-dev \
-        liburdfdom-headers-dev \
-        liburdfdom-dev \
-        liburdfdom-tools \
-        libgpgme-dev \
-        libyaml-cpp-dev \
-        libpcl-dev \
-        libgtk-3-dev \
-        libassimp-dev \
-        libogre-1.9-dev \
-        libconfig-dev \
-        liblog4cplus-dev \
-        alsa-utils \
-        liblog4cpp5-dev \
-        liblog4cxx-dev \
-        libbz2-dev \
-        libbullet-dev \
-        libsdl1.2-dev \
-        libsdl-image1.2-dev \
-        libapriltag-dev \
-        libdc1394-22-dev
+    sudo apt-get install -y --no-install-recommends \
+		build-essential \
+		libbullet-dev \
+		libpython3-dev \
+		python3-colcon-common-extensions \
+		python3-flake8 \
+		python3-pip \
+		python3-numpy \
+		python3-pytest-cov \
+		python3-rosdep \
+		python3-setuptools \
+		python3-vcstool \
+		python3-rosinstall-generator \
+		libasio-dev \
+		libtinyxml2-dev \
+		libcunit1-dev
+
+    sudo pip3 install --upgrade --no-cache-dir \
+		argcomplete \
+		flake8-blind-except \
+		flake8-builtins \
+		flake8-class-newline \
+		flake8-comprehensions \
+		flake8-deprecated \
+		flake8-docstrings \
+		flake8-import-order \
+		flake8-quotes \
+		pytest-repeat \
+		pytest-rerunfailures \
+		pytest
+
+    sudo python3 -m pip install --upgrade pip
+    sudo pip3 install --no-cache-dir scikit-build
+    sudo pip3 install --upgrade --no-cache-dir --verbose cmake==3.24.3
+
+    # remove other versions of Python3
+    # workaround for 'Could NOT find Python3 (missing: Python3_NumPy_INCLUDE_DIRS Development'
+    sudo apt purge -y python3.9 libpython3.9* || echo "python3.9 not found, skipping removal"
+
     makestamp ros_build_deps
 else
     SKIP_SECTION "ROS build dependencies already installed, skipping"
@@ -368,38 +368,7 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Install ROS system dependencies"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp ros_system_deps) = "false" ] ; then
-
-    cd ~/deps
-    clone_git https://github.com/ros/console_bridge.git
-    cd console_bridge
-    cmake_build_install_native
-
-    cd ~/deps
-    clone_git https://github.com/ethz-asl/libnabo.git -b 1.0.7
-    cd libnabo
-    cmake_build_install_native
-
-    cd ~/deps
-    clone_git https://github.com/ethz-asl/libpointmatcher.git -b 1.3.1
-    cd libpointmatcher
-    cmake_build_install_native
-
-    cd ~/deps
-    clone_git -b 0.21.1-noetic https://github.com/introlab/rtabmap.git
-    cd rtabmap
-    cmake_build_install_native 4
-
-    makestamp ros_system_deps
-else
-    SKIP_SECTION "ROS system dependencies already installed, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Generate ROS build workspace and install dependencies"
+ECHO_IN_BLUE ">> Generate ROS2 build workspace and install dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 
@@ -408,12 +377,58 @@ if [ $(checkstamp ros_ws_deps) = "false" ] ; then
     fi
     rosdep update
 
-    mkdir -p ~/ros_catkin_ws/src
-    cd ~/ros_catkin_ws
+    # create the ROS_ROOT directory
+    mkdir -p ${ROS_ROOT}/src
+    cd ${ROS_ROOT}
 
-    rosinstall_generator desktop_full --rosdistro noetic --deps --tar > noetic-desktop.rosinstall
-    vcs import --input noetic-desktop.rosinstall ./src
-    rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
+    sudo bash -c "rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
+        launch_xml \
+        launch_yaml \
+        launch_testing \
+        launch_testing_ament_cmake \
+        demo_nodes_cpp \
+        demo_nodes_py \
+        example_interfaces \
+        camera_calibration_parsers \
+        camera_info_manager \
+        cv_bridge \
+        v4l2_camera \
+        vision_opencv \
+        vision_msgs \
+        image_geometry \
+        image_pipeline \
+        image_transport \
+        compressed_image_transport \
+        compressed_depth_image_transport \
+        rosbag2_storage_mcap \
+        rtabmap \
+        rtabmap_ros \
+        diagnostics \
+        imu_tools \
+        rosbridge_suite \
+        tf_transformations \
+	    joint_state_publisher_gui \
+        rqt_tf_tree \
+        > ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall"
+
+    sudo vcs import --retry 100 src < ros2.${ROS_DISTRO}.${ROS_PACKAGE}.rosinstall
+
+    SKIP_KEYS="libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv xsimd xtensor xtl"
+    sudo rosdep update
+    sudo rosdep install -y \
+	--ignore-src \
+	--from-paths src \
+	--rosdistro ${ROS_DISTRO} \
+	--skip-keys "$SKIP_KEYS"
+
+    cd ${ROS_ROOT}/src
+    sudo_clone_git -b master https://github.com/Kapernikov/cv_camera.git --depth 1 --recurse-submodules
+    sudo_clone_git -b 0.7.0 https://github.com/xtensor-stack/xtl.git --depth 1 --recurse-submodules
+    sudo_clone_git -b 7.4.8 https://github.com/xtensor-stack/xsimd.git --depth 1 --recurse-submodules
+    sudo_clone_git -b 0.23.10 https://github.com/xtensor-stack/xtensor.git --depth 1 --recurse-submodules
+
+    sudo_apply_patch ${ROS_ROOT}/src/libg2o/CMakeLists.txt $PATCH_FILES_DIR/libg2o.patch
+    sudo_apply_patch ${ROS_ROOT}/src/octomap_msgs/CMakeLists.txt $PATCH_FILES_DIR/octomap_msgs.patch
 
     makestamp ros_ws_deps
 else
@@ -422,76 +437,19 @@ fi
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Remove useless ROS packages"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp ros_deps_rm) = "false" ] ; then
-    rm -rf ~/ros_catkin_ws/src/gazebo_ros_pkgs/
-    makestamp ros_deps_rm
-else
-    SKIP_SECTION "Useless ROS packages already removed, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Add missing ROS packages"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp ros_deps_add) = "false" ] ; then
-
-    cd ~/ros_catkin_ws/src
-    clone_git -b 1.0.1 https://github.com/GT-RAIL/rosauth.git
-    clone_git -b noetic-devel https://github.com/ros-drivers/rosserial.git
-    clone_git -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
-    clone_git -b noetic https://github.com/ccny-ros-pkg/imu_tools.git
-    clone_git --recursive https://github.com/orocos/orocos_kinematics_dynamics.git
-
-    clone_git -b 0.21.1-noetic https://github.com/introlab/rtabmap_ros.git
-    clone_git -b noetic-devel https://github.com/ros-planning/navigation.git
-
-    clone_git -b kinetic-devel https://github.com/pal-robotics/ddynamic_reconfigure.git
-    clone_git -b 2.3.2 https://github.com/IntelRealSense/realsense-ros.git
-    clone_git https://github.com/OTL/cv_camera.git
-    clone_git -b 0.6.4-noetic https://github.com/introlab/find-object.git
-
-    makestamp ros_deps_add
-else
-    SKIP_SECTION "Missing ROS packages already added, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
-ECHO_IN_BLUE ">> Replace incomplete ROS packages"
-ECHO_IN_BLUE "###############################################################"
-if [ $(checkstamp ros_deps_replace) = "false" ] ; then
-
-    cd ~/ros_catkin_ws/src
-    rm -rf geometry2 navigation_msgs vision_opencv image_common perception_pcl pcl_msgs image_transport_plugins
-
-    clone_git -b noetic-devel https://github.com/ros/geometry2.git
-    clone_git -b ros1 https://github.com/ros-planning/navigation_msgs.git
-    clone_git -b noetic https://github.com/ros-perception/vision_opencv.git
-    clone_git -b noetic-devel https://github.com/ros-perception/image_common.git
-
-    clone_git -b 1.7.1 https://github.com/ros-perception/perception_pcl.git
-    clone_git -b noetic-devel https://github.com/ros-perception/pcl_msgs.git
-    clone_git -b noetic-devel https://github.com/ros-perception/image_transport_plugins.git
-
-    cd ~/ros_catkin_ws
-    rosdep install --from-paths ./src/image_transport_plugins --ignore-packages-from-source --rosdistro noetic -y
-
-    makestamp ros_deps_replace
-else
-    SKIP_SECTION "Incomplete ROS packages already replaced, skipping"
-fi
-ECHO_IN_BLUE "###############################################################\n"
-
-ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Build ROS workspace"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_ws_build) = "false" ] ; then
-    cd ~/ros_catkin_ws
-    apt list --installed | grep --quiet --no-messages --fixed-regexp "python3.9/" && sudo apt autoremove -y python3.9 || true
-    catkin config --init --install --space-suffix _isolated --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_ENABLE_TESTING=0 -Wno-dev
-    catkin build
+    cd ${ROS_ROOT}
+
+    add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
+    add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
+
+    export ROS_VERSION=2
+    sudo bash -c "export PATH=/usr/local/cuda-11.4/bin:$PATH; \
+        export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH; \
+	colcon build \
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF"
 
     makestamp ros_ws_build
 else
@@ -502,7 +460,7 @@ ECHO_IN_BLUE "###############################################################\n"
 ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Add ROS setup source to .bashrc"
 ECHO_IN_BLUE "###############################################################"
-add_to_bashrc 'source ~/ros_catkin_ws/install_isolated/setup.bash'
+add_to_bashrc 'source /opt/ros/humble/install/setup.bash'
 ECHO_IN_BLUE "###############################################################\n"
 
 ECHO_IN_BLUE "###############################################################"
@@ -553,7 +511,11 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install ONNX Runtime"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp onnxruntime) = "false" ] ; then
+    add_to_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
+    add_to_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
+    
     sudo -H pip3 install packaging==23.1
+    mkdir -p ~/deps
     cd ~/deps
     clone_git --depth 1 -b v1.14.1 https://github.com/microsoft/onnxruntime.git --recurse-submodule
     cd onnxruntime
@@ -677,14 +639,13 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
     cd audio
-    add_to_root_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
-    add_to_root_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
     sudo -H pip3 install kaldi_io==0.9.5
     sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
 
     cd ~/deps
     clone_git https://github.com/NVIDIA-AI-IOT/torch2trt.git
     cd torch2trt
+    git checkout 36656b614f3fbc067ac673932e2200d7afdae712
     sudo -H python3 setup.py install --plugins
 
     makestamp pytorch
@@ -697,9 +658,9 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install OpenTera-WebRTC ROS Python dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp opentera_deps) = "false" ] ; then
-    cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_client_ros
+    cd $TTOP_REPO_PATH/ros/utils/opentera-webrtc-ros/opentera_client_ros
     sudo -H pip3 install -r requirements.txt
-    cd $TTOP_REPO_PATH/ros/opentera-webrtc-ros/opentera_webrtc_ros
+    cd $TTOP_REPO_PATH/ros/utils/opentera-webrtc-ros/opentera_webrtc_ros
     sudo -H pip3 install -r requirements.txt
 
     makestamp opentera_deps
@@ -743,9 +704,11 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_ws_build) = "false" ] ; then
     source ~/.bashrc
     cd $TTOP_REPO_PATH/../..
-    catkin config --init --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    catkin config --profile release --init --space-suffix _release --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_WARN_DEPRECATED=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    catkin build
+
+    mkdir -p ~/.colcon
+    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults.yaml $TTOP_REPO_PATH/../../colcon_defaults.yaml
+
+    colcon build
 
     makestamp ttop_ws_build
 else

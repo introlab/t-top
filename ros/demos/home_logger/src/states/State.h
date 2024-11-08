@@ -1,18 +1,18 @@
 #ifndef HOME_LOGGER_STATES_STATE_H
 #define HOME_LOGGER_STATES_STATE_H
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
-#include <std_msgs/Empty.h>
-#include <daemon_ros_client/BaseStatus.h>
+#include <std_msgs/msg/empty.hpp>
+#include <daemon_ros_client/msg/base_status.hpp>
 
 #include <hbba_lite/core/DesireSet.h>
 #include <hbba_lite/utils/ClassMacros.h>
 
-#include <speech_to_text/Transcript.h>
-#include <video_analyzer/VideoAnalysis.h>
-#include <audio_analyzer/AudioAnalysis.h>
-#include <person_identification/PersonNames.h>
+#include <perception_msgs/msg/transcript.hpp>
+#include <perception_msgs/msg/video_analysis.hpp>
+#include <perception_msgs/msg/audio_analysis.hpp>
+#include <perception_msgs/msg/person_names.hpp>
 
 #include <memory>
 #include <numeric>
@@ -117,7 +117,10 @@ namespace std
 }
 
 #define DECLARE_STATE_PROTECTED_METHODS(className)                                                                     \
-    StateType type() const override { return StateType::get<className>(); }
+    StateType type() const override                                                                                    \
+    {                                                                                                                  \
+        return StateType::get<className>();                                                                            \
+    }
 
 class State
 {
@@ -126,10 +129,10 @@ class State
 protected:
     StateManager& m_stateManager;
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
+    rclcpp::Node::SharedPtr m_node;
 
 public:
-    State(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);
+    State(StateManager& stateManager, std::shared_ptr<DesireSet> desireSet, rclcpp::Node::SharedPtr node);
     virtual ~State();
 
     DECLARE_NOT_COPYABLE(State);
@@ -147,12 +150,12 @@ protected:
 
     virtual void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& desires);
 
-    virtual void onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg);
+    virtual void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg);
     virtual void onRobotNameDetected();
-    virtual void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg);
-    virtual void onAudioAnalysisReceived(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
-    virtual void onPersonNamesDetected(const person_identification::PersonNames::ConstPtr& msg);
-    virtual void onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg);
+    virtual void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
+    virtual void onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg);
+    virtual void onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg);
+    virtual void onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg);
 
     virtual void onStateTimeout();
     virtual void onEveryMinuteTimeout();
@@ -166,6 +169,6 @@ inline bool State::enabled() const
     return m_enabled;
 }
 
-bool containsAtLeastOnePerson(const video_analyzer::VideoAnalysis::ConstPtr& msg);
+bool containsAtLeastOnePerson(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
 
 #endif

@@ -1,48 +1,52 @@
 #!/usr/bin/env python3
 
-import threading
+import time
 from pathlib import Path
 
 import numpy as np
 
 import librosa
 
-import rospy
-from sound_player.msg import SoundFile, Started, Done
-from audio_utils.msg import AudioFrame
+import rclpy
+import rclpy.node
+
+from behavior_msgs.msg import SoundFile, SoundStarted, Done
+from audio_utils_msgs.msg import AudioFrame
 
 import hbba_lite
+import time_utils
 
 
-class SoundPlayerNode:
+class SoundPlayerNode(rclpy.node.Node):
     def __init__(self):
-        self._sampling_frequency = rospy.get_param('~sampling_frequency')
-        self._frame_sample_count = rospy.get_param('~frame_sample_count')
+        super().__init__('sound_player_node')
 
-        self._audio_pub = hbba_lite.OnOffHbbaPublisher('audio_out', AudioFrame, queue_size=5)
-        self._started_pub = rospy.Publisher('sound_player/started', Started, queue_size=5)
-        self._done_pub = rospy.Publisher('sound_player/done', Done, queue_size=5)
+        self._sampling_frequency = self.declare_parameter('sampling_frequency', 16000).get_parameter_value().integer_value
+        self._frame_sample_count = self.declare_parameter('frame_sample_count', 1024).get_parameter_value().integer_value
 
-        self._file_sub_lock = threading.Lock()
-        self._file_sub = rospy.Subscriber('sound_player/file', SoundFile, self._on_file_received_cb, queue_size=1)
+        self._audio_pub = hbba_lite.OnOffHbbaPublisher(self, AudioFrame, 'audio_out', 5)
+        self._started_pub = self.create_publisher(SoundStarted, 'sound_player/started', 5)
+        self._done_pub = self.create_publisher(Done, 'sound_player/done', 5)
+
+        self._file_sub = self.create_subscription(SoundFile, 'sound_player/file', self._on_file_received_cb, 1)
 
     def _on_file_received_cb(self, msg):
-        with self._file_sub_lock:
-            if self._audio_pub.is_filtering_all_messages:
-                return
+        if self._audio_pub.is_filtering_all_messages:
+            return
 
-            try:
-                self._play_audio(msg.id, msg.path)
-                ok = True
-            except Exception as e:
-                rospy.logerr(f'Unable to play the sound ({e})')
-                ok = False
-            self._done_pub.publish(Done(id=msg.id, ok=ok))
+        try:
+            self._play_audio(msg.id, msg.path)
+            ok = True
+        except Exception as e:
+            self.get_logger().error(f'Unable to play the sound ({e})')
+            ok = False
+
+        self._done_pub.publish(Done(id=msg.id, ok=ok))
 
     def _play_audio(self, id, path):
         frames = self._load_frames(Path(path).expanduser().resolve())
 
-        self._started_pub.publish(Started(id=id))
+        self._started_pub.publish(SoundStarted(id=id))
 
         audio_frame = AudioFrame()
         audio_frame.format = 'float'
@@ -50,12 +54,12 @@ class SoundPlayerNode:
         audio_frame.sampling_frequency = self._sampling_frequency
         audio_frame.frame_sample_count = self._frame_sample_count
 
-        rate = rospy.Rate(self._sampling_frequency / self._frame_sample_count)
+        rate = time_utils.Rate(self._sampling_frequency / self._frame_sample_count)
         for frame in frames:
             if self._audio_pub.is_filtering_all_messages:
                 break
 
-            audio_frame.header.stamp = rospy.Time.now()
+            audio_frame.header.stamp = self.get_clock().now().to_msg()
             audio_frame.data = frame.tobytes()
             self._audio_pub.publish(audio_frame)
 
@@ -63,23 +67,29 @@ class SoundPlayerNode:
 
     def _load_frames(self, file_path):
         waveform, _ = librosa.load(file_path, sr=self._sampling_frequency, res_type='kaiser_fast')
+        waveform = librosa.to_mono(waveform)
         pad = (self._frame_sample_count - (waveform.shape[0] % self._frame_sample_count)) % self._frame_sample_count
         waveform.resize(waveform.shape[0] + pad, refcheck=False)
         frames = np.split(waveform, np.arange(self._frame_sample_count, len(waveform), self._frame_sample_count))
         return frames
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('sound_player_node')
+    rclpy.init()
     sound_player_node = SoundPlayerNode()
-    sound_player_node.run()
+
+    try:
+        sound_player_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        sound_player_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

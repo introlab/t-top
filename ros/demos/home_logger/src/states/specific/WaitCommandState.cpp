@@ -13,8 +13,8 @@ using namespace std;
 WaitCommandState::WaitCommandState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : SoundFaceFollowingState(stateManager, move(desireSet), nodeHandle),
+    rclcpp::Node::SharedPtr node)
+    : SoundFaceFollowingState(stateManager, move(desireSet), move(node)),
       m_transcriptReceived(false)
 {
 }
@@ -48,7 +48,7 @@ void WaitCommandState::onDisabling()
     }
 }
 
-void WaitCommandState::onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg)
+void WaitCommandState::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg)
 {
     m_transcriptReceived = true;
     m_commands = m_parser.parse(msg->text);

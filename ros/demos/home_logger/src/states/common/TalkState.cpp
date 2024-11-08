@@ -60,8 +60,8 @@ string TalkStateParameter::toString() const
 }
 
 
-TalkState::TalkState(StateManager& stateManager, shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle)
-    : State(stateManager, move(desireSet), nodeHandle)
+TalkState::TalkState(StateManager& stateManager, shared_ptr<DesireSet> desireSet, rclcpp::Node::SharedPtr node)
+    : State(stateManager, move(desireSet), move(node))
 {
 }
 

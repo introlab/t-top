@@ -29,7 +29,7 @@ public:
     AlarmState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         AlarmManager& alarmManager,
         std::string alarmPath);
     ~AlarmState() override;

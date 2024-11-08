@@ -3,8 +3,6 @@
 
 #include "../State.h"
 
-#include <talk/Done.h>
-
 #include <queue>
 
 struct StoryLine
@@ -26,7 +24,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         const std::string& englishStoryPath,
         const std::string& frenchStoryPath);
     ~RssStoryState() override;

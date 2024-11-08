@@ -8,24 +8,24 @@
 class StateManager : private DesireSetObserver
 {
     std::shared_ptr<DesireSet> m_desireSet;
-    ros::NodeHandle& m_nodeHandle;
+    rclcpp::Node::SharedPtr m_node;
 
     std::unordered_map<StateType, std::unique_ptr<State>> m_states;
     State* m_currentState;
 
-    ros::Subscriber m_speechToTextSubscriber;
-    ros::Subscriber m_robotNameDetectedSubscriber;
-    ros::Subscriber m_videoAnalysisSubscriber;
-    ros::Subscriber m_audioAnalysisSubscriber;
-    ros::Subscriber m_personNamesSubscriber;
-    ros::Subscriber m_baseStatusSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_speechToTextSubscriber;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr m_robotNameDetectedSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::VideoAnalysis>::SharedPtr m_videoAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::AudioAnalysis>::SharedPtr m_audioAnalysisSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::Subscription<daemon_ros_client::msg::BaseStatus>::SharedPtr m_baseStatusSubscriber;
 
-    ros::Timer m_stateTimeoutTimer;
-    ros::Timer m_everyMinuteTimer;
-    ros::Timer m_everyTenMinuteTimer;
+    rclcpp::TimerBase::SharedPtr m_stateTimeoutTimer;
+    rclcpp::TimerBase::SharedPtr m_everyMinuteTimer;
+    rclcpp::TimerBase::SharedPtr m_everyTenMinuteTimer;
 
 public:
-    StateManager(std::shared_ptr<DesireSet> desireSet, ros::NodeHandle& nodeHandle);
+    StateManager(std::shared_ptr<DesireSet> desireSet, rclcpp::Node::SharedPtr node);
     virtual ~StateManager();
 
     DECLARE_NOT_COPYABLE(StateManager);
@@ -40,16 +40,16 @@ public:
 private:
     void onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& desires) override;
 
-    void onSpeechToTextTranscriptReceived(const speech_to_text::Transcript::ConstPtr& msg);
-    void onRobotNameDetected(const std_msgs::Empty::ConstPtr& msg);
-    void onVideoAnalysisReceived(const video_analyzer::VideoAnalysis::ConstPtr& msg);
-    void onAudioAnalysisReceived(const audio_analyzer::AudioAnalysis::ConstPtr& msg);
-    void onPersonNamesDetected(const person_identification::PersonNames::ConstPtr& msg);
-    void onBaseStatusChanged(const daemon_ros_client::BaseStatus::ConstPtr& msg);
+    void onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg);
+    void onRobotNameDetected(const std_msgs::msg::Empty::SharedPtr& msg);
+    void onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg);
+    void onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg);
+    void onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg);
+    void onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg);
 
-    void onStateTimeout(const ros::TimerEvent& event);
-    void onEveryMinuteTimeout(const ros::TimerEvent& event);
-    void onEveryTenMinutesTimeout(const ros::TimerEvent& event);
+    void onStateTimeout();
+    void onEveryMinuteTimeout();
+    void onEveryTenMinutesTimeout();
 };
 
 template<class T>

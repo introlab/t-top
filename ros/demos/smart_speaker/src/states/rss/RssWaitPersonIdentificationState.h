@@ -3,19 +3,19 @@
 
 #include "../State.h"
 
-#include <person_identification/PersonNames.h>
+#include <perception_msgs/msg/person_names.hpp>
 
 class RssWaitPersonIdentificationState : public State
 {
-    ros::Subscriber m_personNamesSubscriber;
-    ros::Timer m_timeoutTimer;
+    rclcpp::Subscription<perception_msgs::msg::PersonNames>::SharedPtr m_personNamesSubscriber;
+    rclcpp::TimerBase::SharedPtr m_timeoutTimer;
 
 public:
     RssWaitPersonIdentificationState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     ~RssWaitPersonIdentificationState() override = default;
 
     DECLARE_NOT_COPYABLE(RssWaitPersonIdentificationState);
@@ -28,8 +28,8 @@ protected:
     void disable() override;
 
 private:
-    void personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg);
-    void timeoutTimerCallback(const ros::TimerEvent& event);
+    void personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg);
+    void timeoutTimerCallback();
 };
 
 inline std::type_index RssWaitPersonIdentificationState::type() const

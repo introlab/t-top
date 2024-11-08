@@ -1,21 +1,16 @@
 #include <t_top_hbba_lite/Strategies.h>
 
-#include <std_msgs/String.h>
-#include <led_animations/Animation.h>
-#include <talk/Text.h>
-#include <gesture/GestureName.h>
-#include <sound_player/SoundFile.h>
-
 using namespace std;
 
 FaceAnimationStrategy::FaceAnimationStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle)
+    shared_ptr<rclcpp::Node> node)
     : Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_animationPublisher = nodeHandle.advertise<std_msgs::String>("face/animation", 1, true);
+    m_animationPublisher =
+        m_node->create_publisher<std_msgs::msg::String>("face/animation", rclcpp::QoS(1).transient_local());
 }
 
 StrategyType FaceAnimationStrategy::strategyType()
@@ -25,29 +20,33 @@ StrategyType FaceAnimationStrategy::strategyType()
 
 void FaceAnimationStrategy::onEnabling(const FaceAnimationDesire& desire)
 {
-    std_msgs::String msg;
+    std_msgs::msg::String msg;
     msg.data = desire.name();
-    m_animationPublisher.publish(msg);
+    m_animationPublisher->publish(msg);
 }
 
 void FaceAnimationStrategy::onDisabling()
 {
-    std_msgs::String msg;
+    std_msgs::msg::String msg;
     msg.data = "normal";
-    m_animationPublisher.publish(msg);
+    m_animationPublisher->publish(msg);
 
     Strategy<FaceAnimationDesire>::onDisabling();
 }
 
-LedEmotionStrategy::LedEmotionStrategy(uint16_t utility, shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle)
+LedEmotionStrategy::LedEmotionStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<rclcpp::Node> node)
     : Strategy<LedEmotionDesire>(
           utility,
           {},
           {{"led_emotions/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_emotionPublisher = nodeHandle.advertise<std_msgs::String>("led_emotions/name", 1, true);
+    m_emotionPublisher =
+        m_node->create_publisher<std_msgs::msg::String>("led_emotions/name", rclcpp::QoS(1).transient_local());
 }
 
 StrategyType LedEmotionStrategy::strategyType()
@@ -57,27 +56,31 @@ StrategyType LedEmotionStrategy::strategyType()
 
 void LedEmotionStrategy::onEnabling(const LedEmotionDesire& desire)
 {
-    std_msgs::String msg;
+    std_msgs::msg::String msg;
     msg.data = desire.name();
-    m_emotionPublisher.publish(msg);
+    m_emotionPublisher->publish(msg);
 }
 
 LedAnimationStrategy::LedAnimationStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
+    shared_ptr<rclcpp::Node> node)
     : Strategy<LedAnimationDesire>(
           utility,
           {},
           {{"led_animations/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_desireSet(desireSet),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_animationPublisher = nodeHandle.advertise<led_animations::Animation>("led_animations/animation", 1, true);
-    m_animationDoneSubscriber =
-        nodeHandle.subscribe("led_animations/done", 1, &LedAnimationStrategy::animationDoneSubscriberCallback, this);
+    m_animationPublisher = m_node->create_publisher<behavior_msgs::msg::LedAnimation>(
+        "led_animations/animation",
+        rclcpp::QoS(1).transient_local());
+    m_animationDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "led_animations/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { animationDoneSubscriberCallback(msg); });
 }
 
 StrategyType LedAnimationStrategy::strategyType()
@@ -87,16 +90,16 @@ StrategyType LedAnimationStrategy::strategyType()
 
 void LedAnimationStrategy::onEnabling(const LedAnimationDesire& desire)
 {
-    led_animations::Animation msg;
+    behavior_msgs::msg::LedAnimation msg;
     msg.id = desire.id();
     msg.duration_s = desire.durationS();
     msg.name = desire.name();
     msg.speed = desire.speed();
     msg.colors = desire.colors();
-    m_animationPublisher.publish(msg);
+    m_animationPublisher->publish(msg);
 }
 
-void LedAnimationStrategy::animationDoneSubscriberCallback(const led_animations::Done::ConstPtr& msg)
+void LedAnimationStrategy::animationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     if (msg->id == desireId())
     {
@@ -107,16 +110,17 @@ void LedAnimationStrategy::animationDoneSubscriberCallback(const led_animations:
 SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle)
+    shared_ptr<rclcpp::Node> node)
     : Strategy<SpecificFaceFollowingDesire>(
           utility,
           {},
           {{"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
            {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_targetNamePublisher = nodeHandle.advertise<std_msgs::String>("face_following/target_name", 1, true);
+    m_targetNamePublisher =
+        m_node->create_publisher<std_msgs::msg::String>("face_following/target_name", rclcpp::QoS(1).transient_local());
 }
 
 StrategyType SpecificFaceFollowingStrategy::strategyType()
@@ -126,26 +130,29 @@ StrategyType SpecificFaceFollowingStrategy::strategyType()
 
 void SpecificFaceFollowingStrategy::onEnabling(const SpecificFaceFollowingDesire& desire)
 {
-    std_msgs::String msg;
+    std_msgs::msg::String msg;
     msg.data = desire.targetName();
-    m_targetNamePublisher.publish(msg);
+    m_targetNamePublisher->publish(msg);
 }
 
 TalkStrategy::TalkStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
+    shared_ptr<rclcpp::Node> node)
     : Strategy<TalkDesire>(
           utility,
           {{"sound", 1}},
           {{"talk/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_desireSet(move(desireSet)),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_talkPublisher = nodeHandle.advertise<talk::Text>("talk/text", 1, true);
-    m_talkDoneSubscriber = nodeHandle.subscribe("talk/done", 10, &TalkStrategy::talkDoneSubscriberCallback, this);
+    m_talkPublisher = m_node->create_publisher<behavior_msgs::msg::Text>("talk/text", rclcpp::QoS(1).transient_local());
+    m_talkDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "talk/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { talkDoneSubscriberCallback(msg); });
 }
 
 StrategyType TalkStrategy::strategyType()
@@ -155,13 +162,13 @@ StrategyType TalkStrategy::strategyType()
 
 void TalkStrategy::onEnabling(const TalkDesire& desire)
 {
-    talk::Text msg;
+    behavior_msgs::msg::Text msg;
     msg.text = desire.text();
     msg.id = desire.id();
-    m_talkPublisher.publish(msg);
+    m_talkPublisher->publish(msg);
 }
 
-void TalkStrategy::talkDoneSubscriberCallback(const talk::Done::ConstPtr& msg)
+void TalkStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     if (msg->id == desireId())
     {
@@ -173,14 +180,17 @@ GestureStrategy::GestureStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
+    shared_ptr<rclcpp::Node> node)
     : Strategy<GestureDesire>(utility, {}, {{"gesture/filter_state", FilterConfiguration::onOff()}}, move(filterPool)),
       m_desireSet(move(desireSet)),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_gesturePublisher = nodeHandle.advertise<gesture::GestureName>("gesture/name", 1, true);
-    m_gestureDoneSubscriber =
-        nodeHandle.subscribe("gesture/done", 1, &GestureStrategy::gestureDoneSubscriberCallback, this);
+    m_gesturePublisher =
+        m_node->create_publisher<behavior_msgs::msg::GestureName>("gesture/name", rclcpp::QoS(1).transient_local());
+    m_gestureDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "gesture/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
 }
 
 StrategyType GestureStrategy::strategyType()
@@ -190,13 +200,13 @@ StrategyType GestureStrategy::strategyType()
 
 void GestureStrategy::onEnabling(const GestureDesire& desire)
 {
-    gesture::GestureName msg;
+    behavior_msgs::msg::GestureName msg;
     msg.name = desire.name();
     msg.id = desire.id();
-    m_gesturePublisher.publish(msg);
+    m_gesturePublisher->publish(msg);
 }
 
-void GestureStrategy::gestureDoneSubscriberCallback(const gesture::Done::ConstPtr& msg)
+void GestureStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     if (msg->id == desireId())
     {
@@ -208,18 +218,21 @@ PlaySoundStrategy::PlaySoundStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
+    shared_ptr<rclcpp::Node> node)
     : Strategy<PlaySoundDesire>(
           utility,
           {{"sound", 1}},
           {{"sound_player/filter_state", FilterConfiguration::onOff()}},
           move(filterPool)),
       m_desireSet(desireSet),
-      m_nodeHandle(nodeHandle)
+      m_node(move(node))
 {
-    m_pathPublisher = nodeHandle.advertise<sound_player::SoundFile>("sound_player/file", 1, true);
-    m_soundDoneSubscriber =
-        nodeHandle.subscribe("sound_player/done", 1, &PlaySoundStrategy::soundDoneSubscriberCallback, this);
+    m_pathPublisher =
+        m_node->create_publisher<behavior_msgs::msg::SoundFile>("sound_player/file", rclcpp::QoS(1).transient_local());
+    m_soundDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "sound_player/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { soundDoneSubscriberCallback(msg); });
 }
 
 StrategyType PlaySoundStrategy::strategyType()
@@ -229,13 +242,13 @@ StrategyType PlaySoundStrategy::strategyType()
 
 void PlaySoundStrategy::onEnabling(const PlaySoundDesire& desire)
 {
-    sound_player::SoundFile msg;
+    behavior_msgs::msg::SoundFile msg;
     msg.path = desire.path();
     msg.id = desire.id();
-    m_pathPublisher.publish(msg);
+    m_pathPublisher->publish(msg);
 }
 
-void PlaySoundStrategy::soundDoneSubscriberCallback(const sound_player::Done::ConstPtr& msg)
+void PlaySoundStrategy::soundDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     if (msg->id == desireId())
     {
@@ -395,24 +408,24 @@ unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool
 }
 
 unique_ptr<BaseStrategy>
-    createFaceAnimationStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+    createFaceAnimationStrategy(shared_ptr<FilterPool> filterPool, shared_ptr<rclcpp::Node> node, uint16_t utility)
 {
-    return make_unique<FaceAnimationStrategy>(utility, move(filterPool), nodeHandle);
+    return make_unique<FaceAnimationStrategy>(utility, move(filterPool), move(node));
 }
 
 unique_ptr<BaseStrategy>
-    createLedEmotionStrategy(shared_ptr<FilterPool> filterPool, ros::NodeHandle& nodeHandle, uint16_t utility)
+    createLedEmotionStrategy(shared_ptr<FilterPool> filterPool, shared_ptr<rclcpp::Node> node, uint16_t utility)
 {
-    return make_unique<LedEmotionStrategy>(utility, move(filterPool), nodeHandle);
+    return make_unique<LedEmotionStrategy>(utility, move(filterPool), move(node));
 }
 
 unique_ptr<BaseStrategy> createLedAnimationStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<LedAnimationStrategy>(utility, filterPool, desireSet, nodeHandle);
+    return make_unique<LedAnimationStrategy>(utility, filterPool, desireSet, move(node));
 }
 
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -437,10 +450,10 @@ unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPoo
 
 unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     shared_ptr<FilterPool> filterPool,
-    ros::NodeHandle& nodeHandle,
+    shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<SpecificFaceFollowingStrategy>(utility, move(filterPool), nodeHandle);
+    return make_unique<SpecificFaceFollowingStrategy>(utility, move(filterPool), move(node));
 }
 
 unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -457,19 +470,19 @@ unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<Fil
 unique_ptr<BaseStrategy> createTalkStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<TalkStrategy>(utility, move(filterPool), move(desireSet), nodeHandle);
+    return make_unique<TalkStrategy>(utility, move(filterPool), move(desireSet), move(node));
 }
 
 unique_ptr<BaseStrategy> createGestureStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<GestureStrategy>(utility, move(filterPool), move(desireSet), nodeHandle);
+    return make_unique<GestureStrategy>(utility, move(filterPool), move(desireSet), move(node));
 }
 
 unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -489,10 +502,10 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
 unique_ptr<BaseStrategy> createPlaySoundStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<PlaySoundStrategy>(utility, move(filterPool), move(desireSet), nodeHandle);
+    return make_unique<PlaySoundStrategy>(utility, move(filterPool), move(desireSet), move(node));
 }
 
 unique_ptr<BaseStrategy> createTelepresenceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)

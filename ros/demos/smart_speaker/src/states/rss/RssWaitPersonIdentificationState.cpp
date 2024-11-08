@@ -14,11 +14,13 @@ RssWaitPersonIdentificationState::RssWaitPersonIdentificationState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : State(language, stateManager, desireSet, nodeHandle)
+    rclcpp::Node::SharedPtr node)
+    : State(language, stateManager, desireSet, move(node))
 {
-    m_personNamesSubscriber =
-        nodeHandle.subscribe("person_names", 1, &RssWaitPersonIdentificationState::personNamesSubscriberCallback, this);
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 }
 
 void RssWaitPersonIdentificationState::enable(const string& parameter, const type_index& previousStageType)
@@ -41,26 +43,22 @@ void RssWaitPersonIdentificationState::enable(const string& parameter, const typ
     m_desireSet->addDesire(move(soundFollowingDesire));
     m_desireSet->addDesire(move(faceAnimationDesire));
 
-    constexpr bool oneshot = true;
-    m_timeoutTimer = m_nodeHandle.createTimer(
-        ros::Duration(TIMEOUT_S),
-        &RssWaitPersonIdentificationState::timeoutTimerCallback,
-        this,
-        oneshot);
+    m_timeoutTimer = m_node->create_wall_timer(chrono::seconds(TIMEOUT_S), [this]() { timeoutTimerCallback(); });
 }
 
 void RssWaitPersonIdentificationState::disable()
 {
     State::disable();
 
-    if (m_timeoutTimer.isValid())
+    if (m_timeoutTimer)
     {
-        m_timeoutTimer.stop();
+        m_timeoutTimer->cancel();
+        m_timeoutTimer = nullptr;
     }
 }
 
 void RssWaitPersonIdentificationState::personNamesSubscriberCallback(
-    const person_identification::PersonNames::ConstPtr& msg)
+    const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     if (!enabled() || msg->names.size() == 0)
     {
@@ -72,13 +70,13 @@ void RssWaitPersonIdentificationState::personNamesSubscriberCallback(
         msg->names.begin(),
         msg->names.end(),
         back_inserter(names),
-        [](const person_identification::PersonName& name) { return name.name; });
+        [](const perception_msgs::msg::PersonName& name) { return name.name; });
 
     auto mergedNames = mergeNames(names, getAndWord());
     m_stateManager.switchTo<RssAskTaskState>(mergedNames);
 }
 
-void RssWaitPersonIdentificationState::timeoutTimerCallback(const ros::TimerEvent& event)
+void RssWaitPersonIdentificationState::timeoutTimerCallback()
 {
     if (!enabled())
     {

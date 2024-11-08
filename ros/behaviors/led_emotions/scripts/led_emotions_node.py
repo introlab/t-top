@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import json
 import math
 
-import rospy
+import rclpy
+import rclpy.node
 
 from std_msgs.msg import String
 from daemon_ros_client.msg import LedColors
@@ -25,21 +28,25 @@ class LedPattern:
         self.ratio = ratio
 
 
-class LedEmotionsNode:
+class LedEmotionsNode(rclpy.node.Node):
     def __init__(self):
-        self._period_s = rospy.get_param('~period_s', 0.0333)
-        with open(rospy.get_param('~led_patterns_file'), 'r') as f:
+        super().__init__('led_emotions_node')
+
+        self._period_s = self.declare_parameter('period_s', 0.0333).get_parameter_value().double_value
+        led_patterns_file = self.declare_parameter('led_patterns_file', '').get_parameter_value().string_value
+
+        with open(led_patterns_file, 'r') as f:
             self._led_patterns_by_emotion_name = self._load_led_patterns(json.load(f))
 
         self._timer = None
         self._timer_time_s = 0
         self._timer_pattern = None
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('led_emotions/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher(self, LedColors, 'led_emotions/set_led_colors', 1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 
-        self._led_emotion_sub = rospy.Subscriber('led_emotions/name', String, self._emotion_cb, queue_size=1)
+        self._led_emotion_sub = self.create_subscription(String, 'led_emotions/name', self._emotion_cb, 1)
 
 
     def _load_led_patterns(self, json_dict):
@@ -62,21 +69,22 @@ class LedEmotionsNode:
             return
 
         if msg.data not in self._led_patterns_by_emotion_name:
-            rospy.logerr(f'Invalid emotion name ({msg.data})')
-        self._start_timer(self._led_patterns_by_emotion_name[msg.data])
+            self.get_logger().error(f'Invalid emotion name ({msg.data})')
+        else:
+            self._start_timer(self._led_patterns_by_emotion_name[msg.data])
 
     def _stop_timer(self):
         if self._timer is not None:
-            self._timer.shutdown()
+            self.destroy_timer(self._timer)
             self._timer = None
 
     def _start_timer(self, pattern):
         self._stop_timer()
         self._timer_time_s = 0
         self._timer_pattern = pattern
-        self._timer = rospy.Timer(rospy.Duration(self._period_s), self._timer_cb)
+        self._timer = self.create_timer(self._period_s, self._timer_cb)
 
-    def _timer_cb(self, timer_event):
+    def _timer_cb(self):
         self._timer_time_s += self._period_s
         if self._timer_time_s > self._timer_pattern.period_s:
             self._timer_time_s -= self._timer_pattern.period_s
@@ -107,17 +115,22 @@ class LedEmotionsNode:
             return 0
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('led_emotions_node')
+    rclpy.init()
     led_emotions_node = LedEmotionsNode()
-    led_emotions_node.run()
+
+    try:
+        led_emotions_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        led_emotions_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

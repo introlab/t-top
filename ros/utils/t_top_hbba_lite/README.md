@@ -8,10 +8,11 @@ This node applies priority arbitration to the head pose topic.
 
 #### Parameters
 
-- `topics`: The topic descriptions containing the topic name (string), priority (int, lower means higher priority) and timeout_s value (double).
+- `topics` (string): The topic names.
+- `priorities` (int): The priority for each topic (int, lower means higher priority).
+- `timeout_s` (double): The timeout in seconds for each topic.
 - `offset_topics` (array of string): The topic names that apply an offset to the head position
-- `latch` (bool): Indicates if the output topic is latched.
 
 #### Published Topics
 
-- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html)): The output topic.
+- `daemon/set_head_pose` ([geometry_msgs/PoseStamped](https://docs.ros.org/en/humble/p/geometry_msgs/interfaces/msg/PoseStamped.html)): The output topic.

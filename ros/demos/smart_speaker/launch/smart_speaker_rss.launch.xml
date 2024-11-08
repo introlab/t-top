@@ -1,0 +1,16 @@
+<launch>
+    <arg name="language" default="en"/>  <!-- Options: fr or en -->
+
+    <node pkg="smart_speaker" exec="smart_speaker_rss_node" name="smart_speaker_rss_node" output="screen">
+        <param name="language" value="$(var language)"/>
+        <param name="story_path_en" value="$(find-pkg-share smart_speaker)/resources/story_en.txt"/>
+        <param name="story_path_fr" value="$(find-pkg-share smart_speaker)/resources/story_fr.txt"/>
+        <param name="song_path" value="$(find-pkg-share smart_speaker)/resources/admiralbob_wanderer.mp3"/>
+        <param name="after_task_delay_duration_s" value="5.0"/>
+    </node>
+
+    <include file="$(find-pkg-share t_top)/launch/bringup.launch.xml">
+        <arg name="language" value="$(var language)"/>
+        <arg name="slam" value="false"/>
+    </include>
+</launch>

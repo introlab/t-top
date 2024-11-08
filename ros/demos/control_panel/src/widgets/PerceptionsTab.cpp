@@ -53,13 +53,15 @@ vector<QColor> getSemanticSegmentationPaletteFromClassCount(size_t classCount)
     return palette;
 }
 
-QImage semanticSegmentationToImage(const video_analyzer::SemanticSegmentation& semanticSegmentation)
+QImage semanticSegmentationToImage(
+    rclcpp::Node& node,
+    const perception_msgs::msg::SemanticSegmentation& semanticSegmentation)
 {
     int width = semanticSegmentation.width;
     int height = semanticSegmentation.height;
     if (semanticSegmentation.class_indexes.size() != width * height)
     {
-        ROS_ERROR("Invalid semantic segmentation (class_indexes.size() != width * height)");
+        RCLCPP_ERROR(node.get_logger(), "Invalid semantic segmentation (class_indexes.size() != width * height)");
         return QImage();
     }
 
@@ -83,39 +85,46 @@ QImage semanticSegmentationToImage(const video_analyzer::SemanticSegmentation& s
 }
 
 PerceptionsTab::PerceptionsTab(
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     shared_ptr<DesireSet> desireSet,
     bool camera2dWideEnabled,
     QWidget* parent)
     : QWidget(parent),
-      m_nodeHandle(nodeHandle),
+      m_node(std::move(node)),
       m_desireSet(std::move(desireSet)),
       m_camera2dWideEnabled(camera2dWideEnabled)
 {
     createUi();
 
-    m_analyzedImage3dSubscriber =
-        nodeHandle.subscribe("camera_3d/analysed_image", 1, &PerceptionsTab::analyzedImage3dSubscriberCallback, this);
+    m_analyzedImage3dSubscriber = m_node->create_subscription<sensor_msgs::msg::Image>(
+        "camera_3d/analysed_image",
+        1,
+        [this](const sensor_msgs::msg::Image::SharedPtr msg) { analyzedImage3dSubscriberCallback(msg); });
     if (m_camera2dWideEnabled)
     {
-        m_analyzedImage2dWideSubscriber = nodeHandle.subscribe(
+        m_analyzedImage2dWideSubscriber = m_node->create_subscription<sensor_msgs::msg::Image>(
             "camera_2d_wide/analysed_image",
             1,
-            &PerceptionsTab::analyzedImage2dWideSubscriberCallback,
-            this);
-        m_videoAnalysis2dWideSubscriber = nodeHandle.subscribe(
+            [this](const sensor_msgs::msg::Image::SharedPtr msg) { analyzedImage2dWideSubscriberCallback(msg); });
+        m_videoAnalysis2dWideSubscriber = m_node->create_subscription<perception_msgs::msg::VideoAnalysis>(
             "camera_2d_wide/video_analysis",
             1,
-            &PerceptionsTab::videoAnalysis2dWideSubscriberCallback,
-            this);
+            [this](const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
+            { videoAnalysis2dWideSubscriberCallback(msg); });
     }
 
-    m_audioAnalysisSubscriber =
-        nodeHandle.subscribe("audio_analysis", 1, &PerceptionsTab::audioAnalysisSubscriberCallback, this);
-    m_robotNameDetectedSubscriber =
-        nodeHandle.subscribe("robot_name_detected", 1, &PerceptionsTab::robotNameDetectedSubscriberCallback, this);
-    m_personNamesSubscriber =
-        nodeHandle.subscribe("person_names", 1, &PerceptionsTab::personNamesSubscriberCallback, this);
+    m_audioAnalysisSubscriber = m_node->create_subscription<perception_msgs::msg::AudioAnalysis>(
+        "audio_analysis",
+        1,
+        [this](const perception_msgs::msg::AudioAnalysis::SharedPtr msg) { audioAnalysisSubscriberCallback(msg); });
+    m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
+        "robot_name_detected",
+        1,
+        [this](const std_msgs::msg::Empty::SharedPtr msg) { robotNameDetectedSubscriberCallback(msg); });
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 }
 
 void PerceptionsTab::onVideoAnalyzer3dButtonToggled(bool checked)
@@ -138,7 +147,7 @@ void PerceptionsTab::onRobotNameDetectorButtonToggled(bool checked)
     toggleDesire<RobotNameDetectorDesire>(checked, m_robotNameDetectorDesireId);
 }
 
-void PerceptionsTab::analyzedImage3dSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg)
+void PerceptionsTab::analyzedImage3dSubscriberCallback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
     if (msg->encoding != "rgb8")
     {
@@ -152,7 +161,7 @@ void PerceptionsTab::analyzedImage3dSubscriberCallback(const sensor_msgs::Image:
         });
 }
 
-void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::Image::ConstPtr& msg)
+void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
     if (msg->encoding != "rgb8")
     {
@@ -167,7 +176,7 @@ void PerceptionsTab::analyzedImage2dWideSubscriberCallback(const sensor_msgs::Im
         });
 }
 
-void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const video_analyzer::VideoAnalysis::ConstPtr& msg)
+void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const perception_msgs::msg::VideoAnalysis::SharedPtr msg)
 {
     if (msg->semantic_segmentation.empty())
     {
@@ -178,23 +187,23 @@ void PerceptionsTab::videoAnalysis2dWideSubscriberCallback(const video_analyzer:
         [this, msg]()
         {
             m_videoAnalyzer2dWideSegmentationcImageDisplay->setImage(
-                semanticSegmentationToImage(msg->semantic_segmentation[0]));
+                semanticSegmentationToImage(*m_node, msg->semantic_segmentation[0]));
         });
 }
 
-void PerceptionsTab::audioAnalysisSubscriberCallback(const audio_analyzer::AudioAnalysis::ConstPtr& msg)
+void PerceptionsTab::audioAnalysisSubscriberCallback(const perception_msgs::msg::AudioAnalysis::SharedPtr msg)
 {
     QString classes = mergeStdStrings(msg->audio_classes);
     invokeLater([this, classes]() { m_soundClassesLineEdit->setText(classes); });
 }
 
-void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg)
+void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg)
 {
     auto currentTime = QDateTime::currentDateTime();
     invokeLater([this, currentTime]() { m_robotNameDetectionTimeLineEdit->setText(currentTime.toString()); });
 }
 
-void PerceptionsTab::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
+void PerceptionsTab::personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     vector<string> names;
     names.reserve(msg->names.size());
@@ -203,7 +212,7 @@ void PerceptionsTab::personNamesSubscriberCallback(const person_identification::
         msg->names.begin(),
         msg->names.end(),
         back_inserter(names),
-        [](const person_identification::PersonName& name) { return name.name; });
+        [](const perception_msgs::msg::PersonName& name) { return name.name; });
 
     QString mergedNames = mergeStdStrings(names);
     invokeLater([this, mergedNames]() { m_identifiedPersonsLineEdit->setText(mergedNames); });

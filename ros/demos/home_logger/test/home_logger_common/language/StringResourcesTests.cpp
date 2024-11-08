@@ -1,11 +1,11 @@
 #include <home_logger_common/language/StringResources.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <gtest/gtest.h>
 
 using namespace std;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 TEST(StringResourcesTests, getValue_notInitialized_shouldThrowRuntimeError)
 {

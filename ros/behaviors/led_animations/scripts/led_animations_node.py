@@ -1,10 +1,14 @@
-import json
+#!/usr/bin/env python3
+
+import traceback
 import math
 
-import rospy
+import rclpy
+import rclpy.node
+from rclpy.duration import Duration
 
 from daemon_ros_client.msg import LedColors
-from led_animations.msg import Animation, Done
+from behavior_msgs.msg import LedAnimation as LedAnimationMsg, Done
 
 import hbba_lite
 
@@ -18,22 +22,25 @@ for led_color in NONE_LED_COLORS.colors:
     led_color.blue = 0
 
 
-class LedAnimationsNode:
+class LedAnimationsNode(rclpy.node.Node):
     def __init__(self):
-        self._period_s = rospy.get_param('~period_s', 0.0333)
+        super().__init__('led_animations_node')
+
+        self._period_s = self.declare_parameter('period_s', 0.0333).get_parameter_value().double_value
 
         self._timer = None
         self._timer_msg_id = -1
-        self._timer_start_time_s = 0.0
-        self._timer_duration_s = 0.0
+        self._timer_start_time = None
+        self._timer_finite = None
+        self._timer_duration = None
         self._timer_animation = None
 
-        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher('led_animations/set_led_colors', LedColors, queue_size=1,
+        self._led_colors_pub = hbba_lite.OnOffHbbaPublisher(self, LedColors, 'led_animations/set_led_colors', 1,
                                                             state_service_name='set_led_colors/filter_state')
         self._led_colors_pub.on_filter_state_changing(self._hbba_filter_state_cb)
 
-        self._done_pub = rospy.Publisher('led_animations/done', Done, queue_size=5)
-        self._led_emotion_sub = rospy.Subscriber('led_animations/animation', Animation, self._animation_cb, queue_size=1)
+        self._done_pub = self.create_publisher(Done, 'led_animations/done', 5)
+        self._led_emotion_sub = self.create_subscription(LedAnimationMsg, 'led_animations/animation', self._animation_cb, 1)
 
     def _hbba_filter_state_cb(self, publish_forced, previous_is_filtering_all_messages, new_is_filtering_all_messages):
         if not previous_is_filtering_all_messages and new_is_filtering_all_messages:
@@ -46,49 +53,56 @@ class LedAnimationsNode:
 
         try:
             animation = LedAnimation.from_name(msg.name, self._period_s, msg.speed, msg.colors)
+            self._start_timer(msg.id, animation, msg.duration_s)
         except Exception as e:
-            rospy.logerr(f'Unable to instantiate the LED animation ({e})')
+            tb = traceback.format_exc()
+            self.get_logger().error(f'Unable to instantiate the LED animation ({e}): {tb}')
             self._done_pub.publish(Done(id=msg.id, ok=False))
 
-        self._start_timer(msg.id, animation, msg.duration_s)
 
     def _stop_timer(self):
         if self._timer is not None:
-            self._timer.shutdown()
+            self.destroy_timer(self._timer)
             self._timer = None
             self._timer_msg_id = -1
-            self._timer_start_time_s = 0.0
-            self._timer_duration_s = 0.0
+            self._timer_start_time = None
+            self._timer_duration = None
             self._timer_animation = None
 
     def _start_timer(self, id, animation, duration_s):
         self._stop_timer()
         self._timer_msg_id = id
-        self._timer_start_time_s = rospy.get_time()
-        self._timer_duration_s = duration_s
+        self._timer_start_time = self.get_clock().now()
+        self._timer_finite = math.isfinite(duration_s)
+        self._timer_duration = Duration(seconds=duration_s) if self._timer_finite else None
         self._timer_animation = animation
-        self._timer = rospy.Timer(rospy.Duration(self._period_s), self._timer_cb)
+        self._timer = self.create_timer(self._period_s, self._timer_cb)
 
-    def _timer_cb(self, timer_event):
-        if rospy.get_time() - self._timer_start_time_s > self._timer_duration_s:
+    def _timer_cb(self):
+        if not self._timer_finite or self.get_clock().now() - self._timer_start_time < self._timer_duration:
+            self._led_colors_pub.publish(self._timer_animation.update())
+        else:
             self._led_colors_pub.publish(NONE_LED_COLORS)
             self._done_pub.publish(Done(id=self._timer_msg_id, ok=True))
             self._stop_timer()
-        else:
-            self._led_colors_pub.publish(self._timer_animation.update())
 
     def run(self):
-        rospy.spin()
+        rclpy.spin(self)
 
 
 def main():
-    rospy.init_node('led_animations_node')
+    rclpy.init()
     led_animations_node = LedAnimationsNode()
-    led_animations_node.run()
+
+    try:
+        led_animations_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        led_animations_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
-import rospy
-from geometry_msgs.msg import Twist
 from contextlib import contextmanager
 
-from t_top import MovementCommands, HEAD_ZERO_Z
-from opentera_webrtc_ros_msgs.srv import SetString, SetStringRequest, SetStringResponse
+import rclpy
+import rclpy.executors
+import rclpy.node
+from geometry_msgs.msg import Twist
+from opentera_webrtc_ros_msgs.srv import SetString
+from t_top import HEAD_ZERO_Z, MovementCommands
+
+MOVE_YES_TIMEOUT = 10
+MOVE_NO_TIMEOUT = 10
+MOVE_MAYBE_TIMEOUT = 10
+MOVE_HEAD_TO_ORIGIN_TIMEOUT = 5
+MOVE_TORSO_TO_ORIGIN_TIMEOUT = 30
+MOVE_THINKING_TIMEOUT = 5
+MOVE_SAD_TIMEOUT = 5
 
 
 def twist_is_null(twist: Twist) -> bool:
@@ -32,23 +42,23 @@ class TeleopState:
         self.is_moving = False
 
 
-class TeleoperationNode:
+class TeleoperationNode(rclpy.node.Node):
     def __init__(self):
-        self._simulation = rospy.get_param('~simulation', False)
+        super().__init__('teleoperation_node')
+        self._simulation = self.declare_parameter('simulation', False).get_parameter_value().bool_value
 
-        self._movement_commands = MovementCommands(self._simulation, namespace='teleoperation')
+        self._movement_commands = MovementCommands(self, self._simulation, namespace='teleoperation')
         self._state = TeleopState()
 
-        self._twist_sub = rospy.Subscriber(
-            'teleoperation/cmd_vel', Twist, self._on_twist_cb, queue_size=1)
+        self._twist_sub = self.create_subscription(
+            Twist, 'teleoperation/cmd_vel', self._on_twist_cb, 1)
 
-        self._timer = rospy.Timer(rospy.Duration(
-            self._movement_commands.sleep_time), self._on_timer_cb)
+        self._timer = self.create_timer(self._movement_commands.sleep_time, self._on_timer_cb)
 
-        self._origin_serv = rospy.Service(
-            "teleop_do_action", SetString, self._do_action_cb)
+        self._origin_serv = self.create_service(
+            SetString, "teleop_do_action", self._do_action_cb)
 
-    def _on_twist_cb(self, msg):
+    def _on_twist_cb(self, msg: Twist):
         if self._movement_commands.is_filtering_all_messages:
             self._state.is_moving = False
             return
@@ -60,7 +70,7 @@ class TeleoperationNode:
         else:
             self._move(msg)
 
-    def _on_timer_cb(self, _):
+    def _on_timer_cb(self):
         if self._state.is_moving:
             self._movement_commands.move_torso_speed(
                 speed_rad_sec_torso=self._state.current_speed.torso_angle, should_sleep=False)
@@ -90,7 +100,7 @@ class TeleoperationNode:
         self._state.current_speed = TeleopAngles(
             torso_angle=msg.angular.z/0.15, head_angle=-1.1*msg.linear.x/0.15)
 
-    def _do_action_cb(self, req: SetStringRequest) -> SetStringResponse:
+    def _do_action_cb(self, req: SetString.Request, res: SetString.Response) -> SetString.Response:
         jump_table = {
             "goto_origin": self._goto_origin,
             "do_yes": self._do_yes,
@@ -102,13 +112,19 @@ class TeleoperationNode:
 
         if req.data in jump_table:
             if self._movement_commands.is_filtering_all_messages:
-                return SetStringResponse(success=False, message="HBBA filter is active")
+                res.success = False
+                res.message = "HBBA filter is active"
+                return res
 
             jump_table[req.data]()
-            return SetStringResponse(success=True, message="")
+            res.success = True
+            res.message = ""
+            return res
 
         else:
-            return SetStringResponse(success=False, message=f"'{req.data}' not in {list(jump_table.keys())}")
+            res.success = False
+            res.message = f"'{req.data}' not in {list(jump_table.keys())}"
+            return res
 
     @contextmanager
     def _pause_moving(self):
@@ -121,41 +137,46 @@ class TeleoperationNode:
 
     def _goto_origin(self) -> None:
         with self._pause_moving():
-            self._movement_commands.move_head_to_origin(False)
-            self._movement_commands.move_torso_to_origin(False)
+            self._movement_commands.move_head_to_origin(False, timeout=MOVE_HEAD_TO_ORIGIN_TIMEOUT)
+            self._movement_commands.move_torso_to_origin(False, timeout=MOVE_TORSO_TO_ORIGIN_TIMEOUT)
 
     def _do_yes(self) -> None:
         with self._pause_moving():
-            self._movement_commands.move_yes(count=1)
+            self._movement_commands.move_yes(count=1, timeout=MOVE_YES_TIMEOUT)
 
     def _do_no(self) -> None:
         with self._pause_moving():
-            self._movement_commands.move_no(count=1)
+            self._movement_commands.move_no(count=1, timeout=MOVE_NO_TIMEOUT)
 
     def _do_maybe(self) -> None:
         with self._pause_moving():
-            self._movement_commands.move_maybe(count=1)
+            self._movement_commands.move_maybe(count=1, timeout=MOVE_MAYBE_TIMEOUT)
 
     def _goto_origin_head(self) -> None:
         with self._pause_moving():
-            self._movement_commands.move_head_to_origin(False)
+            self._movement_commands.move_head_to_origin(False, timeout=MOVE_HEAD_TO_ORIGIN_TIMEOUT)
 
     def _goto_origin_torso(self) -> None:
         with self._pause_moving():
-            self._movement_commands.move_torso_to_origin(False)
+            self._movement_commands.move_torso_to_origin(False, timeout=MOVE_TORSO_TO_ORIGIN_TIMEOUT)
 
     def run(self):
-        rospy.spin()
-
+        executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)
+        executor.add_node(self)
+        executor.spin()
 
 def main():
-    rospy.init_node('teleoperation_node')
+    rclpy.init()
     teleop_node = TeleoperationNode()
-    teleop_node.run()
+    
+    try:
+        teleop_node.run()
+    except KeyboardInterrupt:
+        pass
 
+    teleop_node.destroy_node()
+    if rclpy.ok():
+        rclpy.shutdown()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

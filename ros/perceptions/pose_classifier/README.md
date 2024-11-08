@@ -6,13 +6,13 @@ This folder contains the node to perform pose classification from the pose extra
 This node performs pose classification from the pose extracted by the [video_analyzer](../video_analyzer).
 
 #### Parameters
- - `pose_confidence_threshold` (double): The pose confidence threshold to determine if a joint is present.
+ - `pose_confidence_threshold` (double): The pose confidence threshold to determine if a joint is present. The default value is 0.4.
 
 #### Subscribed Topics
- - `video_analysis` ([video_analyzer/VideoAnalysis](../video_analyzer/msg/VideoAnalysis.msg)): The video analysis topic.
+ - `video_analysis` ([perception_msgs/VideoAnalysis](../perception_msgs/msg/VideoAnalysis.msg)): The video analysis topic.
 
 #### Published Topics
-- `pose_classification` ([pose_classifier/PoseClassifications](msg/PoseClassifications.msg)): The pose classification topic.
+- `pose_classification` ([perception_msgs/PoseClassifications](../perception_msgs/msg/PoseClassifications.msg)): The pose classification topic.
 
 ## Pose classes
 - **head_vertical_class**

@@ -1,11 +1,11 @@
 #include <home_logger_common/Properties.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <gtest/gtest.h>
 
 using namespace std;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 TEST(PropertiesTests, constructor_map_shouldCopyTheMap)
 {

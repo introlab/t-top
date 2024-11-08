@@ -9,10 +9,10 @@ using namespace std;
 SleepState::SleepState(
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     Time sleepTime,
     Time wakeUpTime)
-    : State(stateManager, move(desireSet), nodeHandle),
+    : State(stateManager, move(desireSet), move(node)),
       m_sleepTime(sleepTime),
       m_wakeUpTime(wakeUpTime),
       m_wasForced(false),

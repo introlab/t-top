@@ -210,7 +210,7 @@ void DaemonApp::setScreenBrightness(float front, float back, float left, float r
 void DaemonApp::terminateAllROSProcessesAndShutdown()
 {
 #ifdef __linux__
-    auto pids = listPidsMatchingTheCriteria("roslaunch");
+    auto pids = listPidsMatchingTheCriteria("ros2 launch");
     qDebug() << "Shutdown of roslaunch processes (" << pids << ")";
     shutdownProcessesAndWait(pids, SHUTDOWN_TIMEOUT_SEC);
     qDebug() << "Shutdown of roslaunch processes completed";

@@ -27,7 +27,7 @@ public:
     TellReminderState(
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         ReminderManager& reminderManager);
     ~TellReminderState() override;
 

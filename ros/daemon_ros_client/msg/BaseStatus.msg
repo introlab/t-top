@@ -1,4 +1,4 @@
-Header header
+std_msgs/Header header
 bool is_psu_connected
 bool has_charger_error
 bool is_battery_charging

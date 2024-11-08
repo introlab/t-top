@@ -10,10 +10,10 @@ DancePlayedSongState::DancePlayedSongState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle,
+    rclcpp::Node::SharedPtr node,
     type_index nextStateType,
     vector<std::string> songPaths)
-    : State(language, stateManager, desireSet, nodeHandle),
+    : State(language, stateManager, desireSet, move(node)),
       m_nextStateType(nextStateType),
       m_songPaths(move(songPaths)),
       m_songDesireId(MAX_DESIRE_ID)
@@ -25,8 +25,10 @@ DancePlayedSongState::DancePlayedSongState(
 
     m_desireSet->addObserver(this);
 
-    m_songStartedSubscriber =
-        nodeHandle.subscribe("sound_player/started", 1, &DancePlayedSongState::songStartedSubscriberCallback, this);
+    m_songStartedSubscriber = m_node->create_subscription<behavior_msgs::msg::SoundStarted>(
+        "sound_player/started",
+        1,
+        [this](const behavior_msgs::msg::SoundStarted::SharedPtr msg) { songStartedSubscriberCallback(msg); });
 }
 
 DancePlayedSongState::~DancePlayedSongState()
@@ -51,7 +53,7 @@ void DancePlayedSongState::enable(const string& parameter, const type_index& pre
     size_t songIndex = atoi(parameter.c_str());
     if (songIndex >= m_songPaths.size())
     {
-        ROS_ERROR("The song index is invalid.");
+        RCLCPP_ERROR(m_node->get_logger(), "The song index is invalid.");
         m_stateManager.switchTo(m_nextStateType);
     }
     else
@@ -75,7 +77,7 @@ void DancePlayedSongState::disable()
     m_songDesireId = MAX_DESIRE_ID;
 }
 
-void DancePlayedSongState::songStartedSubscriberCallback(const sound_player::Started::ConstPtr& msg)
+void DancePlayedSongState::songStartedSubscriberCallback(const behavior_msgs::msg::SoundStarted::SharedPtr msg)
 {
     if (!enabled() || msg->id != m_songDesireId)
     {

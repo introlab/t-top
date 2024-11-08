@@ -43,7 +43,7 @@ LedEmotionDesire::LedEmotionDesire(string name, uint16_t intensity) : Desire(int
 
 LedAnimationDesire::LedAnimationDesire(
     string name,
-    vector<daemon_ros_client::LedColor> colors,
+    vector<daemon_ros_client::msg::LedColor> colors,
     double speed,
     double durationS,
     uint16_t intensity)

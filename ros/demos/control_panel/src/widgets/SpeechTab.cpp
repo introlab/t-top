@@ -9,17 +9,22 @@
 
 using namespace std;
 
-SpeechTab::SpeechTab(ros::NodeHandle& nodeHandle, shared_ptr<DesireSet> desireSet, QWidget* parent)
+SpeechTab::SpeechTab(rclcpp::Node::SharedPtr node, shared_ptr<DesireSet> desireSet, QWidget* parent)
     : QWidget(parent),
-      m_nodeHandle(nodeHandle),
+      m_node(std::move(node)),
       m_desireSet(std::move(desireSet))
 {
     createUi();
     m_desireSet->addObserver(this);
 
-    m_speechToTextSubscriber =
-        nodeHandle.subscribe("speech_to_text/transcript", 1, &SpeechTab::speechToTextSubscriberCallback, this);
-    m_vadSubscriber = nodeHandle.subscribe("voice_activity", 1, &SpeechTab::vadSubscriberCallback, this);
+    m_speechToTextSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
+        "speech_to_text/transcript",
+        1,
+        [this](const perception_msgs::msg::Transcript::SharedPtr msg) { speechToTextSubscriberCallback(msg); });
+    m_vadSubscriber = m_node->create_subscription<audio_utils_msgs::msg::VoiceActivity>(
+        "voice_activity",
+        1,
+        [this](const audio_utils_msgs::msg::VoiceActivity::SharedPtr msg) { vadSubscriberCallback(msg); });
 }
 
 SpeechTab::~SpeechTab()
@@ -80,12 +85,12 @@ void SpeechTab::onVadButtonToggled(bool checked)
     }
 }
 
-void SpeechTab::speechToTextSubscriberCallback(const speech_to_text::Transcript::ConstPtr& msg)
+void SpeechTab::speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
 {
     invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->text)); });
 }
 
-void SpeechTab::vadSubscriberCallback(const audio_utils::VoiceActivity::ConstPtr& msg)
+void SpeechTab::vadSubscriberCallback(const audio_utils_msgs::msg::VoiceActivity::SharedPtr msg)
 {
     invokeLater(
         [=]()

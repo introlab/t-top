@@ -1,24 +1,23 @@
 #ifndef _DAEMON_ROS_CLIENT_NODE_H_
 #define _DAEMON_ROS_CLIENT_NODE_H_
 
-#include <QCoreApplication>
 #include "WebSocketProtocolWrapper.h"
 
-#include <ros/ros.h>
-#include <std_msgs/Empty.h>
-#include <std_msgs/UInt8.h>
-#include <std_msgs/Float32.h>
-#include <sensor_msgs/Imu.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/TransformStamped.h>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/empty.hpp>
+#include <std_msgs/msg/u_int8.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 
-#include <daemon_ros_client/BaseStatus.h>
-#include <daemon_ros_client/MotorStatus.h>
-#include <daemon_ros_client/LedColor.h>
-#include <daemon_ros_client/LedColors.h>
+#include <daemon_ros_client/msg/base_status.hpp>
+#include <daemon_ros_client/msg/motor_status.hpp>
+#include <daemon_ros_client/msg/led_color.hpp>
+#include <daemon_ros_client/msg/led_colors.hpp>
 
 #include <SerialCommunication.h>
 
@@ -29,59 +28,45 @@ constexpr uint32_t PubQueueSize = 1;
 constexpr uint32_t SubQueueSize = 10;
 constexpr const char* HEAD_POSE_FRAME_ID = "stewart_base";
 
-struct DaemonRosClientNodeConfiguration
+class DaemonRosClientNode : public QObject, public rclcpp::Node
 {
-    double baseLinkTorsoBaseDeltaZ;
+    Q_OBJECT
 
-    DaemonRosClientNodeConfiguration() : baseLinkTorsoBaseDeltaZ(0.0)
-    {
+    double m_baseLinkTorsoBaseDeltaZ;
 
-    }
-};
+    WebSocketProtocolWrapper* m_websocketProtocolWrapper;
 
-class DaemonRosClientNode : public QCoreApplication
-{
+    rclcpp::Publisher<daemon_ros_client::msg::BaseStatus>::SharedPtr m_baseStatusPub;
+    rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr m_startButtonPressedPub;
+    rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr m_stopButtonPressedPub;
+    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr m_imuPub;
+    rclcpp::Publisher<daemon_ros_client::msg::MotorStatus>::SharedPtr m_motorStatusPub;
 
-    WebSocketProtocolWrapper *m_websocketProtocolWrapper;
-
-    ros::NodeHandle& m_nodeHandle;
-    DaemonRosClientNodeConfiguration m_configuration;
-
-    ros::Publisher m_baseStatusPub;
-    ros::Publisher m_startButtonPressedPub;
-    ros::Publisher m_stopButtonPressedPub;
-    ros::Publisher m_imuPub;
-    ros::Publisher m_motorStatusPub;
-
-    ros::Subscriber m_setVolumeSub;
-    ros::Subscriber m_setLedColorsSub;
-    ros::Subscriber m_setTorsoOrientationSub;
-    ros::Subscriber m_setHeadPoseSub;
+    rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr m_setVolumeSub;
+    rclcpp::Subscription<daemon_ros_client::msg::LedColors>::SharedPtr m_setLedColorsSub;
+    rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr m_setTorsoOrientationSub;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr m_setHeadPoseSub;
 
     tf2_ros::TransformBroadcaster m_tfBroadcaster;
 
-    Q_OBJECT
-
-    public:
-
-    DaemonRosClientNode(int &argc, char* argv[], ros::NodeHandle& nodeHandle, DaemonRosClientNodeConfiguration configuration);
+public:
+    DaemonRosClientNode();
 
     void cleanup();
 
-    private:
-
+private:
     void initROS();
     void initWebSocketProtocolWrapper();
-    void setVolumeCallback(const std_msgs::UInt8::ConstPtr& msg);
-    void setLedColorsCallback(const daemon_ros_client::LedColors::ConstPtr& msg);
-    void setTorsoOrientationCallback(const std_msgs::Float32::ConstPtr& msg);
-    void setHeadPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
+    void setVolumeCallback(const std_msgs::msg::UInt8::SharedPtr& msg);
+    void setLedColorsCallback(const daemon_ros_client::msg::LedColors::SharedPtr& msg);
+    void setTorsoOrientationCallback(const std_msgs::msg::Float32::SharedPtr& msg);
+    void setHeadPoseCallback(const geometry_msgs::msg::PoseStamped::SharedPtr& msg);
     void handleBaseStatus(Device source, const BaseStatusPayload& payload);
     void handleButtonPressed(Device source, const ButtonPressedPayload& payload);
     void handleImuData(Device source, const ImuDataPayload& payload);
     void handleMotorStatus(Device source, const MotorStatusPayload& payload);
-    void sendTorsoTf(const ros::Time& stamp, float torsoOrientation);
-    void sendHeadTf(const ros::Time& stamp, const geometry_msgs::Pose& pose);
+    void sendTorsoTf(const rclcpp::Time& stamp, float torsoOrientation);
+    void sendHeadTf(const rclcpp::Time& stamp, const geometry_msgs::msg::Pose& pose);
 };
 
-#endif //_DAEMON_ROS_CLIENT_NODE_H_
+#endif  //_DAEMON_ROS_CLIENT_NODE_H_

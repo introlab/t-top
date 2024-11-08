@@ -2,12 +2,12 @@
 
 import traceback
 from datetime import datetime
-import rospy
+import rclpy
 import message_filters
 
 from sensor_msgs.msg import Image, CameraInfo
 from geometry_msgs.msg import Point
-from video_analyzer.msg import VideoAnalysis, VideoAnalysisObject
+from perception_msgs.msg import VideoAnalysis, VideoAnalysisObject
 
 import hbba_lite
 
@@ -19,18 +19,19 @@ MM_TO_M = 0.001
 
 class VideoAnalyzer3dNode(VideoAnalyzerNode):
     def __init__(self):
-        super().__init__()
-        self._depth_mean_offset = rospy.get_param('~depth_mean_offset', 1)
+        super().__init__('video_analyzer_3d_node')
 
-        color_image_sub = message_filters.Subscriber('color_image_raw', Image)
-        depth_image_sub = message_filters.Subscriber('depth_image_raw', Image)
-        depth_camera_info_sub = message_filters.Subscriber('depth_camera_info', CameraInfo)
-        self._image_ts = hbba_lite.ThrottlingHbbaApproximateTimeSynchronizer([color_image_sub, depth_image_sub, depth_camera_info_sub],
+        self._depth_mean_offset = self.declare_parameter('depth_mean_offset', 1).get_parameter_value().integer_value
+
+        color_image_sub = message_filters.Subscriber(self, Image, 'color_image_raw')
+        depth_image_sub = message_filters.Subscriber(self, Image, 'depth_image_raw')
+        depth_camera_info_sub = message_filters.Subscriber(self, CameraInfo, 'depth_camera_info')
+        self._image_ts = hbba_lite.ThrottlingHbbaApproximateTimeSynchronizer(self, [color_image_sub, depth_image_sub, depth_camera_info_sub],
                                                                              1, 0.03, self._image_cb, 'image_raw/filter_state')
 
     def _image_cb(self, color_image_msg, depth_image_msg, depth_camera_info):
         if depth_image_msg.encoding != '16UC1':
-            rospy.logerr('Invalid depth image encoding')
+            self.get_logger().error('Invalid depth image encoding')
 
         try:
             start_time = datetime.now()
@@ -46,13 +47,12 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
             self._video_analysis_pub.publish(video_analysis_msg)
             self._publish_analysed_image(color_image, color_image_msg.header, object_analyses)
         except Exception as e:
-            rospy.logerr(f'Image analysis error: {e} \n {traceback.format_exc()}')
+            self.get_logger().error(f'Image analysis error: {e} \n {traceback.format_exc()}')
 
     def _analysis_to_msg(self, object_analyses, semantic_segmentation, header, color_image, depth_image, depth_camera_info):
         image_height, image_width, _ = color_image.shape
 
         msg = VideoAnalysis()
-        msg.header.seq = header.seq
         msg.header.stamp = header.stamp
         msg.header.frame_id = depth_camera_info.header.frame_id
         msg.contains_3d_positions = True
@@ -113,7 +113,7 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
         y1 = int(y + self._depth_mean_offset)
         depth_pixels = depth_image[y0:y1, x0:x1]
         depth = depth_pixels[depth_pixels != 0].mean()
-        K = depth_camera_info.K
+        K = depth_camera_info.k
 
         point = Point()
         point.x = (x - K[2]) * depth / K[0] * MM_TO_M
@@ -123,13 +123,18 @@ class VideoAnalyzer3dNode(VideoAnalyzerNode):
 
 
 def main():
-    rospy.init_node('video_analyzer_3d_node')
+    rclpy.init()
     video_analyzer_node = VideoAnalyzer3dNode()
-    video_analyzer_node.run()
+
+    try:
+        video_analyzer_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analyzer_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

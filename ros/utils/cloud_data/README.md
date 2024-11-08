@@ -10,8 +10,8 @@ This node gets data location, the current local weather and the local weather fo
 
 #### Parameters
 
-- `language` (string): The language for the weather description (en or fr).
-- `timeout_s` (double): The request timeout in seconds.
+- `language` (string): The language for the weather description (en or fr). The default value is 'en'.
+- `timeout_s` (double): The request timeout in seconds. The default value is 10.0.
 
 #### Services
 

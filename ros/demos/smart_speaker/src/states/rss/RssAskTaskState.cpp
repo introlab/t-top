@@ -11,8 +11,8 @@ RssAskTaskState::RssAskTaskState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : TalkState(language, stateManager, desireSet, nodeHandle, type_index(typeid(RssWaitAnswerState)))
+    rclcpp::Node::SharedPtr node)
+    : TalkState(language, stateManager, desireSet, move(node), type_index(typeid(RssWaitAnswerState)))
 {
 }
 

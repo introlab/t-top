@@ -1,0 +1,118 @@
+<launch>
+    <arg name="visualization" default="false"/>
+    <arg name="simulation" default="false"/>
+    <arg name="camera_2d_wide_enabled" default="false"/>
+    <arg name="use_echo_cancellation" default="false"/>
+    <arg name="neural_network_inference_type" default="trt_gpu"/>
+    <arg name="is_stand_alone" default="false"/>
+    <arg name="verify_ssl" default="true"/>
+    <arg name="fullscreen" default="true"/>
+
+    <!-- Platform nodes -->
+    <include file="$(find-pkg-share t_top)/launch/platform.launch.xml">
+        <arg name="use_echo_cancellation" value="$(var use_echo_cancellation)"/>
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="opentera_playback_node_enabled" value="true"/>
+    </include>
+
+    <!-- Perceptions -->
+    <include file="$(find-pkg-share t_top)/launch/perceptions/ego_noise_reduction.launch.xml">
+        <arg name="ego_noise_reduction_perception_delay" value="0"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml">
+        <arg name="visualization" value="$(var visualization)"/>
+        <arg name="use_echo_cancellation" value="$(var use_echo_cancellation)"/>
+        <arg name="odas_perception_delay" value="0"/>
+    </include>
+
+    <include file="$(find-pkg-share t_top)/launch/perceptions/video_analyzer.launch.xml">
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="neural_network_inference_type" value="$(var neural_network_inference_type)"/>
+
+        <arg name="video_analyzer_3d_use_descriptor_yolo" value="false"/>
+        <arg name="video_analyzer_3d_yolo_model" value="yolo_v7_tiny_coco"/>
+        <arg name="video_analyzer_3d_pose_enabled" value="true"/>
+        <arg name="video_analyzer_3d_face_descriptor_enabled" value="true"/>
+        <arg name="video_analyzer_3d_cropped_image_enabled" value="false"/>
+
+        <arg name="video_analyzer_2d_wide_use_descriptor_yolo" value="false"/>
+        <arg name="video_analyzer_2d_wide_yolo_model" value="yolo_v7_coco"/>
+        <arg name="video_analyzer_2d_wide_pose_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_face_descriptor_enabled" value="false"/>
+        <arg name="video_analyzer_2d_wide_cropped_image_enabled" value="false"/>
+
+        <arg name="visualization" value="$(var visualization)"/>
+
+        <arg name="video_analyzer_2d_wide_perception_delay" value="0"/>
+        <arg name="video_analyser_3d_perception_delay" value="0"/>
+        <arg name="video_analyzer_confidence_threshold" value="0.5"/>
+        <arg name="video_analyzer_nms_threshold" value="0.5"/>
+        <arg name="video_analyzer_person_probability_threshold" value="0.75"/>
+        <arg name="video_analyzer_pose_confidence_threshold" value="0.4"/>
+    </include>
+
+    <node pkg="connect4" exec="nearest_face_orientation_node.py" name="nearest_face_orientation_node">
+        <param name="nose_confidence_threshold" value="0.4"/>
+        <param name="pitch_offset_rad" value="-0.8"/>
+        <param name="filter_alpha" value="0.65"/>
+        <param name="roll_dead_zone" value="0.05"/>
+
+        <remap from="face_orientation" to="local_face_orientation"/>
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+    </node>
+
+    <!-- Behaviors -->
+    <node pkg="connect4" exec="nearest_face_following_orientation_replication_node.py" name="nearest_face_following_orientation_replication_node">
+        <param name="simulation" value="false"/>
+        <param name="control_frequency" value="30.0"/>
+        <param name="torso_control_alpha" value="0.2"/>
+        <param name="head_control_alpha" value="0.1"/>
+        <param name="head_control_pitch_up_alpha_gain" value="2.0"/>
+        <param name="min_head_roll_rad" value="-0.3"/>
+        <param name="max_head_roll_rad" value="0.3"/>
+        <param name="min_head_pitch_rad" value="-0.15"/>
+        <param name="max_head_pitch_rad" value="0.3"/>
+        <param name="nose_confidence_threshold" value="0.4"/>
+
+        <remap from="video_analysis" to="camera_3d/video_analysis"/>
+        <remap from="face_orientation_peer_data" to="remote_face_orientation"/>
+
+        <remap from="pose/filter_state" to="nearest_face_following/filter_state"/>
+    </node>
+
+    <include file="$(find-pkg-share t_top)/launch/behaviors/led_animations.launch.xml">
+        <arg name="led_animations_behavior_delay" value="0.0"/>
+    </include>
+
+    <!-- WebRTC -->
+    <include file="$(find-pkg-share t_top)/launch/behaviors/opentera.launch.xml">
+        <arg name="is_stand_alone" value="$(var is_stand_alone)"/>
+        <arg name="verify_ssl" value="$(var verify_ssl)"/>
+        <arg name="use_robot_gui" value="false"/>
+        <arg name="use_outgoing_face_cropping" value="true"/>
+    </include>
+
+    <include file="$(find-pkg-share opentera_webrtc_ros)/launch/ros_data_channel_client.launch.xml">
+        <arg name="name" value="face_orientation_streamer"/>
+        <arg name="is_stand_alone" value="$(var is_stand_alone)"/>
+
+        <arg name="client_name" value="Face Orientation Data Channel"/>
+        <arg name="room_name" value="face_orientation"/>
+        <arg name="verify_ssl" value="$(var verify_ssl)"/>
+
+        <arg name="input_topic" value="local_face_orientation"/>
+        <arg name="output_topic" value="remote_face_orientation"/>
+    </include>
+
+    <!-- GUI -->
+    <node pkg="connect4" exec="connect4_node" name="connect4_node" output="screen">
+        <param name="fullscreen" value="$(var fullscreen)"/>
+    </node>
+
+    <!-- Video Recording -->
+    <include file="$(find-pkg-share t_top)/launch/recording.launch.xml">
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+    </include>
+
+</launch>

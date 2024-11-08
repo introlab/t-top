@@ -2,11 +2,12 @@
 
 import traceback
 from datetime import datetime
-import rospy
+
+import rclpy
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
-from video_analyzer.msg import VideoAnalysis, VideoAnalysisObject
+from perception_msgs.msg import VideoAnalysis, VideoAnalysisObject
 
 import hbba_lite
 
@@ -15,8 +16,8 @@ from video_analyzer.lib_video_analyzer_node import VideoAnalyzerNode, convert_po
 
 class VideoAnalyzer2dNode(VideoAnalyzerNode):
     def __init__(self):
-        super().__init__()
-        self._image_sub = hbba_lite.ThrottlingHbbaSubscriber('image_raw', Image, self._image_cb, queue_size=1)
+        super().__init__('video_analyzer_2d_node')
+        self._image_sub = hbba_lite.ThrottlingHbbaSubscriber(self, Image, 'image_raw', self._image_cb, 1)
 
     def _image_cb(self, color_image_msg):
         try:
@@ -30,7 +31,7 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
             self._video_analysis_pub.publish(video_analysis_msg)
             self._publish_analysed_image(color_image, color_image_msg.header, object_analyses)
         except Exception as e:
-            rospy.logerr(f'Image analysis error: {e} \n {traceback.format_exc()}')
+            self.get_logger().error(f'Image analysis error: {e} \n {traceback.format_exc()}')
 
     def _analysis_to_msg(self, object_analyses, semantic_segmentation, header, color_image):
         image_height, image_width, _ = color_image.shape
@@ -77,13 +78,18 @@ class VideoAnalyzer2dNode(VideoAnalyzerNode):
 
 
 def main():
-    rospy.init_node('video_analyzer_2d_node')
+    rclpy.init()
     video_analyzer_node = VideoAnalyzer2dNode()
-    video_analyzer_node.run()
+
+    try:
+        video_analyzer_node.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        video_analyzer_node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+    main()

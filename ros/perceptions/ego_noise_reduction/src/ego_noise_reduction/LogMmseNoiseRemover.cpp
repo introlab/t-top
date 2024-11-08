@@ -8,7 +8,6 @@
 #include <boost/math/special_functions/expint.hpp>
 
 using namespace introlab;
-using namespace boost::math;
 using namespace std;
 
 
@@ -75,7 +74,7 @@ void LogMmseNoiseRemover::updateSpectrum(
 
     m_A = m_aPrioriSnr / (1.f + m_aPrioriSnr);
     m_H = m_A % m_aPosterioriSnr;
-    m_H.transform([](float v) { return -0.5f * expint(-v); });
+    m_H.transform([](float v) { return -0.5f * boost::math::expint(-v); });
     m_H = m_A % arma::exp(m_H);
 
     output = m_H % input;

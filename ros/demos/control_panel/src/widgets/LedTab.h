@@ -5,8 +5,6 @@
 #include <QPushButton>
 #include <QVariant>
 
-#include <ros/ros.h>
-
 #include <hbba_lite/core/DesireSet.h>
 
 #include <memory>
@@ -16,14 +14,12 @@ class LedTab : public QWidget
 {
     Q_OBJECT
 
-    ros::NodeHandle& m_nodeHandle;
-
     std::shared_ptr<DesireSet> m_desireSet;
     QVariant m_ledEmotionDesireId;
     QVariant m_ledAnimationDesireId;
 
 public:
-    LedTab(ros::NodeHandle& nodeHandle, std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
+    LedTab(std::shared_ptr<DesireSet> desireSet, QWidget* parent = nullptr);
     ~LedTab() override;
 
 private slots:

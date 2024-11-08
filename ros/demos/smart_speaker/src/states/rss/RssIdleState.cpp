@@ -14,13 +14,17 @@ RssIdleState::RssIdleState(
     Language language,
     StateManager& stateManager,
     shared_ptr<DesireSet> desireSet,
-    ros::NodeHandle& nodeHandle)
-    : State(language, stateManager, desireSet, nodeHandle)
+    rclcpp::Node::SharedPtr node)
+    : State(language, stateManager, desireSet, move(node))
 {
-    m_robotNameDetectedSubscriber =
-        nodeHandle.subscribe("robot_name_detected", 1, &RssIdleState::robotNameDetectedSubscriberCallback, this);
-    m_personNamesSubscriber =
-        nodeHandle.subscribe("person_names", 1, &RssIdleState::personNamesSubscriberCallback, this);
+    m_robotNameDetectedSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
+        "robot_name_detected",
+        1,
+        [this](const std_msgs::msg::Empty::SharedPtr msg) { robotNameDetectedSubscriberCallback(msg); });
+    m_personNamesSubscriber = m_node->create_subscription<perception_msgs::msg::PersonNames>(
+        "person_names",
+        1,
+        [this](const perception_msgs::msg::PersonNames::SharedPtr msg) { personNamesSubscriberCallback(msg); });
 }
 
 void RssIdleState::enable(const string& parameter, const type_index& previousStageType)
@@ -44,7 +48,7 @@ void RssIdleState::enable(const string& parameter, const type_index& previousSta
     m_desireSet->addDesire(move(faceAnimationDesire));
 }
 
-void RssIdleState::robotNameDetectedSubscriberCallback(const std_msgs::Empty::ConstPtr& msg)
+void RssIdleState::robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg)
 {
     if (!enabled())
     {
@@ -54,7 +58,7 @@ void RssIdleState::robotNameDetectedSubscriberCallback(const std_msgs::Empty::Co
     m_stateManager.switchTo<RssWaitPersonIdentificationState>();
 }
 
-void RssIdleState::personNamesSubscriberCallback(const person_identification::PersonNames::ConstPtr& msg)
+void RssIdleState::personNamesSubscriberCallback(const perception_msgs::msg::PersonNames::SharedPtr msg)
 {
     if (!enabled() || msg->names.size() == 0)
     {
@@ -66,7 +70,7 @@ void RssIdleState::personNamesSubscriberCallback(const person_identification::Pe
         msg->names.begin(),
         msg->names.end(),
         back_inserter(names),
-        [](const person_identification::PersonName& name) { return name.name; });
+        [](const perception_msgs::msg::PersonName& name) { return name.name; });
 
     auto mergedNames = mergeNames(names, getAndWord());
     m_stateManager.switchTo<RssAskTaskState>(mergedNames);

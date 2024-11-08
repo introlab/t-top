@@ -3,8 +3,6 @@
 
 #include "../common/WaitAnswerState.h"
 
-#include <std_msgs/String.h>
-
 class RssWaitAnswerState : public WaitAnswerState
 {
     std::string m_weatherWord;
@@ -18,7 +16,7 @@ public:
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle);
+        rclcpp::Node::SharedPtr node);
     ~RssWaitAnswerState() override = default;
 
     DECLARE_NOT_COPYABLE(RssWaitAnswerState);

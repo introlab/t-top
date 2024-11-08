@@ -1,4 +1,4 @@
-Header header
+std_msgs/Header header
 
 float32 torso_orientation
 int16 torso_servo_speed

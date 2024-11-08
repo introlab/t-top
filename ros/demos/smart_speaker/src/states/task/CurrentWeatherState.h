@@ -3,16 +3,19 @@
 
 #include "../common/TalkState.h"
 
-#include <cloud_data/CurrentLocalWeather.h>
+#include <cloud_data/srv/current_local_weather.hpp>
 
 class CurrentWeatherState : public TalkState
 {
+    rclcpp::CallbackGroup::SharedPtr m_weatherClientCallbackGroup;
+    rclcpp::Client<cloud_data::srv::CurrentLocalWeather>::SharedPtr m_weatherClient;
+
 public:
     CurrentWeatherState(
         Language language,
         StateManager& stateManager,
         std::shared_ptr<DesireSet> desireSet,
-        ros::NodeHandle& nodeHandle,
+        rclcpp::Node::SharedPtr node,
         std::type_index nextStateType);
     ~CurrentWeatherState() override = default;
 
@@ -26,7 +29,7 @@ protected:
     std::string generateFrenchText(const std::string& _) override;
 
 private:
-    void getCurrentLocalWeather(bool& ok, cloud_data::CurrentLocalWeather& srv);
+    void getCurrentLocalWeather(bool& ok, cloud_data::srv::CurrentLocalWeather::Response& response);
 };
 
 inline std::type_index CurrentWeatherState::type() const
