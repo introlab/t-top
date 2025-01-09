@@ -6,4 +6,6 @@ build:
     - -DCMAKE_BUILD_TYPE=Release
     - -DCMAKE_CXX_FLAGS=-march=native -ffast-math
     - -DCMAKE_C_FLAGS=-march=native -ffast-math
+    - -DOPTIONAL_BUILD_TESTS:BOOL=OFF # For tl-optional tests
+    - -Wno-dev # For a warning with torchvision's usage of CUDA with policy CMP0077
   symlink-install: true

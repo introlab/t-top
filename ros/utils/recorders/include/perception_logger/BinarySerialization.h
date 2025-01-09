@@ -183,7 +183,7 @@ template<class T>
 Bytes serializeToBytesNoCopy(T& v)
 {
     return serializeToBytesNoCopy(const_cast<const T&>(v));
-};
+}
 
 template<class T>
 Bytes serializeToBytesNoCopy(T&&) = delete;  // Disallow temporaries
@@ -217,7 +217,7 @@ template<class T>
 Bytes serializeToBytesNoCopy(std::vector<T>& v)
 {
     return serializeToBytesNoCopy(const_cast<const std::vector<T>&>(v));
-};
+}
 
 template<class T>
 Bytes serializeToBytesNoCopy(std::vector<T>&&) = delete;  // Disallow temporaries

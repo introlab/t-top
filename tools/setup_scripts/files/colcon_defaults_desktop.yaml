@@ -1,0 +1,9 @@
+build:
+  cmake-args:
+    - -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    - --no-warn-unused-cli
+    - -DPYTHON_EXECUTABLE=/usr/bin/python3
+    - -DCMAKE_BUILD_TYPE=Debug
+    - -DOPTIONAL_BUILD_TESTS:BOOL=OFF # For tl-optional tests
+    - -Wno-dev # For a warning with torchvision's usage of CUDA with policy CMP0077
+  symlink-install: true

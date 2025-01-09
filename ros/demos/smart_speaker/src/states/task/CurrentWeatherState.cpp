@@ -25,7 +25,7 @@ CurrentWeatherState::CurrentWeatherState(
         m_weatherClientCallbackGroup);
 }
 
-string CurrentWeatherState::generateEnglishText(const string& _)
+string CurrentWeatherState::generateEnglishText([[maybe_unused]] const string& _)
 {
     bool ok;
     cloud_data::srv::CurrentLocalWeather::Response response;
@@ -49,7 +49,7 @@ string CurrentWeatherState::generateEnglishText(const string& _)
     return ss.str();
 }
 
-string CurrentWeatherState::generateFrenchText(const string& _)
+string CurrentWeatherState::generateFrenchText([[maybe_unused]] const string& _)
 {
     bool ok;
     cloud_data::srv::CurrentLocalWeather::Response response;

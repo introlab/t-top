@@ -27,7 +27,7 @@ ListAlarmsCommandExecutor::ListAlarmsCommandExecutor(StateManager& stateManager,
 
 ListAlarmsCommandExecutor::~ListAlarmsCommandExecutor() {}
 
-void ListAlarmsCommandExecutor::executeSpecific(const shared_ptr<ListAlarmsCommand>& command)
+void ListAlarmsCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<ListAlarmsCommand>& command)
 {
     stringstream ss;
     auto alarms = m_alarmManager.listAlarms();

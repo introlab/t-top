@@ -86,7 +86,7 @@ void ConstantNoiseEstimator::reset() {}
 
 void ConstantNoiseEstimator::estimate(
     arma::fvec& noiseMagnitudeSpectrum,
-    const arma::cx_fvec& signalSpectrum,
+    [[maybe_unused]] const arma::cx_fvec& signalSpectrum,
     size_t channelIndex)
 {
     noiseMagnitudeSpectrum = m_noiseMagnitudeSpectrum.col(channelIndex);

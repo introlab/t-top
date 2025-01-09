@@ -40,7 +40,7 @@ SpectralSubtractionNoiseRemover::SpectralSubtractionNoiseRemover(
 SpectralSubtractionNoiseRemover::~SpectralSubtractionNoiseRemover() {}
 
 void SpectralSubtractionNoiseRemover::updateSpectrum(
-    size_t channelIndex,
+    [[maybe_unused]] size_t channelIndex,
     const arma::cx_fvec& input,
     arma::cx_fvec& output,
     const arma::fvec& noiseMagnitudeSpectrum)

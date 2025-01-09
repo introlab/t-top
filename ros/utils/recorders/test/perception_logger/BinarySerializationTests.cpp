@@ -77,7 +77,6 @@ TEST(BinarySerializationTests, serializeToBytesNoCopy_vectorUint32_shouldReturnL
     Bytes bytes = serializeToBytesNoCopy(values);
     ASSERT_EQ(bytes.size(), 8);
 
-    const float* ptr = reinterpret_cast<const float*>(bytes.data());
     EXPECT_EQ(bytes.data()[0], byte{1});
     EXPECT_EQ(bytes.data()[1], byte{2});
     EXPECT_EQ(bytes.data()[2], byte{3});

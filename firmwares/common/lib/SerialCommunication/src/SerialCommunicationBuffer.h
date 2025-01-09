@@ -70,7 +70,7 @@ inline bool write(uint8_t* data, size_t& writeIndex, size_t maxSize, const bool&
 
 template<class T>
 typename std::enable_if<!std::is_enum<T>::value && !std::is_same<T, bool>::value, tl::optional<T>>::type
-    read(const uint8_t* data, size_t writeIndex, size_t& readIndex, size_t maxSize)
+    read(const uint8_t* data, size_t writeIndex, size_t& readIndex, [[maybe_unused]] size_t maxSize)
 {
     static_assert(
         std::is_integral<T>::value || std::is_floating_point<T>::value,

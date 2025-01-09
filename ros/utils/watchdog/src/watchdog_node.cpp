@@ -73,7 +73,7 @@ private:
         RCLCPP_INFO_STREAM(get_logger(), "Topic type found: " << it->second[0]);
 
         m_subscriber = create_generic_subscription(m_topic, it->second[0], 1,
-            [this](std::shared_ptr<rclcpp::SerializedMessage> msg)
+            [this]([[maybe_unused]] std::shared_ptr<rclcpp::SerializedMessage> msg)
             {
                 topicCallback();
             });

@@ -47,7 +47,7 @@ Date Date::now()
 
 int Date::weekDay() const
 {
-    tm buffer = {0, 0, 0, day, month, year - TM_YEAR_OFFSET};
+    tm buffer = {0, 0, 0, day, month, year - TM_YEAR_OFFSET, {}, {}, {}, {}, {}};
     time_t tmp = mktime(&buffer);
     localtime_r(&tmp, &buffer);
     return buffer.tm_wday;

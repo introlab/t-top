@@ -12,7 +12,7 @@ IncreaseVolumeCommandExecutor::IncreaseVolumeCommandExecutor(StateManager& state
 
 IncreaseVolumeCommandExecutor::~IncreaseVolumeCommandExecutor() {}
 
-void IncreaseVolumeCommandExecutor::executeSpecific(const shared_ptr<IncreaseVolumeCommand>& command)
+void IncreaseVolumeCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<IncreaseVolumeCommand>& command)
 {
     m_volumeManager.setVolume(m_volumeManager.getVolume() + 5.f);
     m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
@@ -26,7 +26,7 @@ DecreaseVolumeCommandExecutor::DecreaseVolumeCommandExecutor(StateManager& state
 
 DecreaseVolumeCommandExecutor::~DecreaseVolumeCommandExecutor() {}
 
-void DecreaseVolumeCommandExecutor::executeSpecific(const shared_ptr<DecreaseVolumeCommand>& command)
+void DecreaseVolumeCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<DecreaseVolumeCommand>& command)
 {
     m_volumeManager.setVolume(m_volumeManager.getVolume() - 5.f);
     m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
@@ -40,7 +40,7 @@ SetVolumeCommandExecutor::SetVolumeCommandExecutor(StateManager& stateManager, V
 
 SetVolumeCommandExecutor::~SetVolumeCommandExecutor() {}
 
-void SetVolumeCommandExecutor::executeSpecific(const shared_ptr<SetVolumeCommand>& command)
+void SetVolumeCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<SetVolumeCommand>& command)
 {
     m_volumeManager.setVolume(command->volumePercent().value());
     m_stateManager.switchTo<TalkState>(*getAskNextCommandParameter());
@@ -54,7 +54,7 @@ GetVolumeCommandExecutor::GetVolumeCommandExecutor(StateManager& stateManager, V
 
 GetVolumeCommandExecutor::~GetVolumeCommandExecutor() {}
 
-void GetVolumeCommandExecutor::executeSpecific(const shared_ptr<GetVolumeCommand>& command)
+void GetVolumeCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<GetVolumeCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         Formatter::format(

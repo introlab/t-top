@@ -51,7 +51,6 @@ void WaitAnswerState::enable(const string& parameter, const type_index& previous
     m_desireSet->addDesire(move(faceFollowingDesire));
     m_desireSet->addDesire(move(faceAnimationDesire));
 
-    constexpr bool ONE_SHOT = true;
     m_timeoutTimer = m_node->create_wall_timer(chrono::seconds(TIMEOUT_S), [this]() { timeoutTimerCallback(); });
 }
 

@@ -52,13 +52,16 @@ struct ValueParser
 template<>
 struct ValueParser<bool>
 {
-    static bool parse(const std::string& key, const std::string& valueStr) { return toLowerString(valueStr) == "true"; }
+    static bool parse([[maybe_unused]] const std::string& key, const std::string& valueStr)
+    {
+        return toLowerString(valueStr) == "true";
+    }
 };
 
 template<>
 struct ValueParser<std::string>
 {
-    static std::string parse(const std::string& key, const std::string& valueStr) { return valueStr; }
+    static std::string parse([[maybe_unused]] const std::string& key, const std::string& valueStr) { return valueStr; }
 };
 
 template<class T>

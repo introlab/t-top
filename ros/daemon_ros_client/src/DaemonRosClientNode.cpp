@@ -146,7 +146,7 @@ void DaemonRosClientNode::setHeadPoseCallback(const geometry_msgs::msg::PoseStam
         });
 }
 
-void DaemonRosClientNode::handleBaseStatus(Device source, const BaseStatusPayload& payload)
+void DaemonRosClientNode::handleBaseStatus([[maybe_unused]] Device source, const BaseStatusPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
     daemon_ros_client::msg::BaseStatus msg;
@@ -170,7 +170,7 @@ void DaemonRosClientNode::handleBaseStatus(Device source, const BaseStatusPayloa
     m_baseStatusPub->publish(msg);
 }
 
-void DaemonRosClientNode::handleButtonPressed(Device source, const ButtonPressedPayload& payload)
+void DaemonRosClientNode::handleButtonPressed([[maybe_unused]] Device source, const ButtonPressedPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
     switch (payload.button)
@@ -187,7 +187,7 @@ void DaemonRosClientNode::handleButtonPressed(Device source, const ButtonPressed
     }
 }
 
-void DaemonRosClientNode::handleImuData(Device source, const ImuDataPayload& payload)
+void DaemonRosClientNode::handleImuData([[maybe_unused]] Device source, const ImuDataPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
     sensor_msgs::msg::Imu msg;
@@ -210,7 +210,7 @@ void DaemonRosClientNode::handleImuData(Device source, const ImuDataPayload& pay
     m_imuPub->publish(msg);
 }
 
-void DaemonRosClientNode::handleMotorStatus(Device source, const MotorStatusPayload& payload)
+void DaemonRosClientNode::handleMotorStatus([[maybe_unused]] Device source, const MotorStatusPayload& payload)
 {
     // WARNING must be tread safe, called from Qt Thread
     daemon_ros_client::msg::MotorStatus msg;

@@ -24,7 +24,7 @@ TalkState::~TalkState()
     m_desireSet->removeObserver(this);
 }
 
-void TalkState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+void TalkState::onDesireSetChanged([[maybe_unused]] const std::vector<std::unique_ptr<Desire>>& _)
 {
     if (!enabled() || m_desireSet->contains(m_talkDesireId))
     {

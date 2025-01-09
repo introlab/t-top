@@ -49,9 +49,9 @@ LedAnimationDesire::LedAnimationDesire(
     uint16_t intensity)
     : Desire(intensity),
       m_name(move(name)),
-      m_colors(move(colors)),
+      m_durationS(durationS),
       m_speed(speed),
-      m_durationS(durationS)
+      m_colors(move(colors))
 {
 }
 

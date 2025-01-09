@@ -286,7 +286,7 @@ void AlarmManager::informPerformedAlarms(const vector<int> alarmIds)
     }
 
     stringstream inClause;
-    for (int i = 0; i < alarmIds.size(); i++)
+    for (size_t i = 0; i < alarmIds.size(); i++)
     {
         if (i > 0)
         {
@@ -303,7 +303,7 @@ void AlarmManager::informPerformedAlarms(const vector<int> alarmIds)
         "UPDATE alarm SET last_alarm_unixepoch=STRFTIME('%s') WHERE id IN (" + inClause.str() + ")");
 
 
-    for (int i = 0; i < alarmIds.size(); i++)
+    for (size_t i = 0; i < alarmIds.size(); i++)
     {
         deleteFrom.bind(i + 2, alarmIds[i]);
         update.bind(i + 1, alarmIds[i]);

@@ -23,7 +23,7 @@
 #endif
 
 #define STR_IMPL_(x) #x
-#define STR(x) STR_IMPL_(x)
+#define STR(x)       STR_IMPL_(x)
 
 class WebSocketProtocolWrapper : public QObject
 {
@@ -35,15 +35,22 @@ public:
     static constexpr const int ROS_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT;
     static constexpr const int CLI_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT;
     static constexpr const int TRAY_DEFAULT_CLIENT_PORT = WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT;
-    static constexpr const char* ROS_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT);
-    static constexpr const char* CLI_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT);
-    static constexpr const char* TRAY_DEFAULT_CLIENT_URL = "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT);
+    static constexpr const char* ROS_DEFAULT_CLIENT_URL =
+        "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_ROS_DEFAULT_CLIENT_PORT);
+    static constexpr const char* CLI_DEFAULT_CLIENT_URL =
+        "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_CLI_DEFAULT_CLIENT_PORT);
+    static constexpr const char* TRAY_DEFAULT_CLIENT_URL =
+        "ws://localhost:" STR(WEBSOCKET_PROTOCOL_WRAPPER_TRAY_DEFAULT_CLIENT_PORT);
 
-    explicit WebSocketProtocolWrapper(QWebSocket* websocket, QObject* parent=nullptr);
-    explicit WebSocketProtocolWrapper(const QUrl& url, QObject* parent=nullptr);
+    explicit WebSocketProtocolWrapper(QWebSocket* websocket, QObject* parent = nullptr);
+    explicit WebSocketProtocolWrapper(const QUrl& url, QObject* parent = nullptr);
 
     template<class Payload>
-    void send(Device source, Device destination, const Payload& payload, qint64 timestamp_ms=QDateTime::currentMSecsSinceEpoch());
+    void send(
+        Device source,
+        Device destination,
+        const Payload& payload,
+        qint64 timestamp_ms = QDateTime::currentMSecsSinceEpoch());
 
 signals:
     void newBaseStatus(Device source, const BaseStatusPayload& payload);
@@ -62,7 +69,7 @@ signals:
     void disconnected();
 
 protected slots:
-    void binaryMessageReceived(const QByteArray &message);
+    void binaryMessageReceived(const QByteArray& message);
     void websocketConnected();
     void websocketDisconnected();
     void websocketErrorOccurred(QAbstractSocket::SocketError error);
@@ -75,7 +82,11 @@ private:
 };
 
 template<class Payload>
-void WebSocketProtocolWrapper::send(Device source, Device destination, const Payload& payload, qint64 timestamp_ms)
+void WebSocketProtocolWrapper::send(
+    Device source,
+    Device destination,
+    const Payload& payload,
+    [[maybe_unused]] qint64 timestamp_ms)
 {
     Q_ASSERT(m_websocket);
     SerialCommunicationBuffer<SERIAL_COMMUNICATION_BUFFER_SIZE> buffer;
@@ -87,10 +98,10 @@ void WebSocketProtocolWrapper::send(Device source, Device destination, const Pay
     message.header().writeTo(buffer);
     message.payload().writeTo(buffer);
 
-    //Send to websocket (in a single message, with no preamble and no CRC8)
-    m_websocket->sendBinaryMessage(QByteArray((char*) buffer.dataToRead(), buffer.sizeToRead()));
+    // Send to websocket (in a single message, with no preamble and no CRC8)
+    m_websocket->sendBinaryMessage(QByteArray((char*)buffer.dataToRead(), buffer.sizeToRead()));
     m_websocket->flush();
 }
 
 
-#endif // _WEBSOCKET_PROTOCOL_WRAPPER_H_
+#endif  // _WEBSOCKET_PROTOCOL_WRAPPER_H_

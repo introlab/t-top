@@ -513,7 +513,7 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp onnxruntime) = "false" ] ; then
     add_to_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
     add_to_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
-    
+
     sudo -H pip3 install packaging==23.1
     mkdir -p ~/deps
     cd ~/deps
@@ -706,7 +706,7 @@ if [ $(checkstamp ttop_ws_build) = "false" ] ; then
     cd $TTOP_REPO_PATH/../..
 
     mkdir -p ~/.colcon
-    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults.yaml $TTOP_REPO_PATH/../../colcon_defaults.yaml
+    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults_jetson.yaml $TTOP_REPO_PATH/../../colcon_defaults.yaml
 
     colcon build
 

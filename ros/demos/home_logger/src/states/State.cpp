@@ -43,19 +43,19 @@ void State::disable()
     }
 }
 
-void State::onDesireSetChanged(const vector<unique_ptr<Desire>>& desires) {}
+void State::onDesireSetChanged([[maybe_unused]] const vector<unique_ptr<Desire>>& desires) {}
 
-void State::onSpeechToTextTranscriptReceived(const perception_msgs::msg::Transcript::SharedPtr& msg) {}
+void State::onSpeechToTextTranscriptReceived([[maybe_unused]] const perception_msgs::msg::Transcript::SharedPtr& msg) {}
 
 void State::onRobotNameDetected() {}
 
-void State::onVideoAnalysisReceived(const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) {}
+void State::onVideoAnalysisReceived([[maybe_unused]] const perception_msgs::msg::VideoAnalysis::SharedPtr& msg) {}
 
-void State::onAudioAnalysisReceived(const perception_msgs::msg::AudioAnalysis::SharedPtr& msg) {}
+void State::onAudioAnalysisReceived([[maybe_unused]] const perception_msgs::msg::AudioAnalysis::SharedPtr& msg) {}
 
-void State::onPersonNamesDetected(const perception_msgs::msg::PersonNames::SharedPtr& msg) {}
+void State::onPersonNamesDetected([[maybe_unused]] const perception_msgs::msg::PersonNames::SharedPtr& msg) {}
 
-void State::onBaseStatusChanged(const daemon_ros_client::msg::BaseStatus::SharedPtr& msg) {}
+void State::onBaseStatusChanged([[maybe_unused]] const daemon_ros_client::msg::BaseStatus::SharedPtr& msg) {}
 
 void State::onStateTimeout() {}
 
