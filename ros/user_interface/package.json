@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --no-clear",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
@@ -29,7 +29,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "vue-cli-plugin-electron-builder": "^1.3.6",
     "vue-template-compiler": "^2.6.10",
-    "serve":"^14.2.3"
+    "serve": "^14.2.3"
   },
   "eslintConfig": {
     "root": true,
