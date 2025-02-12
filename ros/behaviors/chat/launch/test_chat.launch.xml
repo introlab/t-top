@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="chat" exec="chat_node.py" name="chat_node">
+
+    </node>
+</launch>
