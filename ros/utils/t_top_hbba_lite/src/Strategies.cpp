@@ -264,16 +264,20 @@ ChatStrategy::ChatStrategy(
     : Strategy<ChatDesire>(
           utility,
           {{"sound", 1}},
-          {{"chat/filter_state", FilterConfiguration::onOff()}},
+          {
+            {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}
+          },
           move(filterPool)),
       m_desireSet(move(desireSet)),
       m_node(move(node))
 {
     //TODO verify topics
-    m_transcriptSubscriber = m_node->create_subscription<behavior_msgs::msg::Text>(
-        "/transcript",
+    m_transcriptSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
+        "speech_to_text/transcript",
         1,
-        [this](const behavior_msgs::msg::Text::SharedPtr msg) { transcriptSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -310,7 +314,7 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
 
 }
 
-void ChatStrategy::transcriptSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg)
+void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
 {
     // LISTENING DONE
     disableFilter("vad/filter_state");
@@ -625,13 +629,5 @@ unique_ptr<BaseStrategy> createChatStrategy(
     shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<Strategy<ChatDesire>>(
-        utility,
-        unordered_map<string, uint16_t>{},
-        unordered_map<string, FilterConfiguration>{
-            {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-        },
-        move(filterPool));
+    return make_unique<ChatStrategy>(utility, move(filterPool), move(desireSet), move(node));
 }

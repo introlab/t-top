@@ -15,6 +15,8 @@
 #include <behavior_msgs/msg/done.hpp>
 #include <behavior_msgs/msg/sound_file.hpp>
 
+#include <perception_msgs/msg/transcript.hpp>
+
 #include <memory>
 
 class FaceAnimationStrategy : public Strategy<FaceAnimationDesire>
@@ -181,7 +183,7 @@ class ChatStrategy : public Strategy<ChatDesire>
     std::shared_ptr<DesireSet> m_desireSet;
     std::shared_ptr<rclcpp::Node> m_node;
 
-    rclcpp::Subscription<behavior_msgs::msg::Text>::SharedPtr m_transcriptSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_transcriptSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
 
@@ -201,7 +203,7 @@ protected:
     void onEnabling(const ChatDesire& desire) override;
 
 private:
-    void transcriptSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg);
+    void transcriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
     void chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
