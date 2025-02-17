@@ -1,0 +1,13 @@
+<launch>
+
+    <!-- Behaviors -->
+    <node pkg="chat" exec="chat_node.py" name="chat_node">
+
+    </node>
+
+    <!-- Motivation -->
+    <node pkg="chatbot" exec="chatbot_node" name="chatbot_node" output="screen">
+
+    </node>
+
+</launch>

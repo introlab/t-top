@@ -294,21 +294,47 @@ StrategyType ChatStrategy::strategyType()
 void ChatStrategy::onEnabling(const ChatDesire& desire)
 {
     //DO Something with FSM and enable / disable some filters...
+    // We need to listen first
+    /*
+     {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+    */
+
+    // START LISTENING
+    enableFilter("vad/filter_state");
+    enableFilter("speech_to_text/filter_state");
+
+    // DISABLE TALKING
+    disableFilter("talk/filter_state");
+
 }
 
 void ChatStrategy::transcriptSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg)
 {
-    //DO Something with FSM and enable / disable some filters...
+    // LISTENING DONE
+    disableFilter("vad/filter_state");
+    disableFilter("speech_to_text/filter_state");
+
+    // START TALKING
+    enableFilter("talk/filter_state");
 }
 
 void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     //DO Something with FSM and enable / disable some filters...
+    // STOP TALKING
+    disableFilter("talk/filter_state");
+
+    // START LISTENING
+    enableFilter("vad/filter_state");
+    enableFilter("speech_to_text/filter_state");
 }
 
 void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     //DO Something with FSM and enable / disable some filters...
+    //MIGHT HAVE NOTHING TO DO...
 }
 
 unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
