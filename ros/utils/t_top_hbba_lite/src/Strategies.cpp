@@ -256,6 +256,60 @@ void PlaySoundStrategy::soundDoneSubscriberCallback(const behavior_msgs::msg::Do
     }
 }
 
+ChatStrategy::ChatStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    shared_ptr<rclcpp::Node> node)
+    : Strategy<ChatDesire>(
+          utility,
+          {{"sound", 1}},
+          {{"chat/filter_state", FilterConfiguration::onOff()}},
+          move(filterPool)),
+      m_desireSet(move(desireSet)),
+      m_node(move(node))
+{
+    //TODO verify topics
+    m_transcriptSubscriber = m_node->create_subscription<behavior_msgs::msg::Text>(
+        "/transcript",
+        1,
+        [this](const behavior_msgs::msg::Text::SharedPtr msg) { transcriptSubscriberCallback(msg); });
+
+    m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "chat/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { chatDoneSubscriberCallback(msg); });
+
+    m_talkDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "talk/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { talkDoneSubscriberCallback(msg); });
+}
+
+StrategyType ChatStrategy::strategyType()
+{
+    return StrategyType::get<ChatStrategy>();
+}
+
+void ChatStrategy::onEnabling(const ChatDesire& desire)
+{
+    //DO Something with FSM and enable / disable some filters...
+}
+
+void ChatStrategy::transcriptSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg)
+{
+    //DO Something with FSM and enable / disable some filters...
+}
+
+void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    //DO Something with FSM and enable / disable some filters...
+}
+
+void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    //DO Something with FSM and enable / disable some filters...
+}
 
 unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
@@ -535,6 +589,23 @@ unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> f
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
+        },
+        move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createChatStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    shared_ptr<rclcpp::Node> node,
+    uint16_t utility)
+{
+    return make_unique<Strategy<ChatDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
         },
         move(filterPool));
 }

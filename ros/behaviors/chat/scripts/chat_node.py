@@ -16,6 +16,13 @@ import time_utils
 class ChatNode(rclpy.node.Node):
     def __init__(self):
         super().__init__('chat_node')
+        # Default Ollama server URL
+        self._server_url = "http://localhost:11434/api/chat"
+        self._context = list()
+
+
+    def _generate_default_context(self):
+        pass
 
     def run(self):
         executor = rclpy.executors.MultiThreadedExecutor(num_threads=2)

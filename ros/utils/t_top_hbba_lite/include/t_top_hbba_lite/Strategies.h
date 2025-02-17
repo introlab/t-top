@@ -176,6 +176,37 @@ private:
     void soundDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
+class ChatStrategy : public Strategy<ChatDesire>
+{
+    std::shared_ptr<DesireSet> m_desireSet;
+    std::shared_ptr<rclcpp::Node> m_node;
+
+    rclcpp::Subscription<behavior_msgs::msg::Text>::SharedPtr m_transcriptSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
+
+public:
+    ChatStrategy(
+        uint16_t utility,
+        std::shared_ptr<FilterPool> filterPool,
+        std::shared_ptr<DesireSet> desireSet,
+        std::shared_ptr<rclcpp::Node> node);
+
+    DECLARE_NOT_COPYABLE(ChatStrategy);
+    DECLARE_NOT_MOVABLE(ChatStrategy);
+
+    StrategyType strategyType() override;
+
+protected:
+    void onEnabling(const ChatDesire& desire) override;
+
+private:
+    void transcriptSubscriberCallback(const behavior_msgs::msg::Text::SharedPtr msg);
+    void chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+};
+
+
 std::unique_ptr<BaseStrategy>
     createCamera3dRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
@@ -249,5 +280,10 @@ std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<Filter
 std::unique_ptr<BaseStrategy>
     createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
+std::unique_ptr<BaseStrategy> createChatStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    std::shared_ptr<DesireSet> desireSet,
+    std::shared_ptr<rclcpp::Node> node,
+    uint16_t utility = 1);
 
 #endif
