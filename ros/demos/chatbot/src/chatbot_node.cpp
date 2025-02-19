@@ -17,9 +17,10 @@ constexpr const char* NODE_NAME = "chatbot_node";
 int startNode() {
 
     auto node = rclcpp::Node::make_shared(NODE_NAME);
-
     auto desireSet = make_shared<DesireSet>();
-    auto filterPool = make_shared<RosFilterPool>(node, WAIT_FOR_SERVICE);
+
+    auto rosFilterPool = make_unique<RosFilterPool>(node, WAIT_FOR_SERVICE);
+    auto filterPool = make_shared<RosLogFilterPoolDecorator>(node, move(rosFilterPool));
 
     vector<unique_ptr<BaseStrategy>> strategies;
 
@@ -34,7 +35,6 @@ int startNode() {
 
 
     desireSet->addDesire(make_unique<ChatDesire>());
-
 
     rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
 
