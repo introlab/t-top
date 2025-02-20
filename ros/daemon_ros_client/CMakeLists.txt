@@ -40,8 +40,11 @@ include(../../system/common/common.cmake)
 
 # C++ Nodes
 
-set(app_headers
+set(app_headers_moc
   src/DaemonRosClientNode.h
+)
+
+set(app_headers
   src/QtUtils.h
 )
 
@@ -50,12 +53,13 @@ set (app_sources
   src/DaemonRosClientNode.cpp
 )
 
-qt5_wrap_cpp(app_headers_moc_srcs ${app_headers})
+qt5_wrap_cpp(app_headers_moc_srcs ${app_headers_moc})
 
-add_executable(daemon_ros_client_node ${app_headers} ${app_sources} ${app_headers_moc_srcs})
+add_executable(daemon_ros_client_node ${app_headers} ${app_headers_moc} ${app_sources} ${app_headers_moc_srcs})
 ament_target_dependencies(daemon_ros_client_node rclcpp std_msgs geometry_msgs sensor_msgs tf2 tf2_ros)
 target_link_libraries(daemon_ros_client_node serial_communication_common)
-rosidl_target_interfaces(daemon_ros_client_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+rosidl_get_typesupport_target(typesupport_cpp_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(daemon_ros_client_node ${typesupport_cpp_target})
 install(TARGETS daemon_ros_client_node DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

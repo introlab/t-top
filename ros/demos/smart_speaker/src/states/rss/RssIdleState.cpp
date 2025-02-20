@@ -48,7 +48,7 @@ void RssIdleState::enable(const string& parameter, const type_index& previousSta
     m_desireSet->addDesire(move(faceAnimationDesire));
 }
 
-void RssIdleState::robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg)
+void RssIdleState::robotNameDetectedSubscriberCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
     if (!enabled())
     {

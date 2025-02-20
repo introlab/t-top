@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 project(piper_ros)
 
 
@@ -10,10 +10,6 @@ endif()
 # Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 ## System dependencies are found with CMake's conventions
@@ -28,6 +24,7 @@ ExternalProject_Add(
     fmt_external
     PREFIX "${CMAKE_BINARY_DIR}/fmt"
     URL "https://github.com/fmtlib/fmt/archive/refs/tags/${FMT_VERSION}.zip"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${FMT_DIR}
     CMAKE_ARGS -DFMT_TEST:BOOL=OFF  # Don't build all the tests
 )
@@ -40,6 +37,9 @@ ExternalProject_Add(
     espeak_ng_external
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}/espeak-ng"
     URL "https://github.com/rhasspy/espeak-ng/archive/refs/tags/2023.9.7-4.zip"
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
+    LOG_BUILD ON
+    LOG_OUTPUT_ON_FAILURE ON
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
     CMAKE_ARGS -DUSE_ASYNC:BOOL=OFF
     CMAKE_ARGS -DBUILD_SHARED_LIBS:BOOL=ON
@@ -50,8 +50,9 @@ ExternalProject_Add(
     CMAKE_ARGS -DUSE_SPEECHPLAYER:BOOL=OFF
     CMAKE_ARGS -DEXTRA_cmn:BOOL=ON
     CMAKE_ARGS -DEXTRA_ru:BOOL=ON
+    CMAKE_ARGS -DCMAKE_CXX_FLAGS:STRING=-w -DCMAKE_C_FLAGS:STRING=-w  # Suppress warnings
 )
-include_directories(${CMAKE_INSTALL_PREFIX}/include)
+include_directories(SYSTEM ${CMAKE_INSTALL_PREFIX}/include)
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_compile_definitions(ESPEAK_NG_DATA_PATH="${CMAKE_INSTALL_PREFIX}/share/espeak-ng-data")
 
@@ -89,7 +90,7 @@ if (ONNXRUNTIME_NAME)
     if (NOT EXISTS ${CMAKE_BINARY_DIR}/${ONNXRUNTIME_NAME}/VERSION_NUMBER)
         execute_process(COMMAND tar -xvf ${ONNXRUNTIME_NAME}.tgz WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
-    include_directories(${CMAKE_BINARY_DIR}/${ONNXRUNTIME_NAME}/include)
+    include_directories(SYSTEM ${CMAKE_BINARY_DIR}/${ONNXRUNTIME_NAME}/include)
     set(ONNXRUNTIME_LIBRARIES ${CMAKE_BINARY_DIR}/${ONNXRUNTIME_NAME}/lib/libonnxruntime.so)
 endif()
 
@@ -113,7 +114,7 @@ add_library(
 )
 target_link_libraries(piper_phonemize espeak-ng ${ONNXRUNTIME_LIBRARIES})
 add_dependencies(piper_phonemize espeak_ng_external)
-include_directories(${CMAKE_BINARY_DIR}/piper-phonemize-${PIPER_PHONEMIZE_TAG})
+include_directories(SYSTEM ${CMAKE_BINARY_DIR}/piper-phonemize-${PIPER_PHONEMIZE_TAG})
 
 # ******* Piper Dependency *******
 set(PIPER_TAG ce3d92955bf09322dd3cfe7df2c570edbf2a8648)
@@ -128,7 +129,7 @@ if (NOT EXISTS ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/CMakeLists.txt)
     string(REPLACE "spdlog::should_log(spdlog::level::debug)" "false" FILE_CONTENTS "${FILE_CONTENTS}")
     file(WRITE ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp/piper.cpp "${FILE_CONTENTS}")
 endif()
-include_directories(${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp)
+include_directories(SYSTEM ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp)
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
@@ -136,15 +137,20 @@ find_package(rclcpp REQUIRED)
 find_package(behavior_srvs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
+# Include piper.cpp through an object library to hide warnings from its code
+add_library(piper_objlib OBJECT ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp/piper.cpp)
+add_dependencies(piper_objlib espeak_ng_external)
+target_compile_options(piper_objlib PRIVATE -w)  # Suppress warnings
+
 # C++ Nodes
-add_executable(piper_node src/piper_node.cpp ${CMAKE_BINARY_DIR}/piper-${PIPER_TAG}/src/cpp/piper.cpp)
+add_executable(piper_node src/piper_node.cpp $<TARGET_OBJECTS:piper_objlib>)
 ament_target_dependencies(piper_node rclcpp behavior_srvs ament_index_cpp)
 target_link_libraries(piper_node piper_phonemize fmt spdlog ${ONNXRUNTIME_LIBRARIES})
 install(TARGETS piper_node DESTINATION lib/${PROJECT_NAME})
 add_dependencies(piper_node fmt_external espeak_ng_external)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(piper_node PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 
 # Install models
 install(DIRECTORY models DESTINATION share/${PROJECT_NAME})

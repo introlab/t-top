@@ -149,19 +149,19 @@ void WeightedAverageWithAPrioriNoiseEstimator::verifyParameters(
 
     string line;
     getline(file, line);
-    if (stoi(line) != frameSampleCount)
+    if (stoull(line) != frameSampleCount)
     {
         THROW_NOT_SUPPORTED_EXCEPTION("Invalid noise directory N_FFT.");
     }
 
     getline(file, line);
-    if (stoi(line) != samplingFrequency)
+    if (stoull(line) != samplingFrequency)
     {
         THROW_NOT_SUPPORTED_EXCEPTION("Invalid noise directory sampling frequency.");
     }
 
     getline(file, line);
-    if (stoi(line) != channelCount())
+    if (stoull(line) != channelCount())
     {
         THROW_NOT_SUPPORTED_EXCEPTION("Invalid noise directory channel count.");
     }

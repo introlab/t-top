@@ -81,7 +81,7 @@ public:
     }
 
     template<class Functor, size_t I = 0>
-    typename std::enable_if<I >= std::tuple_size<decltype(m_messages)>::value, void>::type forEach(Functor f)
+    typename std::enable_if<I >= std::tuple_size<decltype(m_messages)>::value, void>::type forEach([[maybe_unused]] Functor f)
     {
     }
 };

@@ -20,7 +20,7 @@ GestureTab::~GestureTab()
     m_desireSet->removeObserver(this);
 }
 
-void GestureTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+void GestureTab::onDesireSetChanged([[maybe_unused]] const std::vector<std::unique_ptr<Desire>>& _)
 {
     invokeLater(
         [=]()

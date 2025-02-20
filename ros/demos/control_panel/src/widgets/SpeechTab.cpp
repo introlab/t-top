@@ -32,7 +32,7 @@ SpeechTab::~SpeechTab()
     m_desireSet->removeObserver(this);
 }
 
-void SpeechTab::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+void SpeechTab::onDesireSetChanged([[maybe_unused]] const std::vector<std::unique_ptr<Desire>>& _)
 {
     invokeLater(
         [=]()

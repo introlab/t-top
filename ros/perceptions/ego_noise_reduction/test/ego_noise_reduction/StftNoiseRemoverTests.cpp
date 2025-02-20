@@ -50,10 +50,10 @@ public:
 
 protected:
     void updateSpectrum(
-        size_t channelIndex,
+        [[maybe_unused]] size_t channelIndex,
         const arma::cx_fvec& input,
         arma::cx_fvec& output,
-        const arma::fvec& noiseMagnitudeSpectrum) override
+        [[maybe_unused]] const arma::fvec& noiseMagnitudeSpectrum) override
     {
         output = input;
     }

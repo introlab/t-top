@@ -8,7 +8,7 @@ using namespace std;
 
 ImageDisplay::ImageDisplay(QWidget* parent) : QWidget(parent) {}
 
-void ImageDisplay::paintEvent(QPaintEvent* event)
+void ImageDisplay::paintEvent([[maybe_unused]] QPaintEvent* event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);

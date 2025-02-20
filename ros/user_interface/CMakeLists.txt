@@ -19,10 +19,12 @@ endif()
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 
+find_package(opentera_webrtc_demos REQUIRED)
+
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/package.json
-        COMMAND npm install
+        COMMAND ${opentera_webrtc_demos_OUTPUT_ONLY_IF_FAILED_SCRIPT_EXEC} npm install
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/node_modules.stamp
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         VERBATIM
@@ -37,7 +39,7 @@ add_custom_target(
 add_custom_target(
     user_interface-build ALL
     DEPENDS user_interface-install
-    COMMAND npm run build
+    COMMAND ${opentera_webrtc_demos_OUTPUT_ONLY_IF_FAILED_SCRIPT_EXEC} npm run build
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     VERBATIM
 )

@@ -94,7 +94,7 @@ void StateManager::onSpeechToTextTranscriptReceived(const perception_msgs::msg::
     }
 }
 
-void StateManager::onRobotNameDetected(const std_msgs::msg::Empty::SharedPtr& msg)
+void StateManager::onRobotNameDetected([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr& msg)
 {
     if (m_currentState != nullptr)
     {

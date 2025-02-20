@@ -13,7 +13,7 @@ CurrentDateCommandExecutor::CurrentDateCommandExecutor(StateManager& stateManage
 
 CurrentDateCommandExecutor::~CurrentDateCommandExecutor() {}
 
-void CurrentDateCommandExecutor::executeSpecific(const shared_ptr<CurrentDateCommand>& command)
+void CurrentDateCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<CurrentDateCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         Formatter::format(StringResources::getValue("dialogs.commands.current_date"), fmt::arg("date", Date::now())),
@@ -31,7 +31,7 @@ CurrentTimeCommandExecutor::CurrentTimeCommandExecutor(StateManager& stateManage
 
 CurrentTimeCommandExecutor::~CurrentTimeCommandExecutor() {}
 
-void CurrentTimeCommandExecutor::executeSpecific(const shared_ptr<CurrentTimeCommand>& command)
+void CurrentTimeCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<CurrentTimeCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         Formatter::format(StringResources::getValue("dialogs.commands.current_time"), fmt::arg("time", Time::now())),
@@ -49,7 +49,7 @@ CurrentDateTimeCommandExecutor::CurrentDateTimeCommandExecutor(StateManager& sta
 
 CurrentDateTimeCommandExecutor::~CurrentDateTimeCommandExecutor() {}
 
-void CurrentDateTimeCommandExecutor::executeSpecific(const shared_ptr<CurrentDateTimeCommand>& command)
+void CurrentDateTimeCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<CurrentDateTimeCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         Formatter::format(

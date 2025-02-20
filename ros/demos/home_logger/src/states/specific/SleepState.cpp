@@ -25,7 +25,7 @@ SleepState::SleepState(
 
 SleepState::~SleepState() {}
 
-void SleepState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
+void SleepState::onEnabling([[maybe_unused]] const StateParameter& parameter, const StateType& previousStateType)
 {
     m_wasForced = previousStateType != StateType::get<IdleState>();
 

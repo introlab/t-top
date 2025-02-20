@@ -43,7 +43,7 @@ RssStoryState::~RssStoryState()
     m_desireSet->removeObserver(this);
 }
 
-void RssStoryState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+void RssStoryState::onDesireSetChanged([[maybe_unused]] const std::vector<std::unique_ptr<Desire>>& _)
 {
     if (!enabled() || m_desireSet->contains(m_talkDesireId))
     {

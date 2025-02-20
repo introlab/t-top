@@ -47,7 +47,7 @@ void AfterTaskDelayState::disable()
     }
 }
 
-void AfterTaskDelayState::startButtonCallback(const std_msgs::msg::Empty::SharedPtr msg)
+void AfterTaskDelayState::startButtonCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
     if (!enabled() || !m_useAfterTaskDelayDurationTopic)
     {

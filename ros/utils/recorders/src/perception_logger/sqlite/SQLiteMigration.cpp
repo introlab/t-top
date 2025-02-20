@@ -76,7 +76,7 @@ void applyMigrations(SQLite::Database& database, const string& loggerName, const
 {
     int loggerVersion = getLoggerVersionOrCreateDefault(database, loggerName);
 
-    for (int i = loggerVersion; i < migrations.size(); i++)
+    for (std::size_t i = loggerVersion; i < migrations.size(); i++)
     {
         migrations[i].apply(database);
         updateLoggerVersion(database, loggerName, i + 1);

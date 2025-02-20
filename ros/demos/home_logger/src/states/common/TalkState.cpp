@@ -67,7 +67,7 @@ TalkState::TalkState(StateManager& stateManager, shared_ptr<DesireSet> desireSet
 
 TalkState::~TalkState() {}
 
-void TalkState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
+void TalkState::onEnabling(const StateParameter& parameter, [[maybe_unused]] const StateType& previousStateType)
 {
     m_parameter = dynamic_cast<const TalkStateParameter&>(parameter);
 
@@ -110,7 +110,7 @@ void TalkState::onDisabling()
     m_parameter = TalkStateParameter();
 }
 
-void TalkState::onDesireSetChanged(const vector<unique_ptr<Desire>>& _)
+void TalkState::onDesireSetChanged([[maybe_unused]] const vector<unique_ptr<Desire>>& _)
 {
     if (!(m_talkDesireId.has_value() && m_desireSet->contains(m_talkDesireId.value())) &&
         !(m_gestureDesireId.has_value() && m_desireSet->contains(m_gestureDesireId.value())))

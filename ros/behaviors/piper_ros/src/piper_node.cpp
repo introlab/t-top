@@ -83,12 +83,10 @@ public:
 
         m_generateSpeechFromTextService = create_service<behavior_srvs::srv::GenerateSpeechFromText>(
             "piper/generate_speech_from_text",
-                [this] (
+            [this](
                 const std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Request> request,
                 std::shared_ptr<behavior_srvs::srv::GenerateSpeechFromText::Response> response)
-                {
-                    generateSpeechFromTextServiceCallback(request, response);
-                });
+            { generateSpeechFromTextServiceCallback(request, response); });
     }
 
     void run() { rclcpp::spin(shared_from_this()); }
@@ -162,7 +160,7 @@ private:
         voice.synthesisConfig.lengthScale = lengthScale;
 
         std::ofstream audioFile(path, std::ios::binary);
-        piper::SynthesisResult result = {0};
+        piper::SynthesisResult result = {};
 
         piper::textToWavFile(m_piperConfig, voice, text, audioFile, result);
     }

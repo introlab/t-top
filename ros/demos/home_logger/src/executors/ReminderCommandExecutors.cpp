@@ -31,7 +31,7 @@ ListRemindersCommandExecutor::ListRemindersCommandExecutor(StateManager& stateMa
 
 ListRemindersCommandExecutor::~ListRemindersCommandExecutor() {}
 
-void ListRemindersCommandExecutor::executeSpecific(const shared_ptr<ListRemindersCommand>& command)
+void ListRemindersCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<ListRemindersCommand>& command)
 {
     stringstream ss;
     auto reminders = m_reminderManager.listReminders();

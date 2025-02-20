@@ -17,7 +17,8 @@ constexpr int WEB_SOCKET_STATUS_TIMEOUT_MS = 1000;
 
 
 Connect4Widget::Connect4Widget(rclcpp::Node::SharedPtr node, std::shared_ptr<DesireSet> desireSet, QWidget* parent)
-    : m_node(std::move(node)),
+    : QWidget(parent),
+      m_node(std::move(node)),
       m_desireSet(std::move(desireSet)),
       m_enabled(false),
       m_connect4ManagerConnectionRequested(false)
@@ -31,12 +32,12 @@ Connect4Widget::Connect4Widget(rclcpp::Node::SharedPtr node, std::shared_ptr<Des
         "daemon/start_button_pressed",
         1,
         [this](const std_msgs::msg::Empty::SharedPtr msg) { startButtonPressedCallback(msg); });
-    m_stopButtonPressedSub =  m_node->create_subscription<std_msgs::msg::Empty>(
+    m_stopButtonPressedSub = m_node->create_subscription<std_msgs::msg::Empty>(
         "daemon/stop_button_pressed",
         1,
         [this](const std_msgs::msg::Empty::SharedPtr msg) { stopButtonPressedCallback(msg); });
 
-    m_remoteImageSub =  m_node->create_subscription<opentera_webrtc_ros_msgs::msg::PeerImage>(
+    m_remoteImageSub = m_node->create_subscription<opentera_webrtc_ros_msgs::msg::PeerImage>(
         "webrtc_image",
         1,
         [this](const opentera_webrtc_ros_msgs::msg::PeerImage::SharedPtr msg) { remoteImageCallback(msg); });
@@ -46,8 +47,6 @@ Connect4Widget::Connect4Widget(rclcpp::Node::SharedPtr node, std::shared_ptr<Des
         1,
         [this](const opentera_webrtc_ros_msgs::msg::OpenTeraEvent::SharedPtr msg) { openteraEventCallback(msg); });
 
-
-
     m_volumePub = m_node->create_publisher<std_msgs::msg::Float32>("volume", 1);
 
     m_setVolumeTimer = new QTimer(this);
@@ -55,15 +54,39 @@ Connect4Widget::Connect4Widget(rclcpp::Node::SharedPtr node, std::shared_ptr<Des
     m_setVolumeTimer->start(SET_VOLUME_TIMER_INTERVAL_MS);
 
     m_connect4ManagerWebSocketTimer = new QTimer(this);
-    connect(m_connect4ManagerWebSocketTimer, &QTimer::timeout, this, &Connect4Widget::onConnect4ManagerWebSocketTimeout);
+    connect(
+        m_connect4ManagerWebSocketTimer,
+        &QTimer::timeout,
+        this,
+        &Connect4Widget::onConnect4ManagerWebSocketTimeout);
     m_connect4ManagerWebSocketTimer->start(WEB_SOCKET_STATUS_TIMEOUT_MS);
 
     m_connect4ManagerWebSocket = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
-    connect(m_connect4ManagerWebSocket, &QWebSocket::sslErrors, this, &Connect4Widget::onConnect4ManagerWebSocketSslErrors);
-    connect(m_connect4ManagerWebSocket, &QWebSocket::connected, this, &Connect4Widget::onConnect4ManagerWebSocketConnected);
-    connect(m_connect4ManagerWebSocket, &QWebSocket::disconnected, this, &Connect4Widget::onConnect4ManagerWebSocketDisconnected);
-    connect(m_connect4ManagerWebSocket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &Connect4Widget::onConnect4ManagerWebSocketErrorOccurred);
-    connect(m_connect4ManagerWebSocket, &QWebSocket::textMessageReceived, this, &Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived);
+    connect(
+        m_connect4ManagerWebSocket,
+        &QWebSocket::sslErrors,
+        this,
+        &Connect4Widget::onConnect4ManagerWebSocketSslErrors);
+    connect(
+        m_connect4ManagerWebSocket,
+        &QWebSocket::connected,
+        this,
+        &Connect4Widget::onConnect4ManagerWebSocketConnected);
+    connect(
+        m_connect4ManagerWebSocket,
+        &QWebSocket::disconnected,
+        this,
+        &Connect4Widget::onConnect4ManagerWebSocketDisconnected);
+    connect(
+        m_connect4ManagerWebSocket,
+        QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
+        this,
+        &Connect4Widget::onConnect4ManagerWebSocketErrorOccurred);
+    connect(
+        m_connect4ManagerWebSocket,
+        &QWebSocket::textMessageReceived,
+        this,
+        &Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived);
 }
 
 void Connect4Widget::onSetVolumeTimerTimeout()
@@ -121,8 +144,10 @@ void Connect4Widget::onConnect4ManagerWebSocketDisconnected()
 
 void Connect4Widget::onConnect4ManagerWebSocketErrorOccurred(QAbstractSocket::SocketError error)
 {
-    RCLCPP_ERROR_STREAM(m_node->get_logger(), "Connect 4 manager web socket error: " <<
-        QMetaEnum::fromType<QAbstractSocket::SocketError>().valueToKey(error));
+    RCLCPP_ERROR_STREAM(
+        m_node->get_logger(),
+        "Connect 4 manager web socket error: "
+            << QMetaEnum::fromType<QAbstractSocket::SocketError>().valueToKey(error));
 }
 
 void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString& message)
@@ -133,8 +158,9 @@ void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString
     QJsonDocument jsonMessage = QJsonDocument::fromJson(message.toUtf8(), &jsonParseError);
     if (jsonParseError.error != QJsonParseError::NoError)
     {
-        RCLCPP_ERROR_STREAM(m_node->get_logger(), "Connect 4 manager web socket message parsing error: " <<
-            jsonParseError.errorString().toStdString());
+        RCLCPP_ERROR_STREAM(
+            m_node->get_logger(),
+            "Connect 4 manager web socket message parsing error: " << jsonParseError.errorString().toStdString());
         return;
     }
 
@@ -144,7 +170,7 @@ void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString
     }
 }
 
-void Connect4Widget::startButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg)
+void Connect4Widget::startButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
     m_enabled = true;
     setVolume(ENABLED_VOLUME);
@@ -153,7 +179,7 @@ void Connect4Widget::startButtonPressedCallback(const std_msgs::msg::Empty::Shar
     m_desireSet->addDesire<Camera3dRecordingDesire>();
 }
 
-void Connect4Widget::stopButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg)
+void Connect4Widget::stopButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
     m_enabled = false;
     setVolume(DISABLED_VOLUME);
@@ -206,11 +232,12 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::msg::
                 parseSessionUrl(sessionUrl, m_connect4ManagerWebSocketUrl, m_connect4ManagerWebSocketPassword);
                 m_observedParticipantName = getParticipantName(deviceName, sessionParameters);
 
-                RCLCPP_INFO_STREAM(m_node->get_logger(), "Connect4 Manager Web Socket: Connection (sessionUrl=" << sessionUrl <<
-                    ", webSocketUrl=" << m_connect4ManagerWebSocketUrl.toStdString() <<
-                    ", password=" << m_connect4ManagerWebSocketPassword.toStdString() <<
-                    ", deviceName=" << deviceName <<
-                    ", participantName" << m_observedParticipantName.toStdString() << ")");
+                RCLCPP_INFO_STREAM(
+                    m_node->get_logger(),
+                    "Connect4 Manager Web Socket: Connection (sessionUrl="
+                        << sessionUrl << ", webSocketUrl=" << m_connect4ManagerWebSocketUrl.toStdString()
+                        << ", password=" << m_connect4ManagerWebSocketPassword.toStdString() << ", deviceName="
+                        << deviceName << ", participantName" << m_observedParticipantName.toStdString() << ")");
 
                 m_connect4ManagerWebSocket->open(m_connect4ManagerWebSocketUrl);
             });
@@ -254,8 +281,9 @@ QString Connect4Widget::getParticipantName(const std::string& deviceName, const 
 
     if (jsonParseError.error != QJsonParseError::NoError)
     {
-        RCLCPP_ERROR_STREAM(m_node->get_logger(), "Connect4 Game Data Channel: getParticipantName error: " <<
-            jsonParseError.errorString().toStdString());
+        RCLCPP_ERROR_STREAM(
+            m_node->get_logger(),
+            "Connect4 Game Data Channel: getParticipantName error: " << jsonParseError.errorString().toStdString());
         return "";
     }
 
