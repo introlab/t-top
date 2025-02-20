@@ -27,6 +27,8 @@ int startNode() {
     //strategies.emplace_back(createSpeechToTextStrategy(filterPool));
     //strategies.emplace_back(createTalkStrategy(filterPool, desireSet, node));
     strategies.emplace_back(createChatStrategy(filterPool, desireSet, node));
+    strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
+    strategies.emplace_back(createTooCloseReactionStrategy(filterPool));
 
 
     auto solver = make_unique<GecodeSolver>();
@@ -35,6 +37,8 @@ int startNode() {
 
 
     desireSet->addDesire(make_unique<ChatDesire>());
+    desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
+    desireSet->addDesire(make_unique<TooCloseReactionDesire>());
 
     rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
 

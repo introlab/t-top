@@ -2,6 +2,9 @@
 
 using namespace std;
 
+
+
+
 FaceAnimationStrategy::FaceAnimationStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
@@ -267,13 +270,14 @@ ChatStrategy::ChatStrategy(
           {
             {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
             {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}
+            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+            {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}
           },
           move(filterPool)),
       m_desireSet(move(desireSet)),
       m_node(move(node))
 {
-    //TODO verify topics
     m_transcriptSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
         1,
@@ -288,6 +292,23 @@ ChatStrategy::ChatStrategy(
         "talk/done",
         1,
         [this](const behavior_msgs::msg::Done::SharedPtr msg) { talkDoneSubscriberCallback(msg); });
+
+    m_ledAnimationPublisher = m_node->create_publisher<behavior_msgs::msg::LedAnimation>(
+            "led_animations/animation",
+            rclcpp::QoS(1).transient_local());
+
+    m_ledAnimationDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+            "led_animations/done",
+            1,
+            [this](const behavior_msgs::msg::Done::SharedPtr msg) { ledAnimationDoneSubscriberCallback(msg); });
+
+    m_gesturePublisher =
+            m_node->create_publisher<behavior_msgs::msg::GestureName>("gesture/name", rclcpp::QoS(1).transient_local());
+
+    m_gestureDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+            "gesture/done",
+            1,
+            [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -297,14 +318,6 @@ StrategyType ChatStrategy::strategyType()
 
 void ChatStrategy::onEnabling(const ChatDesire& desire)
 {
-    //DO Something with FSM and enable / disable some filters...
-    // We need to listen first
-    /*
-     {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-    */
-
     // START LISTENING
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
@@ -312,6 +325,31 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     // DISABLE TALKING
     disableFilter("talk/filter_state");
 
+    sendListeningLedAnimation();
+}
+
+void ChatStrategy::sendListeningLedAnimation()
+{
+    enableFilter("led_animations/filter_state");
+    behavior_msgs::msg::LedAnimation msg;
+    msg.id = desireId().value();
+    msg.duration_s = std::numeric_limits<double>::infinity();
+    msg.name = "rotating_sin";
+    msg.speed = 1.0;
+    msg.colors = vector<daemon_ros_client::msg::LedColor>{ChatStrategy::getColor(0, 255, 0)};
+    m_ledAnimationPublisher->publish(msg);
+}
+
+void ChatStrategy::sendTalkingLedAnimation()
+{
+    enableFilter("led_animations/filter_state");
+    behavior_msgs::msg::LedAnimation msg;
+    msg.id = desireId().value();
+    msg.duration_s = std::numeric_limits<double>::infinity();
+    msg.name = "rotating_sin";
+    msg.speed = 1.0;
+    msg.colors = vector<daemon_ros_client::msg::LedColor>{ChatStrategy::getColor(255, 0, 0)};
+    m_ledAnimationPublisher->publish(msg);
 }
 
 void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
@@ -322,6 +360,9 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
 
     // START TALKING
     enableFilter("talk/filter_state");
+
+    sendTalkingLedAnimation();
+    sendGesture("thinking");
 }
 
 void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
@@ -333,12 +374,45 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
     // START LISTENING
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
+
+    sendListeningLedAnimation();
+    sendGesture("slow_origin_head");
 }
 
 void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
-    //DO Something with FSM and enable / disable some filters...
-    //MIGHT HAVE NOTHING TO DO...
+    static int counter = 0;
+    //Random head position ?
+    if (counter++ % 2 == 0)
+    {
+        sendGesture("thinking");
+    }
+    else
+    {
+        sendGesture("slow_origin_head");
+    }
+}
+
+void ChatStrategy::ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    //TODO
+}
+
+void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    if (msg->id == desireId())
+    {
+        disableFilter("gesture/filter_state");
+    }
+}
+
+void ChatStrategy::sendGesture(const string& gesture)
+{
+    enableFilter("gesture/filter_state");
+    behavior_msgs::msg::GestureName msg;
+    msg.name = gesture;
+    msg.id = desireId().value();
+    m_gesturePublisher->publish(msg);
 }
 
 unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)

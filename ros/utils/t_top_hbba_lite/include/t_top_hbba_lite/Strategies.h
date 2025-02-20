@@ -187,6 +187,14 @@ class ChatStrategy : public Strategy<ChatDesire>
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
 
+    // LEDS
+    rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_ledAnimationDoneSubscriber;
+
+    // GESTURES
+    rclcpp::Publisher<behavior_msgs::msg::GestureName>::SharedPtr m_gesturePublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_gestureDoneSubscriber;
+
 public:
     ChatStrategy(
         uint16_t utility,
@@ -199,6 +207,15 @@ public:
 
     StrategyType strategyType() override;
 
+    static daemon_ros_client::msg::LedColor getColor(uint8_t r, uint8_t g, uint8_t b)
+    {
+        daemon_ros_client::msg::LedColor c;
+        c.red = r;
+        c.green = g;
+        c.blue = b;
+        return c;
+    }
+
 protected:
     void onEnabling(const ChatDesire& desire) override;
 
@@ -206,6 +223,13 @@ private:
     void transcriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
     void chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+
+    void sendListeningLedAnimation();
+    void sendTalkingLedAnimation();
+    void sendGesture(const std::string& gesture);
+
 };
 
 
