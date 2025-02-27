@@ -33,7 +33,7 @@ AlarmState::AlarmState(
 
 AlarmState::~AlarmState() {}
 
-void AlarmState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
+void AlarmState::onEnabling(const StateParameter& parameter, [[maybe_unused]] const StateType& previousStateType)
 {
     m_parameter = dynamic_cast<const AlarmStateParameter&>(parameter);
     m_playSoundDesireId = m_desireSet->addDesire<PlaySoundDesire>(m_alarmPath);
@@ -50,7 +50,7 @@ void AlarmState::onDisabling()
     m_alarmManager.informPerformedAlarms(m_parameter.alarmIds);
 }
 
-void AlarmState::onDesireSetChanged(const vector<unique_ptr<Desire>>& _)
+void AlarmState::onDesireSetChanged([[maybe_unused]] const vector<unique_ptr<Desire>>& _)
 {
     if (!(m_playSoundDesireId.has_value() && m_desireSet->contains(m_playSoundDesireId.value())))
     {

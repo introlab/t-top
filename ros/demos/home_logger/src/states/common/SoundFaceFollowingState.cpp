@@ -18,7 +18,9 @@ SoundFaceFollowingState::SoundFaceFollowingState(
 
 SoundFaceFollowingState::~SoundFaceFollowingState() {}
 
-void SoundFaceFollowingState::onEnabling(const StateParameter& parameter, const StateType& previousStateType)
+void SoundFaceFollowingState::onEnabling(
+    [[maybe_unused]] const StateParameter& parameter,
+    [[maybe_unused]] const StateType& previousStateType)
 {
     m_videoAnalysisWithoutPersonCount = 0;
     setFollowingDesire(make_unique<SoundFollowingDesire>());

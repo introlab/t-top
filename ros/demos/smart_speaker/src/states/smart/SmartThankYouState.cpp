@@ -17,12 +17,12 @@ SmartThankYouState::SmartThankYouState(
 {
 }
 
-string SmartThankYouState::generateEnglishText(const string& _)
+string SmartThankYouState::generateEnglishText([[maybe_unused]] const string& _)
 {
     return "Thank you for participating.";
 }
 
-string SmartThankYouState::generateFrenchText(const string& _)
+string SmartThankYouState::generateFrenchText([[maybe_unused]] const string& _)
 {
     return "Merci d'avoir participer.";
 }

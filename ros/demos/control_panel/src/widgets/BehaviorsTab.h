@@ -59,7 +59,11 @@ private:
 };
 
 template<class D, class... DesireArgs>
-void BehaviorsTab::onButtonToggled(bool checked, QPushButton* button, QVariant& desireId, DesireArgs... desireArgs)
+void BehaviorsTab::onButtonToggled(
+    bool checked,
+    [[maybe_unused]] QPushButton* button,
+    QVariant& desireId,
+    DesireArgs... desireArgs)
 {
     if (checked)
     {

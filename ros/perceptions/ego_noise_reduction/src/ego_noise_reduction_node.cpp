@@ -169,9 +169,10 @@ public:
 private:
     void audioCallback(const audio_utils_msgs::msg::AudioFrame::SharedPtr msg)
     {
-        if (msg->format != m_configuration.formatString || msg->channel_count != m_configuration.channelCount ||
-            msg->sampling_frequency != m_configuration.samplingFrequency ||
-            msg->frame_sample_count != m_configuration.frameSampleCount ||
+        if (msg->format != m_configuration.formatString ||
+            msg->channel_count != static_cast<std::uint32_t>(m_configuration.channelCount) ||
+            msg->sampling_frequency != static_cast<std::uint32_t>(m_configuration.samplingFrequency) ||
+            msg->frame_sample_count != static_cast<std::uint32_t>(m_configuration.frameSampleCount) ||
             msg->data.size() != size(m_configuration.format, msg->channel_count, msg->frame_sample_count))
         {
             RCLCPP_ERROR(

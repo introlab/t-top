@@ -18,6 +18,7 @@
         <arg name="camera_name" value="camera_3d"/>
         <arg name="enable_sync" value="true"/>
         <arg name="align_depth.enable" value="true"/>
+        <arg name="publish_tf" value="false"/>
     </include>
 
     <!-- Camera 2d Wide -->

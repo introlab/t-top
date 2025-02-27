@@ -113,7 +113,7 @@ static optional<int> findMonth(const string& lowerCaseText, size_t& monthPositio
     const vector<string>& monthNames = Formatter::monthNames();
 
     optional<int> month;
-    for (int i = 0; i < monthNames.size(); i++)
+    for (size_t i = 0; i < monthNames.size(); i++)
     {
         size_t position = lowerCaseText.find(toLowerString(monthNames[i]));
         bool found = position != string::npos;
@@ -219,7 +219,7 @@ optional<int> findWeekDay(const string& text)
     optional<int> weekDay;
     const vector<string>& weekDayNames = Formatter::weekDayNames();
 
-    for (int i = 0; i < weekDayNames.size(); i++)
+    for (size_t i = 0; i < weekDayNames.size(); i++)
     {
         bool found = lowerCaseText.find(toLowerString(weekDayNames[i])) != string::npos;
         if (found && !weekDay.has_value())

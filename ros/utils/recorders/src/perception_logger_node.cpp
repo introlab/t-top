@@ -7,7 +7,7 @@
 #include <tf2/exceptions.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include <perception_msgs/msg/video_analysis.hpp>
 #include <perception_msgs/msg/audio_analysis.hpp>
@@ -97,7 +97,8 @@ public:
         m_hbbaStrategyStateSubscriber = create_subscription<hbba_lite_msgs::msg::StrategyState>(
             "hbba_strategy_state_log",
             10,
-            [this](const hbba_lite_msgs::msg::StrategyState::SharedPtr msg) { hbbaStrategyStateSubscriberCallback(msg); });
+            [this](const hbba_lite_msgs::msg::StrategyState::SharedPtr msg)
+            { hbbaStrategyStateSubscriberCallback(msg); });
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(get_clock());
         m_tfListener = std::make_shared<tf2_ros::TransformListener>(*m_tfBuffer);

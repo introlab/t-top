@@ -11,7 +11,7 @@ SleepCommandExecutor::SleepCommandExecutor(StateManager& stateManager)
 
 SleepCommandExecutor::~SleepCommandExecutor() {}
 
-void SleepCommandExecutor::executeSpecific(const shared_ptr<SleepCommand>& command)
+void SleepCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<SleepCommand>& command)
 {
     m_stateManager.switchTo<SleepState>();
 }

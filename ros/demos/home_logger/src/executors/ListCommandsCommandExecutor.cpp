@@ -11,7 +11,7 @@ ListCommandsCommandExecutor::ListCommandsCommandExecutor(StateManager& stateMana
 
 ListCommandsCommandExecutor::~ListCommandsCommandExecutor() {}
 
-void ListCommandsCommandExecutor::executeSpecific(const shared_ptr<ListCommandsCommand>& command)
+void ListCommandsCommandExecutor::executeSpecific([[maybe_unused]] const shared_ptr<ListCommandsCommand>& command)
 {
     m_stateManager.switchTo<TalkState>(TalkStateParameter(
         StringResources::getValue("dialogs.commands.list_commands"),

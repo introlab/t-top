@@ -59,15 +59,24 @@ sudo_stay_validated () {
 }
 
 cmake_build_install_native () {
-    # arg 1 [optional]: number of threads to use (-j)
+    # args: additionnal cmake args
     mkdir -p build
     cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math"
-    if [ $# -lt 1 ] ; then
-        cmake --build .
-    else
-        cmake --build . -j$1
-    fi
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" $@
+    cmake --build .
+    sudo cmake --install .
+}
+
+cmake_build_install_native_j () {
+    # arg 1: number of threads to use (-j)
+    # args 2..n [optional]: additionnal cmake args
+    j=$1
+    shift
+
+    mkdir -p build
+    cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" $@
+    cmake --build . -j$j
     sudo cmake --install .
 }
 
@@ -125,16 +134,16 @@ checkstamp () {
     fi
 }
 
+stepstamp () {
+    export _STAMPNUM=$(($_STAMPNUM + 1))
+}
+
 makestamp () {
     # arg 1: file to create
     mkdir -p ~/.ttop/install_stamps
     filename=$(printf "%02d" $_STAMPNUM)_$1
     touch ~/.ttop/install_stamps/$filename
-    export _STAMPNUM=$(($_STAMPNUM + 1))
-}
-
-stepstamp () {
-    export _STAMPNUM=$(($_STAMPNUM + 1))
+    stepstamp
 }
 
 SKIP_SECTION () {
@@ -235,11 +244,8 @@ ECHO_IN_BLUE "###############################################################"
 if [ $JETSON_MODEL = "xavier" ] ; then
     sudo nvpmodel -m 0
 elif [ $JETSON_MODEL = "orin" ] ; then
-    grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp /etc/nvpmodel.conf /etc/nvpmodel/nvpmodel.conf.backup
-    grep --quiet --no-messages --fixed-regexp -- "MODE_38_8_W" /etc/nvpmodel.conf || sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel.conf
-    # Make sure the change to zero is applied by going to 1
-    sudo nvpmodel -m 1 &> /dev/null
-    sudo nvpmodel -m 0
+    grep --quiet --no-messages --fixed-regexp -- "MODE_44_4_W" /etc/nvpmodel.conf || sudo cp $SETUP_SCRIPTS_DIR/files/jetson_orin_nvpmodel.conf /etc/nvpmodel/nvpmodel_introlab_orin.conf
+    grep --quiet --no-messages --fixed-regexp -- "MODE_44_4_W" /etc/nvpmodel.conf || sudo ln -sf /etc/nvpmodel/nvpmodel_introlab_orin.conf /etc/nvpmodel.conf
 elif [ $JETSON_MODEL = "not_jetson" ] ; then
     : # Not a Jetson, we don't do anything
 else
@@ -319,7 +325,7 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_build_deps) = "false" ] ; then
 
     sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-    sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+    sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
     sudo apt-get update
 
     sudo apt-get install -y --no-install-recommends \
@@ -372,13 +378,14 @@ ECHO_IN_BLUE ">> Generate ROS2 build workspace and install dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ros_ws_deps) = "false" ] ; then
 
+    export ROS_VERSION=2
     if [ ! -f "/etc/ros/rosdep/sources.list.d/20-default.list" ] ; then
         sudo rosdep init
     fi
     rosdep update
 
     # create the ROS_ROOT directory
-    mkdir -p ${ROS_ROOT}/src
+    sudo mkdir -p ${ROS_ROOT}/src
     cd ${ROS_ROOT}
 
     sudo bash -c "rosinstall_generator --deps --rosdistro ${ROS_DISTRO} ${ROS_PACKAGE} \
@@ -448,8 +455,8 @@ if [ $(checkstamp ros_ws_build) = "false" ] ; then
     export ROS_VERSION=2
     sudo bash -c "export PATH=/usr/local/cuda-11.4/bin:$PATH; \
         export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH; \
-	colcon build \
-        --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DBUILD_TESTING=OFF"
+	ROS_VERSION=$ROS_VERSION colcon build \
+        --cmake-args --no-warn-unused-cli -Wno-dev -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS='-march=native -ffast-math' -DCMAKE_C_FLAGS='-march=native -ffast-math' -DCMAKE_PREFIX_PATH=$ROS_ROOT -DBUILD_WITH_CUDA=true -DCMAKE_POLICY_DEFAULT_CMP0135=NEW"
 
     makestamp ros_ws_build
 else
@@ -467,6 +474,15 @@ ECHO_IN_BLUE "###############################################################"
 ECHO_IN_BLUE ">> Install system dependencies"
 ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp ttop_system_deps) = "false" ] ; then
+
+    # Workaround because NVIDIA does not fix it's broken packages: https://forums.developer.nvidia.com/t/package-conflict-between-nvidia-ffmpeg-and-libpostproc-dev/316250
+    sudo apt install -y libpostproc-dev
+    sudo dpkg --ignore-depends libpostproc-dev -r libpostproc-dev
+    sudo apt install -y ffmpeg libpostproc-dev
+    sudo dpkg -i --force-overwrite /var/cache/apt/archives/libpostproc-dev_7%3a4.2.7-0ubuntu0.1_arm64.deb
+    sudo apt --fix-broken install -y
+    # End of workaround: when it is removed, move back "ffmpeg" to the next install line
+
     sudo apt install -y \
         libasound2-dev \
         libpulse-dev \
@@ -484,7 +500,6 @@ if [ $(checkstamp ttop_system_deps) = "false" ] ; then
         v4l-utils \
         libopenblas-dev \
         libpython3-dev \
-        ffmpeg \
         chromium-browser \
         libqt5websockets5-dev \
         libqt5charts5-dev \
@@ -513,7 +528,7 @@ ECHO_IN_BLUE "###############################################################"
 if [ $(checkstamp onnxruntime) = "false" ] ; then
     add_to_bashrc 'export PATH=/usr/local/cuda-11.4/bin:$PATH'
     add_to_bashrc 'export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64:$LD_LIBRARY_PATH'
-    
+
     sudo -H pip3 install packaging==23.1
     mkdir -p ~/deps
     cd ~/deps
@@ -552,12 +567,8 @@ if [ $(checkstamp onednn) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v3.2.1 https://github.com/oneapi-src/oneDNN.git
     cd oneDNN
-    mkdir -p build
-    cd build
     export ACL_ROOT_DIR=~/deps/ComputeLibrary
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math -DDNNL_AARCH64_USE_ACL=ON"
-    cmake --build . -j4
-    sudo cmake --install .
+    cmake_build_install_native_j 4 -DDNNL_AARCH64_USE_ACL=ON
 
     makestamp onednn
 else
@@ -581,9 +592,9 @@ if [ $(checkstamp ttop_python_deps) = "false" ] ; then
         python3-tqdm \
         python3-audioread \
         python3-requests \
-        python3-sphinx
+        python3-sphinx \
+        cython3
 
-    sudo -H pip3 install 'cython>=0.29.22,<0.30.0'
     sudo -H pip3 install -r $SETUP_SCRIPTS_DIR/files/requirements.txt
 
     makestamp ttop_python_deps
@@ -599,11 +610,7 @@ if [ $(checkstamp ctranslate2) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v3.20.0 https://github.com/OpenNMT/CTranslate2.git --recurse-submodule
     cd CTranslate2
-    mkdir -p build
-    cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
-    cmake --build . -j4
-    sudo cmake --install .
+    cmake_build_install_native_j 4 -DWITH_MKL=OFF -DWITH_CUDA=ON -DWITH_CUDNN=ON -DWITH_OPENBLAS=ON -DWITH_DNNL=ON -DWITH_RUY=ON
     sudo ldconfig
     cd ../python
     sudo -H pip3 install -r install_requirements.txt
@@ -628,17 +635,14 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd ~/deps
     clone_git --depth 1 -b v0.13.0 https://github.com/pytorch/vision.git
     cd vision
-    mkdir -p build
-    cd build
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native -ffast-math" -DCMAKE_C_FLAGS="-march=native -ffast-math" -DCMAKE_PREFIX_PATH=`python3 -c 'import torch;print(torch.utils.cmake_prefix_path)'` -DWITH_CUDA=ON
-    cmake --build . -j4
-    sudo cmake --install .
+    cmake_build_install_native_j 4 -DCMAKE_PREFIX_PATH=$(python3 -c 'import torch;print(torch.utils.cmake_prefix_path)') -DWITH_CUDA=ON
     cd ~/deps/vision
     sudo -H python3 setup.py install
 
     cd ~/deps
     clone_git --depth 1 -b v0.12.0 https://github.com/pytorch/audio.git --recurse-submodule
     cd audio
+    apply_patch third_party/boost/CMakeLists.txt $PATCH_FILES_DIR/torchaudio_boost_url.patch
     sudo -H pip3 install kaldi_io==0.9.5
     sudo -H bash -c 'TORCH_CUDA_ARCH_LIST="7.2;8.7" CUDACXX=/usr/local/cuda/bin/nvcc python3 setup.py install'
 
@@ -647,6 +651,11 @@ if [ $(checkstamp pytorch) = "false" ] ; then
     cd torch2trt
     git checkout 36656b614f3fbc067ac673932e2200d7afdae712
     sudo -H python3 setup.py install --plugins
+
+    cd ~/deps
+    clone_git --depth 1 -b v0.4.0 https://github.com/pytorch/kineto.git --recurse-submodules
+    cd kineto/libkineto
+    cmake_build_install_native "-DCUDA_ARCHITECTURES=native -DCUDA_SOURCE_DIR=/usr/local/cuda-11.4"
 
     makestamp pytorch
 else
@@ -706,7 +715,7 @@ if [ $(checkstamp ttop_ws_build) = "false" ] ; then
     cd $TTOP_REPO_PATH/../..
 
     mkdir -p ~/.colcon
-    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults.yaml $TTOP_REPO_PATH/../../colcon_defaults.yaml
+    cp $SETUP_SCRIPTS_DIR/files/colcon_defaults_jetson.yaml $TTOP_REPO_PATH/../../colcon_defaults.yaml
 
     colcon build
 

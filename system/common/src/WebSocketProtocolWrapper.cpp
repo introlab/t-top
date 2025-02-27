@@ -170,7 +170,7 @@ void WebSocketProtocolWrapper::websocketDisconnected()
     emit disconnected();
 }
 
-void WebSocketProtocolWrapper::websocketErrorOccurred(QAbstractSocket::SocketError error)
+void WebSocketProtocolWrapper::websocketErrorOccurred([[maybe_unused]] QAbstractSocket::SocketError error)
 {
     websocketDisconnected();
 }

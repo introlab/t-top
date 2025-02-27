@@ -8,7 +8,7 @@
 
 void catchUnixSignals(std::initializer_list<int> quitSignals)
 {
-    auto handler = [](int sig) -> void { QCoreApplication::quit(); };
+    auto handler = []([[maybe_unused]] int sig) -> void { QCoreApplication::quit(); };
 
     sigset_t blockingMask;
     sigemptyset(&blockingMask);

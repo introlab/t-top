@@ -59,7 +59,7 @@ QImage semanticSegmentationToImage(
 {
     int width = semanticSegmentation.width;
     int height = semanticSegmentation.height;
-    if (semanticSegmentation.class_indexes.size() != width * height)
+    if (semanticSegmentation.class_indexes.size() != static_cast<std::size_t>(width * height))
     {
         RCLCPP_ERROR(node.get_logger(), "Invalid semantic segmentation (class_indexes.size() != width * height)");
         return QImage();
@@ -73,7 +73,7 @@ QImage semanticSegmentationToImage(
     {
         for (int y = 0; y < height; y++)
         {
-            int classIndex = semanticSegmentation.class_indexes[y * width + x];
+            std::size_t classIndex = semanticSegmentation.class_indexes[y * width + x];
             if (classIndex < palette.size())
             {
                 image.setPixelColor(x, y, palette[classIndex]);
@@ -197,7 +197,7 @@ void PerceptionsTab::audioAnalysisSubscriberCallback(const perception_msgs::msg:
     invokeLater([this, classes]() { m_soundClassesLineEdit->setText(classes); });
 }
 
-void PerceptionsTab::robotNameDetectedSubscriberCallback(const std_msgs::msg::Empty::SharedPtr msg)
+void PerceptionsTab::robotNameDetectedSubscriberCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
     auto currentTime = QDateTime::currentDateTime();
     invokeLater([this, currentTime]() { m_robotNameDetectionTimeLineEdit->setText(currentTime.toString()); });

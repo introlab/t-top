@@ -25,7 +25,7 @@ WeatherForecastState::WeatherForecastState(
         m_weatherClientCallbackGroup);
 }
 
-string WeatherForecastState::generateEnglishText(const string& _)
+string WeatherForecastState::generateEnglishText([[maybe_unused]] const string& _)
 {
     bool ok;
     cloud_data::srv::LocalWeatherForecast::Response response;
@@ -67,7 +67,7 @@ string WeatherForecastState::generateEnglishText(const string& _)
     return ss.str();
 }
 
-string WeatherForecastState::generateFrenchText(const string& _)
+string WeatherForecastState::generateFrenchText([[maybe_unused]] const string& _)
 {
     bool ok;
     cloud_data::srv::LocalWeatherForecast::Response response;

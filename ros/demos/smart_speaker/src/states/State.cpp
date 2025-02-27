@@ -9,14 +9,14 @@ State::State(
     rclcpp::Node::SharedPtr node)
     : m_enabled(false),
       m_language(language),
+      m_previousStageType(typeid(State)),
       m_stateManager(stateManager),
       m_desireSet(move(desireSet)),
-      m_node(move(node)),
-      m_previousStageType(typeid(State))
+      m_node(move(node))
 {
 }
 
-void State::enable(const string& parameter, const type_index& previousStageType)
+void State::enable([[maybe_unused]] const string& parameter, const type_index& previousStageType)
 {
     m_enabled = true;
     m_previousStageType = previousStageType;

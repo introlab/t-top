@@ -25,7 +25,7 @@ InvalidTaskState::~InvalidTaskState()
     m_desireSet->removeObserver(this);
 }
 
-void InvalidTaskState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+void InvalidTaskState::onDesireSetChanged([[maybe_unused]] const std::vector<std::unique_ptr<Desire>>& _)
 {
     if (!enabled() || m_desireSet->contains(m_talkDesireId) || m_desireSet->contains(m_gestureDesireId))
     {

@@ -489,13 +489,13 @@ struct ShutdownPayload
 };
 
 template<class Buffer>
-bool ShutdownPayload::writeTo(Buffer& buffer) const
+bool ShutdownPayload::writeTo([[maybe_unused]] Buffer& buffer) const
 {
     return true;
 }
 
 template<class Buffer>
-tl::optional<ShutdownPayload> ShutdownPayload::readFrom(Buffer& buffer)
+tl::optional<ShutdownPayload> ShutdownPayload::readFrom([[maybe_unused]] Buffer& buffer)
 {
     return ShutdownPayload();
 }

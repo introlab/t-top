@@ -22,7 +22,7 @@ NoiseEstimator::NoiseEstimator(size_t channelCount, size_t frameSampleCount)
 NoiseEstimator::~NoiseEstimator() {}
 
 void NoiseEstimator::estimate(
-    arma::fvec& noiseMagnitudeSpectrum,
+    [[maybe_unused]] arma::fvec& noiseMagnitudeSpectrum,
     const arma::cx_fvec& signalSpectrum,
     size_t channelIndex)
 {

@@ -36,7 +36,7 @@ DancePlayedSongState::~DancePlayedSongState()
     m_desireSet->removeObserver(this);
 }
 
-void DancePlayedSongState::onDesireSetChanged(const std::vector<std::unique_ptr<Desire>>& _)
+void DancePlayedSongState::onDesireSetChanged([[maybe_unused]] const std::vector<std::unique_ptr<Desire>>& _)
 {
     if (!enabled() || m_desireSet->contains(m_songDesireId))
     {
