@@ -172,16 +172,16 @@ void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString
     {
         if (m_sessionTypeName == "TTOPDinerRobotTablet")
         {
-            stopDinerRobotSession();
+            stopVideoconf();
         }
         else if (m_sessionTypeName == "TTOPDinerTabletRobot")
         {
-            startDinerRobotSession();
+            startVideoconf();
         }
     }
 }
 
-void Connect4Widget::startDinerRobotSession()
+void Connect4Widget::startVideoconf()
 {
     m_enabled = true;
     setVolume(ENABLED_VOLUME);
@@ -190,7 +190,7 @@ void Connect4Widget::startDinerRobotSession()
     m_desireSet->addDesire<Camera3dRecordingDesire>();
 }
 
-void Connect4Widget::stopDinerRobotSession()
+void Connect4Widget::stopVideoconf()
 {
     m_enabled = false;
     setVolume(DISABLED_VOLUME);
@@ -203,22 +203,12 @@ void Connect4Widget::stopDinerRobotSession()
 
 void Connect4Widget::startButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
-    m_enabled = true;
-    setVolume(ENABLED_VOLUME);
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->addDesire<NearestFaceFollowingDesire>();
-    m_desireSet->addDesire<Camera3dRecordingDesire>();
+    startVideoconf();
 }
 
 void Connect4Widget::stopButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
 {
-    m_enabled = false;
-    setVolume(DISABLED_VOLUME);
-    auto transaction = m_desireSet->beginTransaction();
-    m_desireSet->removeAllDesiresOfType<NearestFaceFollowingDesire>();
-    m_desireSet->removeAllDesiresOfType<Camera3dRecordingDesire>();
-    m_desireSet->removeAllDesiresOfType<LedAnimationDesire>();
-    invokeLater([this]() { m_imageDisplay->setImage(QImage()); });
+    stopVideoconf();
 }
 
 void Connect4Widget::remoteImageCallback(const opentera_webrtc_ros_msgs::msg::PeerImage::SharedPtr msg)
@@ -276,11 +266,11 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::msg::
 
                 if (m_sessionTypeName == "TTOPDinerRobotTablet")
                 {
-                    startDinerRobotSession();
+                    startVideoconf();
                 }
                 else if (m_sessionTypeName == "TTOPDinerTabletRobot")
                 {
-                    stopDinerRobotSession();
+                    stopVideoconf();
                 }
             });
     }
