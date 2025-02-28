@@ -63,8 +63,6 @@ private Q_SLOTS:
 private:
     void startButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg);
     void stopButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg);
-    void startDinerRobotSession();
-    void stopDinerRobotSession();
     void remoteImageCallback(const opentera_webrtc_ros_msgs::msg::PeerImage::SharedPtr msg);
 
     void setVolume(float volume);
@@ -75,6 +73,8 @@ private:
     QString getParticipantName(const std::string& deviceName, const std::string& sessionParameters);
     QString getSessionTypeName(const std::string& sessionParameters);
     void parseSessionUrl(const std::string& sessionUrl, QString& webSocketUrl, QString& password);
+    void startDinerRobotSession();
+    void stopDinerRobotSession();
 
     void handleGameFinishedEvent(const QString& result);
     void addRotatingSinDesire(uint8_t r, uint8_t g, uint8_t b);
