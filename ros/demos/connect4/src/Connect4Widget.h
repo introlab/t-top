@@ -63,6 +63,8 @@ private Q_SLOTS:
 private:
     void startButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg);
     void stopButtonPressedCallback(const std_msgs::msg::Empty::SharedPtr msg);
+    void startDinerRobotSession();
+    void stopDinerRobotSession();
     void remoteImageCallback(const opentera_webrtc_ros_msgs::msg::PeerImage::SharedPtr msg);
 
     void setVolume(float volume);

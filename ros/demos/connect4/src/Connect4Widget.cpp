@@ -172,17 +172,33 @@ void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString
     {
         if (m_sessionTypeName == "TTOPDinerRobotTablet")
         {
-            //Simulate a "STOP" button press
-            auto msg = std::make_shared<std_msgs::msg::Empty>();
-            stopButtonPressedCallback(msg);
+            stopDinerRobotSession();
         }
         else if (m_sessionTypeName == "TTOPDinerTabletRobot")
         {
-            //Simulate a "START" button press
-            auto msg = std::make_shared<std_msgs::msg::Empty>();
-            startButtonPressedCallback(msg);
+            startDinerRobotSession();
         }
     }
+}
+
+void Connect4Widget::startDinerRobotSession()
+{
+    m_enabled = true;
+    setVolume(ENABLED_VOLUME);
+    auto transaction = m_desireSet->beginTransaction();
+    m_desireSet->addDesire<NearestFaceFollowingDesire>();
+    m_desireSet->addDesire<Camera3dRecordingDesire>();
+}
+
+void Connect4Widget::stopDinerRobotSession()
+{
+    m_enabled = false;
+    setVolume(DISABLED_VOLUME);
+    auto transaction = m_desireSet->beginTransaction();
+    m_desireSet->removeAllDesiresOfType<NearestFaceFollowingDesire>();
+    m_desireSet->removeAllDesiresOfType<Camera3dRecordingDesire>();
+    m_desireSet->removeAllDesiresOfType<LedAnimationDesire>();
+    invokeLater([this]() { m_imageDisplay->setImage(QImage()); });
 }
 
 void Connect4Widget::startButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
@@ -260,15 +276,11 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::msg::
 
                 if (m_sessionTypeName == "TTOPDinerRobotTablet")
                 {
-                    //Simulate a "START" button press
-                    auto msg = std::make_shared<std_msgs::msg::Empty>();
-                    startButtonPressedCallback(msg);
+                    startDinerRobotSession();
                 }
                 else if (m_sessionTypeName == "TTOPDinerTabletRobot")
                 {
-                    //Simulate a "STOP" button press
-                    auto msg = std::make_shared<std_msgs::msg::Empty>();
-                    stopButtonPressedCallback(msg);
+                    stopDinerRobotSession();
                 }
             });
     }
@@ -370,7 +382,15 @@ void Connect4Widget::parseSessionUrl(const std::string& sessionUrl, QString& web
         baseUrl = baseUrl.substr(0, baseUrl.size() - 1);
     }
     webSocketUrl = baseUrl.c_str();
-    webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/game";
+
+    if (m_sessionTypeName.contains("TTOPDiner"))
+    {
+        webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/diner";
+    }
+    else
+    {
+        webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/game";
+    }
 
     password = QUrlQuery(QUrl(sessionUrl.c_str()).query()).queryItemValue("pwd");
 }
