@@ -37,6 +37,20 @@ class BaseChatAPI(ABC):
         if len(message) > 0:
             self.history.append({"role": role, "content": message, "datetime": str(timestamp)})
 
+    def add_tool_calls_to_history(self, tool_calls: list, timestamp: datetime):
+        """ Add tool calls to history """
+        self.history.append({"role": "assistant",
+                             "tool_calls": tool_calls,
+                             "datetime": str(timestamp)})
+
+    def add_tool_call_response_to_history(self, tool_call: dict, result: dict, timestamp: datetime):
+        """ Add tool call result to history """
+        self.history.append({"role": "tool",
+                             "tool_call_id": tool_call['id'],
+                             "name": tool_call['function']['name'],
+                             "content": json.dumps(result),
+                             "datetime": str(timestamp)})
+
     def reset_history(self):
         """ Reset the history """
         self.history.clear()
@@ -58,8 +72,11 @@ class BaseChatAPI(ABC):
         """ Get the messages to send to the server """
         messages = list()
         for message in self.history:
+            # Copy message
+            new_message = message.copy()
             # Discard timestamp for now
-            messages.append({"role": message["role"], "content": message["content"]})
+            new_message.pop('datetime', None)
+            messages.append(new_message)
 
         return messages
 
@@ -87,7 +104,7 @@ class ChatGPTAPI(BaseChatAPI):
             }
         }
 
-
+        # Schemas
         self._function_schemas = [
             {
                 "type": "function",
@@ -114,11 +131,13 @@ class ChatGPTAPI(BaseChatAPI):
         ]
 
 
-    def _volume_up(self):
+    def _volume_up(self) -> bool:
         print('Volume up')
+        return True
 
-    def _volume_down(self):
+    def _volume_down(self) -> bool:
         print('Volume down')
+        return True
 
     def send_request_and_process_response(self):
         try:
@@ -144,14 +163,12 @@ class ChatGPTAPI(BaseChatAPI):
 
                     # Process function calls
                     if 'tool_calls' in delta:
-                        # print(delta)
                         for tool_call in delta['tool_calls']:
-                            function_index = tool_call.get('index', 0)
-                            # print('Function index:', function_index)
                             tool_type = tool_call.get('type', None)
-
                             if tool_type == 'function':
-                                if tool_call['function']['name'] in self._available_functions:
+                                if 'name' in tool_call['function'] and tool_call['function']['name'] in self._available_functions:
+
+                                    self.add_tool_calls_to_history([tool_call], timestamp=datetime.now())
                                     function_info = self._available_functions[tool_call['function']['name']]
 
                                     # Get function description
@@ -160,14 +177,23 @@ class ChatGPTAPI(BaseChatAPI):
                                     else:
                                         function_description = function_info['en']
 
+                                    # Say the function message
                                     self._chat_node.add_pending_message(function_description)
 
                                     # Call function
-                                    function_info['function']()
+                                    response = function_info['function']()
+
+                                    # Add to history
+                                    self.add_tool_call_response_to_history(tool_call=tool_call,
+                                                                  result={"status": response},
+                                                                  timestamp=datetime.now())
 
                     # Process normal messages
                     if 'content' in delta and delta['content'] is not None:
                         content = delta['content']
+                        if len(content) == 0:
+                            continue
+
                         # Add frangement to output message
                         assistant_message += content
                         # Send fragment to be processed
@@ -181,6 +207,8 @@ class ChatGPTAPI(BaseChatAPI):
         except Exception as e:
             print('Error:', e)
             self._chat_node.add_pending_message(str(e))
+
+        print('Done processing')
 
 class OllamaAPI(BaseChatAPI):
     def __init__(self, chat_node: rclpy.node.Node,  language: str, language_model: str):
@@ -267,6 +295,7 @@ class ChatNode(rclpy.node.Node):
         self._processing = True
         self._chat_api.send_request_and_process_response()
         self._processing = False
+        self._process_pending_messages()
 
     def _on_talk_done_cb(self, msg: Done):
         print('Talk done:', msg.ok)
@@ -298,7 +327,7 @@ class ChatNode(rclpy.node.Node):
 
             # Avoid "*" because TTS will say "Asterisk"
             # TODO find a better replacement
-            partial_message= partial_message.replace("*", '...')
+            partial_message= partial_message.replace("*", '-')
 
             if not self._processing:
                 # Send everything, we are done!
@@ -311,7 +340,8 @@ class ChatNode(rclpy.node.Node):
                 # Split the message into sentences based on punctuation marks .?!
                 sentences = re.findall(r'[^!.?]+[!.?]?', partial_message)  # Match text with optional punctuation
 
-                if len(sentences) > 0:
+                # We are talking if we found at least one sentence
+                if len(sentences) > 1:
                     self._talking = True
                     talk_msg.text = sentences[0]
                     print('Sending talk message: ', talk_msg.text)
