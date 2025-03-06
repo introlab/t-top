@@ -174,9 +174,13 @@ void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString
         {
             stopVideoconf();
         }
-        else if (m_sessionTypeName == "TTOPDinerTabletRobot")
+        else if (m_sessionTypeName == "TTOPDinerTabletRobot" && !m_enabled)
         {
             startVideoconf();
+        }
+        else if (m_sessionTypeName == "TTOPDinerTabletRobot" && m_enabled)
+        {
+            stopVideoconf();
         }
     }
 }
@@ -283,7 +287,7 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::msg::
                 m_connect4ManagerWebSocketUrl = "";
                 m_connect4ManagerWebSocketPassword = "";
                 m_observedParticipantName = "";
-
+                stopVideoconf();
                 m_connect4ManagerWebSocket->close();
             });
     }
