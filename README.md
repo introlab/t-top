@@ -14,7 +14,7 @@ interacting with people.
 - Dominic Létourneau (@doumdi)
 - Philippe Warren (@philippewarren)
 - Mariam Fdil (@MariamFdil)
-- [François Michaud](mailto://francois.michaud@usherbrooke.ca), ing., Ph.D.
+- [François Michaud](mailto:francois.michaud@usherbrooke.ca), ing., Ph.D.
 
 ## Contributors
 
