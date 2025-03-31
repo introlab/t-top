@@ -51,7 +51,7 @@ Host ttop
 
 Now you can SSH into the robot using the command `ssh ttop` instead of `ssh username@robot_ip_address`.
 
-## Setup Visual Studio Code
+## Setup Workspace from Visual Studio Code
 
 1. Open Visual Studio Code and click on the `-[]-` icon in the bottom left corner.
 2. Select `Remote-SSH: Connect to Host...` and choose `ttop` from the list.
@@ -71,14 +71,32 @@ git clone https://github.com/introlab/t-top.git --recurse-submodules
 ```bash
 # Go to the root of the workspace
 cd ~/t_top_ws
-# Create the colcon configuration file
-mkdir -p ~/t_top_ws/.colcon
+# Create the colcon_defaults.yaml file
+touch colcon_defaults.yaml
 ```
 
+6. Open the `colcon_defaults.yaml` file and add the following lines:
 
-6. Go back to the root of the workspace and build the workspace.
+```yaml
+# colcon_defaults.yaml
+build:
+  cmake-args:
+    - -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    - --no-warn-unused-cli
+    - -DPYTHON_EXECUTABLE=/usr/bin/python3
+    - -DCMAKE_BUILD_TYPE=Debug
+    - -DCMAKE_CXX_FLAGS=-march=native -ffast-math
+    - -DCMAKE_C_FLAGS=-march=native -ffast-math
+  symlink-install: true
+```
+
+6. Build the workspace.
 
 ```bash
 # Go to the root of the workspace
-cd ~/t_top_ws
+cd ~/t_top_wsf
+# Source ROS2 Humble
+source /opt/ros/humble/install/setup.bash
 # Build the workspace
+colcon build
+```
