@@ -90,7 +90,7 @@ build:
   symlink-install: true
 ```
 
-6. Build the workspace.
+7. Build the workspace.
 
 ```bash
 # Go to the root of the workspace
