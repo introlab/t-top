@@ -11,7 +11,7 @@ It is recommended to follow the steps in order to ensure a smooth experience. Al
 
 - Install Visual Studio Code Extensions (From the Extensions tab or menu in Visual Studio Code):
   - [Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh)
-  - [ROS 2 extension pack](https://marketplace.visualstudio.com/items?itemName=ms-iot.vscode-ros)
+  - [ROS extension pack](https://marketplace.visualstudio.com/items?itemName=ms-iot.vscode-ros)
   - [Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
   - [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
   - [CMake Tools extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
@@ -124,3 +124,71 @@ export DISPLAY=:0
 # Launch the control panel
 ros2 launch control_panel control_panel.launch.xml
 ```
+
+Use the multiple tabs in the GUI to test the robot capabilities.
+
+## Remote Development with Visual Studio Code
+
+1. Open Visual Studio Code and click on the ![remote_ssh_icon](images/remote_ssh.jpeg) icon in the bottom left corner.
+2. Select `Remote-SSH: Connect to Host...` and choose `ttop` from the list.
+3. Once connected, select `File` in the top menu and select `Open Folder...`.
+4. Select the `~/t_top_ws/src/t-top` folder and click "OK".
+5. Make sure the `colcon_defaults.yaml` file is in the root of the workspace.
+6. Make sure you have the following extensions installed:
+   - CMake Tools
+   - C/C++
+   - Python
+   - ROS
+7. For autocompletion to work and terminal setup, you must configure the ROS extension and the terminal in the `.vscode/settings.json` file. Open the file and add the following lines:
+
+```json
+{
+    "ros.rosSetupScript": "/home/introlab/t_top_ws/install/setup.bash",
+    "terminal.integrated.profiles.linux": {
+        "ROS2 Terminal": {
+            "path": "/bin/bash",
+            "args": ["-i", "-c", "source /opt/ros/humble/install/setup.bash && source /home/introlab/t_top_ws/install/setup.
+bash && exec bash"]
+        }
+    },
+    "terminal.integrated.defaultProfile.linux": "ROS2 Terminal"
+}
+```
+
+8. Open the terminal in Visual Studio Code by clicking on `Terminal` in the top menu and selecting `New Terminal`.
+
+>The terminal should now be configured to source ROS2 Humble and your workspace setup files automatically.
+
+9. You can now build the workspace using the command `colcon build` in the terminal.
+
+10. You can now run the robot using the command `ros2 launch control_panel control_panel.launch.xml` in the terminal.
+
+
+## Debugging from Visual Studio Code
+
+Open the workspace folder as described in the previous section.
+
+1. Create a `launch.json` file in the `.vscode` folder.
+2. Open the `launch.json` file and add the following lines:
+
+```json
+{
+    "configurations": [
+    {
+        "name": "ROS: Launch test chat",
+        "type": "ros",
+        "request": "launch",
+        "target": "${workspaceFolder}/src/enter-the-full-path-of-your-launch-file",
+        "cwd": "${workspaceFolder}",
+    }
+    ]
+}
+```
+
+### WARNINGS
+
+1. When debugging, make sure to set the `CMAKE_BUILD_TYPE` to `Debug` in the `colcon_defaults.yaml` file. This will enable debugging symbols and allow you to set breakpoints in your code.
+
+2. When debugging, make sure to set the `PYTHON_EXECUTABLE` to `/usr/bin/python3` in the `colcon_defaults.yaml` file. This will ensure that the correct Python interpreter is used for debugging.
+
+3. When you launch the debugger, **ALL** the nodes in the launch file will be launched. This means that if you set a breakpoint in one node, all the other nodes will be launched and will run until the breakpoint is hit. This can cause issues if you have multiple nodes that are not designed to run together. To avoid this, you can create a separate launch file for debugging that only launches the node you want to debug.
