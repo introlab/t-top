@@ -90,6 +90,16 @@ build:
   symlink-install: true
 ```
 
+Alternatively, you can copy the sample [colcon_default_jetson.yaml](../../tools/setup_scripts/files/colcon_defaults_jetson.yaml) in your workspace and modify it to fit your needs.
+
+```bash
+# Go to the root of the workspace
+cd ~/t_top_ws
+# Copy the colcon_defaults.yaml file from the t-top repository
+cp src/t-top/tools/setup_scripts/files/colcon_defaults_jetson.yaml colcon_defaults.yaml
+nano colcon_defaults.yaml
+```
+
 7. Build the workspace.
 
 ```bash
@@ -132,7 +142,7 @@ Use the multiple tabs in the GUI to test the robot capabilities.
 1. Open Visual Studio Code and click on the ![remote_ssh_icon](images/remote_ssh.jpeg) icon in the bottom left corner.
 2. Select `Remote-SSH: Connect to Host...` and choose `ttop` from the list.
 3. Once connected, select `File` in the top menu and select `Open Folder...`.
-4. Select the `~/t_top_ws/src/t-top` folder and click "OK".
+4. Select the `~/t_top_ws` folder and click "OK".
 5. Make sure the `colcon_defaults.yaml` file is in the root of the workspace.
 6. Make sure you have the following extensions installed:
    - CMake Tools
@@ -147,8 +157,7 @@ Use the multiple tabs in the GUI to test the robot capabilities.
     "terminal.integrated.profiles.linux": {
         "ROS2 Terminal": {
             "path": "/bin/bash",
-            "args": ["-i", "-c", "source /opt/ros/humble/install/setup.bash && source /home/introlab/t_top_ws/install/setup.
-bash && exec bash"]
+            "args": ["-i", "-c", "source /opt/ros/humble/install/setup.bash && source home introlab/t_top_ws/install/setup.bash && exec bash"]
         }
     },
     "terminal.integrated.defaultProfile.linux": "ROS2 Terminal"
