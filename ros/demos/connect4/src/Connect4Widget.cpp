@@ -168,9 +168,24 @@ void Connect4Widget::onConnect4ManagerWebSocketTextMessageReceived(const QString
     {
         handleGameFinishedEvent(jsonMessage["data"]["result"].toString());
     }
+    else if (jsonMessage["event"] == "next_configuration")
+    {
+        if (m_sessionTypeName == "TTOPDinerRobotTablet")
+        {
+            stopVideoconf();
+        }
+        else if (m_sessionTypeName == "TTOPDinerTabletRobot" && !m_enabled)
+        {
+            startVideoconf();
+        }
+        else if (m_sessionTypeName == "TTOPDinerTabletRobot" && m_enabled)
+        {
+            stopVideoconf();
+        }
+    }
 }
 
-void Connect4Widget::startButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
+void Connect4Widget::startVideoconf()
 {
     m_enabled = true;
     setVolume(ENABLED_VOLUME);
@@ -179,7 +194,7 @@ void Connect4Widget::startButtonPressedCallback([[maybe_unused]] const std_msgs:
     m_desireSet->addDesire<Camera3dRecordingDesire>();
 }
 
-void Connect4Widget::stopButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
+void Connect4Widget::stopVideoconf()
 {
     m_enabled = false;
     setVolume(DISABLED_VOLUME);
@@ -188,6 +203,16 @@ void Connect4Widget::stopButtonPressedCallback([[maybe_unused]] const std_msgs::
     m_desireSet->removeAllDesiresOfType<Camera3dRecordingDesire>();
     m_desireSet->removeAllDesiresOfType<LedAnimationDesire>();
     invokeLater([this]() { m_imageDisplay->setImage(QImage()); });
+}
+
+void Connect4Widget::startButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
+{
+    startVideoconf();
+}
+
+void Connect4Widget::stopButtonPressedCallback([[maybe_unused]] const std_msgs::msg::Empty::SharedPtr msg)
+{
+    stopVideoconf();
 }
 
 void Connect4Widget::remoteImageCallback(const opentera_webrtc_ros_msgs::msg::PeerImage::SharedPtr msg)
@@ -231,15 +256,26 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::msg::
 
                 parseSessionUrl(sessionUrl, m_connect4ManagerWebSocketUrl, m_connect4ManagerWebSocketPassword);
                 m_observedParticipantName = getParticipantName(deviceName, sessionParameters);
+                m_sessionTypeName = getSessionTypeName(sessionParameters);
 
                 RCLCPP_INFO_STREAM(
                     m_node->get_logger(),
                     "Connect4 Manager Web Socket: Connection (sessionUrl="
                         << sessionUrl << ", webSocketUrl=" << m_connect4ManagerWebSocketUrl.toStdString()
+                        << ", sessionTypeName=" << m_sessionTypeName.toStdString()
                         << ", password=" << m_connect4ManagerWebSocketPassword.toStdString() << ", deviceName="
                         << deviceName << ", participantName" << m_observedParticipantName.toStdString() << ")");
 
                 m_connect4ManagerWebSocket->open(m_connect4ManagerWebSocketUrl);
+
+                if (m_sessionTypeName == "TTOPDinerRobotTablet")
+                {
+                    startVideoconf();
+                }
+                else if (m_sessionTypeName == "TTOPDinerTabletRobot")
+                {
+                    stopVideoconf();
+                }
             });
     }
     if (!msg->stop_session_events.empty())
@@ -251,7 +287,7 @@ void Connect4Widget::openteraEventCallback(const opentera_webrtc_ros_msgs::msg::
                 m_connect4ManagerWebSocketUrl = "";
                 m_connect4ManagerWebSocketPassword = "";
                 m_observedParticipantName = "";
-
+                stopVideoconf();
                 m_connect4ManagerWebSocket->close();
             });
     }
@@ -309,6 +345,29 @@ QString Connect4Widget::getParticipantName(const std::string& deviceName, const 
     }
 }
 
+QString Connect4Widget::getSessionTypeName(const std::string& sessionParameters)
+{
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonMessage = QJsonDocument::fromJson(QString(sessionParameters.c_str()).toUtf8(), &jsonParseError);
+
+    if (jsonParseError.error != QJsonParseError::NoError)
+    {
+        RCLCPP_ERROR_STREAM(
+            m_node->get_logger(),
+            "Connect4 Game Data Channel: getSessionTypeName error: " << jsonParseError.errorString().toStdString());
+        return "";
+    }
+
+    QJsonObject jsonObject = jsonMessage.object();
+    if (!jsonObject.contains("session_type_name"))
+    {
+        RCLCPP_ERROR(m_node->get_logger(), "Connect4 Game Data Channel: session_type_name not found");
+        return "";
+    }
+
+    return jsonObject["session_type_name"].toString();
+}
+
 void Connect4Widget::parseSessionUrl(const std::string& sessionUrl, QString& webSocketUrl, QString& password)
 {
     std::string baseUrl = sessionUrl.substr(0, sessionUrl.find('?'));
@@ -317,7 +376,15 @@ void Connect4Widget::parseSessionUrl(const std::string& sessionUrl, QString& web
         baseUrl = baseUrl.substr(0, baseUrl.size() - 1);
     }
     webSocketUrl = baseUrl.c_str();
-    webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/game";
+
+    if (m_sessionTypeName.contains("TTOPDiner"))
+    {
+        webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/diner";
+    }
+    else
+    {
+        webSocketUrl = webSocketUrl.replace("https://", "wss://").replace("http://", "ws://") + "/game";
+    }
 
     password = QUrlQuery(QUrl(sessionUrl.c_str()).query()).queryItemValue("pwd");
 }
