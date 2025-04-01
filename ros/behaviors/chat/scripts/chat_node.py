@@ -17,12 +17,21 @@ from std_msgs.msg import Float32
 from behavior_msgs.msg import Text, Done, Statistics
 from perception_msgs.msg import Transcript
 from audio_utils_msgs.msg import AudioFrame
+from ament_index_python.packages import get_package_share_directory
 
 import hbba_lite
 import time_utils
 import openai
 
-openai.api_key = os.environ.get('OPENAI_API_KEY')
+class ModelNotFoundError(Exception):
+    """ Exception raised when the model is not found """
+    def __init__(self, model_name: str):
+        super().__init__(f'Model {model_name} not found')
+        self.model_name = model_name
+
+    def __str__(self):
+        return f'Model {self.model_name} not found'
+
 
 class BaseChatAPI(ABC):
     def __init__(self,  chat_node: rclpy.node.Node, language: str, language_model: str):
@@ -31,6 +40,59 @@ class BaseChatAPI(ABC):
         self.language = language
         self.language_model = language_model
         self.load_default_context()
+
+        # Available functions
+        self._available_functions = {
+            "volume_up":{
+                "en": "Raising volume",
+                "fr": "Je monte le volume",
+                "function": self._volume_up
+            },
+            "volume_down": {
+                "en": "Lowering volume",
+                "fr": "Je baisse le volume",
+                "function": self._volume_down
+            }
+        }
+
+        # Schemas
+        self._function_schemas = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "volume_up",
+                    "description": "Increase the volume",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "integer",
+                                "description": "Amount to increase the volume by",
+                            }
+                        },
+                        "required": ["amount"]
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "volume_down",
+                    "description": "Decrease the volume",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                             "amount": {
+                                "type": "integer",
+                                "description": "Amount to decrease the volume by",
+                            }
+                        },
+                        "required": ["amount"]
+
+                    }
+                }
+            }
+        ]
 
     def add_to_history(self, message: str, role: str, timestamp: datetime):
         """ Add to history to conserve context """
@@ -80,6 +142,14 @@ class BaseChatAPI(ABC):
 
         return messages
 
+    def _volume_up(self) -> bool:
+        print('Volume up')
+        return True
+
+    def _volume_down(self) -> bool:
+        print('Volume down')
+        return True
+
     @abstractmethod
     def send_request_and_process_response(self):
         """ Send request to the server and get the response """
@@ -89,74 +159,30 @@ class BaseChatAPI(ABC):
 class ChatGPTAPI(BaseChatAPI):
     def __init__(self, chat_node: rclpy.node.Node, language: str, language_model: str):
         super().__init__(chat_node, language, language_model)
+        openai.api_key = os.environ.get('OPENAI_API_KEY')
 
-        # Available functions
-        self._available_functions = {
-            "volume_up":{
-                "en": "Raising volume",
-                "fr": "Je monte le volume",
-                "function": self._volume_up
-            },
-            "volume_down": {
-                "en": "Lowering volume",
-                "fr": "Je baisse le volume",
-                "function": self._volume_down
-            }
-        }
-
-        # Schemas
-        self._function_schemas = [
-            {
-                "type": "function",
-                "function": {
-                    "name": "volume_up",
-                    "description": "Increase the volume",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {}
-                    }
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "volume_down",
-                    "description": "Decrease the volume",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {}
-                    }
-                }
-            }
-        ]
-
-
-    def _volume_up(self) -> bool:
-        print('Volume up')
-        return True
-
-    def _volume_down(self) -> bool:
-        print('Volume down')
-        return True
+    def create_chat_completion(self):
+        return openai.ChatCompletion.create(
+            model=self.language_model,
+            messages=self.get_request_messages(),
+            max_tokens=1600,
+            temperature=0.5, # Somewhat creative
+            frequency_penalty=0.5, # Avoid repetition
+            tools=self._function_schemas,
+            tool_choice="auto",
+            top_p=0.9, # Avoid repetition
+            stream=True # Enable streaming mode
+        )
 
     def send_request_and_process_response(self):
         try:
-            response = openai.ChatCompletion.create(
-                model=self.language_model,
-                messages=self.get_request_messages(),
-                max_tokens=1600,
-                temperature=0.5, # Somewhat creative
-                frequency_penalty=0.5, # Avoid repetition
-                tools=self._function_schemas,
-                tool_choice="auto",
-                top_p=0.9, # Avoid repetition
-                stream=True # Enable streaming mode
-            )
+            response = self.create_chat_completion()
 
             assistant_message = ""
 
             # Generator will give partial responses
             for chunk in response:
+                # print(chunk)
                 if 'choices' in chunk and len(chunk['choices']) > 0:
                     # Get delta
                     delta = chunk['choices'][0].get('delta', {})
@@ -166,6 +192,7 @@ class ChatGPTAPI(BaseChatAPI):
                         for tool_call in delta['tool_calls']:
                             tool_type = tool_call.get('type', None)
                             if tool_type == 'function':
+                                print(tool_type)
                                 if 'name' in tool_call['function'] and tool_call['function']['name'] in self._available_functions:
 
                                     self.add_tool_calls_to_history([tool_call], timestamp=datetime.now())
@@ -210,39 +237,23 @@ class ChatGPTAPI(BaseChatAPI):
 
         print('Done processing')
 
-class OllamaAPI(BaseChatAPI):
-    def __init__(self, chat_node: rclpy.node.Node,  language: str, language_model: str):
+
+class OllamaAPI(ChatGPTAPI):
+    def __init__(self, chat_node: rclpy.node.Node, language: str, language_model: str):
         super().__init__(chat_node, language, language_model)
-        self._server_url = "http://localhost:11434/api/chat"
+        openai.api_key = 'ollama'
+        openai.api_base = "http://localhost:11434/v1"
 
-    def send_request_and_process_response(self):
-        data = {
-            "model": self.language_model,
-            "messages": self.get_request_messages(),
-            "stream": True
-        }
+    def create_chat_completion(self):
+        return openai.ChatCompletion.create(
+            model=self.language_model,
+            messages=self.get_request_messages(),
+            tools=self._function_schemas,
+            top_p=0.9, # Avoid repetition
+            stream=True # Enable streaming mode
+        )
 
-        response = requests.post(self._server_url, json=data, stream=True)
-        if response.status_code == 200:
 
-            output_message: str = str()
-
-            for line in response.iter_lines():
-                if line:
-                    json_obj = json.loads(line.decode("utf-8"))
-
-                    if 'message' in json_obj and json_obj['message']['role'] == 'assistant':
-                        # Chat node will add the message to the pending messages to send to the talk node
-                        self._chat_node.add_pending_message(json_obj['message']['content'])
-                        output_message += json_obj['message']['content']
-
-                    if 'done' in json_obj:
-                        if json_obj['done']:
-                            # Add full output message to the history
-                            self.add_to_history(message=output_message,
-                                            role='assistant',
-                                            timestamp=datetime.now())
-                            break
 
 
 class ChatNode(rclpy.node.Node):
@@ -252,6 +263,8 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._processing = False
         self._pending_messages = list()
+        # self._package_prompts = get_package_share_directory('chat')
+        # self._package_tools = get_package_share_directory('chat')
 
         self._executor = rclpy.executors.MultiThreadedExecutor(num_threads=4)
         # This will allow to receive callbacks while processing another one
@@ -259,10 +272,23 @@ class ChatNode(rclpy.node.Node):
 
         self._language = self.declare_parameter('language', 'fr').get_parameter_value().string_value
         self._language_model = self.declare_parameter('language_model', 'llama3.2').get_parameter_value().string_value
+        self._model_type = self.declare_parameter('model_type', 'ollama').get_parameter_value().string_value
+        self._enable_tools = self.declare_parameter('enable_tools', False).get_parameter_value().bool_value
+
+        self._tools_file = self.declare_parameter('tools_config',
+                                                  get_package_share_directory('chat') + '/tools/default_tools.json').get_parameter_value().string_value
+
+        self._prompts_file = self.declare_parameter('prompts_config',
+                                                    get_package_share_directory('chat') + f'/prompts/default_{self._language}.json').get_parameter_value().string_value
+
 
         # Testing Ollama API
-        # self._chat_api = OllamaAPI(self, language=self._language, language_model=self._language_model)
-        self._chat_api = ChatGPTAPI(self, language=self._language, language_model='gpt-4o-mini')
+        if self._model_type == 'ollama':
+            self._chat_api = OllamaAPI(self, language=self._language, language_model=self._language_model)
+        elif self._model_type == 'chatgpt':
+            self._chat_api = ChatGPTAPI(self, language=self._language, language_model=self._language_model)
+        else:
+            raise ModelNotFoundError(self._model_type)
 
         # Subscribers
         self._transcript_sub = self.create_subscription(Transcript,
@@ -287,18 +313,24 @@ class ChatNode(rclpy.node.Node):
 
 
     def _on_transcript_received_cb(self, msg: Transcript):
-        print('Transcript received:', msg.text)
+        self.get_logger().info(f'Transcript received: {msg.text}')
 
+        if len(msg.text) == 0:
+            self.get_logger().error('Empty transcript')
+
+        self._talking = False
         # Add the transcript to the context history
         self._chat_api.add_to_history(message=msg.text, role='user', timestamp=datetime.now())
         # Process the request
         self._processing = True
+        self.get_logger().info('Processing...')
         self._chat_api.send_request_and_process_response()
         self._processing = False
+        self.get_logger().info('Processing done')
         self._process_pending_messages()
 
     def _on_talk_done_cb(self, msg: Done):
-        print('Talk done:', msg.ok)
+        self.get_logger().info(f'Talk done : {msg.ok}')
         self._talking = False
         self._process_pending_messages()
 
@@ -306,7 +338,7 @@ class ChatNode(rclpy.node.Node):
             # Send the output message to the chat node
             chat_msg = Done()
             chat_msg.ok = True
-            print('Chat done')
+            self.get_logger().info('Chat done')
             self._chat_done_pub.publish(chat_msg)
 
 
@@ -367,6 +399,8 @@ def main():
         chat_node.run()
     except KeyboardInterrupt:
         pass
+    except ModelNotFoundError as e:
+        chat_node.get_logger().error(f'{e}')
     finally:
         chat_node.destroy_node()
         if rclpy.ok():

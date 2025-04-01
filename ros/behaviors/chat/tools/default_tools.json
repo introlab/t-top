@@ -1,0 +1,37 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "volume_up",
+            "description": "Increase the volume",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "integer",
+                        "description": "Amount to increase the volume by"
+                    }
+                },
+                "required": ["amount"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "volume_down",
+            "description": "Decrease the volume",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                     "amount": {
+                        "type": "integer",
+                        "description": "Amount to decrease the volume by"
+                    }
+                },
+                "required": ["amount"]
+
+            }
+        }
+    }
+]

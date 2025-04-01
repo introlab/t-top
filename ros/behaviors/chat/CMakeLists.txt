@@ -32,4 +32,15 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+# Configuration files
+install(DIRECTORY
+  prompts
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+install(DIRECTORY
+  tools
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 ament_package()
