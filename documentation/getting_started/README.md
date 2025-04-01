@@ -175,7 +175,7 @@ Open the workspace folder as described in the previous section.
 {
     "configurations": [
     {
-        "name": "ROS: Launch test chat",
+        "name": "ROS: Launch test nodes",
         "type": "ros",
         "request": "launch",
         "target": "${workspaceFolder}/src/enter-the-full-path-of-your-launch-file",
