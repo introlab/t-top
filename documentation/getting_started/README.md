@@ -53,7 +53,7 @@ Now you can SSH into the robot using the command `ssh ttop` instead of `ssh user
 
 ## Setup Workspace from Visual Studio Code
 
-1. Open Visual Studio Code and click on the `-[]-` icon in the bottom left corner.
+1. Open Visual Studio Code and click on the ![remote_ssh_icon](images/remote_ssh.jpeg) icon in the bottom left corner.
 2. Select `Remote-SSH: Connect to Host...` and choose `ttop` from the list.
 3. Once connected, open the terminal in Visual Studio Code by clicking on `Terminal` in the top menu and selecting `New Terminal`.
 4. In the terminal, we will create a new workspace folder for the project. You can choose any name you like, but for this example, we will use `t_top_ws`. If the directory already exists, create a new one with another name :
@@ -94,9 +94,33 @@ build:
 
 ```bash
 # Go to the root of the workspace
-cd ~/t_top_wsf
+cd ~/t_top_ws
 # Source ROS2 Humble
 source /opt/ros/humble/install/setup.bash
 # Build the workspace
 colcon build
+```
+
+## Launch the Control Panel from the Terminal
+
+Control Panel is a graphical interface to test the robot. It allows you to visualize the robot's state, control its movements, and interact with its sensors.
+
+1. Open a terminal in Visual Studio Code and source the workspace.
+
+```bash
+# Go to the root of the workspace
+cd ~/t_top_ws
+# Source ROS2 Humble
+source /opt/ros/humble/install/setup.bash
+# Source the workspace
+source install/setup.bash
+```
+
+2. Launch the control panel.
+
+```bash
+# Redirect the display to the robot
+export DISPLAY=:0
+# Launch the control panel
+ros2 launch control_panel control_panel.launch.xml
 ```
