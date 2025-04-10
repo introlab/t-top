@@ -7,3 +7,4 @@
 - The [architecture](architecture/) folder contains architecture diagrams.
 - The [tf](tf/) folder illustrates the frame locations.
 - The [hbba_lite](hbba_lite/) folder contains the documentation of how to use HBBA Lite.
+- The [getting_started](getting_started/) folder contains the documentation to get started with the robot.
