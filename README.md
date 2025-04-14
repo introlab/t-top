@@ -11,11 +11,16 @@ interacting with people.
 ## Authors
 
 - Marc-Antoine Maheux (@mamaheux)
-- Charles Caya (@chcaya)
-- Alexandre Filion (@alexfilion)
 - Dominic Létourneau (@doumdi)
 - Philippe Warren (@philippewarren)
+- Mariam Fdil (@MariamFdil)
+- [François Michaud](mailto:francois.michaud@usherbrooke.ca), ing., Ph.D.
+
+## Contributors
+
 - Ian-Mathieu Joly (@joli-1801)
+- Charles Caya (@chcaya)
+- Alexandre Filion (@alexfilion)
 
 ## Licensing
 
@@ -69,12 +74,15 @@ See [01_COMPUTER_CONFIGURATION.md](documentation/assembly/01_COMPUTER_CONFIGURAT
 
 - [M.-A. Maheux, D. Létourneau, P. Warren, A. M. Panchea, J. M. Robillard and F. Michaud, “‍Designing a Tabletop SAR as an Advanced HRI Experimentation Platform,” in Proceedings of the 2024 International Symposium on Technological Advances in Human-Robot Interaction (TAHRI 2024), Boulder, CO, USA, 2024](https://dl.acm.org/doi/10.1145/3648536.3648538)
     - [YouTube Video](https://youtu.be/HSd65F055VE)
+- [M. Fdil, M. Levasseur, D. Létourneau, M.-A. Maheux, M. Lussier-Therrien, F. Michaud, "Enhancing Open Conversations Using Visual Percepts From a Socially Assistive Robot -- Preliminary Assessment", in Proceedings of the International Conference on Social Robotics, 2024, pp. 1-12.](https://link.springer.com/chapter/10.1007/978-981-96-3519-1_17)
+    - [YouTube Video](https://youtu.be/4ykoxQKUweU)  
 - [A. M. Panchea, M.-A. Maheux, P. Warren, D. Létourneau and F. Michaud, “Exploratory Evaluation of a Tabletop Robot With Older Adults,” in Proceedings of the 2024 ACM/IEEE International Conference on Human-Robot Interaction, Boulder, CO, USA, 2024, pp. 817–821.](https://dl.acm.org/doi/10.1145/3610978.3640621)
 - [M.-A. Maheux, A. M. Panchea, P. Warren, D. Létourneau and F. Michaud, “T-Top, an Open Source Tabletop Robot with Advanced Onboard Audio, Vision and Deep Learning Capabilities,” in Proceedings of the 2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Detroit, MI, USA, 2023, pp. 7862-7869.](https://ieeexplore.ieee.org/abstract/document/10342252)
 - [M.-A. Maheux, C. Caya, D. Létourneau and F. Michaud, “T-Top, a sar experimental platform,” in Proceedings of the 2022 ACM/IEEE International Conference on Human-Robot Interaction, 2022, pp. 904–908.](https://dl.acm.org/doi/abs/10.5555/3523760.3523902)
 
 ## Sponsor
 
-![IntRoLab](https://introlab.3it.usherbrooke.ca/IntRoLab.png)
+![IntRoLab](images/introlab_logo.png)
+
 
 [IntRoLab - Intelligent / Interactive / Integrated / Interdisciplinary Robot Lab](https://introlab.3it.usherbrooke.ca)

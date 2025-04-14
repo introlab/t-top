@@ -40,6 +40,7 @@ class Connect4Widget : public QWidget
     QString m_connect4ManagerWebSocketUrl;
     QString m_connect4ManagerWebSocketPassword;
     QString m_observedParticipantName;
+    QString m_sessionTypeName;
     bool m_connect4ManagerConnectionRequested;
 
     QTimer* m_connect4ManagerWebSocketTimer;
@@ -70,7 +71,10 @@ private:
     bool sendConnect4ManagerEvent(const QString& event, const QJsonObject& data);
 
     QString getParticipantName(const std::string& deviceName, const std::string& sessionParameters);
+    QString getSessionTypeName(const std::string& sessionParameters);
     void parseSessionUrl(const std::string& sessionUrl, QString& webSocketUrl, QString& password);
+    void startVideoconf();
+    void stopVideoconf();
 
     void handleGameFinishedEvent(const QString& result);
     void addRotatingSinDesire(uint8_t r, uint8_t g, uint8_t b);
