@@ -13,8 +13,8 @@ import rclpy.callback_groups
 import rclpy.node
 import rclpy.executors
 
-from std_msgs.msg import Float32
-from behavior_msgs.msg import Text, Done, Statistics
+from std_msgs.msg import String
+from behavior_msgs.msg import Text, Done, Statistics, ChatToolsFunctionCall
 from perception_msgs.msg import Transcript
 from audio_utils_msgs.msg import AudioFrame
 from ament_index_python.packages import get_package_share_directory
@@ -32,6 +32,24 @@ class ModelNotFoundError(Exception):
     def __str__(self):
         return f'Model {self.model_name} not found'
 
+class ToolsNotFoundError(Exception):
+    """ Exception raised when the tool is not found """
+    def __init__(self, tools_name: str):
+        super().__init__(f'Tool {tools_name} not found')
+        self.tools_name = tools_name
+
+    def __str__(self):
+        return f'Tool {self.tools_name} not found'
+
+class PromptsNotFoundError(Exception):
+    """ Exception raised when the prompts are not found """
+    def __init__(self, prompts_name: str):
+        super().__init__(f'Prompts {prompts_name} not found')
+        self.prompts_name = prompts_name
+
+    def __str__(self):
+        return f'Prompts {self.prompts_name} not found'
+
 
 class BaseChatAPI(ABC):
     def __init__(self,  chat_node: rclpy.node.Node, language: str, language_model: str):
@@ -39,60 +57,8 @@ class BaseChatAPI(ABC):
         self.history = list()
         self.language = language
         self.language_model = language_model
-        self.load_default_context()
-
-        # Available functions
-        self._available_functions = {
-            "volume_up":{
-                "en": "Raising volume",
-                "fr": "Je monte le volume",
-                "function": self._volume_up
-            },
-            "volume_down": {
-                "en": "Lowering volume",
-                "fr": "Je baisse le volume",
-                "function": self._volume_down
-            }
-        }
-
-        # Schemas
-        self._function_schemas = [
-            {
-                "type": "function",
-                "function": {
-                    "name": "volume_up",
-                    "description": "Increase the volume",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "amount": {
-                                "type": "integer",
-                                "description": "Amount to increase the volume by",
-                            }
-                        },
-                        "required": ["amount"]
-                    }
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "volume_down",
-                    "description": "Decrease the volume",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                             "amount": {
-                                "type": "integer",
-                                "description": "Amount to decrease the volume by",
-                            }
-                        },
-                        "required": ["amount"]
-
-                    }
-                }
-            }
-        ]
+        self._tools_schema = None
+        self._prompts = None
 
     def add_to_history(self, message: str, role: str, timestamp: datetime):
         """ Add to history to conserve context """
@@ -117,7 +83,10 @@ class BaseChatAPI(ABC):
         """ Reset the history """
         self.history.clear()
         # Reload default context
-        self.load_default_context()
+        if (self._prompts is None):
+            self.load_default_context()
+        else:
+            self._chat_node.get_logger().info('No prompts loaded, not resetting context')
 
     def load_default_context(self):
         """ Load default context """
@@ -129,6 +98,41 @@ class BaseChatAPI(ABC):
             self.add_to_history(message="You are a robot assistant. You always answer in English.",
                                         role="system",
                                         timestamp=datetime.now())
+
+    def load_prompts(self, file : str) -> bool:
+        """ Load prompts from file """
+        with open(file, 'r') as f:
+            self._prompts = json.load(f)
+            # Should be an array
+            if isinstance(self._prompts, list):
+                # Add to history
+                for prompt in self._prompts:
+                    if 'role' in prompt and 'content' in prompt:
+                        self.add_to_history(message=prompt['content'],
+                                            role=prompt['role'],
+                                            timestamp=datetime.now())
+                    else:
+                        self._chat_node.get_logger().info('Invalid prompt format')
+                        return False
+            else:
+                self._chat_node.get_logger().info('Invalid prompts format')
+                return False
+            return True
+        return False
+
+    def load_tools(self, file : str) -> bool:
+        try:
+            with open(file, 'r') as f:
+                # TODO Validate schema
+                self._tools_schema = json.load(f)
+
+                return True
+        except Exception as e:
+            self._chat_node.get_logger().info(f'Failed to load tools: {e}')
+            return False
+
+        return False
+
 
     def get_request_messages(self) -> list:
         """ Get the messages to send to the server """
@@ -142,13 +146,6 @@ class BaseChatAPI(ABC):
 
         return messages
 
-    def _volume_up(self) -> bool:
-        print('Volume up')
-        return True
-
-    def _volume_down(self) -> bool:
-        print('Volume down')
-        return True
 
     @abstractmethod
     def send_request_and_process_response(self):
@@ -168,7 +165,7 @@ class ChatGPTAPI(BaseChatAPI):
             max_tokens=1600,
             temperature=0.5, # Somewhat creative
             frequency_penalty=0.5, # Avoid repetition
-            tools=self._function_schemas,
+            tools=self._tools_schema,
             tool_choice="auto",
             top_p=0.9, # Avoid repetition
             stream=True # Enable streaming mode
@@ -192,28 +189,15 @@ class ChatGPTAPI(BaseChatAPI):
                         for tool_call in delta['tool_calls']:
                             tool_type = tool_call.get('type', None)
                             if tool_type == 'function':
-                                print(tool_type)
-                                if 'name' in tool_call['function'] and tool_call['function']['name'] in self._available_functions:
 
+                                if 'name' in tool_call['function']:
+                                    # Call function, will be handled by chat_node and published to be processed externally
+                                    id = tool_call.get('id', None)
+                                    function_name = tool_call['function'].get('name', None)
+                                    function_arguments = tool_call['function'].get('arguments', None)
+                                    self._chat_node.publish_tools_function_call(id, tool_type,
+                                                                                function_name, function_arguments)
                                     self.add_tool_calls_to_history([tool_call], timestamp=datetime.now())
-                                    function_info = self._available_functions[tool_call['function']['name']]
-
-                                    # Get function description
-                                    if self.language == 'fr':
-                                        function_description = function_info['fr']
-                                    else:
-                                        function_description = function_info['en']
-
-                                    # Say the function message
-                                    self._chat_node.add_pending_message(function_description)
-
-                                    # Call function
-                                    response = function_info['function']()
-
-                                    # Add to history
-                                    self.add_tool_call_response_to_history(tool_call=tool_call,
-                                                                  result={"status": response},
-                                                                  timestamp=datetime.now())
 
                     # Process normal messages
                     if 'content' in delta and delta['content'] is not None:
@@ -248,13 +232,11 @@ class OllamaAPI(ChatGPTAPI):
         return openai.ChatCompletion.create(
             model=self.language_model,
             messages=self.get_request_messages(),
-            tools=self._function_schemas,
+            tools=self._tools_schema,
+            tool_choice="auto",
             top_p=0.9, # Avoid repetition
             stream=True # Enable streaming mode
         )
-
-
-
 
 class ChatNode(rclpy.node.Node):
     def __init__(self):
@@ -263,21 +245,24 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._processing = False
         self._pending_messages = list()
-        # self._package_prompts = get_package_share_directory('chat')
-        # self._package_tools = get_package_share_directory('chat')
-
         self._executor = rclpy.executors.MultiThreadedExecutor(num_threads=4)
         # This will allow to receive callbacks while processing another one
         self._callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
 
         self._language = self.declare_parameter('language', 'fr').get_parameter_value().string_value
-        self._language_model = self.declare_parameter('language_model', 'llama3.2').get_parameter_value().string_value
-        self._model_type = self.declare_parameter('model_type', 'ollama').get_parameter_value().string_value
-        self._enable_tools = self.declare_parameter('enable_tools', False).get_parameter_value().bool_value
+        #self._language_model = self.declare_parameter('language_model', 'llama3.2').get_parameter_value().string_value
+        #self._model_type = self.declare_parameter('model_type', 'ollama').get_parameter_value().string_value
 
+        self._language_model = self.declare_parameter('language_model', 'gpt-4o-mini').get_parameter_value().string_value
+        self._model_type = self.declare_parameter('model_type', 'chatgpt').get_parameter_value().string_value
+
+        # Tools
+        self._enable_tools = self.declare_parameter('enable_tools', True).get_parameter_value().bool_value
         self._tools_file = self.declare_parameter('tools_config',
                                                   get_package_share_directory('chat') + '/tools/default_tools.json').get_parameter_value().string_value
 
+        # Prompts
+        self._enable_prompts = self.declare_parameter('enable_prompts', True).get_parameter_value().bool_value
         self._prompts_file = self.declare_parameter('prompts_config',
                                                     get_package_share_directory('chat') + f'/prompts/default_{self._language}.json').get_parameter_value().string_value
 
@@ -289,6 +274,22 @@ class ChatNode(rclpy.node.Node):
             self._chat_api = ChatGPTAPI(self, language=self._language, language_model=self._language_model)
         else:
             raise ModelNotFoundError(self._model_type)
+
+        # Load tools
+        if self._enable_tools:
+            if not self._chat_api.load_tools(self._tools_file):
+                self.get_logger().error('Failed to load tools')
+                raise ToolsNotFoundError(self._tools_file)
+        # Load prompts
+        if self._enable_prompts:
+            if not self._chat_api.load_prompts(self._prompts_file):
+                self.get_logger().error('Failed to load prompts')
+                raise PromptsNotFoundError(self._prompts_file)
+        else :
+            self.get_logger().info('Prompts not enabled')
+            self.get_logger().info('Using default prompts')
+            self._chat_api.load_default_context()
+
 
         # Subscribers
         self._transcript_sub = self.create_subscription(Transcript,
@@ -306,6 +307,18 @@ class ChatNode(rclpy.node.Node):
         # Publishers
         self._talk_text_pub = self.create_publisher(Text, 'talk/text', 1)
         self._chat_done_pub = self.create_publisher(Done, 'chat/done', 1)
+        self._chat_tools_functions_pub = self.create_publisher(ChatToolsFunctionCall, 'chat/tools/functions', 1)
+
+    def publish_tools_function_call(self, id: str, type: str, name: str, arguments: str):
+        """ Publish a tool function call """
+        function_call : ChatToolsFunctionCall = ChatToolsFunctionCall(id=String(data=id),
+                                                                      type=String(data=type),
+                                                                      function_name=String(data=name),
+                                                                      function_arguments=String(data=arguments))
+        # Set the header timestamp
+        function_call.header.stamp = self.get_clock().now().to_msg()
+        # Publish the function call
+        self._chat_tools_functions_pub.publish(function_call)
 
     def add_pending_message(self, message: str):
         self._pending_messages.append(message)

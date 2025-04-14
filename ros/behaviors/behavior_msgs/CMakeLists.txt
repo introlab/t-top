@@ -23,6 +23,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 # Generate messages
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/ChatToolsFunctionCall.msg"
   "msg/Done.msg"
   "msg/GestureName.msg"
   "msg/LedAnimation.msg"
