@@ -1,6 +1,0 @@
-std_msgs/Header header
-
-string id
-string type
-string function_name
-string function_arguments
