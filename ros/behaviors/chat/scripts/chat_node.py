@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
-import requests
+
 import json
 import os
 import re
-import time
+
 from abc import ABC, abstractmethod
 from datetime import datetime
 import rclpy
@@ -13,14 +13,14 @@ import rclpy.callback_groups
 import rclpy.node
 import rclpy.executors
 
-from std_msgs.msg import String
-from behavior_msgs.msg import Text, Done, Statistics, ChatToolsFunctionCall
+from behavior_msgs.msg import Text, Done, ChatToolsFunctionCall
+from behavior_srvs.srv import ChatToolsFunctionCall
+
 from perception_msgs.msg import Transcript
-from audio_utils_msgs.msg import AudioFrame
 from ament_index_python.packages import get_package_share_directory
 
-import hbba_lite
-import time_utils
+
+
 import openai
 
 class ModelNotFoundError(Exception):
@@ -195,9 +195,25 @@ class ChatGPTAPI(BaseChatAPI):
                                     id = tool_call.get('id', None)
                                     function_name = tool_call['function'].get('name', None)
                                     function_arguments = tool_call['function'].get('arguments', None)
-                                    self._chat_node.publish_tools_function_call(id, tool_type,
-                                                                                function_name, function_arguments)
                                     self.add_tool_calls_to_history([tool_call], timestamp=datetime.now())
+
+                                    # Call service with
+                                    response : ChatToolsFunctionCall.Response = self._chat_node.call_tools_external_service(id, function_name, function_arguments)
+
+                                    if response is not None:
+                                        # TODO Add response to history
+                                        # TODO Call back API with response
+                                        pass
+                                    else:
+                                        self._chat_node.get_logger().error(f'Failed to call external service: {function_name}')
+                                        self.add_tool_call_response_to_history(tool_call=tool_call,
+                                                                               result={"error": "Failed to call external service"},
+                                                                               timestamp=datetime.now())
+
+                                    # TODO Call back API with response ?
+
+
+
 
                     # Process normal messages
                     if 'content' in delta and delta['content'] is not None:
@@ -212,14 +228,13 @@ class ChatGPTAPI(BaseChatAPI):
 
 
             # Add full output message to the history
-            self.add_to_history(message=assistant_message, role='assistant', timestamp=datetime.now())
-
+            if len(assistant_message) > 0:
+                # Add to history
+                self.add_to_history(message=assistant_message, role='assistant', timestamp=datetime.now())
 
         except Exception as e:
-            print('Error:', e)
+            self._chat_node.get_logger().error(f"Error: {e}")
             self._chat_node.add_pending_message(str(e))
-
-        print('Done processing')
 
 
 class OllamaAPI(ChatGPTAPI):
@@ -244,6 +259,7 @@ class ChatNode(rclpy.node.Node):
 
         self._talking = False
         self._processing = False
+        self._tools_calls = list()
         self._pending_messages = list()
         self._executor = rclpy.executors.MultiThreadedExecutor(num_threads=4)
         # This will allow to receive callbacks while processing another one
@@ -267,7 +283,7 @@ class ChatNode(rclpy.node.Node):
                                                     get_package_share_directory('chat') + f'/prompts/default_{self._language}.json').get_parameter_value().string_value
 
 
-        # Testing Ollama API
+        # Initialize API
         if self._model_type == 'ollama':
             self._chat_api = OllamaAPI(self, language=self._language, language_model=self._language_model)
         elif self._model_type == 'chatgpt':
@@ -307,18 +323,39 @@ class ChatNode(rclpy.node.Node):
         # Publishers
         self._talk_text_pub = self.create_publisher(Text, 'talk/text', 1)
         self._chat_done_pub = self.create_publisher(Done, 'chat/done', 1)
-        self._chat_tools_functions_pub = self.create_publisher(ChatToolsFunctionCall, 'chat/tools/functions', 1)
+        # self._chat_tools_functions_pub = self.create_publisher(ChatToolsFunctionCall, 'chat/tools/functions', 1)
 
-    def publish_tools_function_call(self, id: str, type: str, name: str, arguments: str):
-        """ Publish a tool function call """
-        function_call : ChatToolsFunctionCall = ChatToolsFunctionCall(id=String(data=id),
-                                                                      type=String(data=type),
-                                                                      function_name=String(data=name),
-                                                                      function_arguments=String(data=arguments))
-        # Set the header timestamp
-        function_call.header.stamp = self.get_clock().now().to_msg()
-        # Publish the function call
-        self._chat_tools_functions_pub.publish(function_call)
+
+    def call_tools_external_service(self, id: str, function_name: str, function_arguments: str) -> str:
+        """ Call the external service to process the tool function call """
+        self.get_logger().info(f'Calling external service: {function_name} with arguments: {function_arguments}')
+
+        # Create client
+        client = self.create_client(ChatToolsFunctionCall, f'/chat/tools/functions/{function_name}')
+
+        # Create Request
+        request : ChatToolsFunctionCall.Request = ChatToolsFunctionCall.Request()
+
+        # Fill request
+        request.id = id
+        request.function_name = function_name
+        request.function_arguments = function_arguments
+
+        # Wait for service to be available
+        if not client.wait_for_service(timeout_sec=5.0):
+            self.get_logger().error(f'Service {client.srv_name} not available')
+            return None
+
+        # Call and wait for service
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(self, future, timeout_sec=5.0)
+        if future.result() is not None:
+            self.get_logger().info(f'Service call result: {future.result()}')
+            return future.result()
+        else:
+            self.get_logger().error(f'Service call failed: {future.exception()}')
+            return None
+        return None
 
     def add_pending_message(self, message: str):
         self._pending_messages.append(message)
@@ -332,14 +369,24 @@ class ChatNode(rclpy.node.Node):
             self.get_logger().error('Empty transcript')
 
         self._talking = False
-        # Add the transcript to the context history
-        self._chat_api.add_to_history(message=msg.text, role='user', timestamp=datetime.now())
-        # Process the request
-        self._processing = True
-        self.get_logger().info('Processing...')
-        self._chat_api.send_request_and_process_response()
         self._processing = False
-        self.get_logger().info('Processing done')
+
+        if len(msg.text) > 0:
+            # Add the transcript to the context history
+            self._chat_api.add_to_history(message=msg.text,
+                                        role='user', timestamp=datetime.now())
+
+            # Process the request
+            self._processing = True
+            self.get_logger().info('Processing...')
+            self._chat_api.send_request_and_process_response()
+            self._processing = False
+            self.get_logger().info('Processing done!')
+
+        else:
+            self.get_logger().error('Empty transcript')
+
+        # Safety always call _process_pending_messages
         self._process_pending_messages()
 
     def _on_talk_done_cb(self, msg: Done):
@@ -347,12 +394,27 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._process_pending_messages()
 
-        if not self._processing and len(self._pending_messages) == 0 and not self._talking:
-            # Send the output message to the chat node
-            chat_msg = Done()
-            chat_msg.ok = True
-            self.get_logger().info('Chat done')
-            self._chat_done_pub.publish(chat_msg)
+    def _on_tools_function_call_service_cb(self, request, response):
+        self.get_logger().info(f'Tools function call received: {request}')
+
+        # Find the tool call in the list
+        for tool_call in self._tools_calls:
+            if tool_call.id == request.id:
+                # Remove the tool call from the list
+                self._tools_calls.remove(tool_call)
+                break
+
+        # Add the result to the history
+        self._chat_api.add_tool_call_response_to_history(tool_call=tool_call,
+                                                         result=request.result,
+                                                         timestamp=datetime.now())
+
+        # Send to API
+
+        # Send response to client
+        response.ok = True
+        response.message = 'Tool call processed'
+        return response
 
 
     def _process_pending_messages(self):
@@ -362,7 +424,15 @@ class ChatNode(rclpy.node.Node):
                 partial_message += message
             self._pending_messages.clear()
 
+            # To be done we need to have no pending messages and no tools calls
             if len(partial_message) == 0:
+                if len(self._tools_calls) == 0:
+                    # We are done
+                    chat_msg = Done()
+                    chat_msg.ok = True
+                    self.get_logger().info('Chat done')
+                    self._chat_done_pub.publish(chat_msg)
+
                 return
 
             talk_msg = Text()
@@ -378,18 +448,19 @@ class ChatNode(rclpy.node.Node):
                 # Send everything, we are done!
                 self._talking = True
                 talk_msg.text = partial_message
-                print('Sending talk message: ', talk_msg.text)
+                self.get_logger().info(f'Sending talk message: {talk_msg.text}')
                 self._talk_text_pub.publish(talk_msg)
             else:
                 # Send the first phrase and buffer the rest
                 # Split the message into sentences based on punctuation marks .?!
-                sentences = re.findall(r'[^!.?]+[!.?]?', partial_message)  # Match text with optional punctuation
+                # Match text with optional punctuation
+                sentences = re.findall(r'[^!.?]+[!.?]?', partial_message)
 
                 # We are talking if we found at least one sentence
                 if len(sentences) > 1:
                     self._talking = True
                     talk_msg.text = sentences[0]
-                    print('Sending talk message: ', talk_msg.text)
+                    self.get_logger().info(f'Sending talk message: {talk_msg.text}')
                     self._talk_text_pub.publish(talk_msg)
 
                     # Remove the first sentence from the list
