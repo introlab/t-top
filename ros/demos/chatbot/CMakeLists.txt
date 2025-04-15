@@ -22,6 +22,8 @@ find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(perception_msgs REQUIRED)
+find_package(behavior_srvs REQUIRED)
+find_package(behavior_msgs REQUIRED)
 
 
 set(srcs
@@ -34,6 +36,8 @@ ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp
   t_top_hbba_lite
   perception_msgs
+  behavior_srvs
+  behavior_msgs
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 

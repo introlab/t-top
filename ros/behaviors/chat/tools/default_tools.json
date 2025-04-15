@@ -12,9 +12,11 @@
                         "description": "Amount to increase the volume by"
                     }
                 },
-                "required": ["amount"]
+                "required": ["amount"],
+                "additionalProperties": false
             }
-        }
+        },
+        "strict": true
     },
     {
         "type": "function",
@@ -29,9 +31,10 @@
                         "description": "Amount to decrease the volume by"
                     }
                 },
-                "required": ["amount"]
-
+                "required": ["amount"],
+                "additionalProperties": false
             }
-        }
+        },
+        "strict": true
     }
 ]

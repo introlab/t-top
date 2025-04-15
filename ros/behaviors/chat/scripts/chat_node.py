@@ -13,7 +13,7 @@ import rclpy.callback_groups
 import rclpy.node
 import rclpy.executors
 
-from behavior_msgs.msg import Text, Done, ChatToolsFunctionCall
+from behavior_msgs.msg import Text, Done
 from behavior_srvs.srv import ChatToolsFunctionCall
 
 from perception_msgs.msg import Transcript
@@ -393,29 +393,6 @@ class ChatNode(rclpy.node.Node):
         self.get_logger().info(f'Talk done : {msg.ok}')
         self._talking = False
         self._process_pending_messages()
-
-    def _on_tools_function_call_service_cb(self, request, response):
-        self.get_logger().info(f'Tools function call received: {request}')
-
-        # Find the tool call in the list
-        for tool_call in self._tools_calls:
-            if tool_call.id == request.id:
-                # Remove the tool call from the list
-                self._tools_calls.remove(tool_call)
-                break
-
-        # Add the result to the history
-        self._chat_api.add_tool_call_response_to_history(tool_call=tool_call,
-                                                         result=request.result,
-                                                         timestamp=datetime.now())
-
-        # Send to API
-
-        # Send response to client
-        response.ok = True
-        response.message = 'Tool call processed'
-        return response
-
 
     def _process_pending_messages(self):
         if not self._talking:

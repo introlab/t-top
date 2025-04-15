@@ -7,6 +7,9 @@
 
 #include <t_top_hbba_lite/Strategies.h>
 
+
+#include <behavior_srvs/srv/chat_tools_function_call.hpp>
+
 #include <memory>
 
 using namespace std;
@@ -17,6 +20,31 @@ constexpr const char* NODE_NAME = "chatbot_node";
 int startNode() {
 
     auto node = rclcpp::Node::make_shared(NODE_NAME);
+    auto callbackGroup = node->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
+
+    // Create service for chat tools function call
+    auto service_volume_up = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/volume_up",
+        [](const std::shared_ptr<rmw_request_id_t> request_header,
+           const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+           const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response) {
+            RCLCPP_INFO(rclcpp::get_logger(NODE_NAME), "Received service volume_up request");
+            // Handle the service request here
+        },
+        rmw_qos_profile_services_default,
+        callbackGroup);
+
+    auto service_volume_down = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/volume_down",
+        [](const std::shared_ptr<rmw_request_id_t> request_header,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response) {
+            RCLCPP_INFO(rclcpp::get_logger(NODE_NAME), "Received service volume_down request");
+            // Handle the service request here
+        },
+        rmw_qos_profile_services_default,
+        callbackGroup);
+
     auto desireSet = make_shared<DesireSet>();
 
     auto rosFilterPool = make_unique<RosFilterPool>(node, WAIT_FOR_SERVICE);
