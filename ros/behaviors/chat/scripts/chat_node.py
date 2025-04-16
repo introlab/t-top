@@ -363,7 +363,20 @@ class ChatNode(rclpy.node.Node):
 
         # Call and wait for service
         future = client.call_async(request)
-        rclpy.spin_until_future_complete(self, future=future, executor=self._executor, timeout_sec=5.0)
+
+        # This will make sure the service is called in a separate thread
+        # and the node is not blocked
+        service_executor = rclpy.executors.SingleThreadedExecutor()
+        import threading
+        def spin_service():
+            # This will spin the executor in a separate thread
+            rclpy.spin_until_future_complete(self, future, executor=service_executor, timeout_sec=5.0)
+            service_executor.shutdown()
+
+        service_thread = threading.Thread(target=spin_service)
+        service_thread.start()
+        service_thread.join()  # Wait for thread
+
         if future.done() and future.result() is not None:
             self.get_logger().info(f'Service call result: {future.result()}')
             return future.result()
