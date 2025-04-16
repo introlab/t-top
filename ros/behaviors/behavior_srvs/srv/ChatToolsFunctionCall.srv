@@ -4,4 +4,4 @@ string function_name
 string function_arguments
 ---
 bool ok
-string response
+string result

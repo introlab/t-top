@@ -25,22 +25,27 @@ int startNode() {
     // Create service for chat tools function call
     auto service_volume_up = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_up",
-        [](const std::shared_ptr<rmw_request_id_t> request_header,
+        [node](const std::shared_ptr<rmw_request_id_t> request_header,
            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response) {
             RCLCPP_INFO(rclcpp::get_logger(NODE_NAME), "Received service volume_up request");
             // Handle the service request here
+
+            response->ok = true;
+            response->result = "{\"status\": \"Volume increased\"}";
         },
         rmw_qos_profile_services_default,
         callbackGroup);
 
     auto service_volume_down = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_down",
-        [](const std::shared_ptr<rmw_request_id_t> request_header,
+        [node](const std::shared_ptr<rmw_request_id_t> request_header,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response) {
             RCLCPP_INFO(rclcpp::get_logger(NODE_NAME), "Received service volume_down request");
             // Handle the service request here
+            response->ok = true;
+            response->result = "{\"status\": \"Volume decreased\"}";
         },
         rmw_qos_profile_services_default,
         callbackGroup);

@@ -174,8 +174,8 @@ class ChatGPTAPI(BaseChatAPI):
     def send_request_and_process_response(self):
         try:
             response = self.create_chat_completion()
-
             assistant_message = ""
+            final_tool_calls = {}
 
             # Generator will give partial responses
             for chunk in response:
@@ -184,35 +184,17 @@ class ChatGPTAPI(BaseChatAPI):
                     # Get delta
                     delta = chunk['choices'][0].get('delta', {})
 
-                    # Process function calls
+                    # Process tool calls
                     if 'tool_calls' in delta:
+                        # Tool calls are sent in chuncks so we need to accumulate them
+                        # And process them when we have the full message
                         for tool_call in delta['tool_calls']:
-                            tool_type = tool_call.get('type', None)
-                            if tool_type == 'function':
+                            index = tool_call.index
+                            if index not in final_tool_calls:
+                                final_tool_calls[index] = tool_call
 
-                                if 'name' in tool_call['function']:
-                                    # Call function, will be handled by chat_node and published to be processed externally
-                                    id = tool_call.get('id', None)
-                                    function_name = tool_call['function'].get('name', None)
-                                    function_arguments = tool_call['function'].get('arguments', None)
-                                    self.add_tool_calls_to_history([tool_call], timestamp=datetime.now())
-
-                                    # Call service with
-                                    response : ChatToolsFunctionCall.Response = self._chat_node.call_tools_external_service(id, function_name, function_arguments)
-
-                                    if response is not None:
-                                        # TODO Add response to history
-                                        # TODO Call back API with response
-                                        pass
-                                    else:
-                                        self._chat_node.get_logger().error(f'Failed to call external service: {function_name}')
-                                        self.add_tool_call_response_to_history(tool_call=tool_call,
-                                                                               result={"error": "Failed to call external service"},
-                                                                               timestamp=datetime.now())
-
-                                    # TODO Call back API with response ?
-
-
+                            if tool_call.function.arguments and len(tool_call.function.arguments) > 0:
+                                final_tool_calls[index].function.arguments += tool_call.function.arguments
 
 
                     # Process normal messages
@@ -221,17 +203,49 @@ class ChatGPTAPI(BaseChatAPI):
                         if len(content) == 0:
                             continue
 
-                        # Add frangement to output message
+                        # Add fragement to output message
                         assistant_message += content
                         # Send fragment to be processed
                         self._chat_node.add_pending_message(content)
-
 
             # Add full output message to the history
             if len(assistant_message) > 0:
                 # Add to history
                 self.add_to_history(message=assistant_message, role='assistant', timestamp=datetime.now())
 
+            # Process final tools calls
+            for tool_call in final_tool_calls.values():
+                if tool_call.type == 'function':
+                    # Get Function information
+                    id = tool_call.get('id', None)
+                    function_name = tool_call['function'].get('name', None)
+                    function_arguments = tool_call['function'].get('arguments', None)
+                    # Add to History
+                    self.add_tool_calls_to_history([tool_call], timestamp=datetime.now())
+
+                    # Call service with
+                    response : ChatToolsFunctionCall.Response = self._chat_node.call_tools_external_service(id, function_name, function_arguments)
+
+                    if response is not None and response.ok:
+                        try:
+                            self.add_tool_call_response_to_history(tool_call=tool_call,
+                                                                    result=json.loads(response.result),
+                                                                    timestamp=datetime.now())
+                        except json.JSONDecodeError as e:
+                            self._chat_node.get_logger().error(f'Failed to decode JSON: {e}')
+                            self.add_tool_call_response_to_history(tool_call=tool_call,
+                                                                    result={"error": f"Failed to decode JSON {e}"},
+                                                                    timestamp=datetime.now())
+                    else:
+                        self._chat_node.get_logger().error(f'Failed to call external service: {function_name}')
+                        self.add_tool_call_response_to_history(tool_call=tool_call,
+                                                                result={"error": "Failed to call external service"},
+                                                                timestamp=datetime.now())
+
+                    # Process final message recursively
+                    self.send_request_and_process_response()
+
+            print('send_request_and_process_response done')
         except Exception as e:
             self._chat_node.get_logger().error(f"Error: {e}")
             self._chat_node.add_pending_message(str(e))
@@ -259,11 +273,11 @@ class ChatNode(rclpy.node.Node):
 
         self._talking = False
         self._processing = False
-        self._tools_calls = list()
         self._pending_messages = list()
         self._executor = rclpy.executors.MultiThreadedExecutor(num_threads=4)
         # This will allow to receive callbacks while processing another one
-        self._callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
+        self._subscriber_callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
+        self._service_callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
 
         self._language = self.declare_parameter('language', 'fr').get_parameter_value().string_value
         #self._language_model = self.declare_parameter('language_model', 'llama3.2').get_parameter_value().string_value
@@ -312,13 +326,13 @@ class ChatNode(rclpy.node.Node):
                                                         'speech_to_text/transcript',
                                                         self._on_transcript_received_cb,
                                                         1,
-                                                        callback_group=self._callback_group)
+                                                        callback_group=self._subscriber_callback_group)
 
         self._talk_done_sub = self.create_subscription(Done,
                                                        'talk/done',
                                                        self._on_talk_done_cb,
                                                        1,
-                                                       callback_group=self._callback_group)
+                                                       callback_group=self._subscriber_callback_group)
 
         # Publishers
         self._talk_text_pub = self.create_publisher(Text, 'talk/text', 1)
@@ -331,7 +345,8 @@ class ChatNode(rclpy.node.Node):
         self.get_logger().info(f'Calling external service: {function_name} with arguments: {function_arguments}')
 
         # Create client
-        client = self.create_client(ChatToolsFunctionCall, f'/chat/tools/functions/{function_name}')
+        client = self.create_client(ChatToolsFunctionCall, f'/chat/tools/functions/{function_name}',
+                                    callback_group=self._service_callback_group)
 
         # Create Request
         request : ChatToolsFunctionCall.Request = ChatToolsFunctionCall.Request()
@@ -348,8 +363,8 @@ class ChatNode(rclpy.node.Node):
 
         # Call and wait for service
         future = client.call_async(request)
-        rclpy.spin_until_future_complete(self, future, timeout_sec=5.0)
-        if future.result() is not None:
+        rclpy.spin_until_future_complete(self, future=future, executor=self._executor, timeout_sec=5.0)
+        if future.done() and future.result() is not None:
             self.get_logger().info(f'Service call result: {future.result()}')
             return future.result()
         else:
@@ -403,13 +418,11 @@ class ChatNode(rclpy.node.Node):
 
             # To be done we need to have no pending messages and no tools calls
             if len(partial_message) == 0:
-                if len(self._tools_calls) == 0:
-                    # We are done
-                    chat_msg = Done()
-                    chat_msg.ok = True
-                    self.get_logger().info('Chat done')
-                    self._chat_done_pub.publish(chat_msg)
-
+                # We are done
+                chat_msg = Done()
+                chat_msg.ok = True
+                self.get_logger().info('Chat done')
+                self._chat_done_pub.publish(chat_msg)
                 return
 
             talk_msg = Text()
