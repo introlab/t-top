@@ -2,7 +2,8 @@
 
     <!-- Behaviors -->
     <node pkg="chat" exec="chat_node.py" name="chat_node">
-
+        <param name="language_model" value="qwen2.5:3b"/>
+        <param name="model_type" value="ollama"/>
     </node>
 
     <!-- Motivation -->

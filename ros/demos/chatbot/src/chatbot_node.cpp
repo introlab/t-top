@@ -74,7 +74,13 @@ int startNode()
             {
                 RCLCPP_ERROR(node->get_logger(), "JSON parse error: %s", e.what());
                 response->ok = false;
-                response->result = fmt::format("{{\"status\": \"Invalid JSON format: {}\"}}", e.what());
+                response->result = fmt::format("{{\"status\": \"Invalid JSON format: {0}\"}}", e.what());
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_ERROR(node->get_logger(), "Exception: %s", e.what());
+                response->ok = false;
+                response->result = fmt::format("{{\"status\": \"Exception: {0}\"}}", e.what());
             }
         },
         rmw_qos_profile_services_default,
@@ -120,7 +126,13 @@ int startNode()
             {
                 RCLCPP_ERROR(node->get_logger(), "JSON parse error: %s", e.what());
                 response->ok = false;
-                response->result = fmt::format("{{\"status\": \"Invalid JSON format: {}\"}}", e.what());
+                response->result = fmt::format("{{\"status\": \"Invalid JSON format: {0}\"}}", e.what());
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_ERROR(node->get_logger(), "Exception: %s", e.what());
+                response->ok = false;
+                response->result = fmt::format("{{\"status\": \"Exception: {0}\"}}", e.what());
             }
         },
         rmw_qos_profile_services_default,

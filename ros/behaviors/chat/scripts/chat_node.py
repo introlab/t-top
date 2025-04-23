@@ -207,13 +207,14 @@ class ChatGPTAPI(BaseChatAPI):
                             if index not in final_tool_calls:
                                 final_tool_calls[index] = tool_call
 
-                            if (
-                                tool_call.function.arguments
-                                and len(tool_call.function.arguments) > 0
-                            ):
-                                final_tool_calls[
-                                    index
-                                ].function.arguments += tool_call.function.arguments
+                            else:
+                                if (
+                                    tool_call.function.arguments
+                                    and len(tool_call.function.arguments) > 0
+                                ):
+                                    final_tool_calls[
+                                        index
+                                    ].function.arguments += tool_call.function.arguments
 
                     # Process normal messages
                     if "content" in delta and delta["content"] is not None:
@@ -299,6 +300,9 @@ class OllamaAPI(ChatGPTAPI):
         return openai.ChatCompletion.create(
             model=self.language_model,
             messages=self.get_request_messages(),
+            max_tokens=1600,
+            temperature=0.5,  # Somewhat creative
+            frequency_penalty=0.5,  # Avoid repetition
             tools=self._tools_schema,
             tool_choice="auto",
             top_p=0.9,  # Avoid repetition
@@ -324,8 +328,6 @@ class ChatNode(rclpy.node.Node):
         self._language = (
             self.declare_parameter("language", "fr").get_parameter_value().string_value
         )
-        # self._language_model = self.declare_parameter('language_model', 'llama3.2').get_parameter_value().string_value
-        # self._model_type = self.declare_parameter('model_type', 'ollama').get_parameter_value().string_value
 
         self._language_model = (
             self.declare_parameter("language_model", "gpt-4o-mini")
@@ -368,6 +370,7 @@ class ChatNode(rclpy.node.Node):
             .get_parameter_value()
             .string_value
         )
+
 
         # Initialize API
         if self._model_type == "ollama":
@@ -416,6 +419,16 @@ class ChatNode(rclpy.node.Node):
         # Publishers
         self._talk_text_pub = self.create_publisher(Text, "talk/text", 1)
         self._chat_done_pub = self.create_publisher(Done, "chat/done", 1)
+
+        # Print parameters summary
+        self.get_logger().info(f"Language: {self._language}")
+        self.get_logger().info(f"Language model: {self._language_model}")
+        self.get_logger().info(f"Model type: {self._model_type}")
+        self.get_logger().info(f"Enable tools: {self._enable_tools}")
+        self.get_logger().info(f"Tools file: {self._tools_file}")
+        self.get_logger().info(f"Enable prompts: {self._enable_prompts}")
+        self.get_logger().info(f"Prompts file: {self._prompts_file}")
+        self.get_logger().info("Chat node initialized")
 
     def call_tools_external_service(
         self, id: str, function_name: str, function_arguments: str
