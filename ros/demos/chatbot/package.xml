@@ -17,6 +17,8 @@
   <depend>perception_msgs</depend>
   <depend>behavior_msgs</depend>
   <depend>behavior_srvs</depend>
+  <depend>nlohmann-json-dev</depend>
+  <depend>fmt</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

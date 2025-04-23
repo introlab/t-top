@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-# -*- encoding: utf-8 -*-
-
 
 import json
 import os
 import re
 from abc import ABC, abstractmethod
 from datetime import datetime
-from threading import Event, current_thread
+from threading import Event
 
 import openai
 import rclpy
@@ -419,8 +417,9 @@ class ChatNode(rclpy.node.Node):
         self._talk_text_pub = self.create_publisher(Text, "talk/text", 1)
         self._chat_done_pub = self.create_publisher(Done, "chat/done", 1)
 
-
-    def call_tools_external_service(self, id: str, function_name: str, function_arguments: str) -> str:
+    def call_tools_external_service(
+        self, id: str, function_name: str, function_arguments: str
+    ) -> str:
         """Call the external service to process the tool function call"""
         self.get_logger().info(
             f"Calling external service: {function_name} with arguments: {function_arguments}"
@@ -461,15 +460,14 @@ class ChatNode(rclpy.node.Node):
             event.set()
 
         future.add_done_callback(service_done_cb)
-        event.wait()
-
+        event.wait(timeout=5.0)
 
         if future.done() and future.result() is not None:
             self.get_logger().info(f"Service call result: {future.result()}")
             return future.result()
-        else:
-            self.get_logger().error(f"Service call failed: {future.exception()}")
-            return None
+
+        # Something went wrong
+        self.get_logger().error(f"Service call failed: {future.exception()}")
         return None
 
     def add_pending_message(self, message: str):

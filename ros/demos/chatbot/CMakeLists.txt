@@ -24,7 +24,8 @@ find_package(t_top_hbba_lite REQUIRED)
 find_package(perception_msgs REQUIRED)
 find_package(behavior_srvs REQUIRED)
 find_package(behavior_msgs REQUIRED)
-
+find_package(nlohmann_json REQUIRED)
+find_package(fmt REQUIRED)
 
 set(srcs
   src/chatbot_node.cpp
@@ -40,6 +41,12 @@ ament_target_dependencies(${PROJECT_NAME}_node
   behavior_msgs
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
+
+target_link_libraries(${PROJECT_NAME}_node
+  fmt::fmt
+  nlohmann_json::nlohmann_json
+)
+
 
 # Python Nodes
 #install(PROGRAMS
