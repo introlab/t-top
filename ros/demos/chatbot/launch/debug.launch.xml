@@ -1,0 +1,33 @@
+<!--
+This file is intended to be used with VSCode ROS extension.
+The user must launch robot.launch.xml manually first.
+
+launch.json is used to configure the launch of the chat_node.py and chatbot_node demo.
+{
+    "configurations": [
+    {
+        "name": "ROS: Launch test chat",
+        "type": "ros",
+        "request": "launch",
+        "target": "${workspaceFolder}/src/t-top/ros/demos/chatbot/launch/debug.launch.xml"
+    }
+    ]
+}
+-->
+
+<launch>
+    <arg name="language_model" default="gpt-4o-mini"/>  <!-- Options: qwen2.5:3, gpt-4o-mini, etc.  -->
+    <arg name="model_type" default="chatgpt"/> <!-- Options: ollama or chatgpt-->
+
+    <!-- Chat Behavior -->
+    <node pkg="chat" exec="chat_node.py" name="chat_node">
+        <param name="language_model" value="$(var language_model)"/>
+        <param name="model_type" value="$(var model_type)"/>
+    </node>
+
+    <!-- Motivation / HBBA -->
+    <node pkg="chatbot" exec="chatbot_node" name="chatbot_node" output="screen">
+
+    </node>
+
+</launch>
