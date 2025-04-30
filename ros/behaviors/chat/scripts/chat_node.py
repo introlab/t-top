@@ -6,6 +6,8 @@ import re
 from abc import ABC, abstractmethod
 from datetime import datetime
 from threading import Event
+from typing import List, Callable
+from functools import reduce
 
 import openai
 import rclpy
@@ -73,7 +75,7 @@ class BaseChatAPI(ABC):
             {"role": "assistant", "tool_calls": tool_calls, "datetime": str(timestamp)}
         )
 
-    def add_tool_call_response_to_history(
+    def add_tool_call_result_to_history(
         self, tool_call: dict, result: dict, timestamp: datetime
     ):
         """Add tool call result to history"""
@@ -90,13 +92,14 @@ class BaseChatAPI(ABC):
     def reset_history(self):
         """Reset the history"""
         self.history.clear()
+        self._chat_node.get_logger().info("History Reset")
+
         # Reload default context
         if self._prompts is None:
             self.load_default_context()
         else:
-            self._chat_node.get_logger().info(
-                "No prompts loaded, not resetting context"
-            )
+            self._chat_node.get_logger().info("Reloading prompts to history.")
+            self.load_prompts_into_history(self._prompts)
 
     def load_default_context(self):
         """Load default context"""
@@ -113,30 +116,43 @@ class BaseChatAPI(ABC):
                 timestamp=datetime.now(),
             )
 
-    def load_prompts(self, file: str) -> bool:
-        """Load prompts from file"""
-        with open(file, "r") as f:
-            self._prompts = json.load(f)
-            # Should be an array
-            if isinstance(self._prompts, list):
-                # Add to history
-                for prompt in self._prompts:
-                    if "role" in prompt and "content" in prompt:
-                        self.add_to_history(
-                            message=prompt["content"],
-                            role=prompt["role"],
-                            timestamp=datetime.now(),
-                        )
-                    else:
-                        self._chat_node.get_logger().info("Invalid prompt format")
-                        return False
-            else:
-                self._chat_node.get_logger().info("Invalid prompts format")
-                return False
+    def load_prompts_into_history(self, prompts: dict) -> bool:
+        """Load prompts from a dict"""
+        if isinstance(prompts, list):
+            # Add to history
+            for prompt in prompts:
+                if "role" in prompt and "content" in prompt:
+                    self.add_to_history(
+                        message=prompt["content"],
+                        role=prompt["role"],
+                        timestamp=datetime.now(),
+                    )
+                else:
+                    self._chat_node.get_logger().info(
+                        f"Invalid prompt format : {prompt}"
+                    )
+                    return False
+
             return True
+
         return False
 
+    def load_prompts(self, file: str) -> bool:
+        """Load prompts from file"""
+        try:
+            with open(file, "r") as f:
+                # Keep a copy of the prompts
+                self._prompts = json.load(f)
+
+            # Load to history
+            return self.load_prompts_into_history(self._prompts)
+        except Exception as e:
+            self._chat_node.get_logger().info(f"Failed to load prompts: {e}")
+            self._prompts = None
+            return False
+
     def load_tools(self, file: str) -> bool:
+        """Load tools from file"""
         try:
             with open(file, "r") as f:
                 # TODO Validate schema
@@ -145,6 +161,7 @@ class BaseChatAPI(ABC):
                 return True
         except Exception as e:
             self._chat_node.get_logger().info(f"Failed to load tools: {e}")
+            self._tools_schema = None
             return False
 
         return False
@@ -186,6 +203,7 @@ class ChatGPTAPI(BaseChatAPI):
         )
 
     def send_request_and_process_response(self):
+        # TODO High cyclomatic complexity, should be split in a few functions
         try:
             response = self.create_chat_completion()
             assistant_message = ""
@@ -255,7 +273,7 @@ class ChatGPTAPI(BaseChatAPI):
 
                     if response is not None and response.ok:
                         try:
-                            self.add_tool_call_response_to_history(
+                            self.add_tool_call_result_to_history(
                                 tool_call=tool_call,
                                 result=json.loads(response.result),
                                 timestamp=datetime.now(),
@@ -264,7 +282,7 @@ class ChatGPTAPI(BaseChatAPI):
                             self._chat_node.get_logger().error(
                                 f"Failed to decode JSON: {e}"
                             )
-                            self.add_tool_call_response_to_history(
+                            self.add_tool_call_result_to_history(
                                 tool_call=tool_call,
                                 result={"error": f"Failed to decode JSON {e}"},
                                 timestamp=datetime.now(),
@@ -273,7 +291,7 @@ class ChatGPTAPI(BaseChatAPI):
                         self._chat_node.get_logger().error(
                             f"Failed to call external service: {function_name}"
                         )
-                        self.add_tool_call_response_to_history(
+                        self.add_tool_call_result_to_history(
                             tool_call=tool_call,
                             result={"error": "Failed to call external service"},
                             timestamp=datetime.now(),
@@ -326,6 +344,11 @@ class ChatNode(rclpy.node.Node):
             rclpy.callback_groups.ReentrantCallbackGroup()
         )
         self._service_callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
+        self.partial_message_transformations: List[Callable[[str], str]] = []
+        self.partial_message_transformations.append(self._remove_think_tags)
+        self.partial_message_transformations.append(
+            self._replace_enumeration_characters
+        )
 
         self._language = (
             self.declare_parameter("language", "fr").get_parameter_value().string_value
@@ -520,6 +543,15 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._process_pending_messages()
 
+    def _remove_think_tags(partial_message: str) -> str:
+        # TODO better handling of <think></think> tags over multiple partial messages.
+        return re.sub(r"<think>.*</think>", "", partial_message, flags=re.DOTALL)
+
+    def _replace_enumeration_characters(partial_message: str) -> str:
+        # Avoid "*" because TTS will say "Asterisk"
+        # TODO find a better replacement
+        return partial_message.replace("*", "-")
+
     def _process_pending_messages(self):
         if not self._talking:
             partial_message: str = ""
@@ -538,16 +570,12 @@ class ChatNode(rclpy.node.Node):
 
             talk_msg = Text()
 
-            # Remove all the text between the <think> </think> tags
-            # This is present in thinking models
-            # TODO better handling of <think></think> tags over multiple partial messages.
-            partial_message = re.sub(
-                r"<think>.*</think>", "", partial_message, flags=re.DOTALL
+            # Apply transformations to partial messages (cleanup mostly)
+            partial_message = reduce(
+                lambda msg, f: f(msg),
+                self.partial_message_transformations,
+                partial_message,
             )
-
-            # Avoid "*" because TTS will say "Asterisk"
-            # TODO find a better replacement
-            partial_message = partial_message.replace("*", "-")
 
             if not self._processing:
                 # Send everything, we are done!

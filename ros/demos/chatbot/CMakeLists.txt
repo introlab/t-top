@@ -17,13 +17,12 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
 find_package(t_top_hbba_lite REQUIRED)
 find_package(perception_msgs REQUIRED)
 find_package(behavior_srvs REQUIRED)
 find_package(behavior_msgs REQUIRED)
+
 find_package(nlohmann_json REQUIRED)
 find_package(fmt REQUIRED)
 
@@ -46,13 +45,6 @@ target_link_libraries(${PROJECT_NAME}_node
   fmt::fmt
   nlohmann_json::nlohmann_json
 )
-
-
-# Python Nodes
-#install(PROGRAMS
-#  scripts/chat_unused_node.py
-#  DESTINATION lib/${PROJECT_NAME}
-#)
 
 # Launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})

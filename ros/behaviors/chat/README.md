@@ -55,8 +55,8 @@ export OPENAI_API_KEY=<your_openai_api_key>
 
 ### Services
 
-- (TODO) Clear the chat history. This is used to clear the chat history when the user says "clear" or "reset".
-- (TODO) Add information to the chat history. This can be useful to add more context to the chat session.
+- (TODO) Clear the chat history. This is used to clear the chat history when the user says "clear" or "reset". This can also be triggered by external nodes.
+- (TODO) Add information to the chat history. This can be useful to add more context to the chat session. This could also be done via a topic. 
 
 ### Tools (Dynamic remote service calls)
 

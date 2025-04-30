@@ -40,7 +40,6 @@ int startNode()
     auto service_volume_up = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_up",
         [node, &baseStatusMsg, volumePublisher](
-            const std::shared_ptr<rmw_request_id_t> request_header,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
@@ -89,7 +88,6 @@ int startNode()
     auto service_volume_down = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_down",
         [node, &baseStatusMsg, volumePublisher](
-            const std::shared_ptr<rmw_request_id_t> request_header,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
@@ -104,8 +102,10 @@ int startNode()
                     if (amount > baseStatusMsg->volume)
                     {
                         amount = baseStatusMsg->volume;
+                        RCLCPP_WARN(rclcpp::get_logger(NODE_NAME),
+                        fmt::format("Volume cannot be lower than 0. Will decrese by {0} instead.", baseStatusMsg->volume).c_str());
                     }
-                    uint8_t volume = std::max<uint8_t>(baseStatusMsg->volume - amount, 0);
+                    uint8_t volume = baseStatusMsg->volume - amount;
                     response->ok = true;
                     response->result = fmt::format(
                         "{{\"status\": \"Volume decreased by {0} to {1} over {2}\"}}",

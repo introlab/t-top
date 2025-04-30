@@ -7,13 +7,11 @@ This demo showcases a simple chatbot using the T-Top framework. The chatbot is d
 The demo is implemented using the [chatbot_node.cpp](src/chatbot_node.cpp) which is a ROS2 node that handles the interaction with the user. We use `hbba_lite` to manage the desires and strategies of the chatbot.
 
 There are three main desires in the demo :
-
-
 * ChatDesire: This desire is responsible for handling the chat interactions with the user. It uses the LLM to generate responses based on the user's input. LLM is handled in the chat behavior node. It uses the `ChatStrategy` to process the user's input and generate a response.
 * NearestFaceFollowingDesire: This desire is responsible for following the nearest face detected by the perception module. It uses the `NearestFaceFollowingStrategy` to achieve this.
 * TooCloseReactionDesire: This desire is responsible for reacting when the user is too close to the robot. It uses the `TooCloseReactionStrategy` to achieve this.
 
-The main goal is to have the robot change its state based on the user's input from listening (STT) and speaking (TTS). The robot will listen to the user and respond using the LLM. The robot will also follow the user if they are too close or if they are not facing the robot and send led information to communicate its state. When listening, the robot will have "green" rotating leds and when speacking, the robot will have "red" rotating leds.
+The main goal is to have the robot change its state based on the user's input from listening (STT) and speaking (TTS). The robot will listen to the user and respond using the LLM. The robot will also follow the user if they are too close or if they are not facing the robot and send led information to communicate its state. When listening, the robot will have "green" rotating leds and when speaking, the robot will have "red" rotating leds.
 
 Listening --> Chat Behavior --> Speaking --> Listening --> Chat Behavior --> Speaking --> (never ending loop)...
 
