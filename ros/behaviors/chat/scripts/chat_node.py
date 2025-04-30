@@ -249,10 +249,8 @@ class ChatGPTAPI(BaseChatAPI):
                     )
 
                     # Call service with
-                    response: ChatToolsFunctionCall.Response = (
-                        self._chat_node.call_tools_external_service(
-                            id, function_name, function_arguments
-                        )
+                    response = self._chat_node.call_tools_external_service(
+                        id, function_name, function_arguments
                     )
 
                     if response is not None and response.ok:
@@ -297,6 +295,10 @@ class OllamaAPI(ChatGPTAPI):
         openai.api_base = "http://localhost:11434/v1"
 
     def create_chat_completion(self):
+        # TODO Validate if all parameters are supported in the ollama API.
+        # Fine-tuned parameters for ollama could be required, this is why
+        # create_chat_completion (identical to the ChatGPTAPI class for now)
+        # is overloaded here.
         return openai.ChatCompletion.create(
             model=self.language_model,
             messages=self.get_request_messages(),
@@ -371,7 +373,6 @@ class ChatNode(rclpy.node.Node):
             .string_value
         )
 
-
         # Initialize API
         if self._model_type == "ollama":
             self._chat_api = OllamaAPI(
@@ -382,7 +383,9 @@ class ChatNode(rclpy.node.Node):
                 self, language=self._language, language_model=self._language_model
             )
         else:
-            raise ModelNotFoundError(self._model_type)
+            raise ModelNotFoundError(
+                f"Model not found : {self._model_type}. Available models are ollama and chatgpt."
+            )
 
         # Load tools
         if self._enable_tools:
@@ -432,7 +435,7 @@ class ChatNode(rclpy.node.Node):
 
     def call_tools_external_service(
         self, id: str, function_name: str, function_arguments: str
-    ) -> str:
+    ) -> ChatToolsFunctionCall.Response:
         """Call the external service to process the tool function call"""
         self.get_logger().info(
             f"Calling external service: {function_name} with arguments: {function_arguments}"
@@ -447,7 +450,7 @@ class ChatNode(rclpy.node.Node):
         )
 
         # Create Request
-        request: ChatToolsFunctionCall.Request = ChatToolsFunctionCall.Request()
+        request = ChatToolsFunctionCall.Request()
 
         # Fill request
         request.id = id
@@ -537,8 +540,9 @@ class ChatNode(rclpy.node.Node):
 
             # Remove all the text between the <think> </think> tags
             # This is present in thinking models
+            # TODO better handling of <think></think> tags over multiple partial messages.
             partial_message = re.sub(
-                r"<think>.*?</think>", "", partial_message, flags=re.DOTALL
+                r"<think>.*</think>", "", partial_message, flags=re.DOTALL
             )
 
             # Avoid "*" because TTS will say "Asterisk"

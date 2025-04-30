@@ -4,16 +4,18 @@ This folder contains the node to make T-Top chat (LLM based). The node can be us
 
 ## `chat_node.py`
 
-This ROS2 node makes T-Top communicate with the user using a large language model (LLM). It uses either an OpenAI model or a local model using Ollama. The local Ollama API is using the same chat completion API endpoints as the OpenAI API. Instead of connecting to external servers, it connects to the local ollama server at http://localhost:11434.
+This ROS2 node allows T-Top to communicate with the user using a large language model (LLM). It uses either an OpenAI model or a local model using Ollama. The local Ollama API is using the same chat completion API endpoints as the OpenAI API. Instead of connecting to external servers, it connects to the local ollama server at http://localhost:11434.
 
 To reduce latency, the model is called in streaming mode. The node is designed to output the text to be spoken by the TTS module incrementally. Tools are called dynamically using the service name and the service message. The tools can be configured using a JSON file. Initial context can also be configured with a JSON file.
 
 The `chat_node.py` is designed to be used in conjunction with a speech-to-text (STT) module and a text-to-speech (TTS) module. Listening or speaking is performed using an external HBBA node which controls desires, strategies and filters. A demo application can be found in the [demos/chatbot](../../demos/chatbot/README.md) folder.
 
 ### Requirements
+
 - `openai` (Python package): The OpenAI API client.
 ```bash
-pip install openai
+# Python package dependencies are handled with rosdep
+rosdep install --from-paths src/t-top/ros/behaviors/chat/ --ignore-src -r -y
 ```
 - `ollama` (optional) : Ollama can be installed from [ollama.com](https://ollama.com/). Local models can be downloaded from [ollama.com/models](https://ollama.com/models). [Installation instructions](https://ollama.com/download/linux) are available on the website.
 ```bash
