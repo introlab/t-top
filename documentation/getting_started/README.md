@@ -157,12 +157,13 @@ Use the multiple tabs in the GUI to test the robot capabilities.
     "terminal.integrated.profiles.linux": {
         "ROS2 Terminal": {
             "path": "/bin/bash",
-            "args": ["-i", "-c", "source /opt/ros/humble/install/setup.bash && source home introlab/t_top_ws/install/setup.bash && exec bash"]
+            "args": ["-i", "-c", "source /opt/ros/humble/install/setup.bash && source /home/introlab/t_top_ws/install/setup.bash && exec bash"]
         }
     },
     "terminal.integrated.defaultProfile.linux": "ROS2 Terminal"
 }
 ```
+If your workspace has a different name than `t_top_ws`, remember to change it both for `ros.rosSetupScript` and `terminal.integrated.profiles.linux` above.
 
 8. Open the terminal in Visual Studio Code by clicking on `Terminal` in the top menu and selecting `New Terminal`.
 
