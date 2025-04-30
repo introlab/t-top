@@ -38,12 +38,14 @@ public slots:
         float stateOfCharge,
         float current,
         float voltage);
+    void updateIpAddressText();
 
     void enableActions(bool enabled);
     void setConnected(bool connected);
 
 private slots:
     void onStateOfChargeAction();
+    void onIpAddressAction();
     void onVolumeUpAction();
     void onVolumeDownAction();
     void onCloseAllLedsAction();
@@ -57,6 +59,7 @@ private:
 
     QMenu* m_menu;
     QAction* m_stateOfChargeAction;
+    QAction* m_ipAddressAction;
     QAction* m_volumeUpAction;
     QAction* m_volumeDownAction;
     QAction* m_closeAllLedsAction;
