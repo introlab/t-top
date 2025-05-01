@@ -1,5 +1,7 @@
 #include "SystemTrayIcon.h"
 
+#include <QNetworkInterface>
+
 
 SystemTrayIcon::SystemTrayIcon(QObject* parent)
     : QSystemTrayIcon(parent),
@@ -18,6 +20,8 @@ void SystemTrayIcon::setupMenu()
 
     m_stateOfChargeAction = new QAction("State of charge: ", m_menu);
     m_stateOfChargeAction->setDisabled(true);
+    m_ipAddressAction = new QAction("IP: Not connected", m_menu);
+    m_ipAddressAction->setDisabled(true);
     m_volumeUpAction = new QAction("Volume Up", m_menu);
     m_volumeUpAction->setDisabled(true);
     m_volumeDownAction = new QAction("Volume Down", m_menu);
@@ -30,6 +34,7 @@ void SystemTrayIcon::setupMenu()
     m_resetHeadAction->setDisabled(true);
 
     m_menu->addAction(m_stateOfChargeAction);
+    m_menu->addAction(m_ipAddressAction);
     m_menu->addSeparator();
     m_menu->addAction(m_volumeUpAction);
     m_menu->addAction(m_volumeDownAction);
@@ -46,6 +51,10 @@ void SystemTrayIcon::setupSignals()
 {
     // State Of Charge
     connect(m_stateOfChargeAction, &QAction::triggered, this, &SystemTrayIcon::onStateOfChargeAction);
+
+    // IP Address
+    connect(m_ipAddressAction, &QAction::triggered, this, &SystemTrayIcon::onIpAddressAction);
+    connect(m_menu, &QMenu::aboutToShow, this, &SystemTrayIcon::updateIpAddressText);
 
     // Volume Up
     connect(m_volumeUpAction, &QAction::triggered, this, &SystemTrayIcon::onVolumeUpAction);
@@ -95,6 +104,11 @@ void SystemTrayIcon::onStateOfChargeAction()
     qDebug() << "onStateOfChargeAction";
 }
 
+void SystemTrayIcon::onIpAddressAction()
+{
+    qDebug() << "onIpAddressAction";
+}
+
 void SystemTrayIcon::onVolumeUpAction()
 {
     qDebug() << "onVolumeUpAction";
@@ -134,4 +148,29 @@ void SystemTrayIcon::updateStateOfChargeText(
         QString::number(current, 'f', 1) + " A" + " " + QString(isPsuConnected ? " PSU" : "") + " " +
         QString(isBatteryCharging ? " Charging" : "") + " " + QString(hasChargerError ? " Charger Error" : "") + " " +
         QString(hasBatteryError ? " Battery Error" : ""));
+}
+
+void SystemTrayIcon::updateIpAddressText()
+{
+    QNetworkInterface networkInterface = QNetworkInterface::interfaceFromName("wlan0");
+
+    if (!networkInterface.isValid() || !networkInterface.flags().testFlag(QNetworkInterface::IsRunning))
+    {
+        m_ipAddressAction->setText("IP: Not connected");
+        return;
+    }
+
+    QList<QHostAddress> addressEntries = networkInterface.allAddresses();
+
+    for (const QHostAddress& address : addressEntries)
+    {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && !address.isLoopback() && !address.isLinkLocal() &&
+            !address.isMulticast() && !address.isBroadcast() && !address.isNull())
+        {
+            m_ipAddressAction->setText("IP: " + address.toString());
+            return;
+        }
+    }
+
+    m_ipAddressAction->setText("IP: Not connected");
 }
