@@ -52,7 +52,20 @@ int startNode()
 
                 if (baseStatusMsg)
                 {
-                    uint8_t volume = std::min<uint8_t>(amount + baseStatusMsg->volume, baseStatusMsg->maximum_volume);
+                    // Test volume higher limit
+                    if (amount + baseStatusMsg->volume > baseStatusMsg->maximum_volume)
+                    {
+                        amount = baseStatusMsg->maximum_volume - baseStatusMsg->volume;
+                        RCLCPP_WARN(
+                            rclcpp::get_logger(NODE_NAME),
+                            fmt::format(
+                                "Volume cannot be higher than {0}. Will increased by {1} instead.",
+                                baseStatusMsg->maximum_volume,
+                                amount)
+                                .c_str());
+                    }
+
+                    uint8_t volume = amount + baseStatusMsg->volume;
                     response->ok = true;
                     response->result = fmt::format(
                         "{{\"status\": \"Volume increased by {0} to {1} over {2}\"}}",
@@ -99,11 +112,13 @@ int startNode()
                 uint8_t amount = j["amount"];
                 if (baseStatusMsg)
                 {
+                    // Test volume lower limit
                     if (amount > baseStatusMsg->volume)
                     {
                         amount = baseStatusMsg->volume;
-                        RCLCPP_WARN(rclcpp::get_logger(NODE_NAME),
-                        fmt::format("Volume cannot be lower than 0. Will decrese by {0} instead.", baseStatusMsg->volume).c_str());
+                        RCLCPP_WARN(
+                            rclcpp::get_logger(NODE_NAME),
+                            fmt::format("Volume cannot be lower than 0. Will decrese by {0} instead.", amount).c_str());
                     }
                     uint8_t volume = baseStatusMsg->volume - amount;
                     response->ok = true;

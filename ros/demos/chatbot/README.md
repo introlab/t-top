@@ -20,7 +20,9 @@ When tools are enabled, the LLM can call external services to perform actions. T
 `volume_up`: This function increases the volume of the robot. It is called when the user says "volume up" or "increase volume". The service name is `chat/tools/functions/volume_up` and the service message is `behavior_srvs/ChatToolsFunctionCall.srv`. The service must return a JSON response to be sent to the LLM.
 `volume_down`: This function decreases the volume of the robot. It is called when the user says "volume down" or "decrease volume". The service name is `chat/tools/functions/volume_down` and the service message is `behavior_srvs/ChatToolsFunctionCall.srv`. The service must return a JSON response to be sent to the LLM.
 
+## Requirements
 
+Install the requirements specified in the `Chat` behavior [README.md](../../behaviors/chat/README.md).
 
 ## Launching the demo
 To launch the demo, use the following command:

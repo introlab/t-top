@@ -116,7 +116,7 @@ class BaseChatAPI(ABC):
                 timestamp=datetime.now(),
             )
 
-    def load_prompts_into_history(self, prompts: dict) -> bool:
+    def load_prompts_into_history(self, prompts: list) -> bool:
         """Load prompts from a dict"""
         if isinstance(prompts, list):
             # Add to history
@@ -543,11 +543,11 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._process_pending_messages()
 
-    def _remove_think_tags(partial_message: str) -> str:
+    def _remove_think_tags(self, partial_message: str) -> str:
         # TODO better handling of <think></think> tags over multiple partial messages.
         return re.sub(r"<think>.*</think>", "", partial_message, flags=re.DOTALL)
 
-    def _replace_enumeration_characters(partial_message: str) -> str:
+    def _replace_enumeration_characters(self, partial_message: str) -> str:
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
