@@ -173,7 +173,7 @@ class ChatGPTAPI(BaseChatAPI):
         openai.api_key = os.environ.get("OPENAI_API_KEY")
 
     def create_chat_completion(self):
-        return openai.ChatCompletion.create(
+        return openai.chat.completions.create(
             model=self.language_model,
             messages=self.get_request_messages(),
             max_tokens=1600,
@@ -194,15 +194,15 @@ class ChatGPTAPI(BaseChatAPI):
             # Generator will give partial responses
             for chunk in response:
                 # print(chunk)
-                if "choices" in chunk and len(chunk["choices"]) > 0:
+                if len(chunk.choices) > 0:
                     # Get delta
-                    delta = chunk["choices"][0].get("delta", {})
+                    delta = chunk.choices[0].delta
 
                     # Process tool calls
-                    if "tool_calls" in delta:
+                    if delta.tool_calls is not None:
                         # Tool calls are sent in chuncks so we need to accumulate them
                         # And process them when we have the full message
-                        for tool_call in delta["tool_calls"]:
+                        for tool_call in delta.tool_calls:
                             index = tool_call.index
                             if index not in final_tool_calls:
                                 final_tool_calls[index] = tool_call
@@ -217,8 +217,8 @@ class ChatGPTAPI(BaseChatAPI):
                                     ].function.arguments += tool_call.function.arguments
 
                     # Process normal messages
-                    if "content" in delta and delta["content"] is not None:
-                        content = delta["content"]
+                    if delta.content is not None:
+                        content = delta.content
                         if len(content) == 0:
                             continue
 
@@ -299,7 +299,7 @@ class OllamaAPI(ChatGPTAPI):
         # Fine-tuned parameters for ollama could be required, this is why
         # create_chat_completion (identical to the ChatGPTAPI class for now)
         # is overloaded here.
-        return openai.ChatCompletion.create(
+        return openai.chat.completions.create(
             model=self.language_model,
             messages=self.get_request_messages(),
             max_tokens=1600,
@@ -597,4 +597,5 @@ def main():
 
 
 if __name__ == "__main__":
+    print(openai.__version__)
     main()
