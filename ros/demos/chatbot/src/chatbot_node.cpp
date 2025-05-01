@@ -40,7 +40,6 @@ int startNode()
     auto service_volume_up = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_up",
         [node, &baseStatusMsg, volumePublisher](
-            const std::shared_ptr<rmw_request_id_t> request_header,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
@@ -53,7 +52,20 @@ int startNode()
 
                 if (baseStatusMsg)
                 {
-                    uint8_t volume = std::min<uint8_t>(amount + baseStatusMsg->volume, baseStatusMsg->maximum_volume);
+                    // Test volume higher limit
+                    if (amount + baseStatusMsg->volume > baseStatusMsg->maximum_volume)
+                    {
+                        amount = baseStatusMsg->maximum_volume - baseStatusMsg->volume;
+                        RCLCPP_WARN(
+                            rclcpp::get_logger(NODE_NAME),
+                            fmt::format(
+                                "Volume cannot be higher than {0}. Will increased by {1} instead.",
+                                baseStatusMsg->maximum_volume,
+                                amount)
+                                .c_str());
+                    }
+
+                    uint8_t volume = amount + baseStatusMsg->volume;
                     response->ok = true;
                     response->result = fmt::format(
                         "{{\"status\": \"Volume increased by {0} to {1} over {2}\"}}",
@@ -89,7 +101,6 @@ int startNode()
     auto service_volume_down = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_down",
         [node, &baseStatusMsg, volumePublisher](
-            const std::shared_ptr<rmw_request_id_t> request_header,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
@@ -101,11 +112,15 @@ int startNode()
                 uint8_t amount = j["amount"];
                 if (baseStatusMsg)
                 {
+                    // Test volume lower limit
                     if (amount > baseStatusMsg->volume)
                     {
                         amount = baseStatusMsg->volume;
+                        RCLCPP_WARN(
+                            rclcpp::get_logger(NODE_NAME),
+                            fmt::format("Volume cannot be lower than 0. Will decrese by {0} instead.", amount).c_str());
                     }
-                    uint8_t volume = std::max<uint8_t>(baseStatusMsg->volume - amount, 0);
+                    uint8_t volume = baseStatusMsg->volume - amount;
                     response->ok = true;
                     response->result = fmt::format(
                         "{{\"status\": \"Volume decreased by {0} to {1} over {2}\"}}",

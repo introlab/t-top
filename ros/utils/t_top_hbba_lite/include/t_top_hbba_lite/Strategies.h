@@ -229,7 +229,6 @@ private:
     void sendListeningLedAnimation();
     void sendTalkingLedAnimation();
     void sendGesture(const std::string& gesture);
-
 };
 
 

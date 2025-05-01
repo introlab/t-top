@@ -30,11 +30,7 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-
 # Download Weights
-# /home/introlab/ros2_dl_work/src/t-top/ros/utils/dnn_utils/
-
-
 set(weights_archive_name Weights.zip)
 set(weights_version "4.1.0")
 set(weights_md5 "c20518fa511799032e9f2038434fb409")
@@ -149,13 +145,6 @@ add_custom_target(
   dnn_utils_models_extractor ALL
   DEPENDS ${all_models_output}
 )
-
-# DNN Models
-#add_custom_target(
-#        dnn_utils_export_models ALL
-#        COMMAND scripts/export_models.bash
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-#)
 
 install(DIRECTORY models DESTINATION share/${PROJECT_NAME})
 

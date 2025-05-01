@@ -14,8 +14,10 @@ The `chat_node.py` is designed to be used in conjunction with a speech-to-text (
 
 - `openai` (Python package): The OpenAI API client.
 ```bash
-# Python package dependencies are handled with rosdep
+# Python package dependencies sould be handled with rosdep for latest Ubuntu
 rosdep install --from-paths src/t-top/ros/behaviors/chat/ --ignore-src -r -y
+# However, if you have an old version of openai library and you see error messages, install it manually
+pip3 install openai
 ```
 - `ollama` (optional) : Ollama can be installed from [ollama.com](https://ollama.com/). Local models can be downloaded from [ollama.com/models](https://ollama.com/models). [Installation instructions](https://ollama.com/download/linux) are available on the website.
 ```bash
@@ -55,8 +57,8 @@ export OPENAI_API_KEY=<your_openai_api_key>
 
 ### Services
 
-- (TODO) Clear the chat history. This is used to clear the chat history when the user says "clear" or "reset".
-- (TODO) Add information to the chat history. This can be useful to add more context to the chat session.
+- (TODO) Clear the chat history. This is used to clear the chat history when the user says "clear" or "reset". This can also be triggered by external nodes.
+- (TODO) Add information to the chat history. This can be useful to add more context to the chat session. This could also be done via a topic.
 
 ### Tools (Dynamic remote service calls)
 

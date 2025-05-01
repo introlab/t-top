@@ -1,7 +1,7 @@
 <launch>
     <arg name="language" default="fr"/>  <!-- Options: fr or en -->
     <arg name="camera_2d_wide_enabled" default="false"/>
-    <arg name="language_model" default="gpt-4o-mini"/>  <!-- Options: qwen2.5:3, gpt-4o-mini, etc.  -->
+    <arg name="language_model" default="gpt-4o-mini"/>  <!-- Options: qwen2.5:3b, gpt-4o-mini, etc.  -->
     <arg name="model_type" default="chatgpt"/> <!-- Options: ollama or chatgpt-->
 
     <!-- Base robot -->

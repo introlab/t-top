@@ -10,9 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>chat</depend>
-  <depend>sensor_msgs</depend>
   <depend>rclcpp</depend>
-  <depend>rclpy</depend>
   <depend>t_top_hbba_lite</depend>
   <depend>perception_msgs</depend>
   <depend>behavior_msgs</depend>
