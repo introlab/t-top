@@ -345,9 +345,9 @@ class ChatNode(rclpy.node.Node):
         )
         self._service_callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
         self.partial_message_transformations: List[Callable[[str], str]] = []
-        self.partial_message_transformations.append(self._remove_think_tags)
+        self.partial_message_transformations.append(ChatNode._remove_think_tags)
         self.partial_message_transformations.append(
-            self._replace_enumeration_characters
+            ChatNode._replace_enumeration_characters
         )
 
         self._language = (
@@ -543,11 +543,13 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._process_pending_messages()
 
-    def _remove_think_tags(self, partial_message: str) -> str:
+    @staticmethod
+    def _remove_think_tags(partial_message: str) -> str:
         # TODO better handling of <think></think> tags over multiple partial messages.
         return re.sub(r"<think>.*</think>", "", partial_message, flags=re.DOTALL)
 
-    def _replace_enumeration_characters(self, partial_message: str) -> str:
+    @staticmethod
+    def _replace_enumeration_characters(partial_message: str) -> str:
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
