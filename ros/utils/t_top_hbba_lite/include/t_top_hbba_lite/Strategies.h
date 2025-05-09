@@ -8,6 +8,8 @@
 #include <hbba_lite/core/Strategy.h>
 
 #include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/empty.hpp>
+
 
 #include <behavior_msgs/msg/led_animation.hpp>
 #include <behavior_msgs/msg/text.hpp>
@@ -124,6 +126,7 @@ protected:
 
 private:
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    
 };
 
 class GestureStrategy : public Strategy<GestureDesire>
@@ -186,6 +189,8 @@ class ChatStrategy : public Strategy<ChatDesire>
     rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_transcriptSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
+    rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_talkFilterEnablePublisher;
+
 
     // LEDS
     rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
@@ -302,8 +307,7 @@ std::unique_ptr<BaseStrategy> createPlaySoundStrategy(
 std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
-std::unique_ptr<BaseStrategy>
-    createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+//std::unique_ptr<BaseStrategy>createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
 std::unique_ptr<BaseStrategy> createChatStrategy(
     std::shared_ptr<FilterPool> filterPool,

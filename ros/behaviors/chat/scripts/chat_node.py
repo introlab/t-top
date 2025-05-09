@@ -9,11 +9,15 @@ from threading import Event
 from typing import List, Callable
 from functools import reduce
 
+import time
 import openai
 import rclpy
 import rclpy.callback_groups
 import rclpy.executors
 import rclpy.node
+import threading
+
+from std_msgs.msg import Empty
 from ament_index_python.packages import get_package_share_directory
 from behavior_msgs.msg import Done, Text
 from behavior_srvs.srv import ChatToolsFunctionCall
@@ -428,7 +432,7 @@ class ChatNode(rclpy.node.Node):
         # Subscribers
         self._transcript_sub = self.create_subscription(
             Transcript,
-            "speech_to_text/transcript",
+            "talk/enabled",
             self._on_transcript_received_cb,
             1,
             callback_group=self._subscriber_callback_group_transcript,
@@ -444,6 +448,7 @@ class ChatNode(rclpy.node.Node):
 
         # Publishers
         self._talk_text_pub = self.create_publisher(Text, "talk/text", 1)
+
         self._chat_done_pub = self.create_publisher(Done, "chat/done", 1)
 
         # Print parameters summary
@@ -595,7 +600,6 @@ class ChatNode(rclpy.node.Node):
                     talk_msg.text = sentences[0]
                     self.get_logger().info(f"Sending talk message: {talk_msg.text}")
                     self._talk_text_pub.publish(talk_msg)
-
                     # Remove the first sentence from the list
                     sentences.pop(0)
 

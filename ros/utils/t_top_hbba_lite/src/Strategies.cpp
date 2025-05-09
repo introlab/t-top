@@ -1,5 +1,6 @@
 #include <t_top_hbba_lite/Strategies.h>
 
+
 using namespace std;
 
 FaceAnimationStrategy::FaceAnimationStrategy(
@@ -295,6 +296,10 @@ ChatStrategy::ChatStrategy(
     m_ledAnimationPublisher = m_node->create_publisher<behavior_msgs::msg::LedAnimation>(
         "led_animations/animation",
         rclcpp::QoS(1).transient_local());
+    
+    m_talkFilterEnablePublisher = m_node->create_publisher<perception_msgs::msg::Transcript>(
+        "talk/enabled",
+        rclcpp::QoS(1).transient_local());
 
     m_ledAnimationDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "led_animations/done",
@@ -357,6 +362,8 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
 {
     if (msg->is_final)
     {
+        RCLCPP_INFO(rclcpp::get_logger("chatbot_node"), "transcriptSubscriberCallback");
+
         // Listening done
         disableFilter("vad/filter_state");
         disableFilter("speech_to_text/filter_state");
@@ -366,6 +373,8 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
 
         sendTalkingLedAnimation();
         sendGesture("thinking");
+        m_talkFilterEnablePublisher->publish(*msg);
+
     }
 }
 
@@ -373,6 +382,8 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 {
     if (msg->ok)
     {
+        RCLCPP_INFO(rclcpp::get_logger("chatbot_node"), "chatDoneSubscriberCallback");
+
         // Stop talking
         disableFilter("talk/filter_state");
 
@@ -699,16 +710,16 @@ unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filt
         std::move(filterPool));
 }
 
-unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
-{
-    return make_unique<Strategy<TooCloseReactionDesire>>(
-        utility,
-        unordered_map<string, uint16_t>{},
-        unordered_map<string, FilterConfiguration>{
-            {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
-        },
-        std::move(filterPool));
-}
+// unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+// {
+//     return make_unique<Strategy<TooCloseReactionDesire>>(
+//         utility,
+//         unordered_map<string, uint16_t>{},
+//         unordered_map<string, FilterConfiguration>{
+//             {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
+//         },
+//         std::move(filterPool));
+// }
 
 unique_ptr<BaseStrategy> createChatStrategy(
     shared_ptr<FilterPool> filterPool,
