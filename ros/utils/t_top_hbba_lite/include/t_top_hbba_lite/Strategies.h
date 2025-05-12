@@ -4,6 +4,7 @@
 #include <t_top_hbba_lite/Desires.h>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/time.hpp>
 
 #include <hbba_lite/core/Strategy.h>
 
@@ -190,7 +191,11 @@ class ChatStrategy : public Strategy<ChatDesire>
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
     rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_talkFilterEnablePublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_vadSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_perceptionSubscriberCallback;
 
+    rclcpp::TimerBase::SharedPtr m_vadTimeoutTimer;
+    rclcpp::Time m_lastVadTime; 
 
     // LEDS
     rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
@@ -230,10 +235,16 @@ private:
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void vadSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void perceptionSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void vadTimeoutCallback();
+
 
     void sendListeningLedAnimation();
     void sendTalkingLedAnimation();
     void sendGesture(const std::string& gesture);
+
+    std::vector<std::string> current_objects;
 };
 
 

@@ -313,6 +313,19 @@ ChatStrategy::ChatStrategy(
         "gesture/done",
         1,
         [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
+    
+    m_perceptionSubscriberCallback = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "perception/current_objects",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { perceptionSubscriberCallback(msg); });
+    
+    m_vadSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "vad",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { perceptionSubscriberCallback(msg); });
+
+    m_vadTimeoutTimer = m_node->create_wall_timer(std::chrono::seconds(1),
+        std::bind(&ChatStrategy::vadTimeoutCallback, this));
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -427,6 +440,26 @@ void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done:
     if (msg->id == desireId())
     {
         disableFilter("gesture/filter_state");
+    }
+}
+
+void ChatStrategy::perceptionSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    //current_objects = msg->objects
+}
+
+void ChatStrategy::vadSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    m_lastVadTime = m_node->now();
+}
+
+void ChatStrategy::vadTimeoutCallback()
+{
+    double elapsed = (m_node->now() - m_lastVadTime).seconds();
+
+    if (elapsed > 30.0)
+    {
+        RCLCPP_WARN(m_node->get_logger(), "[VAD] Timeout: no activity for 30 seconds.");
     }
 }
 
