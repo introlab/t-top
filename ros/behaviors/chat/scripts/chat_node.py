@@ -15,13 +15,12 @@ import rclpy
 import rclpy.callback_groups
 import rclpy.executors
 import rclpy.node
-import threading
-
-from std_msgs.msg import Empty
+from rclpy.qos import QoSProfile
 from ament_index_python.packages import get_package_share_directory
 from behavior_msgs.msg import Done, Text
 from behavior_srvs.srv import ChatToolsFunctionCall
 from perception_msgs.msg import Transcript
+import hbba_lite
 
 
 class ModelNotFoundError(Exception):
@@ -343,15 +342,17 @@ class ChatNode(rclpy.node.Node):
         self._pending_messages = list()
         self._executor = rclpy.executors.MultiThreadedExecutor(num_threads=4)
         # This will allow to receive callbacks while processing another one
-        self._subscriber_callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
-        self._subscriber_callback_group_transcript = (
-            rclpy.callback_groups.ReentrantCallbackGroup()
+        self._subscriber_callback_group = (
+            rclpy.callback_groups.MutuallyExclusiveCallbackGroup()
         )
+        # self._subscriber_callback_group_transcript = (
+        #    rclpy.callback_groups.MutuallyExclusiveCallbackGroup()
+        # )
         self._service_callback_group = rclpy.callback_groups.ReentrantCallbackGroup()
         self.partial_message_transformations: List[Callable[[str], str]] = []
-        self.partial_message_transformations.append(self._remove_think_tags)
+        self.partial_message_transformations.append(ChatNode._remove_think_tags)
         self.partial_message_transformations.append(
-            self._replace_enumeration_characters
+            ChatNode._replace_enumeration_characters
         )
 
         self._language = (
@@ -430,12 +431,17 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.load_default_context()
 
         # Subscribers
-        self._transcript_sub = self.create_subscription(
+        self._transcript_sub = hbba_lite.OnOffHbbaSubscriber(
+            self,
             Transcript,
-            "talk/enabled",
+            "chat/transcript",
             self._on_transcript_received_cb,
-            1,
-            callback_group=self._subscriber_callback_group_transcript,
+            qos_profile=QoSProfile(history=1, depth=1),
+            state_service_name="chat/transcript/filter_state",
+        )
+
+        self._transcript_sub.on_filter_state_changed(
+            self._on_transcript_filter_state_cb
         )
 
         self._talk_done_sub = self.create_subscription(
@@ -518,6 +524,13 @@ class ChatNode(rclpy.node.Node):
         self._pending_messages.append(message)
         self._process_pending_messages()
 
+    def _on_transcript_filter_state_cb(
+        self, previous_is_filtering_all_messages, new_is_filtering_all_messages
+    ):
+        self.get_logger().info(
+            f"Transcript filter state changed: {new_is_filtering_all_messages} from {previous_is_filtering_all_messages}"
+        )
+
     def _on_transcript_received_cb(self, msg: Transcript):
         self.get_logger().info(f"Transcript received: {msg.text}")
 
@@ -548,11 +561,13 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._process_pending_messages()
 
-    def _remove_think_tags(self, partial_message: str) -> str:
+    @staticmethod
+    def _remove_think_tags(partial_message: str) -> str:
         # TODO better handling of <think></think> tags over multiple partial messages.
         return re.sub(r"<think>.*</think>", "", partial_message, flags=re.DOTALL)
 
-    def _replace_enumeration_characters(self, partial_message: str) -> str:
+    @staticmethod
+    def _replace_enumeration_characters(partial_message: str) -> str:
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")

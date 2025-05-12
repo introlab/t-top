@@ -273,7 +273,8 @@ ChatStrategy::ChatStrategy(
            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+           {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"chat/transcript/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
@@ -282,6 +283,9 @@ ChatStrategy::ChatStrategy(
         "speech_to_text/transcript",
         1,
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
+
+    m_transcriptPublisher =
+        m_node->create_publisher<perception_msgs::msg::Transcript>("chat/transcript", rclcpp::QoS(1).transient_local());
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -295,10 +299,6 @@ ChatStrategy::ChatStrategy(
 
     m_ledAnimationPublisher = m_node->create_publisher<behavior_msgs::msg::LedAnimation>(
         "led_animations/animation",
-        rclcpp::QoS(1).transient_local());
-    
-    m_talkFilterEnablePublisher = m_node->create_publisher<perception_msgs::msg::Transcript>(
-        "talk/enabled",
         rclcpp::QoS(1).transient_local());
 
     m_ledAnimationDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
@@ -341,7 +341,8 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
 
-    // Disable talking
+    // Disable chat & talking
+    disableFilter("chat/transcript/filter_state");
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
@@ -381,12 +382,15 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         disableFilter("vad/filter_state");
         disableFilter("speech_to_text/filter_state");
 
+        // Start chatting
+        enableFilter("chat/transcript/filter_state");
+
         // Start talking
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
         sendGesture("thinking");
-        m_talkFilterEnablePublisher->publish(*msg);
+        m_transcriptPublisher->publish(*msg);
 
     }
 }
@@ -395,7 +399,8 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 {
     if (msg->ok)
     {
-        RCLCPP_INFO(rclcpp::get_logger("chatbot_node"), "chatDoneSubscriberCallback");
+        // Stop chatting
+        disableFilter("chat/transcript/filter_state");
 
         // Stop talking
         disableFilter("talk/filter_state");

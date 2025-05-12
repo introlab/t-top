@@ -59,7 +59,7 @@ int startNode()
                         RCLCPP_WARN(
                             rclcpp::get_logger(NODE_NAME),
                             fmt::format(
-                                "Volume cannot be higher than {0}. Will increased by {1} instead.",
+                                "Volume cannot be higher than {0}. Will increase by {1} instead.",
                                 baseStatusMsg->maximum_volume,
                                 amount)
                                 .c_str());
@@ -118,7 +118,7 @@ int startNode()
                         amount = baseStatusMsg->volume;
                         RCLCPP_WARN(
                             rclcpp::get_logger(NODE_NAME),
-                            fmt::format("Volume cannot be lower than 0. Will decrese by {0} instead.", amount).c_str());
+                            fmt::format("Volume cannot be lower than 0. Will decrease by {0} instead.", amount).c_str());
                     }
                     uint8_t volume = baseStatusMsg->volume - amount;
                     response->ok = true;
