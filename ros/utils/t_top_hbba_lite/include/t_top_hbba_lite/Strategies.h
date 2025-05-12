@@ -184,6 +184,7 @@ class ChatStrategy : public Strategy<ChatDesire>
     std::shared_ptr<rclcpp::Node> m_node;
 
     rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_transcriptSubscriber;
+    rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_transcriptPublisher;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
 

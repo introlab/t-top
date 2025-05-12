@@ -272,7 +272,8 @@ ChatStrategy::ChatStrategy(
            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+           {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"chat/transcript/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
@@ -281,6 +282,9 @@ ChatStrategy::ChatStrategy(
         "speech_to_text/transcript",
         1,
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
+
+    m_transcriptPublisher =
+        m_node->create_publisher<perception_msgs::msg::Transcript>("chat/transcript", rclcpp::QoS(1).transient_local());
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -323,7 +327,8 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
 
-    // Disable talking
+    // Disable chat & talking
+    disableFilter("chat/transcript/filter_state");
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
@@ -361,6 +366,12 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         disableFilter("vad/filter_state");
         disableFilter("speech_to_text/filter_state");
 
+        // Start chatting
+        enableFilter("chat/transcript/filter_state");
+
+        // Re-Publish the transcript
+        m_transcriptPublisher->publish(*msg);
+
         // Start talking
         enableFilter("talk/filter_state");
 
@@ -373,6 +384,9 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 {
     if (msg->ok)
     {
+        // Stop chatting
+        disableFilter("chat/transcript/filter_state");
+
         // Stop talking
         disableFilter("talk/filter_state");
 
