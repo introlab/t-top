@@ -390,5 +390,13 @@ public:
     DECLARE_DESIRE_METHODS(TooCloseReactionDesire);
 };
 
+class ChatDesire : public Desire
+{
+public:
+    explicit ChatDesire(uint16_t intensity = 1);
+    ~ChatDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(ChatDesire);
+};
 
 #endif

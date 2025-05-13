@@ -1,0 +1,7 @@
+string id
+string type
+string function_name
+string function_arguments
+---
+bool ok
+string result

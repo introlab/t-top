@@ -41,9 +41,9 @@ target_include_directories(t_top_hbba_lite_cpp
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
+ament_target_dependencies(t_top_hbba_lite_cpp rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs perception_msgs std_msgs std_msgs daemon_ros_client)
 
-ament_export_dependencies(rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs std_msgs std_msgs daemon_ros_client)
+ament_export_dependencies(rclcpp hbba_lite nav_msgs sensor_msgs behavior_msgs perception_msgs std_msgs std_msgs daemon_ros_client)
 ament_export_targets(export_t_top_hbba_lite_cpp HAS_LIBRARY_TARGET)
 
 install(

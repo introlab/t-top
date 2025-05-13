@@ -23,6 +23,7 @@ find_package(rosidl_default_generators REQUIRED)
 # Generate services
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GenerateSpeechFromText.srv"
+  "srv/ChatToolsFunctionCall.srv"
 )
 
 ament_package()

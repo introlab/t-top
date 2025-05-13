@@ -6,8 +6,8 @@ FaceAnimationStrategy::FaceAnimationStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     shared_ptr<rclcpp::Node> node)
-    : Strategy<FaceAnimationDesire>(utility, {}, {}, move(filterPool)),
-      m_node(move(node))
+    : Strategy<FaceAnimationDesire>(utility, {}, {}, std::move(filterPool)),
+      m_node(std::move(node))
 {
     m_animationPublisher =
         m_node->create_publisher<std_msgs::msg::String>("face/animation", rclcpp::QoS(1).transient_local());
@@ -42,8 +42,8 @@ LedEmotionStrategy::LedEmotionStrategy(
           utility,
           {},
           {{"led_emotions/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
-      m_node(move(node))
+          std::move(filterPool)),
+      m_node(std::move(node))
 {
     m_emotionPublisher =
         m_node->create_publisher<std_msgs::msg::String>("led_emotions/name", rclcpp::QoS(1).transient_local());
@@ -70,9 +70,9 @@ LedAnimationStrategy::LedAnimationStrategy(
           utility,
           {},
           {{"led_animations/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
+          std::move(filterPool)),
       m_desireSet(desireSet),
-      m_node(move(node))
+      m_node(std::move(node))
 {
     m_animationPublisher = m_node->create_publisher<behavior_msgs::msg::LedAnimation>(
         "led_animations/animation",
@@ -116,8 +116,8 @@ SpecificFaceFollowingStrategy::SpecificFaceFollowingStrategy(
           {},
           {{"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
            {"specific_face_following/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
-      m_node(move(node))
+          std::move(filterPool)),
+      m_node(std::move(node))
 {
     m_targetNamePublisher =
         m_node->create_publisher<std_msgs::msg::String>("face_following/target_name", rclcpp::QoS(1).transient_local());
@@ -144,9 +144,9 @@ TalkStrategy::TalkStrategy(
           utility,
           {{"sound", 1}},
           {{"talk/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
-      m_desireSet(move(desireSet)),
-      m_node(move(node))
+          std::move(filterPool)),
+      m_desireSet(std::move(desireSet)),
+      m_node(std::move(node))
 {
     m_talkPublisher = m_node->create_publisher<behavior_msgs::msg::Text>("talk/text", rclcpp::QoS(1).transient_local());
     m_talkDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
@@ -181,9 +181,13 @@ GestureStrategy::GestureStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
     shared_ptr<rclcpp::Node> node)
-    : Strategy<GestureDesire>(utility, {}, {{"gesture/filter_state", FilterConfiguration::onOff()}}, move(filterPool)),
-      m_desireSet(move(desireSet)),
-      m_node(move(node))
+    : Strategy<GestureDesire>(
+          utility,
+          {},
+          {{"gesture/filter_state", FilterConfiguration::onOff()}},
+          std::move(filterPool)),
+      m_desireSet(std::move(desireSet)),
+      m_node(std::move(node))
 {
     m_gesturePublisher =
         m_node->create_publisher<behavior_msgs::msg::GestureName>("gesture/name", rclcpp::QoS(1).transient_local());
@@ -223,9 +227,9 @@ PlaySoundStrategy::PlaySoundStrategy(
           utility,
           {{"sound", 1}},
           {{"sound_player/filter_state", FilterConfiguration::onOff()}},
-          move(filterPool)),
+          std::move(filterPool)),
       m_desireSet(desireSet),
-      m_node(move(node))
+      m_node(std::move(node))
 {
     m_pathPublisher =
         m_node->create_publisher<behavior_msgs::msg::SoundFile>("sound_player/file", rclcpp::QoS(1).transient_local());
@@ -256,6 +260,187 @@ void PlaySoundStrategy::soundDoneSubscriberCallback(const behavior_msgs::msg::Do
     }
 }
 
+ChatStrategy::ChatStrategy(
+    uint16_t utility,
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    shared_ptr<rclcpp::Node> node)
+    : Strategy<ChatDesire>(
+          utility,
+          {{"sound", 1}},
+          {{"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"chat/transcript/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+          std::move(filterPool)),
+      m_desireSet(std::move(desireSet)),
+      m_node(std::move(node))
+{
+    m_transcriptSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
+        "speech_to_text/transcript",
+        1,
+        [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
+
+    m_transcriptPublisher =
+        m_node->create_publisher<perception_msgs::msg::Transcript>("chat/transcript", rclcpp::QoS(1).transient_local());
+
+    m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "chat/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { chatDoneSubscriberCallback(msg); });
+
+    m_talkDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "talk/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { talkDoneSubscriberCallback(msg); });
+
+    m_ledAnimationPublisher = m_node->create_publisher<behavior_msgs::msg::LedAnimation>(
+        "led_animations/animation",
+        rclcpp::QoS(1).transient_local());
+
+    m_ledAnimationDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "led_animations/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { ledAnimationDoneSubscriberCallback(msg); });
+
+    m_gesturePublisher =
+        m_node->create_publisher<behavior_msgs::msg::GestureName>("gesture/name", rclcpp::QoS(1).transient_local());
+
+    m_gestureDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
+        "gesture/done",
+        1,
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
+}
+
+StrategyType ChatStrategy::strategyType()
+{
+    return StrategyType::get<ChatStrategy>();
+}
+
+void ChatStrategy::onEnabling(const ChatDesire& desire)
+{
+    // Unused parameter for now
+    (void)desire;
+    // Start listening
+    enableFilter("vad/filter_state");
+    enableFilter("speech_to_text/filter_state");
+
+    // Disable chat & talking
+    disableFilter("chat/transcript/filter_state");
+    disableFilter("talk/filter_state");
+
+    sendListeningLedAnimation();
+}
+
+void ChatStrategy::sendListeningLedAnimation()
+{
+    enableFilter("led_animations/filter_state");
+    behavior_msgs::msg::LedAnimation msg;
+    msg.id = desireId().value();
+    msg.duration_s = std::numeric_limits<double>::infinity();
+    msg.name = "rotating_sin";
+    msg.speed = 1.0;
+    msg.colors = vector<daemon_ros_client::msg::LedColor>{ChatStrategy::getColor(0, 255, 0)};
+    m_ledAnimationPublisher->publish(msg);
+}
+
+void ChatStrategy::sendTalkingLedAnimation()
+{
+    enableFilter("led_animations/filter_state");
+    behavior_msgs::msg::LedAnimation msg;
+    msg.id = desireId().value();
+    msg.duration_s = std::numeric_limits<double>::infinity();
+    msg.name = "rotating_sin";
+    msg.speed = 1.0;
+    msg.colors = vector<daemon_ros_client::msg::LedColor>{ChatStrategy::getColor(255, 0, 0)};
+    m_ledAnimationPublisher->publish(msg);
+}
+
+void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
+{
+    if (msg->is_final)
+    {
+        // Listening done
+        disableFilter("vad/filter_state");
+        disableFilter("speech_to_text/filter_state");
+
+        // Start chatting
+        enableFilter("chat/transcript/filter_state");
+
+        // Start talking, we need to enable filter first before publishing to make sure the message is not lost
+        enableFilter("talk/filter_state");
+
+        // Re-Publish the transcript
+        m_transcriptPublisher->publish(*msg);
+
+        sendTalkingLedAnimation();
+        sendGesture("thinking");
+    }
+}
+
+void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    if (msg->ok)
+    {
+        // Stop chatting
+        disableFilter("chat/transcript/filter_state");
+
+        // Stop talking
+        disableFilter("talk/filter_state");
+
+        // Start listening
+        enableFilter("vad/filter_state");
+        enableFilter("speech_to_text/filter_state");
+
+        sendListeningLedAnimation();
+        sendGesture("slow_origin_head");
+    }
+}
+
+void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    static int counter = 0;
+
+    if (msg->ok)
+    {
+        // Random head position ?
+        if (counter++ % 2 == 0)
+        {
+            sendGesture("thinking");
+        }
+        else
+        {
+            sendGesture("slow_origin_head");
+        }
+    }
+}
+
+void ChatStrategy::ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    if (msg->ok)
+    {
+        // TODO
+    }
+}
+
+void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+{
+    if (msg->id == desireId())
+    {
+        disableFilter("gesture/filter_state");
+    }
+}
+
+void ChatStrategy::sendGesture(const string& gesture)
+{
+    enableFilter("gesture/filter_state");
+    behavior_msgs::msg::GestureName msg;
+    msg.name = gesture;
+    msg.id = desireId().value();
+    m_gesturePublisher->publish(msg);
+}
 
 unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
@@ -264,7 +449,7 @@ unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> 
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"video_recorder_camera_3d/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createCamera2dWideRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -274,7 +459,7 @@ unique_ptr<BaseStrategy> createCamera2dWideRecordingStrategy(shared_ptr<FilterPo
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{
             {"video_recorder_camera_2d_wide/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -283,7 +468,7 @@ unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(shared_ptr<FilterPool> 
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"robot_name_detector/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy>
@@ -295,7 +480,7 @@ unique_ptr<BaseStrategy>
         unordered_map<string, FilterConfiguration>{
             {"robot_name_detector/filter_state", FilterConfiguration::onOff()},
             {"robot_name_detector/led_status/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createSlowVideoAnalyzer3dStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -306,7 +491,7 @@ unique_ptr<BaseStrategy> createSlowVideoAnalyzer3dStrategy(shared_ptr<FilterPool
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(15)},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createFastVideoAnalyzer3dStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -317,7 +502,7 @@ unique_ptr<BaseStrategy> createFastVideoAnalyzer3dStrategy(shared_ptr<FilterPool
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy>
@@ -330,7 +515,7 @@ unique_ptr<BaseStrategy>
             {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"video_analyzer_3d/analysed_image/filter_state", FilterConfiguration::onOff()},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createSlowVideoAnalyzer2dWideStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -341,7 +526,7 @@ unique_ptr<BaseStrategy> createSlowVideoAnalyzer2dWideStrategy(shared_ptr<Filter
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(5)},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -352,7 +537,7 @@ unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideStrategy(shared_ptr<Filter
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy>
@@ -365,7 +550,7 @@ unique_ptr<BaseStrategy>
             {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
             {"video_analyzer_2d_wide/analysed_image/filter_state", FilterConfiguration::onOff()},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -374,7 +559,7 @@ unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(shared_ptr<FilterPool> filt
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"audio_analyzer/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createVadStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -383,7 +568,7 @@ unique_ptr<BaseStrategy> createVadStrategy(shared_ptr<FilterPool> filterPool, ui
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"vad/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -394,7 +579,7 @@ unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filte
         unordered_map<string, FilterConfiguration>{
             {"speech_to_text/filter_state", FilterConfiguration::onOff()},
             {"vad/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 
@@ -404,19 +589,19 @@ unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"explore/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy>
     createFaceAnimationStrategy(shared_ptr<FilterPool> filterPool, shared_ptr<rclcpp::Node> node, uint16_t utility)
 {
-    return make_unique<FaceAnimationStrategy>(utility, move(filterPool), move(node));
+    return make_unique<FaceAnimationStrategy>(utility, std::move(filterPool), std::move(node));
 }
 
 unique_ptr<BaseStrategy>
     createLedEmotionStrategy(shared_ptr<FilterPool> filterPool, shared_ptr<rclcpp::Node> node, uint16_t utility)
 {
-    return make_unique<LedEmotionStrategy>(utility, move(filterPool), move(node));
+    return make_unique<LedEmotionStrategy>(utility, std::move(filterPool), std::move(node));
 }
 
 unique_ptr<BaseStrategy> createLedAnimationStrategy(
@@ -425,7 +610,7 @@ unique_ptr<BaseStrategy> createLedAnimationStrategy(
     shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<LedAnimationStrategy>(utility, filterPool, desireSet, move(node));
+    return make_unique<LedAnimationStrategy>(utility, filterPool, desireSet, std::move(node));
 }
 
 unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -434,7 +619,7 @@ unique_ptr<BaseStrategy> createSoundFollowingStrategy(shared_ptr<FilterPool> fil
         utility,
         unordered_map<string, uint16_t>{},
         unordered_map<string, FilterConfiguration>{{"sound_following/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -445,7 +630,7 @@ unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(shared_ptr<FilterPoo
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_3d/image_raw/filter_state", FilterConfiguration::throttling(3)},
             {"nearest_face_following/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
@@ -453,7 +638,7 @@ unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<SpecificFaceFollowingStrategy>(utility, move(filterPool), move(node));
+    return make_unique<SpecificFaceFollowingStrategy>(utility, std::move(filterPool), std::move(node));
 }
 
 unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -464,7 +649,7 @@ unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(shared_ptr<Fil
         unordered_map<string, FilterConfiguration>{
             {"video_analyzer_2d_wide/image_raw/filter_state", FilterConfiguration::throttling(1)},
             {"sound_object_person_following/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createTalkStrategy(
@@ -473,7 +658,7 @@ unique_ptr<BaseStrategy> createTalkStrategy(
     shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<TalkStrategy>(utility, move(filterPool), move(desireSet), move(node));
+    return make_unique<TalkStrategy>(utility, std::move(filterPool), std::move(desireSet), std::move(node));
 }
 
 unique_ptr<BaseStrategy> createGestureStrategy(
@@ -482,7 +667,7 @@ unique_ptr<BaseStrategy> createGestureStrategy(
     shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<GestureStrategy>(utility, move(filterPool), move(desireSet), move(node));
+    return make_unique<GestureStrategy>(utility, std::move(filterPool), std::move(desireSet), std::move(node));
 }
 
 unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -496,7 +681,7 @@ unique_ptr<BaseStrategy> createDanceStrategy(shared_ptr<FilterPool> filterPool, 
             {"torso_dance/filter_state", FilterConfiguration::onOff()},
             {"led_dance/filter_state", FilterConfiguration::onOff()},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createPlaySoundStrategy(
@@ -505,7 +690,7 @@ unique_ptr<BaseStrategy> createPlaySoundStrategy(
     shared_ptr<rclcpp::Node> node,
     uint16_t utility)
 {
-    return make_unique<PlaySoundStrategy>(utility, move(filterPool), move(desireSet), move(node));
+    return make_unique<PlaySoundStrategy>(utility, std::move(filterPool), std::move(desireSet), std::move(node));
 }
 
 unique_ptr<BaseStrategy> createTelepresenceStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -514,7 +699,7 @@ unique_ptr<BaseStrategy> createTelepresenceStrategy(shared_ptr<FilterPool> filte
         utility,
         unordered_map<string, uint16_t>{{"sound", 1}},
         unordered_map<string, FilterConfiguration>{{"ego_noise_reduction/filter_state", FilterConfiguration::onOff()}},
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -525,7 +710,7 @@ unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filt
         unordered_map<string, FilterConfiguration>{
             {"teleoperation/filter_state", FilterConfiguration::onOff()},
         },
-        move(filterPool));
+        std::move(filterPool));
 }
 
 unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
@@ -536,5 +721,14 @@ unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> f
         unordered_map<string, FilterConfiguration>{
             {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
         },
-        move(filterPool));
+        std::move(filterPool));
+}
+
+unique_ptr<BaseStrategy> createChatStrategy(
+    shared_ptr<FilterPool> filterPool,
+    shared_ptr<DesireSet> desireSet,
+    shared_ptr<rclcpp::Node> node,
+    uint16_t utility)
+{
+    return make_unique<ChatStrategy>(utility, std::move(filterPool), std::move(desireSet), std::move(node));
 }

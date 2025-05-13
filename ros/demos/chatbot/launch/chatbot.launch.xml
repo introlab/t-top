@@ -1,0 +1,35 @@
+<launch>
+    <arg name="language" default="fr"/>  <!-- Options: fr or en -->
+    <arg name="camera_2d_wide_enabled" default="false"/>
+    <arg name="language_model" default="gpt-4o-mini"/>  <!-- Options: qwen2.5:3b, gpt-4o-mini, etc.  -->
+    <arg name="model_type" default="chatgpt"/> <!-- Options: ollama or chatgpt-->
+
+    <!-- Base robot -->
+    <include file="$(find-pkg-share t_top)/launch/bringup.launch.xml">
+        <arg name="language" value="$(var language)"/>
+        <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
+        <arg name="slam" value="false"/>
+        <arg name="open_browser" value="true"/>
+        <arg name="gender" value="female"/> <!-- male , female -->
+        <arg name="voice_generator_type" value="piper"/> <!-- Options: google or piper -->
+        <arg name="fullscreen_face" value="true"/>
+        <arg name="whisper_model" value="small"/> <!-- Options: tiny, base, small, medium -->
+    </include>
+
+    <!-- Chat Behavior -->
+    <node pkg="chat" exec="chat_node.py" name="chat_node">
+        <param name="language" value="$(var language)"/>
+        <param name="language_model" value="$(var language_model)"/>
+        <param name="model_type" value="$(var model_type)"/>
+        <param name="enable_tools" value="true"/>
+        <!-- <param name="tools_config" value="$(find t-top)/config/tools_config.json"/> -->
+        <param name="enable_prompts" value="true"/>
+        <!-- <param name="prompts_config" value="$(find t-top)/config/prompts_config.json"/> -->
+    </node>
+
+    <!-- Motivation / HBBA -->
+    <node pkg="chatbot" exec="chatbot_node" name="chatbot_node" output="screen">
+
+    </node>
+
+</launch>

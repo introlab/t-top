@@ -15,6 +15,8 @@
 #include <behavior_msgs/msg/done.hpp>
 #include <behavior_msgs/msg/sound_file.hpp>
 
+#include <perception_msgs/msg/transcript.hpp>
+
 #include <memory>
 
 class FaceAnimationStrategy : public Strategy<FaceAnimationDesire>
@@ -176,6 +178,61 @@ private:
     void soundDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
 };
 
+class ChatStrategy : public Strategy<ChatDesire>
+{
+    std::shared_ptr<DesireSet> m_desireSet;
+    std::shared_ptr<rclcpp::Node> m_node;
+
+    rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_transcriptSubscriber;
+    rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_transcriptPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
+
+    // LEDS
+    rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_ledAnimationDoneSubscriber;
+
+    // GESTURES
+    rclcpp::Publisher<behavior_msgs::msg::GestureName>::SharedPtr m_gesturePublisher;
+    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_gestureDoneSubscriber;
+
+public:
+    ChatStrategy(
+        uint16_t utility,
+        std::shared_ptr<FilterPool> filterPool,
+        std::shared_ptr<DesireSet> desireSet,
+        std::shared_ptr<rclcpp::Node> node);
+
+    DECLARE_NOT_COPYABLE(ChatStrategy);
+    DECLARE_NOT_MOVABLE(ChatStrategy);
+
+    StrategyType strategyType() override;
+
+    static daemon_ros_client::msg::LedColor getColor(uint8_t r, uint8_t g, uint8_t b)
+    {
+        daemon_ros_client::msg::LedColor c;
+        c.red = r;
+        c.green = g;
+        c.blue = b;
+        return c;
+    }
+
+protected:
+    void onEnabling(const ChatDesire& desire) override;
+
+private:
+    void transcriptSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg);
+    void chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+
+    void sendListeningLedAnimation();
+    void sendTalkingLedAnimation();
+    void sendGesture(const std::string& gesture);
+};
+
+
 std::unique_ptr<BaseStrategy>
     createCamera3dRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
@@ -249,5 +306,10 @@ std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<Filter
 std::unique_ptr<BaseStrategy>
     createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
+std::unique_ptr<BaseStrategy> createChatStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    std::shared_ptr<DesireSet> desireSet,
+    std::shared_ptr<rclcpp::Node> node,
+    uint16_t utility = 1);
 
 #endif

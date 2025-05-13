@@ -37,9 +37,9 @@ SpeechToTextDesire::SpeechToTextDesire(uint16_t intensity) : Desire(intensity) {
 
 ExploreDesire::ExploreDesire(uint16_t intensity) : Desire(intensity) {}
 
-FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
+FaceAnimationDesire::FaceAnimationDesire(string name, uint16_t intensity) : Desire(intensity), m_name(std::move(name)) {}
 
-LedEmotionDesire::LedEmotionDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
+LedEmotionDesire::LedEmotionDesire(string name, uint16_t intensity) : Desire(intensity), m_name(std::move(name)) {}
 
 LedAnimationDesire::LedAnimationDesire(
     string name,
@@ -48,10 +48,10 @@ LedAnimationDesire::LedAnimationDesire(
     double durationS,
     uint16_t intensity)
     : Desire(intensity),
-      m_name(move(name)),
+      m_name(std::move(name)),
       m_durationS(durationS),
       m_speed(speed),
-      m_colors(move(colors))
+      m_colors(std::move(colors))
 {
 }
 
@@ -61,22 +61,24 @@ NearestFaceFollowingDesire::NearestFaceFollowingDesire(uint16_t intensity) : Des
 
 SpecificFaceFollowingDesire::SpecificFaceFollowingDesire(string targetName, uint16_t intensity)
     : Desire(intensity),
-      m_targetName(move(targetName))
+      m_targetName(std::move(targetName))
 {
 }
 
 SoundObjectPersonFollowingDesire::SoundObjectPersonFollowingDesire(uint16_t intensity) : Desire(intensity) {}
 
-TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(move(text)) {}
+TalkDesire::TalkDesire(string text, uint16_t intensity) : Desire(intensity), m_text(std::move(text)) {}
 
-GestureDesire::GestureDesire(string name, uint16_t intensity) : Desire(intensity), m_name(move(name)) {}
+GestureDesire::GestureDesire(string name, uint16_t intensity) : Desire(intensity), m_name(std::move(name)) {}
 
 DanceDesire::DanceDesire(uint16_t intensity) : Desire(intensity) {}
 
-PlaySoundDesire::PlaySoundDesire(string path, uint16_t intensity) : Desire(intensity), m_path(move(path)) {}
+PlaySoundDesire::PlaySoundDesire(string path, uint16_t intensity) : Desire(intensity), m_path(std::move(path)) {}
 
 TelepresenceDesire::TelepresenceDesire(uint16_t intensity) : Desire(intensity) {}
 
 TeleoperationDesire::TeleoperationDesire(uint16_t intensity) : Desire(intensity) {}
 
 TooCloseReactionDesire::TooCloseReactionDesire(uint16_t intensity) : Desire(intensity) {}
+
+ChatDesire::ChatDesire(uint16_t intensity) : Desire(intensity) {}
