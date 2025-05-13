@@ -16,7 +16,7 @@ The `chat_node.py` is designed to be used in conjunction with a speech-to-text (
 ```bash
 # Python package dependencies sould be handled with rosdep for latest Ubuntu
 rosdep install --from-paths src/t-top/ros/behaviors/chat/ --ignore-src -r -y
-# However, if you have an old version of openai library and you see error messages, install it manually
+# Alternatively, you can install the package manually using pip
 pip3 install openai
 ```
 - `ollama` (optional) : Ollama can be installed from [ollama.com](https://ollama.com/). Local models can be downloaded from [ollama.com/models](https://ollama.com/models). [Installation instructions](https://ollama.com/download/linux) are available on the website.
