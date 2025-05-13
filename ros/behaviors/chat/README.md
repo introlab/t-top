@@ -47,7 +47,7 @@ export OPENAI_API_KEY=<your_openai_api_key>
 
 ### Subscribed Topics
 
-- `speech_to_text/transcript` ([perception_msgs/Transcript](../../perceptions/perception_msgs/msg/Transcript.msg)): The text output by the Speech-to-Text (STT) perception module. This is used to trigger the chat API (processing the output of the LLM).
+- `chat/transcript` ([perception_msgs/Transcript](../../perceptions/perception_msgs/msg/Transcript.msg)): The text output by the Speech-to-Text (STT) perception module. This is used to trigger the chat API (processing the output of the LLM).
 - `talk/done` ([behavior_msgs/Done](../behavior_msgs/msg/Done.msg)): Sent when the Text To Speech (TTS) module is done talking. This is used to trigger the next action to be performed by the chat behavior.
 
 ### Published Topics

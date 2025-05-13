@@ -369,11 +369,11 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         // Start chatting
         enableFilter("chat/transcript/filter_state");
 
+        // Start talking, we need to enable filter first before publishing to make sure the message is not lost
+        enableFilter("talk/filter_state");
+
         // Re-Publish the transcript
         m_transcriptPublisher->publish(*msg);
-
-        // Start talking
-        enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
         sendGesture("thinking");
