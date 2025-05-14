@@ -355,6 +355,8 @@ class ChatNode(rclpy.node.Node):
             ChatNode._replace_enumeration_characters
         )
 
+        self.revive_counter = 0
+
         self._language = (
             self.declare_parameter("language", "fr").get_parameter_value().string_value
         )
@@ -549,8 +551,9 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.send_request_and_process_response()
             self._processing = False
             self.get_logger().info("Processing done!")
-        
-        elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 :
+            self.revive_counter = 0 
+
+        elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 and self.revive_counter < 3 :
             self.get_logger().info(f"Transcript received: {msg.objects}")
 
             if self._language == "fr":
@@ -577,6 +580,7 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.send_request_and_process_response()
             self._processing = False
             self.get_logger().info("Processing done!")
+            self.revive_counter += 1
 
         else:
             self.get_logger().error("Empty transcript")

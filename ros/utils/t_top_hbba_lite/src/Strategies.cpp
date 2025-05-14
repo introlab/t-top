@@ -346,7 +346,7 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
-
+    isTalking = true;
     m_lastVadTime = std::chrono::steady_clock::now();
 }
 
