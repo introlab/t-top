@@ -170,6 +170,8 @@ int startNode()
     strategies.emplace_back(createChatStrategy(filterPool, desireSet, node));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createTooCloseReactionStrategy(filterPool));
+    strategies.emplace_back(createFastVideoAnalyzer3dWithAnalyzedImageStrategy(filterPool));
+
 
 
     auto solver = make_unique<GecodeSolver>();
@@ -177,8 +179,10 @@ int startNode()
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
     desireSet->addDesire(make_unique<ChatDesire>());
-    desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
-    desireSet->addDesire(make_unique<TooCloseReactionDesire>());
+    //desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
+    //desireSet->addDesire(make_unique<TooCloseReactionDesire>());
+    desireSet->addDesire(make_unique<FastVideoAnalyzer3dWithAnalyzedImageDesire>());
+
 
     rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
 
@@ -191,7 +195,6 @@ int startNode()
 int main(int argc, char** argv)
 {
     rclcpp::init(argc, argv);
-
     try
     {
         return startNode();

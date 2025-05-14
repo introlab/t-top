@@ -1,0 +1,4 @@
+std_msgs/Header header
+string person_name
+string formatted_detection_time
+bool is_visible

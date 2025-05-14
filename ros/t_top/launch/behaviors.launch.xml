@@ -58,23 +58,29 @@
     </include>
 
     <!-- Sound Following -->
+<!--
     <include file="$(find-pkg-share t_top)/launch/behaviors/sound_following.launch.xml">
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="sound_following_behavior_delay" value="$(var sound_following_behavior_delay)"/>
     </include>
+-->
 
     <!-- Face Following -->
+<!--
     <include file="$(find-pkg-share t_top)/launch/behaviors/face_following.launch.xml">
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="face_following_behavior_delay" value="$(var face_following_behavior_delay)"/>
     </include>
+-->
 
     <!-- Sound Object Person Following -->
+<!--
     <include file="$(find-pkg-share t_top)/launch/behaviors/sound_object_person_following.launch.xml">
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="camera_2d_wide_enabled" value="$(var camera_2d_wide_enabled)"/>
         <arg name="sound_object_person_following_behavior_delay" value="$(var sound_object_person_following_behavior_delay)"/>
     </include>
+-->
 
     <!-- Dance -->
     <include file="$(find-pkg-share t_top)/launch/behaviors/dance.launch.xml">

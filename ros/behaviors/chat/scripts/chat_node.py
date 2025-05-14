@@ -19,7 +19,7 @@ from rclpy.qos import QoSProfile
 from ament_index_python.packages import get_package_share_directory
 from behavior_msgs.msg import Done, Text
 from behavior_srvs.srv import ChatToolsFunctionCall
-from perception_msgs.msg import Transcript
+from perception_msgs.msg import Transcript, ContextInput
 import hbba_lite
 
 
@@ -433,7 +433,7 @@ class ChatNode(rclpy.node.Node):
         # Subscribers
         self._transcript_sub = hbba_lite.OnOffHbbaSubscriber(
             self,
-            Transcript,
+            ContextInput,
             "chat/transcript",
             self._on_transcript_received_cb,
             qos_profile=QoSProfile(history=1, depth=1),
@@ -531,16 +531,44 @@ class ChatNode(rclpy.node.Node):
             f"Transcript filter state changed: {new_is_filtering_all_messages} from {previous_is_filtering_all_messages}"
         )
 
-    def _on_transcript_received_cb(self, msg: Transcript):
-        self.get_logger().info(f"Transcript received: {msg.text}")
+    def _on_transcript_received_cb(self, msg: ContextInput):
+        self.get_logger().info(f"Transcript received: {msg.transcript.text}")
 
         self._talking = False
         self._processing = False
 
-        if len(msg.text) > 0:
+        if len(msg.transcript.text) > 0:
             # Add the transcript to the context history
             self._chat_api.add_to_history(
-                message=msg.text, role="user", timestamp=datetime.now()
+                message=msg.transcript.text, role="user", timestamp=datetime.now()
+            )
+
+            # Process the request
+            self._processing = True
+            self.get_logger().info("Processing...")
+            self._chat_api.send_request_and_process_response()
+            self._processing = False
+            self.get_logger().info("Processing done!")
+        
+        elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 :
+            self.get_logger().info(f"Transcript received: {msg.objects}")
+
+            if self._language == "fr":
+                revive_msg = (
+                    "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
+                    "les objets dans ton champ de vision et le contexte de la conversation."
+                    " Voici la liste des objets : "
+                    f"{', '.join(msg.objects)}"
+                )
+            else: 
+                revive_msg = (
+                    "The conversation has stopped. Try to restart it by using the objects in your field of view "
+                    "and the context of the conversation. Here is the list of objects: "
+                    f"{', '.join(msg.objects)}"
+                )
+
+            self._chat_api.add_to_history(
+                message=revive_msg, role="system", timestamp=datetime.now()
             )
 
             # Process the request

@@ -1,6 +1,5 @@
 #include <t_top_hbba_lite/Strategies.h>
 
-
 using namespace std;
 
 FaceAnimationStrategy::FaceAnimationStrategy(
@@ -278,6 +277,7 @@ ChatStrategy::ChatStrategy(
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
+      //m_vadFilter(m_node, "vad/filter_state")
 {
     m_transcriptSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
@@ -285,7 +285,7 @@ ChatStrategy::ChatStrategy(
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
 
     m_transcriptPublisher =
-        m_node->create_publisher<perception_msgs::msg::Transcript>("chat/transcript", rclcpp::QoS(1).transient_local());
+        m_node->create_publisher<perception_msgs::msg::ContextInput>("chat/transcript", rclcpp::QoS(1).transient_local());
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -314,17 +314,17 @@ ChatStrategy::ChatStrategy(
         1,
         [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
     
-    m_perceptionSubscriberCallback = m_node->create_subscription<behavior_msgs::msg::Done>(
+    m_perceptionSubscriberCallback = m_node->create_subscription<perception_msgs::msg::ContextInput>(
         "perception/current_objects",
         1,
-        [this](const behavior_msgs::msg::Done::SharedPtr msg) { perceptionSubscriberCallback(msg); });
+        [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
     
     m_vadSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "vad",
         1,
-        [this](const behavior_msgs::msg::Done::SharedPtr msg) { perceptionSubscriberCallback(msg); });
+        [this](const behavior_msgs::msg::Done::SharedPtr msg) { vadSubscriberCallback(msg); });
 
-    m_vadTimeoutTimer = m_node->create_wall_timer(std::chrono::seconds(1),
+    m_vadTimeoutTimer = m_node->create_wall_timer(std::chrono::seconds(5),
         std::bind(&ChatStrategy::vadTimeoutCallback, this));
 }
 
@@ -346,6 +346,8 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
+
+    m_lastVadTime = std::chrono::steady_clock::now();
 }
 
 void ChatStrategy::sendListeningLedAnimation()
@@ -376,8 +378,6 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
 {
     if (msg->is_final)
     {
-        RCLCPP_INFO(rclcpp::get_logger("chatbot_node"), "transcriptSubscriberCallback");
-
         // Listening done
         disableFilter("vad/filter_state");
         disableFilter("speech_to_text/filter_state");
@@ -390,10 +390,14 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
 
         sendTalkingLedAnimation();
         sendGesture("thinking");
-        m_transcriptPublisher->publish(*msg);
-
+        perception_msgs::msg::ContextInput message;
+        message.transcript = *msg;
+        message.objects = {}; 
+        m_transcriptPublisher->publish(message);
+        isTalking = true;
     }
 }
+
 
 void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
@@ -411,6 +415,10 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 
         sendListeningLedAnimation();
         sendGesture("slow_origin_head");
+
+        isTalking = false;
+        m_lastVadTime = std::chrono::steady_clock::now();
+
     }
 }
 
@@ -448,23 +456,49 @@ void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done:
     }
 }
 
-void ChatStrategy::perceptionSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
+void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg)
 {
-    //current_objects = msg->objects
+    current_objects = msg->objects;
+    RCLCPP_WARN(m_node->get_logger(), "Objects received");
+
 }
 
 void ChatStrategy::vadSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
-    m_lastVadTime = m_node->now();
+    RCLCPP_WARN(m_node->get_logger(), "[VAD] reset");
+    m_lastVadTime = std::chrono::steady_clock::now();
+ 
 }
 
 void ChatStrategy::vadTimeoutCallback()
 {
-    double elapsed = (m_node->now() - m_lastVadTime).seconds();
+    RCLCPP_WARN(m_node->get_logger(), "Timeout");
+    //if (m_vadFilter.isFilteringAllMessages()) {
+    if (isTalking){
+    m_lastVadTime = std::chrono::steady_clock::now();
+        RCLCPP_WARN(m_node->get_logger(), "Timeout is reset");
+    }
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastVadTime).count();
+    if (elapsed > 30) {
+        RCLCPP_WARN(m_node->get_logger(), "Timeout: no activity for 30 seconds.");
+        // Listening done
+        disableFilter("vad/filter_state");
+        disableFilter("speech_to_text/filter_state");
 
-    if (elapsed > 30.0)
-    {
-        RCLCPP_WARN(m_node->get_logger(), "[VAD] Timeout: no activity for 30 seconds.");
+        // Start chatting
+        enableFilter("chat/transcript/filter_state");
+
+        // Start talking
+        enableFilter("talk/filter_state");
+
+        sendTalkingLedAnimation();
+        sendGesture("thinking");
+        perception_msgs::msg::ContextInput message;
+        message.transcript = perception_msgs::msg::Transcript();
+        message.objects = current_objects; 
+        m_transcriptPublisher->publish(message);
+        isTalking = true;
     }
 }
 
@@ -748,16 +782,16 @@ unique_ptr<BaseStrategy> createTeleoperationStrategy(shared_ptr<FilterPool> filt
         std::move(filterPool));
 }
 
-// unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
-// {
-//     return make_unique<Strategy<TooCloseReactionDesire>>(
-//         utility,
-//         unordered_map<string, uint16_t>{},
-//         unordered_map<string, FilterConfiguration>{
-//             {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
-//         },
-//         std::move(filterPool));
-// }
+unique_ptr<BaseStrategy> createTooCloseReactionStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<TooCloseReactionDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"too_close_reaction/filter_state", FilterConfiguration::onOff()},
+        },
+        std::move(filterPool));
+}
 
 unique_ptr<BaseStrategy> createChatStrategy(
     shared_ptr<FilterPool> filterPool,

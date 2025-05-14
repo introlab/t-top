@@ -18,7 +18,12 @@
 #include <behavior_msgs/msg/done.hpp>
 #include <behavior_msgs/msg/sound_file.hpp>
 
+#include <hbba_lite/filters/FilterState.h>
+#include <optional>
+
 #include <perception_msgs/msg/transcript.hpp>
+#include <perception_msgs/msg/context_input.hpp>
+
 
 #include <memory>
 
@@ -188,15 +193,16 @@ class ChatStrategy : public Strategy<ChatDesire>
     std::shared_ptr<rclcpp::Node> m_node;
 
     rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_transcriptSubscriber;
-    rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_transcriptPublisher;
+    rclcpp::Publisher<perception_msgs::msg::ContextInput>::SharedPtr m_transcriptPublisher;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
-    rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_talkFilterEnablePublisher;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_vadSubscriber;
-    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_perceptionSubscriberCallback;
+    rclcpp::Subscription<perception_msgs::msg::ContextInput>::SharedPtr m_perceptionSubscriberCallback;
 
     rclcpp::TimerBase::SharedPtr m_vadTimeoutTimer;
-    rclcpp::Time m_lastVadTime; 
+    std::chrono::steady_clock::time_point m_lastVadTime;
+    //OnOffHbbaFilterState m_vadFilter;
+    bool isTalking = true;
 
     // LEDS
     rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
@@ -237,7 +243,7 @@ private:
     void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void vadSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
-    void perceptionSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg);
     void vadTimeoutCallback();
 
 
@@ -319,7 +325,7 @@ std::unique_ptr<BaseStrategy> createPlaySoundStrategy(
 std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
-//std::unique_ptr<BaseStrategy>createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy>createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 
 std::unique_ptr<BaseStrategy> createChatStrategy(
     std::shared_ptr<FilterPool> filterPool,
