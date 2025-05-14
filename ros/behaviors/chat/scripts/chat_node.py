@@ -9,7 +9,6 @@ from threading import Event
 from typing import List, Callable
 from functools import reduce
 
-import time
 import openai
 import rclpy
 import rclpy.callback_groups
@@ -456,7 +455,6 @@ class ChatNode(rclpy.node.Node):
 
         # Publishers
         self._talk_text_pub = self.create_publisher(Text, "talk/text", 1)
-
         self._chat_done_pub = self.create_publisher(Done, "chat/done", 1)
 
         # Print parameters summary
