@@ -389,10 +389,11 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
-        sendGesture("thinking");
+        //sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = *msg;
-        message.objects = {}; 
+        message.objects = current_objects;
+        message.revive_conversation = false;
         m_transcriptPublisher->publish(message);
         isTalking = true;
     }
@@ -431,7 +432,7 @@ void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
         // Random head position ?
         if (counter++ % 2 == 0)
         {
-            sendGesture("thinking");
+            //sendGesture("thinking");
         }
         else
         {
@@ -493,10 +494,11 @@ void ChatStrategy::vadTimeoutCallback()
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
-        sendGesture("thinking");
+        //sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = perception_msgs::msg::Transcript();
         message.objects = current_objects; 
+        message.revive_conversation = true;
         m_transcriptPublisher->publish(message);
         isTalking = true;
     }

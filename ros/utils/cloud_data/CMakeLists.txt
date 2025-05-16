@@ -24,12 +24,15 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CurrentLocalWeather.srv"
   "srv/LocalWeatherForecast.srv"
+  "srv/CurrentLocalWeather2.srv"
+  "srv/LocalWeatherForecast2.srv"
   "srv/Location.srv"
 )
 
 # Python Nodes
 install(PROGRAMS
   scripts/cloud_data_node.py
+  scripts/cloud_data_node_2.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

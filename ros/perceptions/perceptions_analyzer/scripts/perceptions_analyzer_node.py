@@ -49,7 +49,7 @@ class PerceptionsAnalyzer(Node):
         self.create_subscription(PersonNames, '/person_names', self.personIdentificationCallback, 10)
         self.create_subscription(AudioAnalysis, 'audio_analysis', self.audioAnalyzerCallback, 10)
 
-        self.video_ignored_classes = [x.lower() for x in [
+        """self.video_ignored_classes = [x.lower() for x in [
             "Person", "Car", "Street Lights", "Plate", "Helmet", "Boat", "Bench", "Bowl/Basin", "SUV", "Traffic Light",
             "Bicycle", "Barrel/bucket", "Van", "Drum", "Bus", "Wild Bird", "Motorcycle", "Truck", "Traffic cone",
             "Cymbal", "Lifesaver", "Towel", "Sailboat", "Awning", "Faucet", "Tent", "Horse",
@@ -63,6 +63,9 @@ class PerceptionsAnalyzer(Node):
             "Camel", "Formula1", "Crab", "Antelope", "Parrot", "Seal", "Butterfly", "Donkey", "Lion", "Urinal",
             "Dolphin", "Jellyfish", "Target", "Monkey", "Rabbit", "Yak", "Barbell", "Scallop", "Oyster", "Table Tennis",
             "Paddle", "Chainsaw", "Lobster"
+        ]]"""
+        self.video_ignored_classes = [x.lower() for x in [
+            "Lobster"
         ]]
 
     def videoAnalyzerCallback(self, msg):
@@ -95,7 +98,8 @@ class PerceptionsAnalyzer(Node):
                         
                         self.current_objects_pub.publish(ContextInput(
                             transcript=empty_Transcript,
-                            objects=self.currently_visible_objects
+                            objects=self.currently_visible_objects,
+                            revive_conversation=False
                         ))
 
             
@@ -119,7 +123,8 @@ class PerceptionsAnalyzer(Node):
 
                     self.current_objects_pub.publish(ContextInput(
                         transcript=empty_Transcript,
-                        objects=self.currently_visible_objects
+                        objects=self.currently_visible_objects,
+                        revive_conversation=False
                     ))
 
 

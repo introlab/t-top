@@ -105,15 +105,16 @@ class BaseChatAPI(ABC):
 
     def load_default_context(self):
         """Load default context"""
+        date = datetime.now()
         if self.language == "fr":
             self.add_to_history(
-                message="Vous êtes un robot assistant. Vous répondez toujours en français.",
+                message= "Vous êtes un robot assistant. Vous répondez toujours en français.",
                 role="system",
                 timestamp=datetime.now(),
             )
         else:
             self.add_to_history(
-                message="You are a robot assistant. You always answer in English.",
+                message= "You are a robot assistant. You always answer in English.",
                 role="system",
                 timestamp=datetime.now(),
             )
@@ -542,7 +543,9 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.add_to_history(
                 message=msg.transcript.text, role="user", timestamp=datetime.now()
             )
-
+            self._chat_api.add_to_history(
+                message= (self._format_date_msg()+ " " + self._perception_msg(msg)),role="system",timestamp=datetime.now()
+            )
             # Process the request
             self._processing = True
             self.get_logger().info("Processing...")
@@ -551,27 +554,11 @@ class ChatNode(rclpy.node.Node):
             self.get_logger().info("Processing done!")
             self.revive_counter = 0 
 
-        elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 and self.revive_counter < 3 :
+        elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 and self.revive_counter < 2 and msg.revive_conversation : 
             self.get_logger().info(f"Transcript received: {msg.objects}")
-
-            if self._language == "fr":
-                revive_msg = (
-                    "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
-                    "les objets dans ton champ de vision et le contexte de la conversation."
-                    " Voici la liste des objets : "
-                    f"{', '.join(msg.objects)}"
-                )
-            else: 
-                revive_msg = (
-                    "The conversation has stopped. Try to restart it by using the objects in your field of view "
-                    "and the context of the conversation. Here is the list of objects: "
-                    f"{', '.join(msg.objects)}"
-                )
-
             self._chat_api.add_to_history(
-                message=revive_msg, role="system", timestamp=datetime.now()
+                message=(self._revive_conversation_msg() + " " + self._perception_msg(msg)), role="system", timestamp=datetime.now()
             )
-
             # Process the request
             self._processing = True
             self.get_logger().info("Processing...")
@@ -601,6 +588,46 @@ class ChatNode(rclpy.node.Node):
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
+    
+    def _format_date_msg(self) -> str:
+        date = datetime.now()
+        if self._language == "fr":
+            message= ("La date de la journée est : "
+                        f"{date.strftime('%A')}, {date.strftime('%B')} {date.day} {date.strftime('%H:%M')}")
+        else:
+            message= ("The date of the day is : "
+                        f"{date.strftime('%A')}, {date.strftime('%B')} {date.day} {date.strftime('%H:%M')}")
+        return message
+    
+    def _perception_msg(self, msg) -> str:
+        if self._language == "fr":
+            perception_msg = (
+                "Tu as la capacité de perception et peux voir les objets dans ton environnement. "
+                "Utilise-les pour construire une réponse pertinente selon le contexte de la conversation. "
+                "Voici la liste des objets actuellement visibles : "
+                f"{', '.join(msg.objects)}"
+            )
+        else: 
+            perception_msg = (
+                "You have the ability to perceive and can see objects in your environment. "
+                "Use them to build a relevant response depending on the context of the conversation. "
+                "Here is the list of currently visible objects: "
+                f"{', '.join(msg.objects)}"
+            )
+        return perception_msg
+    
+    def _revive_conversation_msg(self) -> str:
+        if self._language == "fr":
+            revive_msg = (
+                "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
+                "les objets dans ton champ de vision et le contexte de la conversation."
+            )
+        else: 
+            revive_msg = (
+                "The conversation has stopped. Try to restart it by using the objects in your field of view "
+                "and the context of the conversation."
+            )
+        return revive_msg
 
     def _process_pending_messages(self):
         if not self._talking:

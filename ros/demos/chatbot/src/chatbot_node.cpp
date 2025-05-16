@@ -179,7 +179,7 @@ int startNode()
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
     desireSet->addDesire(make_unique<ChatDesire>());
-    //desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
+    desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
     //desireSet->addDesire(make_unique<TooCloseReactionDesire>());
     desireSet->addDesire(make_unique<FastVideoAnalyzer3dWithAnalyzedImageDesire>());
 

@@ -1,0 +1,11 @@
+---
+bool ok
+
+string city
+string region
+string country_code
+string country_name
+
+float64 temperature_celsius
+float64 wind_speed_kph
+
