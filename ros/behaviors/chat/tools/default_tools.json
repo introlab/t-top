@@ -36,5 +36,34 @@
             }
         },
         "strict": true
-    }
+    },
+    {
+        "type": "function",
+        "function": {
+          "name": "get_current_weather",
+          "description": "Get the current weather at the user's location",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_local_forecast",
+          "description": "Get the local forecast weather at the user's location for a specific day",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "relative_day": {
+                "type": "integer",
+                "description": "The day for which to get the forecast (0 = today, 1 = tomorrow, 2 = day after tomorrow, etc.)",
+                "default": 0
+              }
+            },
+            "required": []
+          }
+        }
+      }
 ]

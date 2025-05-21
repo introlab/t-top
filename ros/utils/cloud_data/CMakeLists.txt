@@ -33,6 +33,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 install(PROGRAMS
   scripts/cloud_data_node.py
   scripts/cloud_data_node_2.py
+  scripts/weather_tool_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

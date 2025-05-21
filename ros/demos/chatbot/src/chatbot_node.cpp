@@ -11,6 +11,10 @@
 #include <daemon_ros_client/msg/base_status.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 
+#include <cloud_data/srv/current_local_weather2.hpp>         // Weather service definition
+#include <cloud_data/srv/local_weather_forecast2.hpp>        
+
+
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <fmt/format.h>
@@ -152,6 +156,197 @@ int startNode()
         },
         rmw_qos_profile_services_default,
         callbackGroup);
+
+    rclcpp::Client<cloud_data::srv::CurrentLocalWeather2>::SharedPtr weather_client =
+    node->create_client<cloud_data::srv::CurrentLocalWeather2>("/cloud_data/current_local_weather");
+
+    auto service_get_weather = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/get_current_weather",
+        [node, weather_client](
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
+        {
+            RCLCPP_INFO(node->get_logger(), "Received get_current_weather request");
+    
+            // Check if weather service is available
+            if (!weather_client->wait_for_service(std::chrono::seconds(2))) {
+                RCLCPP_ERROR(node->get_logger(), "Weather service unavailable");
+                response->ok = false;
+                response->result = "{\"error\": \"Weather service unavailable\"}";
+                return;
+            }
+    
+            try {
+                auto req = std::make_shared<cloud_data::srv::CurrentLocalWeather2::Request>();
+                
+                // Use a promise/future pattern instead of spin_until_future_complete
+                std::promise<std::shared_ptr<cloud_data::srv::CurrentLocalWeather2::Response>> promise;
+                std::future<std::shared_ptr<cloud_data::srv::CurrentLocalWeather2::Response>> future = promise.get_future();
+                
+                auto callback = [&promise](rclcpp::Client<cloud_data::srv::CurrentLocalWeather2>::SharedFuture inner_future) {
+                    promise.set_value(inner_future.get());
+                };
+                
+                // Send the request with a callback
+                weather_client->async_send_request(req, callback);
+                
+                // Wait for the response with a timeout
+                auto status = future.wait_for(std::chrono::seconds(5));
+                
+                if (status != std::future_status::ready) {
+                    RCLCPP_ERROR(node->get_logger(), "Timeout waiting for weather response");
+                    response->ok = false;
+                    response->result = "{\"error\": \"Timeout\"}";
+                    return;
+                }
+                
+                auto res = future.get();
+                if (res && res->ok) {
+                    // Using nlohmann::json
+                    nlohmann::json payload = {
+                        {"city", res->city},
+                        {"region", res->region},
+                        {"country", res->country_name},
+                        {"temperature_celsius", res->temperature_celsius},
+                        {"wind_speed_kph", res->wind_speed_kph}
+                    };
+                    response->ok = true;
+                    response->result = payload.dump();
+                    RCLCPP_INFO(node->get_logger(), "Weather data sent successfully");
+                } else {
+                    RCLCPP_ERROR(node->get_logger(), "Weather service returned error");
+                    response->ok = false;
+                    response->result = "{\"error\": \"Failed to get weather\"}";
+                }
+            } catch (const std::exception& e) {
+                RCLCPP_ERROR(node->get_logger(), "Exception in weather service callback: %s", e.what());
+                response->ok = false;
+                response->result = "{\"error\": \"Internal error: " + std::string(e.what()) + "\"}";
+            } catch (...) {
+                RCLCPP_ERROR(node->get_logger(), "Unknown exception in weather service callback");
+                response->ok = false;
+                response->result = "{\"error\": \"Unknown internal error\"}";
+            }
+        },
+        rmw_qos_profile_services_default,
+        callbackGroup);
+    
+    rclcpp::Client<cloud_data::srv::LocalWeatherForecast2>::SharedPtr forecast_client =
+    node->create_client<cloud_data::srv::LocalWeatherForecast2>("/cloud_data/local_weather_forecast");
+    
+    auto service_get_forecast = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/get_local_forecast",
+        [node, forecast_client](
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
+        {
+            RCLCPP_INFO(node->get_logger(), "Received get_local_forecast request");
+    
+            // Default to today (relative_day = 0)
+            uint64_t relative_day = 0;
+            
+            // Try to access the arguments field - modify this part based on your actual request structure
+            try {
+                // Log the request structure to help debug
+                RCLCPP_INFO(node->get_logger(), "Examining request structure");
+                
+                // Check if there's a 'function_arguments' field or similar
+                // This is a placeholder - you need to find the correct field name
+                if (request->function_arguments.length() > 0) {
+                    nlohmann::json args = nlohmann::json::parse(request->function_arguments);
+                    if (args.contains("relative_day")) {
+                        relative_day = args["relative_day"].get<uint64_t>();
+                    }
+                }
+            } catch (const std::exception& e) {
+                RCLCPP_WARN(node->get_logger(), "Failed to parse arguments: %s", e.what());
+                // Continue with default value
+            }
+            
+            RCLCPP_INFO(node->get_logger(), "Processing forecast for relative day: %ld", relative_day);
+    
+            // Check if forecast service is available
+            if (!forecast_client->wait_for_service(std::chrono::seconds(2))) {
+                RCLCPP_ERROR(node->get_logger(), "Forecast service unavailable");
+                response->ok = false;
+                response->result = "{\"error\": \"Forecast service unavailable\"}";
+                return;
+            }
+    
+            try {
+                auto req = std::make_shared<cloud_data::srv::LocalWeatherForecast2::Request>();
+                req->relative_day = relative_day;
+                
+                // Use a promise/future pattern
+                std::promise<std::shared_ptr<cloud_data::srv::LocalWeatherForecast2::Response>> promise;
+                std::future<std::shared_ptr<cloud_data::srv::LocalWeatherForecast2::Response>> future = promise.get_future();
+                
+                auto callback = [&promise](rclcpp::Client<cloud_data::srv::LocalWeatherForecast2>::SharedFuture inner_future) {
+                    promise.set_value(inner_future.get());
+                };
+                
+                // Send the request with a callback
+                forecast_client->async_send_request(req, callback);
+                
+                // Wait for the response with a timeout
+                auto status = future.wait_for(std::chrono::seconds(5));
+                
+                if (status != std::future_status::ready) {
+                    RCLCPP_ERROR(node->get_logger(), "Timeout waiting for forecast response");
+                    response->ok = false;
+                    response->result = "{\"error\": \"Timeout\"}";
+                    return;
+                }
+                
+                auto res = future.get();
+                if (res && res->ok) {
+                    // Create a descriptive forecast day name
+                    std::string day_description;
+                    if (relative_day == 0) {
+                        day_description = "Today";
+                    } else if (relative_day == 1) {
+                        day_description = "Tomorrow";
+                    } else {
+                        day_description = "Day " + std::to_string(relative_day);
+                    }
+                    
+                    // Using nlohmann::json
+                    nlohmann::json payload = {
+                        {"day", day_description},
+                        {"city", res->city},
+                        {"region", res->region},
+                        {"country", res->country_name},
+                        {"temperature_day_celsius", res->temperature_day_celsius},
+                        {"temperature_night_celsius", res->temperature_night_celsius},
+                        {"feels_like_temperature_day_celsius", res->feals_like_temperature_day_celsius},
+                        {"feels_like_temperature_night_celsius", res->feals_like_temperature_night_celsius},
+                        {"precipitation_sum", res->precipitation_sum},
+                        {"precipitation_probability_percent", res->precipitation_probability_percent},
+                        {"wind_speed_kph", res->wind_speed_kph},
+                        {"sunrise", res->sunrise},
+                        {"sunset", res->sunset}
+                    };
+                    response->ok = true;
+                    response->result = payload.dump();
+                    RCLCPP_INFO(node->get_logger(), "Forecast data sent successfully for day %ld", relative_day);
+                } else {
+                    RCLCPP_ERROR(node->get_logger(), "Forecast service returned error");
+                    response->ok = false;
+                    response->result = "{\"error\": \"Failed to get forecast\"}";
+                }
+            } catch (const std::exception& e) {
+                RCLCPP_ERROR(node->get_logger(), "Exception in forecast service callback: %s", e.what());
+                response->ok = false;
+                response->result = "{\"error\": \"Internal error: " + std::string(e.what()) + "\"}";
+            } catch (...) {
+                RCLCPP_ERROR(node->get_logger(), "Unknown exception in forecast service callback");
+                response->ok = false;
+                response->result = "{\"error\": \"Unknown internal error\"}";
+            }
+        },
+        rmw_qos_profile_services_default,
+        callbackGroup);
+    
 
     rclcpp::SubscriptionOptions options;
     options.callback_group = callbackGroup;

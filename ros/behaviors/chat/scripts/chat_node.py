@@ -10,6 +10,7 @@ from typing import List, Callable
 from functools import reduce
 
 import openai
+
 import rclpy
 import rclpy.callback_groups
 import rclpy.executors
@@ -20,6 +21,7 @@ from behavior_msgs.msg import Done, Text
 from behavior_srvs.srv import ChatToolsFunctionCall
 from perception_msgs.msg import Transcript, ContextInput
 import hbba_lite
+from openai.types.chat.chat_completion_chunk import ChoiceDeltaToolCall
 
 
 class ModelNotFoundError(Exception):
@@ -84,8 +86,8 @@ class BaseChatAPI(ABC):
         self.history.append(
             {
                 "role": "tool",
-                "tool_call_id": tool_call["id"],
-                "name": tool_call["function"]["name"],
+                "tool_call_id": tool_call.id,
+                "name": tool_call.function.name,
                 "content": json.dumps(result),
                 "datetime": str(timestamp),
             }
@@ -259,11 +261,12 @@ class ChatGPTAPI(BaseChatAPI):
 
             # Process final tools calls
             for tool_call in final_tool_calls.values():
+                tool_call: ChoiceDeltaToolCall = tool_call
                 if tool_call.type == "function":
                     # Get Function information
-                    id = tool_call.get("id", None)
-                    function_name = tool_call["function"].get("name", None)
-                    function_arguments = tool_call["function"].get("arguments", None)
+                    id = tool_call.id
+                    function_name = tool_call.function.name
+                    function_arguments = tool_call.function.arguments
                     # Add to History
                     self.add_tool_calls_to_history(
                         [tool_call], timestamp=datetime.now()

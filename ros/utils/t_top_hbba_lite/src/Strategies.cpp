@@ -473,11 +473,9 @@ void ChatStrategy::vadSubscriberCallback(const behavior_msgs::msg::Done::SharedP
 
 void ChatStrategy::vadTimeoutCallback()
 {
-    RCLCPP_WARN(m_node->get_logger(), "Timeout");
     //if (m_vadFilter.isFilteringAllMessages()) {
     if (isTalking){
     m_lastVadTime = std::chrono::steady_clock::now();
-        RCLCPP_WARN(m_node->get_logger(), "Timeout is reset");
     }
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastVadTime).count();
