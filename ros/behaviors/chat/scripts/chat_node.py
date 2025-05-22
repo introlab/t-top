@@ -110,7 +110,7 @@ class BaseChatAPI(ABC):
         date = datetime.now()
         if self.language == "fr":
             self.add_to_history(
-                message= "Vous êtes un robot assistant. Vous répondez toujours en français.",
+                message= "Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerai à l'oral, veuillez répondre avec une ponctuation adéquate.",
                 role="system",
                 timestamp=datetime.now(),
             )
@@ -546,9 +546,6 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.add_to_history(
                 message=msg.transcript.text, role="user", timestamp=datetime.now()
             )
-            self._chat_api.add_to_history(
-                message= (self._format_date_msg()+ " " + self._perception_msg(msg)),role="system",timestamp=datetime.now()
-            )
             # Process the request
             self._processing = True
             self.get_logger().info("Processing...")
@@ -560,7 +557,7 @@ class ChatNode(rclpy.node.Node):
         elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 and self.revive_counter < 2 and msg.revive_conversation : 
             self.get_logger().info(f"Transcript received: {msg.objects}")
             self._chat_api.add_to_history(
-                message=(self._revive_conversation_msg() + " " + self._perception_msg(msg)), role="system", timestamp=datetime.now()
+                message=self._revive_conversation_msg(), role="system", timestamp=datetime.now()
             )
             # Process the request
             self._processing = True

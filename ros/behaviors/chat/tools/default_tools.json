@@ -65,5 +65,27 @@
             "required": []
           }
         }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_perceive_objects",
+          "description": "Get the perceived objects in the environment",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_date_and_time",
+          "description": "Get the date and time",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
       }
 ]

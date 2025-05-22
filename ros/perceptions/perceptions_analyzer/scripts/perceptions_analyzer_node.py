@@ -10,6 +10,7 @@ from rclpy.node import Node
 from std_msgs.msg import String, Header
 from perceptions_analyzer.msg import IdentifiedPerson, DetectedObjects, DetectedAudio
 from perception_msgs.msg import AudioAnalysis, VideoAnalysis, PersonNames, ContextInput, Transcript
+from perceptions_analyzer.srv import PerceiveObjects
 
 
 
@@ -48,6 +49,10 @@ class PerceptionsAnalyzer(Node):
         self.create_subscription(VideoAnalysis, '/camera_3d/video_analysis', self.videoAnalyzerCallback, 10)
         self.create_subscription(PersonNames, '/person_names', self.personIdentificationCallback, 10)
         self.create_subscription(AudioAnalysis, 'audio_analysis', self.audioAnalyzerCallback, 10)
+
+        self._current_local_weather_service = self.create_service(PerceiveObjects,
+                                                                  'perception/detected_objects',
+                                                                  self._handle_detected_objects)
 
         """self.video_ignored_classes = [x.lower() for x in [
             "Person", "Car", "Street Lights", "Plate", "Helmet", "Boat", "Bench", "Bowl/Basin", "SUV", "Traffic Light",
@@ -203,6 +208,18 @@ class PerceptionsAnalyzer(Node):
                     is_active=False,
                     formatted_detection_time=formatted_time
                 ))
+
+    def _handle_detected_objects(self, request, response):
+            self.get_logger().info(f'Fetching current_objects')
+            try:
+                response.ok = True
+                response.objects = self.currently_visible_objects
+
+            except Exception as e:
+                self.get_logger().error(f'An error occured while retrieving the perceived objects: {e}')
+                response.ok = False
+
+            return response
 
 
 def main(args=None):

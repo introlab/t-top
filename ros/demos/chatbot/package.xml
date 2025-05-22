@@ -17,6 +17,7 @@
   <depend>behavior_srvs</depend>
   <depend>nlohmann-json-dev</depend>
   <depend>cloud_data</depend>
+  <depend>perceptions_analyzer</depend>
 
   <depend>fmt</depend>
 

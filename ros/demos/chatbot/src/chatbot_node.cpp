@@ -12,13 +12,16 @@
 #include <std_msgs/msg/u_int8.hpp>
 
 #include <cloud_data/srv/current_local_weather2.hpp>         // Weather service definition
-#include <cloud_data/srv/local_weather_forecast2.hpp>        
+#include <cloud_data/srv/local_weather_forecast2.hpp>   
+#include <perceptions_analyzer/srv/perceive_objects.hpp>   
+
 
 
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <fmt/format.h>
 #include <algorithm>
+#include <ctime>
 
 using json = nlohmann::json;
 using namespace std;
@@ -230,7 +233,7 @@ int startNode()
         },
         rmw_qos_profile_services_default,
         callbackGroup);
-    
+
     rclcpp::Client<cloud_data::srv::LocalWeatherForecast2>::SharedPtr forecast_client =
     node->create_client<cloud_data::srv::LocalWeatherForecast2>("/cloud_data/local_weather_forecast");
     
@@ -346,6 +349,113 @@ int startNode()
         },
         rmw_qos_profile_services_default,
         callbackGroup);
+    
+
+    rclcpp::Client<perceptions_analyzer::srv::PerceiveObjects>::SharedPtr perception_client =
+    node->create_client<perceptions_analyzer::srv::PerceiveObjects>("/perception/detected_objects");
+
+    auto service_get_perceive_objects = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/get_perceive_objects",
+        [node, perception_client](
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
+        {
+            RCLCPP_INFO(node->get_logger(), "Received get_perceive_objects request");
+    
+            // Check if weather service is available
+            if (!perception_client->wait_for_service(std::chrono::seconds(2))) {
+                RCLCPP_ERROR(node->get_logger(), "Perceive objects service unavailable");
+                response->ok = false;
+                response->result = "{\"error\": \"Perceive objects service unavailable\"}";
+                return;
+            }
+    
+            try {
+                auto req = std::make_shared<perceptions_analyzer::srv::PerceiveObjects::Request>();
+                
+                // Use a promise/future pattern instead of spin_until_future_complete
+                std::promise<std::shared_ptr<perceptions_analyzer::srv::PerceiveObjects::Response>> promise;
+                std::future<std::shared_ptr<perceptions_analyzer::srv::PerceiveObjects::Response>> future = promise.get_future();
+                
+                auto callback = [&promise](rclcpp::Client<perceptions_analyzer::srv::PerceiveObjects>::SharedFuture inner_future) {
+                    promise.set_value(inner_future.get());
+                };
+                
+                // Send the request with a callback
+                perception_client->async_send_request(req, callback);
+                
+                // Wait for the response with a timeout
+                auto status = future.wait_for(std::chrono::seconds(5));
+                
+                if (status != std::future_status::ready) {
+                    RCLCPP_ERROR(node->get_logger(), "Timeout waiting for erceive objects response");
+                    response->ok = false;
+                    response->result = "{\"error\": \"Timeout\"}";
+                    return;
+                }
+                
+                auto res = future.get();
+                if (res && res->ok) {
+                    // Using nlohmann::json
+                    nlohmann::json payload = {
+                        {"objects", res->objects}
+                    };
+                    response->ok = true;
+                    response->result = payload.dump();
+                    RCLCPP_INFO(node->get_logger(), "Perceive objects data sent successfully");
+                } else {
+                    RCLCPP_ERROR(node->get_logger(), "Perceive objects service returned error");
+                    response->ok = false;
+                    response->result = "{\"error\": \"Failed to get weather\"}";
+                }
+            } catch (const std::exception& e) {
+                RCLCPP_ERROR(node->get_logger(), "Exception in perceive objects service callback: %s", e.what());
+                response->ok = false;
+                response->result = "{\"error\": \"Internal error: " + std::string(e.what()) + "\"}";
+            } catch (...) {
+                RCLCPP_ERROR(node->get_logger(), "Unknown exception in perceive objects service callback");
+                response->ok = false;
+                response->result = "{\"error\": \"Unknown internal error\"}";
+            }
+        },
+        rmw_qos_profile_services_default,
+        callbackGroup);
+
+    auto service_get_date = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/get_date_and_time",
+        [node ](
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
+        {
+            RCLCPP_INFO(rclcpp::get_logger(NODE_NAME), "Received service get_date_and_time request");
+            try
+            {
+                time_t timestamp = std::time(nullptr);
+                nlohmann::json payload = {
+                    {"date and time", std::ctime(&timestamp)},
+                };
+                response->ok = true;
+                response->result = payload.dump();
+                RCLCPP_INFO(node->get_logger(), "Date data sent successfully");
+
+                
+            }
+            catch (const json::parse_error& e)
+            {
+                RCLCPP_ERROR(node->get_logger(), "JSON parse error: %s", e.what());
+                response->ok = false;
+                response->result = fmt::format("{{\"status\": \"Invalid JSON format: {0}\"}}", e.what());
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_ERROR(node->get_logger(), "Exception: %s", e.what());
+                response->ok = false;
+                response->result = fmt::format("{{\"status\": \"Exception: {0}\"}}", e.what());
+            }
+        },
+        rmw_qos_profile_services_default,
+        callbackGroup);
+
     
 
     rclcpp::SubscriptionOptions options;

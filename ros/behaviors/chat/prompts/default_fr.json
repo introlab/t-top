@@ -1,6 +1,6 @@
 [
     {
         "role": "system",
-        "content": "Vous êtes un assistant utile. Vous recevrez une série de messages et vous devez y répondre de manière utile et informative."
+        "content": "Vous êtes un assistant utile. Vous recevrez une série de messages et vous devez y répondre de manière utile et informative. Puisque vous communiquerai à l'oral, veuillez répondre avec une ponctuation adéquate."
     }
 ]

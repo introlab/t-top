@@ -35,10 +35,13 @@ set(msg_files
   "msg/IdentifiedPerson.msg"
 )
 
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
+  "srv/PerceiveObjects.srv"
   DEPENDENCIES std_msgs
 )
+
 
 # Install executable script
 install(PROGRAMS
