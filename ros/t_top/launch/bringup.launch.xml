@@ -117,7 +117,7 @@
         <arg name="too_close_reaction_behavior_delay" value="$(eval '$(var platform_delay) + 0.0')"/>
     </include>
 
-    <node pkg="cloud_data" exec="cloud_data_node.py" name="cloud_data_node">
+    <node pkg="cloud_data" exec="cloud_data_node_2.py" name="cloud_data_node">
         <param name="language" value="$(var language)"/>
         <param name="timeout_s" value="20.0"/>
     </node>
