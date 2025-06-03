@@ -11,8 +11,8 @@
 #include <daemon_ros_client/msg/base_status.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 
-#include <cloud_data/srv/current_local_weather2.hpp>         // Weather service definition
-#include <cloud_data/srv/local_weather_forecast2.hpp>   
+#include <cloud_data/srv/current_local_weather_open_meteo.hpp>         // Weather service definition
+#include <cloud_data/srv/local_weather_forecast_open_meteo.hpp>   
 #include <perceptions_analyzer/srv/perceive_objects.hpp>   
 
 
@@ -160,13 +160,13 @@ int startNode()
         rmw_qos_profile_services_default,
         callbackGroup);
 
-    rclcpp::Client<cloud_data::srv::CurrentLocalWeather2>::SharedPtr weather_client =
-    node->create_client<cloud_data::srv::CurrentLocalWeather2>("/cloud_data/current_local_weather");
+    rclcpp::Client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>::SharedPtr weather_client =
+    node->create_client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>("/cloud_data/current_local_weather");
 
     auto service_get_weather = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_current_weather",
         [node, weather_client](
-            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request>,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
             RCLCPP_INFO(node->get_logger(), "Received get_current_weather request");
@@ -180,13 +180,13 @@ int startNode()
             }
     
             try {
-                auto req = std::make_shared<cloud_data::srv::CurrentLocalWeather2::Request>();
+                auto req = std::make_shared<cloud_data::srv::CurrentLocalWeatherOpenMeteo::Request>();
                 
                 // Use a promise/future pattern instead of spin_until_future_complete
-                std::promise<std::shared_ptr<cloud_data::srv::CurrentLocalWeather2::Response>> promise;
-                std::future<std::shared_ptr<cloud_data::srv::CurrentLocalWeather2::Response>> future = promise.get_future();
+                std::promise<std::shared_ptr<cloud_data::srv::CurrentLocalWeatherOpenMeteo::Response>> promise;
+                std::future<std::shared_ptr<cloud_data::srv::CurrentLocalWeatherOpenMeteo::Response>> future = promise.get_future();
                 
-                auto callback = [&promise](rclcpp::Client<cloud_data::srv::CurrentLocalWeather2>::SharedFuture inner_future) {
+                auto callback = [&promise](rclcpp::Client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>::SharedFuture inner_future) {
                     promise.set_value(inner_future.get());
                 };
                 
@@ -234,8 +234,8 @@ int startNode()
         rmw_qos_profile_services_default,
         callbackGroup);
 
-    rclcpp::Client<cloud_data::srv::LocalWeatherForecast2>::SharedPtr forecast_client =
-    node->create_client<cloud_data::srv::LocalWeatherForecast2>("/cloud_data/local_weather_forecast");
+    rclcpp::Client<cloud_data::srv::LocalWeatherForecastOpenMeteo>::SharedPtr forecast_client =
+    node->create_client<cloud_data::srv::LocalWeatherForecastOpenMeteo>("/cloud_data/local_weather_forecast");
     
     auto service_get_forecast = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_local_forecast",
@@ -277,14 +277,14 @@ int startNode()
             }
     
             try {
-                auto req = std::make_shared<cloud_data::srv::LocalWeatherForecast2::Request>();
+                auto req = std::make_shared<cloud_data::srv::LocalWeatherForecastOpenMeteo::Request>();
                 req->relative_day = relative_day;
                 
                 // Use a promise/future pattern
-                std::promise<std::shared_ptr<cloud_data::srv::LocalWeatherForecast2::Response>> promise;
-                std::future<std::shared_ptr<cloud_data::srv::LocalWeatherForecast2::Response>> future = promise.get_future();
+                std::promise<std::shared_ptr<cloud_data::srv::LocalWeatherForecastOpenMeteo::Response>> promise;
+                std::future<std::shared_ptr<cloud_data::srv::LocalWeatherForecastOpenMeteo::Response>> future = promise.get_future();
                 
-                auto callback = [&promise](rclcpp::Client<cloud_data::srv::LocalWeatherForecast2>::SharedFuture inner_future) {
+                auto callback = [&promise](rclcpp::Client<cloud_data::srv::LocalWeatherForecastOpenMeteo>::SharedFuture inner_future) {
                     promise.set_value(inner_future.get());
                 };
                 
@@ -357,7 +357,7 @@ int startNode()
     auto service_get_perceive_objects = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_perceive_objects",
         [node, perception_client](
-            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request>,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
             RCLCPP_INFO(node->get_logger(), "Received get_perceive_objects request");
@@ -424,7 +424,7 @@ int startNode()
     auto service_get_date = node->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_date_and_time",
         [node ](
-            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
+            const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request>,
             const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
         {
             RCLCPP_INFO(rclcpp::get_logger(NODE_NAME), "Received service get_date_and_time request");
