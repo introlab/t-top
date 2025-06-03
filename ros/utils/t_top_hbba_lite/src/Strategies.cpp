@@ -273,7 +273,7 @@ ChatStrategy::ChatStrategy(
            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"chat/transcript/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+           {"chat/context_input/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
@@ -283,8 +283,8 @@ ChatStrategy::ChatStrategy(
         1,
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
 
-    m_transcriptPublisher =
-        m_node->create_publisher<perception_msgs::msg::ContextInput>("chat/transcript", rclcpp::QoS(1).transient_local());
+    m_contextInputPublisher =
+        m_node->create_publisher<perception_msgs::msg::ContextInput>("chat/context_input", rclcpp::QoS(1).transient_local());
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -336,7 +336,7 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     enableFilter("speech_to_text/filter_state");
 
     // Disable chat & talking
-    disableFilter("chat/transcript/filter_state");
+    disableFilter("chat/context_input/filter_state");
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
@@ -377,7 +377,7 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         disableFilter("speech_to_text/filter_state");
 
         // Start chatting
-        enableFilter("chat/transcript/filter_state");
+        enableFilter("chat/context_input/filter_state");
 
         // Start talking
         enableFilter("talk/filter_state");
@@ -388,7 +388,7 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         message.transcript = *msg;
         message.objects = currentObjects;
         message.revive_conversation = false;
-        m_transcriptPublisher->publish(message);
+        m_contextInputPublisher->publish(message);
         isTalking = true;
     }
 }
@@ -398,7 +398,7 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
     if (msg->ok)
     {
         // Stop chatting
-        disableFilter("chat/transcript/filter_state");
+        disableFilter("chat/context_input/filter_state");
 
         // Stop talking
         disableFilter("talk/filter_state");
@@ -467,7 +467,7 @@ void ChatStrategy::vadTimeoutCallback()
         disableFilter("speech_to_text/filter_state");
 
         // Start chatting
-        enableFilter("chat/transcript/filter_state");
+        enableFilter("chat/context_input/filter_state");
 
         // Start talking
         enableFilter("talk/filter_state");
@@ -478,7 +478,7 @@ void ChatStrategy::vadTimeoutCallback()
         message.transcript = perception_msgs::msg::Transcript();
         message.objects = currentObjects; 
         message.revive_conversation = true;
-        m_transcriptPublisher->publish(message);
+        m_contextInputPublisher->publish(message);
         isTalking = true;
     }
 }
