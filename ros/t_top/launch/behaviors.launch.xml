@@ -58,7 +58,6 @@
     </include>
 
     <!-- Sound Following -->
-
     <include file="$(find-pkg-share t_top)/launch/behaviors/sound_following.launch.xml">
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="sound_following_behavior_delay" value="$(var sound_following_behavior_delay)"/>

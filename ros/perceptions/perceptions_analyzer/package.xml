@@ -4,29 +4,23 @@
   <version>0.0.0</version>
   <description>The perceptions_analyzer package</description>
 
-  <maintainer email="mariam.fdil@usherbrooke.ca">mariam</maintainer>
+  <maintainer email="dominic.letourneau@usherbrooke.ca">Dominic Létourneau</maintainer>
   <license>GPL-3.0 license</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>rosidl_default_generators</build_depend>
-  <build_depend>rclcpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>video_analyzer</build_depend>
-  <build_depend>audio_analyzer</build_depend>
-  <build_depend>person_identification</build_depend>
+  
+  <depend>rclpy</depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>video_analyzer</depend>
+  <depend>audio_analyzer</depend>
+  <depend>person_identification</depend>
+  <depend>perception_msgs</depend>
 
-  <exec_depend>Python3</exec_depend>
-  <exec_depend>rclpy</exec_depend>
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>video_analyzer</exec_depend>
-  <exec_depend>audio_analyzer</exec_depend>
-  <exec_depend>person_identification</exec_depend>
+
   <exec_depend>rosidl_default_runtime</exec_depend>
-  <exec_depend>perception_msgs</exec_depend>
-
-
   <member_of_group>rosidl_interface_packages</member_of_group>
 
   <export>

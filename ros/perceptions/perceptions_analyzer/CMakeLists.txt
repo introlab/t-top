@@ -35,24 +35,15 @@ set(msg_files
   "msg/IdentifiedPerson.msg"
 )
 
-
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   "srv/PerceiveObjects.srv"
   DEPENDENCIES std_msgs
 )
 
-
-# Install executable script
 install(PROGRAMS
-  scripts/perceptions_analyzer_node.py
+  src/perceptions_analyzer_node.py
   DESTINATION lib/${PROJECT_NAME}
-)
-
-# Install Python support files
-install(DIRECTORY src/
-  DESTINATION lib/${PROJECT_NAME}
-  FILES_MATCHING PATTERN "*.py"
 )
 
 ament_package()

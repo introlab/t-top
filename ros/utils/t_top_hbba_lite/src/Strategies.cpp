@@ -277,7 +277,6 @@ ChatStrategy::ChatStrategy(
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
-      //m_vadFilter(m_node, "vad/filter_state")
 {
     m_transcriptSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
@@ -318,11 +317,6 @@ ChatStrategy::ChatStrategy(
         "perception/current_objects",
         1,
         [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
-    
-    m_vadSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
-        "vad",
-        1,
-        [this](const behavior_msgs::msg::Done::SharedPtr msg) { vadSubscriberCallback(msg); });
 
     m_vadTimeoutTimer = m_node->create_wall_timer(std::chrono::seconds(5),
         std::bind(&ChatStrategy::vadTimeoutCallback, this));
@@ -392,13 +386,12 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         //sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = *msg;
-        message.objects = current_objects;
+        message.objects = currentObjects;
         message.revive_conversation = false;
         m_transcriptPublisher->publish(message);
         isTalking = true;
     }
 }
-
 
 void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
@@ -419,14 +412,12 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 
         isTalking = false;
         m_lastVadTime = std::chrono::steady_clock::now();
-
     }
 }
 
 void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     static int counter = 0;
-
     if (msg->ok)
     {
         // Random head position ?
@@ -459,23 +450,13 @@ void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done:
 
 void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg)
 {
-    current_objects = msg->objects;
-    RCLCPP_WARN(m_node->get_logger(), "Objects received");
-
-}
-
-void ChatStrategy::vadSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
-{
-    RCLCPP_WARN(m_node->get_logger(), "[VAD] reset");
-    m_lastVadTime = std::chrono::steady_clock::now();
- 
+    currentObjects = msg->objects;
 }
 
 void ChatStrategy::vadTimeoutCallback()
 {
-    //if (m_vadFilter.isFilteringAllMessages()) {
     if (isTalking){
-    m_lastVadTime = std::chrono::steady_clock::now();
+        m_lastVadTime = std::chrono::steady_clock::now();
     }
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastVadTime).count();
@@ -495,7 +476,7 @@ void ChatStrategy::vadTimeoutCallback()
         //sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = perception_msgs::msg::Transcript();
-        message.objects = current_objects; 
+        message.objects = currentObjects; 
         message.revive_conversation = true;
         m_transcriptPublisher->publish(message);
         isTalking = true;

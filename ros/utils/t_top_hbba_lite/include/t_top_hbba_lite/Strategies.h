@@ -6,11 +6,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
 
-#include <hbba_lite/core/Strategy.h>
-
 #include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/empty.hpp>
-
 
 #include <behavior_msgs/msg/led_animation.hpp>
 #include <behavior_msgs/msg/text.hpp>
@@ -18,6 +15,7 @@
 #include <behavior_msgs/msg/done.hpp>
 #include <behavior_msgs/msg/sound_file.hpp>
 
+#include <hbba_lite/core/Strategy.h>
 #include <hbba_lite/filters/FilterState.h>
 #include <optional>
 
@@ -132,7 +130,6 @@ protected:
 
 private:
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
-    
 };
 
 class GestureStrategy : public Strategy<GestureDesire>
@@ -196,12 +193,10 @@ class ChatStrategy : public Strategy<ChatDesire>
     rclcpp::Publisher<perception_msgs::msg::ContextInput>::SharedPtr m_transcriptPublisher;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
-    rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_vadSubscriber;
     rclcpp::Subscription<perception_msgs::msg::ContextInput>::SharedPtr m_perceptionSubscriberCallback;
 
     rclcpp::TimerBase::SharedPtr m_vadTimeoutTimer;
     std::chrono::steady_clock::time_point m_lastVadTime;
-    //OnOffHbbaFilterState m_vadFilter;
     bool isTalking = true;
 
     // LEDS
@@ -242,46 +237,59 @@ private:
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
-    void vadSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg);
     void vadTimeoutCallback();
-
 
     void sendListeningLedAnimation();
     void sendTalkingLedAnimation();
     void sendGesture(const std::string& gesture);
 
-    std::vector<std::string> current_objects;
+    std::vector<std::string> currentObjects;
 };
 
 
-std::unique_ptr<BaseStrategy>
-    createCamera3dRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createCamera2dWideRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
-std::unique_ptr<BaseStrategy>
-    createRobotNameDetectorStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createRobotNameDetectorWithLedStatusDesireStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createSlowVideoAnalyzer3dStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createFastVideoAnalyzer3dStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createFastVideoAnalyzer3dWithAnalyzedImageStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createSlowVideoAnalyzer2dWideStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createFastVideoAnalyzer2dWideStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createCamera2dWideRecordingStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createRobotNameDetectorStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createRobotNameDetectorWithLedStatusDesireStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSlowVideoAnalyzer3dStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createFastVideoAnalyzer3dStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createFastVideoAnalyzer3dWithAnalyzedImageStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSlowVideoAnalyzer2dWideStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideWithAnalyzedImageStrategy(
     std::shared_ptr<FilterPool> filterPool,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createVadStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
-std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(
+    std::shared_ptr<FilterPool> filterPool,
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createVadStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createExploreStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<rclcpp::Node> node,
@@ -295,16 +303,19 @@ std::unique_ptr<BaseStrategy> createLedAnimationStrategy(
     std::shared_ptr<DesireSet> desireSet,
     std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createSoundFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createNearestFaceFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSoundFollowingStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createNearestFaceFollowingStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createSpecificFaceFollowingStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy>
-    createSoundObjectPersonFollowingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createSoundObjectPersonFollowingStrategy(
+        std::shared_ptr<FilterPool> filterPool, 
+        uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTalkStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
@@ -315,18 +326,23 @@ std::unique_ptr<BaseStrategy> createGestureStrategy(
     std::shared_ptr<DesireSet> desireSet,
     std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createDanceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createDanceStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createPlaySoundStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
     std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-
-std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
-std::unique_ptr<BaseStrategy>createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
+std::unique_ptr<BaseStrategy> createTelepresenceStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createTeleoperationStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createTooCloseReactionStrategy(
+    std::shared_ptr<FilterPool> filterPool, 
+    uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createChatStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
