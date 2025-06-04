@@ -7,4 +7,11 @@ string country_code
 string country_name
 
 float64 temperature_celsius
+float64 feels_like_temperature_celsius
+float64 clouds_cover
 float64 wind_speed_kph
+float64 precipitation
+float64 snowfall
+float64 precipitation_probability_percent
+float64 rain
+bool is_day
