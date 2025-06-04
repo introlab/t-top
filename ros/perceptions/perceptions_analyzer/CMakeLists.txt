@@ -46,4 +46,9 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+install(DIRECTORY
+  classes
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 ament_package()
