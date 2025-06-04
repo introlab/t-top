@@ -1,6 +1,6 @@
 [
     {
         "role": "system",
-        "content": "You are a helpful assistant. You will be given a series of messages and you should respond to them in a helpful and informative manner."
+        "content": "You are a helpful assistant. You will be given a series of messages and you should respond to them in a helpful and informative manner. Since you will be communicating orally, please respond with proper punctuation."
     }
 ]

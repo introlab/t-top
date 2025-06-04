@@ -273,7 +273,8 @@ ChatStrategy::ChatStrategy(
            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"chat/context_input/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+           {"chat/context_input/filter_state",
+            FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
@@ -283,8 +284,9 @@ ChatStrategy::ChatStrategy(
         1,
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
 
-    m_contextInputPublisher =
-        m_node->create_publisher<perception_msgs::msg::ContextInput>("chat/context_input", rclcpp::QoS(1).transient_local());
+    m_contextInputPublisher = m_node->create_publisher<perception_msgs::msg::ContextInput>(
+        "chat/context_input",
+        rclcpp::QoS(1).transient_local());
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -312,14 +314,14 @@ ChatStrategy::ChatStrategy(
         "gesture/done",
         1,
         [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
-    
+
     m_perceptionSubscriberCallback = m_node->create_subscription<perception_msgs::msg::ContextInput>(
         "perception/current_objects",
         1,
         [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
 
-    m_vadTimeoutTimer = m_node->create_wall_timer(std::chrono::seconds(5),
-        std::bind(&ChatStrategy::vadTimeoutCallback, this));
+    m_vadTimeoutTimer =
+        m_node->create_wall_timer(std::chrono::seconds(5), std::bind(&ChatStrategy::vadTimeoutCallback, this));
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -383,7 +385,7 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
-        //sendGesture("thinking");
+        // sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = *msg;
         message.objects = currentObjects;
@@ -423,7 +425,7 @@ void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
         // Random head position ?
         if (counter++ % 2 == 0)
         {
-            //sendGesture("thinking");
+            // sendGesture("thinking");
         }
         else
         {
@@ -455,12 +457,14 @@ void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::Cont
 
 void ChatStrategy::vadTimeoutCallback()
 {
-    if (isTalking){
+    if (isTalking)
+    {
         m_lastVadTime = std::chrono::steady_clock::now();
     }
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastVadTime).count();
-    if (elapsed > 30) {
+    if (elapsed > 30)
+    {
         RCLCPP_WARN(m_node->get_logger(), "Timeout: no activity for 30 seconds.");
         // Listening done
         disableFilter("vad/filter_state");
@@ -473,10 +477,10 @@ void ChatStrategy::vadTimeoutCallback()
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
-        //sendGesture("thinking");
+        // sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = perception_msgs::msg::Transcript();
-        message.objects = currentObjects; 
+        message.objects = currentObjects;
         message.revive_conversation = true;
         m_contextInputPublisher->publish(message);
         isTalking = true;

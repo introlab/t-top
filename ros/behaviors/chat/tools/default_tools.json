@@ -1,91 +1,95 @@
 [
-    {
-        "type": "function",
-        "function": {
-            "name": "volume_up",
-            "description": "Increase the volume",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "amount": {
-                        "type": "integer",
-                        "description": "Amount to increase the volume by"
-                    }
-                },
-                "required": ["amount"],
-                "additionalProperties": false
-            }
+  {
+    "type": "function",
+    "function": {
+      "name": "volume_up",
+      "description": "Increase the volume",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "Amount to increase the volume by"
+          }
         },
-        "strict": true
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "volume_down",
-            "description": "Decrease the volume",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                     "amount": {
-                        "type": "integer",
-                        "description": "Amount to decrease the volume by"
-                    }
-                },
-                "required": ["amount"],
-                "additionalProperties": false
-            }
-        },
-        "strict": true
-    },
-    {
-        "type": "function",
-        "function": {
-          "name": "get_current_weather",
-          "description": "Get the current weather at the user's location",
-          "parameters": {
-            "type": "object",
-            "properties": {}
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "get_local_forecast",
-          "description": "Get the local forecast weather at the user's location for a specific day",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "relative_day": {
-                "type": "integer",
-                "description": "The day for which to get the forecast (0 = today, 1 = tomorrow, 2 = day after tomorrow, etc.)",
-                "default": 0
-              }
-            },
-            "required": []
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "get_perceive_objects",
-          "description": "Get the perceived objects in the environment",
-          "parameters": {
-            "type": "object",
-            "properties": {}
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "get_date_and_time",
-          "description": "Get the date and time",
-          "parameters": {
-            "type": "object",
-            "properties": {}
-          }
-        }
+        "required": [
+          "amount"
+        ],
+        "additionalProperties": false
       }
+    },
+    "strict": true
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "volume_down",
+      "description": "Decrease the volume",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "Amount to decrease the volume by"
+          }
+        },
+        "required": [
+          "amount"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "strict": true
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_current_weather",
+      "description": "Get the current weather at the user's location",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_local_forecast",
+      "description": "Get the local forecast weather at the user's location for a specific day",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "relative_day": {
+            "type": "integer",
+            "description": "The day for which to get the forecast (0 = day before yesterday, 1 = yesterday, 2 = today, 3 = tomorrow, until relative day 9.)",
+            "default": 0
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_perceive_objects",
+      "description": "Get the perceived objects in the environment",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_date_and_time",
+      "description": "Get the date and time",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
 ]
