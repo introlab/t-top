@@ -367,7 +367,6 @@ class OpenMeteoCloudDataNode(rclpy.node.Node):
         response = requests.get(
             OPEN_METEO_API_URL, params=params, timeout=self._timeout
         )
-        print(response.text)
         return json.loads(response.text)
 
     def run(self):
