@@ -32,6 +32,25 @@ set(srcs
   src/chatbot_node.cpp
 )
 
+include_directories(
+  include
+)
+
+add_library(chatbot_tools_lib
+  src/tools/chatbot_tools.cpp
+)
+
+ament_target_dependencies(chatbot_tools_lib
+  rclcpp
+  behavior_srvs
+  behavior_msgs
+  perception_msgs
+  cloud_data
+  perceptions_analyzer
+  nlohmann_json
+  fmt
+)
+
 add_executable(${PROJECT_NAME}_node ${srcs})
 
 ament_target_dependencies(${PROJECT_NAME}_node
@@ -42,17 +61,22 @@ ament_target_dependencies(${PROJECT_NAME}_node
   behavior_msgs
   cloud_data
   perceptions_analyzer
+  nlohmann_json
+  fmt
 )
 
-install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME}_node chatbot_tools_lib DESTINATION lib/${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}_node
+  chatbot_tools_lib
   fmt::fmt
   nlohmann_json::nlohmann_json
 )
 
 # Launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+
+install(DIRECTORY include/ DESTINATION include)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

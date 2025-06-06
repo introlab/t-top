@@ -10,6 +10,7 @@ from typing import List, Callable
 from functools import reduce
 
 import openai
+from openai import OpenAI
 
 import rclpy
 import rclpy.callback_groups
@@ -19,7 +20,7 @@ from rclpy.qos import QoSProfile
 from ament_index_python.packages import get_package_share_directory
 from behavior_msgs.msg import Done, Text
 from behavior_srvs.srv import ChatToolsFunctionCall
-from perception_msgs.msg import Transcript, ContextInput
+from perception_msgs.msg import ContextInput
 import hbba_lite
 from openai.types.chat.chat_completion_chunk import ChoiceDeltaToolCall
 
@@ -107,16 +108,15 @@ class BaseChatAPI(ABC):
 
     def load_default_context(self):
         """Load default context"""
-        date = datetime.now()
         if self.language == "fr":
             self.add_to_history(
-                message= "Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerai à l'oral, veuillez répondre avec une ponctuation adéquate.",
+                message="Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerai à l'oral, veuillez répondre avec une ponctuation adéquate.",
                 role="system",
                 timestamp=datetime.now(),
             )
         else:
             self.add_to_history(
-                message= "You are a robot assistant. You always answer in English.",
+                message="You are a robot assistant. You always answer in English. Since you will be communicating orally, please respond with proper punctuation.",
                 role="system",
                 timestamp=datetime.now(),
             )
@@ -315,22 +315,22 @@ class ChatGPTAPI(BaseChatAPI):
 class OllamaAPI(ChatGPTAPI):
     def __init__(self, chat_node: rclpy.node.Node, language: str, language_model: str):
         super().__init__(chat_node, language, language_model)
-        openai.api_key = "ollama"
-        openai.api_base = "http://localhost:11434/v1"
+        self.client = OpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama",  # required, but unused
+        )
 
     def create_chat_completion(self):
         # TODO Validate if all parameters are supported in the ollama API.
         # Fine-tuned parameters for ollama could be required, this is why
         # create_chat_completion (identical to the ChatGPTAPI class for now)
         # is overloaded here.
-        return openai.chat.completions.create(
+        return self.client.chat.completions.create(
             model=self.language_model,
             messages=self.get_request_messages(),
             max_tokens=1600,
             temperature=0.5,  # Somewhat creative
             frequency_penalty=0.5,  # Avoid repetition
-            tools=self._tools_schema,
-            tool_choice="auto",
             top_p=0.9,  # Avoid repetition
             stream=True,  # Enable streaming mode
         )
@@ -436,17 +436,17 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.load_default_context()
 
         # Subscribers
-        self._transcript_sub = hbba_lite.OnOffHbbaSubscriber(
+        self._context_input_sub = hbba_lite.OnOffHbbaSubscriber(
             self,
             ContextInput,
-            "chat/transcript",
-            self._on_transcript_received_cb,
+            "chat/context_input",
+            self._on_context_input_received_cb,
             qos_profile=QoSProfile(history=1, depth=1),
-            state_service_name="chat/transcript/filter_state",
+            state_service_name="chat/context_input/filter_state",
         )
 
-        self._transcript_sub.on_filter_state_changed(
-            self._on_transcript_filter_state_cb
+        self._context_input_sub.on_filter_state_changed(
+            self._on_context_input_filter_state_cb
         )
 
         self._talk_done_sub = self.create_subscription(
@@ -528,20 +528,19 @@ class ChatNode(rclpy.node.Node):
         self._pending_messages.append(message)
         self._process_pending_messages()
 
-    def _on_transcript_filter_state_cb(
+    def _on_context_input_filter_state_cb(
         self, previous_is_filtering_all_messages, new_is_filtering_all_messages
     ):
         self.get_logger().info(
             f"Transcript filter state changed: {new_is_filtering_all_messages} from {previous_is_filtering_all_messages}"
         )
 
-    def _on_transcript_received_cb(self, msg: ContextInput):
-        self.get_logger().info(f"Transcript received: {msg.transcript.text}")
-
+    def _on_context_input_received_cb(self, msg: ContextInput):
         self._talking = False
         self._processing = False
 
         if len(msg.transcript.text) > 0:
+            self.get_logger().info(f"Transcript received: {msg.transcript.text}")
             # Add the transcript to the context history
             self._chat_api.add_to_history(
                 message=msg.transcript.text, role="user", timestamp=datetime.now()
@@ -552,12 +551,19 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.send_request_and_process_response()
             self._processing = False
             self.get_logger().info("Processing done!")
-            self.revive_counter = 0 
+            self.revive_counter = 0
 
-        elif len(msg.objects) > 0 and len(msg.transcript.text) == 0 and self.revive_counter < 2 and msg.revive_conversation : 
-            self.get_logger().info(f"Transcript received: {msg.objects}")
+        elif (
+            len(msg.objects) > 0
+            and len(msg.transcript.text) == 0
+            and self.revive_counter < 2
+            and msg.revive_conversation
+        ):
+            self.get_logger().info("Reviving with objects")
             self._chat_api.add_to_history(
-                message=self._revive_conversation_msg(), role="system", timestamp=datetime.now()
+                message=self._revive_conversation_msg(),
+                role="system",
+                timestamp=datetime.now(),
             )
             # Process the request
             self._processing = True
@@ -568,7 +574,7 @@ class ChatNode(rclpy.node.Node):
             self.revive_counter += 1
 
         else:
-            self.get_logger().error("Empty transcript")
+            self.get_logger().error("Empty transcript and not reviving conversation.")
 
         # Safety always call _process_pending_messages
         self._process_pending_messages()
@@ -588,41 +594,14 @@ class ChatNode(rclpy.node.Node):
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
-    
-    def _format_date_msg(self) -> str:
-        date = datetime.now()
-        if self._language == "fr":
-            message= ("La date de la journée est : "
-                        f"{date.strftime('%A')}, {date.strftime('%B')} {date.day} {date.strftime('%H:%M')}")
-        else:
-            message= ("The date of the day is : "
-                        f"{date.strftime('%A')}, {date.strftime('%B')} {date.day} {date.strftime('%H:%M')}")
-        return message
-    
-    def _perception_msg(self, msg) -> str:
-        if self._language == "fr":
-            perception_msg = (
-                "Tu as la capacité de perception et peux voir les objets dans ton environnement. "
-                "Utilise-les pour construire une réponse pertinente selon le contexte de la conversation. "
-                "Voici la liste des objets actuellement visibles : "
-                f"{', '.join(msg.objects)}"
-            )
-        else: 
-            perception_msg = (
-                "You have the ability to perceive and can see objects in your environment. "
-                "Use them to build a relevant response depending on the context of the conversation. "
-                "Here is the list of currently visible objects: "
-                f"{', '.join(msg.objects)}"
-            )
-        return perception_msg
-    
+
     def _revive_conversation_msg(self) -> str:
         if self._language == "fr":
             revive_msg = (
                 "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
                 "les objets dans ton champ de vision et le contexte de la conversation."
             )
-        else: 
+        else:
             revive_msg = (
                 "The conversation has stopped. Try to restart it by using the objects in your field of view "
                 "and the context of the conversation."
