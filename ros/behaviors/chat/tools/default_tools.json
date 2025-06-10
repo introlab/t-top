@@ -91,23 +91,5 @@
         "properties": {}
       }
     }
-  },
-  {
-    "type": "function",
-    "function": {
-      "name": "get_activity_data",
-      "description": "Get the activity data for the user",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "relative_day": {
-            "type": "integer",
-            "description": "How many previous days to get the activity data (1 = one day ago, 2 = two days ago, etc.)",
-            "default": 1
-          }
-        },
-        "required": []
-      }
-    }
   }
 ]
