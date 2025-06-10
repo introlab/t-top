@@ -73,6 +73,17 @@ target_link_libraries(${PROJECT_NAME}_node
   nlohmann_json::nlohmann_json
 )
 
+ament_export_targets(chatbot_tools_lib HAS_LIBRARY_TARGET)
+
+install(
+  TARGETS chatbot_tools_lib
+  EXPORT chatbot_tools_lib
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
 # Launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
