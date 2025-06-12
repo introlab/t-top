@@ -85,8 +85,9 @@ class BaseChatAPI(ABC):
             self.history.append(
                 {"role": role, "content": message, "datetime": str(timestamp)}
             )
-            message = {"role": role, "content": message, "datetime": str(timestamp)}
-            self.save_history(message)
+            if self._save_history:
+                message = {"role": role, "content": message, "datetime": str(timestamp)}
+                self.save_history(message)
 
     def add_tool_calls_to_history(
         self, tool_call: list, timestamp: datetime, function_name: str
@@ -100,12 +101,13 @@ class BaseChatAPI(ABC):
                 "datetime": str(timestamp),
             }
         )
-        message = {
-            "role": "assistant",
-            "tool_calls": function_name,
-            "datetime": str(timestamp),
-        }
-        self.save_history(message)
+        if self._save_history:
+            message = {
+                "role": "assistant",
+                "tool_calls": function_name,
+                "datetime": str(timestamp),
+            }
+            self.save_history(message)
 
     def add_tool_call_result_to_history(
         self, tool_call: dict, result: dict, timestamp: datetime
@@ -122,14 +124,15 @@ class BaseChatAPI(ABC):
                 "datetime": str(timestamp),
             }
         )
-        message = {
-            "role": "tool",
-            "tool_call_id": tool_call.id,
-            "name": tool_call.function.name,
-            "content": json.dumps(result),
-            "datetime": str(timestamp),
-        }
-        self.save_history(message)
+        if self._save_history:
+            message = {
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "name": tool_call.function.name,
+                "content": json.dumps(result),
+                "datetime": str(timestamp),
+            }
+            self.save_history(message)
 
     def reset_history(self):
         """Reset the history"""

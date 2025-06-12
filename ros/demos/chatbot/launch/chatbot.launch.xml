@@ -3,6 +3,9 @@
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="language_model" default="gpt-4o-mini"/>  <!-- Options: qwen2.5:3b, gpt-4o-mini, etc.  -->
     <arg name="model_type" default="chatgpt"/> <!-- Options: ollama or chatgpt-->
+    <arg name="streaming" default="false"/> <!-- Options: true or false-->
+    <arg name="save_history" default="false"/> <!-- Options: true or false-->
+
 
     <!-- Base robot -->
     <include file="$(find-pkg-share t_top)/launch/bringup.launch.xml">
@@ -25,6 +28,9 @@
         <!-- <param name="tools_config" value="$(find t-top)/config/tools_config.json"/> -->
         <param name="enable_prompts" value="true"/>
         <!-- <param name="prompts_config" value="$(find t-top)/config/prompts_config.json"/> -->
+        <param name="streaming" value="$(var streaming)"/>
+        <param name="save_history" value="$(var save_history)"/>
+        <param name="save_history_path" value="chat_history.json"/>
     </node>
 
     <!-- Perceptions analyzer -->
