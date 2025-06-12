@@ -158,7 +158,7 @@ class BaseChatAPI(ABC):
         """Load default context"""
         if self.language == "fr":
             self.add_to_history(
-                message="Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerai à l'oral, veuillez répondre avec une ponctuation adéquate.",
+                message="Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerez à l'oral, veuillez répondre avec une ponctuation adéquate.",
                 role="system",
                 timestamp=datetime.now(),
             )
