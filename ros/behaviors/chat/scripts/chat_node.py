@@ -503,9 +503,10 @@ class ChatNode(rclpy.node.Node):
             .bool_value
         )
         self._save_history_path = (
+            # Path is temporary, it will be changed to send to opentera
             self.declare_parameter(
                 "save_history_path",
-                "/home/introlab/ecp_ws/src/t-top/ros/behaviors/chat/history/chat_history.json",
+                "chat_history.json",
             )
             .get_parameter_value()
             .string_value
