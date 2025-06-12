@@ -10,7 +10,7 @@
 #include <daemon_ros_client/msg/base_status.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 
-#include <cloud_data/srv/current_local_weather_open_meteo.hpp>  // Weather service definition
+#include <cloud_data/srv/current_local_weather_open_meteo.hpp>
 #include <cloud_data/srv/local_weather_forecast_open_meteo.hpp>
 #include <perceptions_analyzer/srv/perceive_objects.hpp>
 
