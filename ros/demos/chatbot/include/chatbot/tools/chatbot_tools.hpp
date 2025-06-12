@@ -29,7 +29,7 @@ private:
     rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_volume_down_;
     rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_get_weather_;
     rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_get_forecast_;
-    rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_get_perceive_objects_;
+    rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_get_perceived_objects_;
     rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_get_date_;
 
     rclcpp::Client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>::SharedPtr weather_client_;

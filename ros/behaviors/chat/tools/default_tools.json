@@ -3,7 +3,7 @@
     "type": "function",
     "function": {
       "name": "volume_up",
-      "description": "Increase the volume",
+      "description": "Increase the robot's speaking volume to help the user hear more clearly. Use if the user seems to have difficulty hearing or requests louder speech.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -24,7 +24,7 @@
     "type": "function",
     "function": {
       "name": "volume_down",
-      "description": "Decrease the volume",
+      "description": "Lower the robot's speaking volume to make the interaction more comfortable. Use if the user seems sensitive to loud sounds or requests a softer voice.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -45,7 +45,7 @@
     "type": "function",
     "function": {
       "name": "get_current_weather",
-      "description": "Get the current weather at the user's location",
+      "description": "Retrieve the current weather at the user's location. Useful for making relevant suggestions (e.g., going for a walk or attending an outdoor event).",
       "parameters": {
         "type": "object",
         "properties": {}
@@ -56,7 +56,7 @@
     "type": "function",
     "function": {
       "name": "get_local_forecast",
-      "description": "Get the local forecast weather at the user's location for a specific day",
+      "description": "Get the weather forecast for a specific day near the user's location. Use to plan or suggest upcoming outdoor activities.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -73,8 +73,8 @@
   {
     "type": "function",
     "function": {
-      "name": "get_perceive_objects",
-      "description": "Get the perceived objects in the environment",
+      "name": "get_perceived_objects",
+      "description": "Retrieve a list of objects currently perceived by the robot. Use this to refer to items in the user's environment to support context-aware conversation.",
       "parameters": {
         "type": "object",
         "properties": {}
@@ -85,7 +85,7 @@
     "type": "function",
     "function": {
       "name": "get_date_and_time",
-      "description": "Get the date and time",
+      "description": "Get the current date and time. Always call this before suggesting activities to ensure contextual relevance.",
       "parameters": {
         "type": "object",
         "properties": {}

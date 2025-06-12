@@ -43,8 +43,8 @@ ChatbotTools::ChatbotTools(shared_ptr<rclcpp::Node> node, rclcpp::CallbackGroup:
         rmw_qos_profile_services_default,
         callbackGroup_);
 
-    service_get_perceive_objects_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
-        "/chat/tools/functions/get_perceive_objects",
+    service_get_perceived_objects_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
+        "/chat/tools/functions/get_perceived_objects",
         std::bind(&ChatbotTools::handle_perceive_objects_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
         callbackGroup_);
@@ -380,7 +380,7 @@ void ChatbotTools::handle_perceive_objects_request(
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request>,
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
 {
-    RCLCPP_INFO(node_->get_logger(), "Received get_perceive_objects request");
+    RCLCPP_INFO(node_->get_logger(), "Received get_perceived_objects request");
 
     // Check if weather service is available
     if (!perceive_objects_client_->wait_for_service(std::chrono::seconds(2)))

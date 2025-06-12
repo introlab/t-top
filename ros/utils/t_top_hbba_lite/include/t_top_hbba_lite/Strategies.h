@@ -195,8 +195,8 @@ class ChatStrategy : public Strategy<ChatDesire>
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
     rclcpp::Subscription<perception_msgs::msg::ContextInput>::SharedPtr m_perceptionSubscriberCallback;
 
-    rclcpp::TimerBase::SharedPtr m_vadTimeoutTimer;
-    std::chrono::steady_clock::time_point m_lastVadTime;
+    rclcpp::TimerBase::SharedPtr m_reviveTimeoutTimer;
+    std::chrono::steady_clock::time_point m_reviveTimer;
     bool isTalking = true;
 
     // LEDS
@@ -238,7 +238,7 @@ private:
     void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg);
-    void vadTimeoutCallback();
+    void reviveTimeoutCallback();
 
     void sendListeningLedAnimation();
     void sendTalkingLedAnimation();

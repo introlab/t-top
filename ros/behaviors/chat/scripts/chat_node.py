@@ -59,13 +59,25 @@ class PromptsNotFoundError(Exception):
 
 
 class BaseChatAPI(ABC):
-    def __init__(self, chat_node: "ChatNode", language: str, language_model: str):
+    def __init__(
+        self,
+        chat_node: "ChatNode",
+        language: str,
+        language_model: str,
+        streaming: bool,
+        save_history: bool,
+        save_history_path: str,
+    ):
         self._chat_node = chat_node
         self.history = list()
+        self.history_to_save = list()
         self.language = language
         self.language_model = language_model
         self._tools_schema = None
         self._prompts = None
+        self._streaming = streaming
+        self._save_history = save_history
+        self._save_history_path = save_history_path
 
     def add_to_history(self, message: str, role: str, timestamp: datetime):
         """Add to history to conserve context"""
@@ -73,17 +85,34 @@ class BaseChatAPI(ABC):
             self.history.append(
                 {"role": role, "content": message, "datetime": str(timestamp)}
             )
+            message = {"role": role, "content": message, "datetime": str(timestamp)}
+            self.save_history(message)
 
-    def add_tool_calls_to_history(self, tool_calls: list, timestamp: datetime):
+    def add_tool_calls_to_history(
+        self, tool_call: list, timestamp: datetime, function_name: str
+    ):
         """Add tool calls to history"""
+        self._chat_node.get_logger().info(f"Adding tool calls to history: {tool_call}")
         self.history.append(
-            {"role": "assistant", "tool_calls": tool_calls, "datetime": str(timestamp)}
+            {
+                "role": "assistant",
+                "tool_calls": tool_call,
+                "datetime": str(timestamp),
+            }
         )
+        message = {
+            "role": "assistant",
+            "tool_calls": function_name,
+            "datetime": str(timestamp),
+        }
+        self.save_history(message)
 
     def add_tool_call_result_to_history(
         self, tool_call: dict, result: dict, timestamp: datetime
     ):
         """Add tool call result to history"""
+        self._chat_node.get_logger().info(f"historyy ::: {result}")
+
         self.history.append(
             {
                 "role": "tool",
@@ -93,6 +122,14 @@ class BaseChatAPI(ABC):
                 "datetime": str(timestamp),
             }
         )
+        message = {
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "name": tool_call.function.name,
+            "content": json.dumps(result),
+            "datetime": str(timestamp),
+        }
+        self.save_history(message)
 
     def reset_history(self):
         """Reset the history"""
@@ -105,6 +142,14 @@ class BaseChatAPI(ABC):
         else:
             self._chat_node.get_logger().info("Reloading prompts to history.")
             self.load_prompts_into_history(self._prompts)
+
+    def save_history(self, message):
+        try:
+            self.history_to_save.append(message)
+            with open(self._save_history_path, "w") as f:
+                json.dump(self.history_to_save, f, indent=4)
+        except Exception as e:
+            self._chat_node.get_logger().error(f"Failed to save history: {e}")
 
     def load_default_context(self):
         """Load default context"""
@@ -190,8 +235,23 @@ class BaseChatAPI(ABC):
 
 
 class ChatGPTAPI(BaseChatAPI):
-    def __init__(self, chat_node: rclpy.node.Node, language: str, language_model: str):
-        super().__init__(chat_node, language, language_model)
+    def __init__(
+        self,
+        chat_node: rclpy.node.Node,
+        language: str,
+        language_model: str,
+        streaming: bool,
+        save_history: bool,
+        save_history_path: str,
+    ):
+        super().__init__(
+            chat_node,
+            language,
+            language_model,
+            streaming,
+            save_history,
+            save_history_path,
+        )
         openai.api_key = os.environ.get("OPENAI_API_KEY")
 
     def create_chat_completion(self):
@@ -204,7 +264,7 @@ class ChatGPTAPI(BaseChatAPI):
             tools=self._tools_schema,
             tool_choice="auto",
             top_p=0.9,  # Avoid repetition
-            stream=True,  # Enable streaming mode
+            stream=self._streaming,  # Enable streaming mode
         )
 
     def send_request_and_process_response(self):
@@ -213,55 +273,67 @@ class ChatGPTAPI(BaseChatAPI):
             response = self.create_chat_completion()
             assistant_message = ""
             final_tool_calls = {}
-
             # Generator will give partial responses
-            for chunk in response:
-                # print(chunk)
-                if len(chunk.choices) > 0:
-                    # Get delta
-                    delta = chunk.choices[0].delta
+            if self._streaming:
+                for chunk in response:
+                    if len(chunk.choices) > 0:
+                        # Get delta
+                        delta = chunk.choices[0].delta
+                        # Process tool calls
+                        if delta.tool_calls is not None:
+                            # Tool calls are sent in chuncks so we need to accumulate them
+                            # And process them when we have the full message
+                            for tool_call in delta.tool_calls:
+                                index = tool_call.index
+                                if index not in final_tool_calls:
+                                    final_tool_calls[index] = tool_call
+                                else:
+                                    if (
+                                        tool_call.function.arguments
+                                        and len(tool_call.function.arguments) > 0
+                                    ):
+                                        final_tool_calls[
+                                            index
+                                        ].function.arguments += (
+                                            tool_call.function.arguments
+                                        )
+                        # Process normal messages
+                        if delta.content is not None:
+                            content = delta.content
+                            if len(content) == 0:
+                                continue
+                            # Add fragement to output message
+                            assistant_message += content
+                            # Send fragment to be processed
+                            self._chat_node.add_pending_message(content)
+                            # Add full output message to the history
+                if len(assistant_message) > 0:
+                    # Add to history
+                    self.add_to_history(
+                        message=assistant_message,
+                        role="assistant",
+                        timestamp=datetime.now(),
+                    )
+            else:
+                if len(response.choices) > 0:
+                    choice = response.choices[0]
 
+                    if choice.message is not None:
+                        assistant_message = choice.message.content
                     # Process tool calls
-                    if delta.tool_calls is not None:
-                        # Tool calls are sent in chuncks so we need to accumulate them
-                        # And process them when we have the full message
-                        for tool_call in delta.tool_calls:
-                            index = tool_call.index
-                            if index not in final_tool_calls:
-                                final_tool_calls[index] = tool_call
-
-                            else:
-                                if (
-                                    tool_call.function.arguments
-                                    and len(tool_call.function.arguments) > 0
-                                ):
-                                    final_tool_calls[
-                                        index
-                                    ].function.arguments += tool_call.function.arguments
-
-                    # Process normal messages
-                    if delta.content is not None:
-                        content = delta.content
-                        if len(content) == 0:
-                            continue
-
-                        # Add fragement to output message
-                        assistant_message += content
-                        # Send fragment to be processed
-                        self._chat_node.add_pending_message(content)
-
-            # Add full output message to the history
-            if len(assistant_message) > 0:
-                # Add to history
-                self.add_to_history(
-                    message=assistant_message,
-                    role="assistant",
-                    timestamp=datetime.now(),
-                )
-
+                    if choice.message.tool_calls is not None:
+                        for tool_call in choice.message.tool_calls:
+                            final_tool_calls[0] = tool_call
+                    if assistant_message:
+                        self._chat_node.add_pending_message(assistant_message)
+                        # Add to history
+                        self.add_to_history(
+                            message=assistant_message,
+                            role="assistant",
+                            timestamp=datetime.now(),
+                        )
             # Process final tools calls
             for tool_call in final_tool_calls.values():
-                tool_call: ChoiceDeltaToolCall = tool_call
                 if tool_call.type == "function":
                     # Get Function information
                     id = tool_call.id
@@ -269,7 +341,9 @@ class ChatGPTAPI(BaseChatAPI):
                     function_arguments = tool_call.function.arguments
                     # Add to History
                     self.add_tool_calls_to_history(
-                        [tool_call], timestamp=datetime.now()
+                        [tool_call],
+                        timestamp=datetime.now(),
+                        function_name=function_name,
                     )
 
                     # Call service with
@@ -313,8 +387,23 @@ class ChatGPTAPI(BaseChatAPI):
 
 
 class OllamaAPI(ChatGPTAPI):
-    def __init__(self, chat_node: rclpy.node.Node, language: str, language_model: str):
-        super().__init__(chat_node, language, language_model)
+    def __init__(
+        self,
+        chat_node: rclpy.node.Node,
+        language: str,
+        language_model: str,
+        streaming: bool,
+        save_history: bool,
+        save_history_path: str,
+    ):
+        super().__init__(
+            chat_node,
+            language,
+            language_model,
+            streaming,
+            save_history,
+            save_history_path,
+        )
         self.client = OpenAI(
             base_url="http://localhost:11434/v1",
             api_key="ollama",  # required, but unused
@@ -332,7 +421,7 @@ class OllamaAPI(ChatGPTAPI):
             temperature=0.5,  # Somewhat creative
             frequency_penalty=0.5,  # Avoid repetition
             top_p=0.9,  # Avoid repetition
-            stream=True,  # Enable streaming mode
+            stream=self._streaming,  # Enable streaming mode
         )
 
 
@@ -405,15 +494,40 @@ class ChatNode(rclpy.node.Node):
             .get_parameter_value()
             .string_value
         )
-
+        self._streaming = (
+            self.declare_parameter("streaming", True).get_parameter_value().bool_value
+        )
+        self._save_history = (
+            self.declare_parameter("save_history", True)
+            .get_parameter_value()
+            .bool_value
+        )
+        self._save_history_path = (
+            self.declare_parameter(
+                "save_history_path",
+                "/home/introlab/ecp_ws/src/t-top/ros/behaviors/chat/history/chat_history.json",
+            )
+            .get_parameter_value()
+            .string_value
+        )
         # Initialize API
         if self._model_type == "ollama":
             self._chat_api = OllamaAPI(
-                self, language=self._language, language_model=self._language_model
+                self,
+                language=self._language,
+                language_model=self._language_model,
+                streaming=self._streaming,
+                save_history=self._save_history,
+                save_history_path=self._save_history_path,
             )
         elif self._model_type == "chatgpt":
             self._chat_api = ChatGPTAPI(
-                self, language=self._language, language_model=self._language_model
+                self,
+                language=self._language,
+                language_model=self._language_model,
+                streaming=self._streaming,
+                save_history=self._save_history,
+                save_history_path=self._save_history_path,
             )
         else:
             raise ModelNotFoundError(
@@ -469,6 +583,9 @@ class ChatNode(rclpy.node.Node):
         self.get_logger().info(f"Tools file: {self._tools_file}")
         self.get_logger().info(f"Enable prompts: {self._enable_prompts}")
         self.get_logger().info(f"Prompts file: {self._prompts_file}")
+        self.get_logger().info(f"Streaming: {self._streaming}")
+        self.get_logger().info(f"Save history: {self._save_history}")
+        self.get_logger().info(f"Save history path: {self._save_history_path}")
         self.get_logger().info("Chat node initialized")
 
     def call_tools_external_service(

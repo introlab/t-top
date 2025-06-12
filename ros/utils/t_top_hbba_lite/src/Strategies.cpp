@@ -320,8 +320,8 @@ ChatStrategy::ChatStrategy(
         1,
         [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
 
-    m_vadTimeoutTimer =
-        m_node->create_wall_timer(std::chrono::seconds(5), std::bind(&ChatStrategy::vadTimeoutCallback, this));
+    m_reviveTimeoutTimer =
+        m_node->create_wall_timer(std::chrono::seconds(5), std::bind(&ChatStrategy::reviveTimeoutCallback, this));
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -343,7 +343,7 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
 
     sendListeningLedAnimation();
     isTalking = true;
-    m_lastVadTime = std::chrono::steady_clock::now();
+    m_reviveTimer = std::chrono::steady_clock::now();
 }
 
 void ChatStrategy::sendListeningLedAnimation()
@@ -385,7 +385,7 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
-        // sendGesture("thinking");
+        sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = *msg;
         message.objects = currentObjects;
@@ -413,7 +413,7 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
         sendGesture("slow_origin_head");
 
         isTalking = false;
-        m_lastVadTime = std::chrono::steady_clock::now();
+        m_reviveTimer = std::chrono::steady_clock::now();
     }
 }
 
@@ -425,7 +425,7 @@ void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
         // Random head position ?
         if (counter++ % 2 == 0)
         {
-            // sendGesture("thinking");
+            sendGesture("thinking");
         }
         else
         {
@@ -455,14 +455,14 @@ void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::Cont
     currentObjects = msg->objects;
 }
 
-void ChatStrategy::vadTimeoutCallback()
+void ChatStrategy::reviveTimeoutCallback()
 {
     if (isTalking)
     {
-        m_lastVadTime = std::chrono::steady_clock::now();
+        m_reviveTimer = std::chrono::steady_clock::now();
     }
     auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastVadTime).count();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_reviveTimer).count();
     if (elapsed > 30)
     {
         RCLCPP_WARN(m_node->get_logger(), "Timeout: no activity for 30 seconds.");
@@ -477,7 +477,7 @@ void ChatStrategy::vadTimeoutCallback()
         enableFilter("talk/filter_state");
 
         sendTalkingLedAnimation();
-        // sendGesture("thinking");
+        sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
         message.transcript = perception_msgs::msg::Transcript();
         message.objects = currentObjects;

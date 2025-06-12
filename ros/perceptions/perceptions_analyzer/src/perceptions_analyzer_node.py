@@ -52,7 +52,7 @@ class PerceptionsAnalyzer(Node):
         self.identity_pub = self.create_publisher(
             IdentifiedPerson, "/perception/identified_person", 10
         )
-        self.detectedAudio_pub = self.create_publisher(
+        self.detected_audio_pub = self.create_publisher(
             DetectedAudio, "/perception/detected_audioClass", 10
         )
         self.current_objects_pub = self.create_publisher(
@@ -255,7 +255,7 @@ class PerceptionsAnalyzer(Node):
             ):
                 self.audio_event_active[audio_class] = True
                 self.get_logger().warn(f"Son actif: {audio_class}")
-                self.detectedAudio_pub.publish(
+                self.detected_audio_pub.publish(
                     DetectedAudio(
                         header=msg.header,
                         audio_class_name=audio_class,
@@ -267,7 +267,7 @@ class PerceptionsAnalyzer(Node):
             if audio_class not in detected_now and self.audio_event_active[audio_class]:
                 self.audio_event_active[audio_class] = False
                 self.get_logger().warn(f"Son inactif: {audio_class}")
-                self.detectedAudio_pub.publish(
+                self.detected_audio_pub.publish(
                     DetectedAudio(
                         header=msg.header,
                         audio_class_name=audio_class,
