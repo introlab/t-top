@@ -93,7 +93,6 @@ class BaseChatAPI(ABC):
         self, tool_call: list, timestamp: datetime, function_name: str
     ):
         """Add tool calls to history"""
-        self._chat_node.get_logger().info(f"Adding tool calls to history: {tool_call}")
         self.history.append(
             {
                 "role": "assistant",
@@ -113,8 +112,6 @@ class BaseChatAPI(ABC):
         self, tool_call: dict, result: dict, timestamp: datetime
     ):
         """Add tool call result to history"""
-        self._chat_node.get_logger().info(f"historyy ::: {result}")
-
         self.history.append(
             {
                 "role": "tool",
@@ -151,6 +148,9 @@ class BaseChatAPI(ABC):
             self.history_to_save.append(message)
             with open(self._save_history_path, "w") as f:
                 json.dump(self.history_to_save, f, indent=4)
+            self._chat_node.get_logger().info(
+                f"History saved to {self._save_history_path}"
+            )
         except Exception as e:
             self._chat_node.get_logger().error(f"Failed to save history: {e}")
 
@@ -509,7 +509,7 @@ class ChatNode(rclpy.node.Node):
             # Path is temporary, it will be changed to send to opentera
             self.declare_parameter(
                 "save_history_path",
-                "chat_history.json",
+                "src/t-top/ros/behaviors/chat/history/chat_history.json",
             )
             .get_parameter_value()
             .string_value
