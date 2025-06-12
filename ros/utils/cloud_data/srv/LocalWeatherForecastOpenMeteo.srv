@@ -1,6 +1,3 @@
-# 0: today
-# 1: tomorow
-# ...
 uint64 relative_day
 ---
 bool ok
