@@ -1,3 +1,9 @@
+# -2 : 2 days ago
+# -1 : yesterday
+# 0  : today
+# 1  : tomorrow
+# ...
+
 uint64 relative_day
 ---
 bool ok

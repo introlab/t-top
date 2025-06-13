@@ -62,7 +62,7 @@
         "properties": {
           "relative_day": {
             "type": "integer",
-            "description": "The day for which to get the forecast (0 = day before yesterday, 1 = yesterday, 2 = today, 3 = tomorrow, until relative day 9.)",
+            "description": "The day for which to get the forecast (-2 = 2 days ago, -1 = yesterday, 0 = today, 1 = tomorrow, until relative day 7.)",
             "default": 0
           }
         },

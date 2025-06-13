@@ -222,6 +222,9 @@ class OpenMeteoCloudDataNode(rclpy.node.Node):
             "cloud_data/open_meteo/local_weather_forecast",
             self._handle_local_weather_forecast,
         )
+        self.past_days = (
+            self.declare_parameter("past_days", 2).get_parameter_value().integer_value
+        )
 
     def _handle_location(self, request, response):
         try:
@@ -288,7 +291,7 @@ class OpenMeteoCloudDataNode(rclpy.node.Node):
             )
 
             daily_data = weather["daily"]
-            idx = request.relative_day
+            idx = request.relative_day + self.past_days
             if idx >= len(daily_data["time"]):
                 raise ValueError("Invalid relative day")
             response.ok = True
@@ -336,7 +339,7 @@ class OpenMeteoCloudDataNode(rclpy.node.Node):
             "latitude": str(latitude),
             "longitude": str(longitude),
             "timezone": "auto",
-            "past_days": 2,
+            "past_days": self.past_days,
         }
         if daily:
             params["daily"] = (
