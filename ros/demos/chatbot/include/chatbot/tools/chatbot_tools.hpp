@@ -7,13 +7,7 @@
 #include <std_msgs/msg/u_int8.hpp>
 #include <cloud_data/srv/current_local_weather_open_meteo.hpp>
 #include <cloud_data/srv/local_weather_forecast_open_meteo.hpp>
-#include <perceptions_analyzer/srv/perceive_objects.hpp>
-
-#include <memory>
-#include <nlohmann/json.hpp>
-#include <fmt/format.h>
-#include <algorithm>
-#include <ctime>
+#include <perception_msgs/srv/perceive_objects.hpp>
 
 class ChatbotTools
 {
@@ -34,7 +28,7 @@ private:
 
     rclcpp::Client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>::SharedPtr weather_client_;
     rclcpp::Client<cloud_data::srv::LocalWeatherForecastOpenMeteo>::SharedPtr forecast_client_;
-    rclcpp::Client<perceptions_analyzer::srv::PerceiveObjects>::SharedPtr perceive_objects_client_;
+    rclcpp::Client<perception_msgs::srv::PerceiveObjects>::SharedPtr perceive_objects_client_;
 
     rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr volume_publisher_;
     rclcpp::Subscription<daemon_ros_client::msg::BaseStatus>::SharedPtr base_status_subscriber_;

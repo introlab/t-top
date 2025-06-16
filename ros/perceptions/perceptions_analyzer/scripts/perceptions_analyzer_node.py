@@ -9,15 +9,17 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import Header
-from perceptions_analyzer.msg import IdentifiedPerson, DetectedObjects, DetectedAudio
 from perception_msgs.msg import (
     AudioAnalysis,
     VideoAnalysis,
     PersonNames,
     ContextInput,
     Transcript,
+    IdentifiedPerson,
+    DetectedObjects,
+    DetectedAudio,
 )
-from perceptions_analyzer.srv import PerceiveObjects
+from perception_msgs.srv import PerceiveObjects
 from ament_index_python.packages import get_package_share_directory
 
 
@@ -60,13 +62,13 @@ class PerceptionsAnalyzer(Node):
         )
 
         self.create_subscription(
-            VideoAnalysis, "/camera_3d/video_analysis", self.videoAnalyzerCallback, 10
+            VideoAnalysis, "/camera_3d/video_analysis", self.video_analyzer_callback, 10
         )
         self.create_subscription(
-            PersonNames, "/person_names", self.personIdentificationCallback, 10
+            PersonNames, "/person_names", self.person_identification_callback, 10
         )
         self.create_subscription(
-            AudioAnalysis, "audio_analysis", self.audioAnalyzerCallback, 10
+            AudioAnalysis, "audio_analysis", self.audio_analyzer_callback, 10
         )
 
         self._current_local_weather_service = self.create_service(
@@ -85,13 +87,13 @@ class PerceptionsAnalyzer(Node):
         f.close()
 
         self.video_ignored_classes = [
-            x.lower() for x in classes[0]["video_ignored_classes"]
+            x.lower() for x in classes["video_ignored_classes"]
         ]
         self.acknowledged_classes = [
-            x.lower() for x in classes[1]["audio_acknowledged_classes"]
+            x.lower() for x in classes["audio_acknowledged_classes"]
         ]
 
-    def videoAnalyzerCallback(self, msg):
+    def video_analyzer_callback(self, msg: VideoAnalysis):
         current_time = time.time()
 
         detected_objects_this_frame = set()
@@ -103,7 +105,6 @@ class PerceptionsAnalyzer(Node):
                 and obj.object_class.lower() not in self.video_ignored_classes
             ):
                 detected_objects_this_frame.add(obj.object_class)
-
                 history = (
                     self.currently_visible_objects_detection_status_historic.setdefault(
                         obj.object_class, []
@@ -122,9 +123,7 @@ class PerceptionsAnalyzer(Node):
                     if len(history) >= self.n_thresh_detection and all(
                         history[-self.n_thresh_detection :]
                     ):
-                        self.get_logger().warn(
-                            f"Objet détecté constamment: {obj.object_class}"
-                        )
+                        self.get_logger().info(f"Objet detected: {obj.object_class}")
                         self.currently_visible_objects.add(obj.object_class)
                         self.object_pub.publish(
                             DetectedObjects(
@@ -138,6 +137,9 @@ class PerceptionsAnalyzer(Node):
 
                         self.current_objects_pub.publish(
                             ContextInput(
+                                header=Header(
+                                    stamp=self.get_clock().now().to_msg(), frame_id=""
+                                ),
                                 transcript=empty_transcript,
                                 objects=self.currently_visible_objects,
                                 revive_conversation=False,
@@ -157,7 +159,7 @@ class PerceptionsAnalyzer(Node):
                 if len(history) > self.n_thresh_disparition and not any(
                     history[-self.n_thresh_disparition :]
                 ):
-                    self.get_logger().warn(f"Objet disparu: {obj}")
+                    self.get_logger().info(f"Objet gone: {obj}")
                     self.object_pub.publish(
                         DetectedObjects(
                             header=Header(
@@ -173,13 +175,16 @@ class PerceptionsAnalyzer(Node):
 
                     self.current_objects_pub.publish(
                         ContextInput(
+                            header=Header(
+                                stamp=self.get_clock().now().to_msg(), frame_id=""
+                            ),
                             transcript=empty_transcript,
                             objects=self.currently_visible_objects,
                             revive_conversation=False,
                         )
                     )
 
-    def personIdentificationCallback(self, msg):
+    def person_identification_callback(self, msg: PersonNames):
         current_time = time.time()
 
         detected_persons_this_frame = set()
@@ -241,9 +246,7 @@ class PerceptionsAnalyzer(Node):
                     del self.currently_identified_persons_timestamp_historic[name]
                     self.currently_identified_persons.remove(name)
 
-    def audioAnalyzerCallback(self, msg):
-        current_time = time.time()
-
+    def audio_analyzer_callback(self, msg: AudioAnalysis):
         detected_now = set(
             audio_class.audio_class.lower() for audio_class in msg.audio_classes
         )

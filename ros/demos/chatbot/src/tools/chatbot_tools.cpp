@@ -1,5 +1,11 @@
 #include <chatbot/tools/chatbot_tools.hpp>
 
+#include <memory>
+#include <nlohmann/json.hpp>
+#include <fmt/format.h>
+#include <ctime>
+
+
 using json = nlohmann::json;
 using namespace std;
 
@@ -60,7 +66,7 @@ ChatbotTools::ChatbotTools(shared_ptr<rclcpp::Node> node, rclcpp::CallbackGroup:
     forecast_client_ = node_->create_client<cloud_data::srv::LocalWeatherForecastOpenMeteo>(
         "/cloud_data/open_meteo/local_weather_forecast");
     perceive_objects_client_ =
-        node_->create_client<perceptions_analyzer::srv::PerceiveObjects>("/perception/detected_objects");
+        node_->create_client<perception_msgs::srv::PerceiveObjects>("/perception/detected_objects");
 }
 
 void ChatbotTools::on_base_status_(const daemon_ros_client::msg::BaseStatus::SharedPtr msg)
@@ -79,7 +85,7 @@ void ChatbotTools::handle_volume_up_request(
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
 {
-    RCLCPP_INFO(rclcpp::get_logger("Chatbot_tools"), "Received service volume_up request");
+    RCLCPP_INFO(node_->get_logger(), "Received service volume_up request");
     // Handle the service request here
     try
     {
@@ -93,7 +99,7 @@ void ChatbotTools::handle_volume_up_request(
             {
                 amount = base_status_msg_->maximum_volume - base_status_msg_->volume;
                 RCLCPP_WARN(
-                    rclcpp::get_logger("Chatbot_tools"),
+                    node_->get_logger(),
                     fmt::format(
                         "Volume cannot be higher than {0}. Will increase by {1} instead.",
                         base_status_msg_->maximum_volume,
@@ -136,7 +142,7 @@ void ChatbotTools::handle_volume_down_request(
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request> request,
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
 {
-    RCLCPP_INFO(rclcpp::get_logger("Chatbot_tools"), "Received service volume_down request");
+    RCLCPP_INFO(node_->get_logger(), "Received service volume_down request");
     // Handle the service request here
     try
     {
@@ -149,7 +155,7 @@ void ChatbotTools::handle_volume_down_request(
             {
                 amount = base_status_msg_->volume;
                 RCLCPP_WARN(
-                    rclcpp::get_logger("Chatbot_tools"),
+                    node_->get_logger(),
                     fmt::format("Volume cannot be lower than 0. Will decrease by {0} instead.", amount).c_str());
             }
             uint8_t volume = base_status_msg_->volume - amount;
@@ -321,30 +327,7 @@ void ChatbotTools::handle_get_forecast_request(
         auto res = future.get();
         if (res && res->ok)
         {
-            std::string day_description;
-            if (relative_day == 0)
-            {
-                day_description = "Day before yesterday";
-            }
-            else if (relative_day == 1)
-            {
-                day_description = "Yesterday";
-            }
-            else if (relative_day == 2)
-            {
-                day_description = "Today";
-            }
-            else if (relative_day == 3)
-            {
-                day_description = "Tomorrow";
-            }
-            else
-            {
-                day_description = "Day " + std::to_string(relative_day + 2);
-            }
-
             nlohmann::json payload = {
-                {"day", day_description},
                 {"city", res->city},
                 {"region", res->region},
                 {"country", res->country_name},
@@ -393,15 +376,15 @@ void ChatbotTools::handle_perceive_objects_request(
 
     try
     {
-        auto req = std::make_shared<perceptions_analyzer::srv::PerceiveObjects::Request>();
+        auto req = std::make_shared<perception_msgs::srv::PerceiveObjects::Request>();
 
         // Use a promise/future pattern instead of spin_until_future_complete
-        std::promise<std::shared_ptr<perceptions_analyzer::srv::PerceiveObjects::Response>> promise;
-        std::future<std::shared_ptr<perceptions_analyzer::srv::PerceiveObjects::Response>> future =
+        std::promise<std::shared_ptr<perception_msgs::srv::PerceiveObjects::Response>> promise;
+        std::future<std::shared_ptr<perception_msgs::srv::PerceiveObjects::Response>> future =
             promise.get_future();
 
         auto callback =
-            [&promise](rclcpp::Client<perceptions_analyzer::srv::PerceiveObjects>::SharedFuture inner_future)
+            [&promise](rclcpp::Client<perception_msgs::srv::PerceiveObjects>::SharedFuture inner_future)
         { promise.set_value(inner_future.get()); };
 
         perceive_objects_client_->async_send_request(req, callback);
@@ -443,13 +426,13 @@ void ChatbotTools::handle_get_date_request(
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Request>,
     const std::shared_ptr<behavior_srvs::srv::ChatToolsFunctionCall::Response> response)
 {
-    RCLCPP_INFO(rclcpp::get_logger("Chatbot_tools"), "Received service get_date_and_time request");
+    RCLCPP_INFO(node_->get_logger(), "Received service get_date_and_time request");
     try
     {
         time_t timestamp = std::time(nullptr);
-        nlohmann::json payload = {
-            {"date and time", std::ctime(&timestamp)},
-        };
+        char timeString[21];
+        std::strftime(timeString, sizeof(timeString), "%Y-%m-%dT%H:%M:%SZ", std::localtime(&timestamp));
+        nlohmann::json payload = {"date and time", timeString};
         response->ok = true;
         response->result = payload.dump();
         RCLCPP_INFO(node_->get_logger(), "Date data sent successfully");

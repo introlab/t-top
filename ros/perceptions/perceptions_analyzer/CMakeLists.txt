@@ -28,21 +28,8 @@ find_package(perception_msgs)
 find_package(geometry_msgs REQUIRED)
 find_package(person_identification REQUIRED)
 
-# Message files
-set(msg_files
-  "msg/DetectedAudio.msg"
-  "msg/DetectedObjects.msg"
-  "msg/IdentifiedPerson.msg"
-)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  ${msg_files}
-  "srv/PerceiveObjects.srv"
-  DEPENDENCIES std_msgs
-)
-
 install(PROGRAMS
-  src/perceptions_analyzer_node.py
+  scripts/perceptions_analyzer_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

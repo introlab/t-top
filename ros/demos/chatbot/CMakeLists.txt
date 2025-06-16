@@ -28,16 +28,14 @@ find_package(perceptions_analyzer REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(fmt REQUIRED)
 
-set(srcs
-  src/chatbot_node.cpp
-)
-
-include_directories(
-  include
-)
-
 add_library(chatbot_tools_lib
   src/tools/chatbot_tools.cpp
+)
+
+target_include_directories(chatbot_tools_lib
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 ament_target_dependencies(chatbot_tools_lib
@@ -51,7 +49,7 @@ ament_target_dependencies(chatbot_tools_lib
   fmt
 )
 
-add_executable(${PROJECT_NAME}_node ${srcs})
+add_executable(${PROJECT_NAME}_node src/chatbot_node.cpp)
 
 ament_target_dependencies(${PROJECT_NAME}_node
   rclcpp

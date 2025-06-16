@@ -387,6 +387,8 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         sendTalkingLedAnimation();
         sendGesture("thinking");
         perception_msgs::msg::ContextInput message;
+        message.header.stamp = m_node->now();
+        message.header.frame_id = "";
         message.transcript = *msg;
         message.objects = currentObjects;
         message.revive_conversation = false;

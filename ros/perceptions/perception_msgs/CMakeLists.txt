@@ -37,6 +37,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/VideoAnalysis.msg"
   "msg/VideoAnalysisObject.msg"
   "msg/ContextInput.msg"
+  "msg/DetectedAudio.msg"
+  "msg/DetectedObjects.msg"
+  "msg/IdentifiedPerson.msg"
+  "srv/PerceiveObjects.srv"
   DEPENDENCIES std_msgs sensor_msgs geometry_msgs visualization_msgs audio_utils_msgs
 )
 

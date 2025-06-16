@@ -12,7 +12,7 @@
 
 #include <cloud_data/srv/current_local_weather_open_meteo.hpp>
 #include <cloud_data/srv/local_weather_forecast_open_meteo.hpp>
-#include <perceptions_analyzer/srv/perceive_objects.hpp>
+#include <perception_msgs/srv/perceive_objects.hpp>
 
 #include <memory>
 #include <nlohmann/json.hpp>

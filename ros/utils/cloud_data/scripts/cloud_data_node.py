@@ -392,7 +392,8 @@ def main():
     finally:
         cloud_data_open_weather_node.destroy_node()
         cloud_data_open_meteo_node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == "__main__":
