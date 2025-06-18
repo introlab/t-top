@@ -30,8 +30,7 @@
         <!-- <param name="prompts_config" value="$(find t-top)/config/prompts_config.json"/> -->
         <param name="streaming" value="$(var streaming)"/>
         <param name="save_history" value="$(var save_history)"/>
-        <param name="save_history_path" value="/home/introlab/.ros/chat_history/chat_history.json
-"/>
+        <param name="save_history_path" value="~/.ros/chat_history/chat_history.json"/>
     </node>
 
     <!-- Perceptions analyzer -->

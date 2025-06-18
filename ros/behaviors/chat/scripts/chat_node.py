@@ -82,49 +82,42 @@ class BaseChatAPI(ABC):
     def add_to_history(self, message: str, role: str, timestamp: datetime):
         """Add to history to conserve context"""
         if len(message) > 0:
-            self.history.append(
-                {"role": role, "content": message, "datetime": str(timestamp)}
-            )
+            message = {"role": role, "content": message, "datetime": str(timestamp)}
+            self.history.append(message)
             if self._save_history:
-                self.save_history(role=role, content=message, datetime=str(timestamp))
+                self.save_history(message)
 
     def add_tool_calls_to_history(
         self, tool_call: list, timestamp: datetime, function_name: str
     ):
         """Add tool calls to history"""
-        self.history.append(
-            {
+        message = {
+            "role": "assistant",
+            "tool_calls": tool_call,
+            "datetime": str(timestamp),
+        }
+        self.history.append(message)
+        if self._save_history:
+            message = {
                 "role": "assistant",
-                "tool_calls": tool_call,
+                "tool_calls": tool_call.function.name,
                 "datetime": str(timestamp),
             }
-        )
-        if self._save_history:
-            self.save_history(
-                role="assistant", tool_call_name=function_name, datetime=str(timestamp)
-            )
+            self.save_history(message)
 
     def add_tool_call_result_to_history(
         self, tool_call: dict, result: dict, timestamp: datetime
     ):
-        """Add tool call result to history"""
-        self.history.append(
-            {
-                "role": "tool",
-                "tool_call_id": tool_call.id,
-                "name": tool_call.function.name,
-                "content": json.dumps(result),
-                "datetime": str(timestamp),
-            }
-        )
+        message = {
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "name": tool_call.function.name,
+            "content": json.dumps(result),
+            "datetime": str(timestamp),
+        }
+        self.history.append(message)
         if self._save_history:
-            self.save_history(
-                role="tool",
-                tool_call_id=tool_call.id,
-                tool_call_name=tool_call.function.name,
-                content=json.dumps(result),
-                datetime=str(timestamp),
-            )
+            self.save_history(message)
 
     def reset_history(self):
         """Reset the history"""
@@ -138,22 +131,8 @@ class BaseChatAPI(ABC):
             self._chat_node.get_logger().info("Reloading prompts to history.")
             self.load_prompts_into_history(self._prompts)
 
-    def save_history(
-        self,
-        role: str = "",
-        tool_call_id: str = "",
-        tool_call_name: str = "",
-        content: str = "",
-        datetime: str = "",
-    ):
+    def save_history(self, message):
         try:
-            message = {
-                "role": role,
-                "tool_call_id": tool_call_id,
-                "tool_call_name": tool_call_name,
-                "content": content,
-                "datetime": datetime,
-            }
             self.history_to_save.append(message)
             with open(self._save_history_path, "w") as f:
                 json.dump(self.history_to_save, f, indent=4)
@@ -512,18 +491,18 @@ class ChatNode(rclpy.node.Node):
             .string_value
         )
         self._streaming = (
-            self.declare_parameter("streaming", True).get_parameter_value().bool_value
+            self.declare_parameter("streaming", False).get_parameter_value().bool_value
         )
         self._save_history = (
             self.declare_parameter("save_history", True)
             .get_parameter_value()
             .bool_value
         )
-        self._save_history_path = (
+        self._save_history_path = os.path.expanduser(
             # Path is temporary, it will be changed to send to opentera
             self.declare_parameter(
                 "save_history_path",
-                "/home/introlab/.ros/chat_history/chat_history.json",
+                "~/.ros/chat_history/chat_history.json",
             )
             .get_parameter_value()
             .string_value

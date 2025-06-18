@@ -12,7 +12,7 @@ using namespace std;
 
 ChatbotTools::ChatbotTools(shared_ptr<rclcpp::Node> node, rclcpp::CallbackGroup::SharedPtr callbackGroup)
     : node_(std::move(node)),
-      callbackGroup_(callbackGroup)
+      callback_group_(callbackGroup)
 {
     volume_publisher_ = node_->create_publisher<std_msgs::msg::UInt8>("daemon/set_volume", 1);
 
@@ -29,37 +29,37 @@ ChatbotTools::ChatbotTools(shared_ptr<rclcpp::Node> node, rclcpp::CallbackGroup:
         "/chat/tools/functions/volume_up",
         std::bind(&ChatbotTools::handle_volume_up_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
-        callbackGroup_);
+        callback_group_);
 
     service_volume_down_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/volume_down",
         std::bind(&ChatbotTools::handle_volume_down_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
-        callbackGroup_);
+        callback_group_);
 
     service_get_weather_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_current_weather",
         std::bind(&ChatbotTools::handle_get_weather_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
-        callbackGroup_);
+        callback_group_);
 
     service_get_forecast_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_local_forecast",
         std::bind(&ChatbotTools::handle_get_forecast_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
-        callbackGroup_);
+        callback_group_);
 
     service_get_perceived_objects_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_perceived_objects",
         std::bind(&ChatbotTools::handle_perceive_objects_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
-        callbackGroup_);
+        callback_group_);
 
     service_get_date_ = node_->create_service<behavior_srvs::srv::ChatToolsFunctionCall>(
         "/chat/tools/functions/get_date_and_time",
         std::bind(&ChatbotTools::handle_get_date_request, this, std::placeholders::_1, std::placeholders::_2),
         rmw_qos_profile_services_default,
-        callbackGroup_);
+        callback_group_);
 
     weather_client_ = node_->create_client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>(
         "/cloud_data/open_meteo/current_local_weather");

@@ -17,7 +17,7 @@ public:
 
 private:
     rclcpp::Node::SharedPtr node_;
-    rclcpp::CallbackGroup::SharedPtr callbackGroup_;
+    rclcpp::CallbackGroup::SharedPtr callback_group_;
 
     rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_volume_up_;
     rclcpp::Service<behavior_srvs::srv::ChatToolsFunctionCall>::SharedPtr service_volume_down_;
