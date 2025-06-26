@@ -16,6 +16,9 @@ import rclpy
 import rclpy.callback_groups
 import rclpy.executors
 import rclpy.node
+import rclpy.parameter
+from rcl_interfaces.msg import SetParametersResult
+
 from rclpy.qos import QoSProfile
 from ament_index_python.packages import get_package_share_directory
 from behavior_msgs.msg import Done, Text
@@ -122,14 +125,8 @@ class BaseChatAPI(ABC):
     def reset_history(self):
         """Reset the history"""
         self.history.clear()
+        self.history_to_save.clear()
         self._chat_node.get_logger().info("History Reset")
-
-        # Reload default context
-        if self._prompts is None:
-            self.load_default_context()
-        else:
-            self._chat_node.get_logger().info("Reloading prompts to history.")
-            self.load_prompts_into_history(self._prompts)
 
     def save_history(self, message):
         try:
@@ -261,124 +258,115 @@ class ChatGPTAPI(BaseChatAPI):
         # TODO High cyclomatic complexity, should be split in a few functions
         try:
             response = self.create_chat_completion()
+            assistant_message = ""
             final_tool_calls = {}
+            # Generator will give partial responses
             if self._streaming:
-                final_tool_calls = self.process_response_streaming(
-                    response, final_tool_calls
-                )
+                for chunk in response:
+                    if len(chunk.choices) > 0:
+                        # Get delta
+                        delta = chunk.choices[0].delta
+                        # Process tool calls
+                        if delta.tool_calls is not None:
+                            # Tool calls are sent in chuncks so we need to accumulate them
+                            # And process them when we have the full message
+                            for tool_call in delta.tool_calls:
+                                index = tool_call.index
+                                if index not in final_tool_calls:
+                                    final_tool_calls[index] = tool_call
+                                else:
+                                    if (
+                                        tool_call.function.arguments
+                                        and len(tool_call.function.arguments) > 0
+                                    ):
+                                        final_tool_calls[
+                                            index
+                                        ].function.arguments += (
+                                            tool_call.function.arguments
+                                        )
+                        # Process normal messages
+                        if delta.content is not None:
+                            content = delta.content
+                            if len(content) == 0:
+                                continue
+                            # Add fragement to output message
+                            assistant_message += content
+                            # Send fragment to be processed
+                            self._chat_node.add_pending_message(content)
+                            # Add full output message to the history
+                if len(assistant_message) > 0:
+                    # Add to history
+                    self.add_to_history(
+                        message=assistant_message,
+                        role="assistant",
+                        timestamp=datetime.now(),
+                    )
             else:
-                final_tool_calls = self.process_response(response, final_tool_calls)
+                if len(response.choices) > 0:
+                    choice = response.choices[0]
 
-            self.process_tool_calls(final_tool_calls)
+                    if choice.message is not None:
+                        assistant_message = choice.message.content
+                    # Process tool calls
+                    if choice.message.tool_calls is not None:
+                        for tool_call in choice.message.tool_calls:
+                            final_tool_calls[0] = tool_call
+                    if assistant_message:
+                        self._chat_node.add_pending_message(assistant_message)
+                        # Add to history
+                        self.add_to_history(
+                            message=assistant_message,
+                            role="assistant",
+                            timestamp=datetime.now(),
+                        )
+            # Process final tools calls
+            self._chat_node.get_logger().info(f"Reponse: {final_tool_calls.values()}")
+            for tool_call in final_tool_calls.values():
+                if tool_call.type == "function":
+                    # Get Function information
+                    id = tool_call.id
+                    function_name = tool_call.function.name
+                    function_arguments = tool_call.function.arguments
+                    # Add to History
+                    self.add_tool_calls_to_history(
+                        [tool_call],
+                        timestamp=datetime.now(),
+                        function_name=function_name,
+                    )
 
+                    # Call service with
+                    response = self._chat_node.call_tools_external_service(
+                        id, function_name, function_arguments
+                    )
+                    if response is not None:
+                        try:
+                            raw = response.result if hasattr(response, "result") else response
+                            parsed = json.loads(raw) if raw else {}
+                        except json.JSONDecodeError as e:
+                            parsed = {"error": f"Failed to decode JSON: {e}"}
+
+                        self.add_tool_call_result_to_history(
+                            tool_call=tool_call,
+                            result=parsed,
+                            timestamp=datetime.now(),
+                        )
+                    else:
+                        self._chat_node.get_logger().error(
+                            f"Failed to call external service: {function_name}"
+                        )
+                        self.add_tool_call_result_to_history(
+                            tool_call=tool_call,
+                            result={"error": "Failed to call external service"},
+                            timestamp=datetime.now(),
+                        )
+
+                    # Process final message recursively
+                    self.send_request_and_process_response()
+
+            print("send_request_and_process_response done")
         except Exception as e:
             self._chat_node.get_logger().error(f"Error: {e}")
             self._chat_node.add_pending_message(str(e))
-
-    def process_response(self, response, final_tool_calls):
-        assistant_message = ""
-        if len(response.choices) > 0:
-            choice = response.choices[0]
-            if choice.message is not None:
-                assistant_message = choice.message.content
-            # Process tool calls
-            if choice.message.tool_calls is not None:
-                for tool_call in choice.message.tool_calls:
-                    final_tool_calls[0] = tool_call
-            if assistant_message:
-                self._chat_node.add_pending_message(assistant_message)
-                self.add_to_history(
-                    message=assistant_message,
-                    role="assistant",
-                    timestamp=datetime.now(),
-                )
-        return final_tool_calls
-
-    def process_response_streaming(self, response, final_tool_calls):
-        assistant_message = ""
-        for chunk in response:
-            if len(chunk.choices) > 0:
-                # Get delta
-                delta = chunk.choices[0].delta
-                # Process tool calls
-                if delta.tool_calls is not None:
-                    # Tool calls are sent in chuncks so we need to accumulate them
-                    # And process them when we have the full message
-                    for tool_call in delta.tool_calls:
-                        index = tool_call.index
-                        if index not in final_tool_calls:
-                            final_tool_calls[index] = tool_call
-                        else:
-                            if (
-                                tool_call.function.arguments
-                                and len(tool_call.function.arguments) > 0
-                            ):
-                                final_tool_calls[
-                                    index
-                                ].function.arguments += tool_call.function.arguments
-                # Process normal messages
-                if delta.content is not None:
-                    content = delta.content
-                    if len(content) == 0:
-                        continue
-                    # Add fragement to output message
-                    assistant_message += content
-                    # Send fragment to be processed
-                    self._chat_node.add_pending_message(content)
-                    # Add full output message to the history
-        if len(assistant_message) > 0:
-            self.add_to_history(
-                message=assistant_message,
-                role="assistant",
-                timestamp=datetime.now(),
-            )
-        return final_tool_calls
-
-    def process_tool_calls(self, final_tool_calls):
-        for tool_call in final_tool_calls.values():
-            if tool_call.type == "function":
-                # Get Function information
-                id = tool_call.id
-                function_name = tool_call.function.name
-                function_arguments = tool_call.function.arguments
-                self.add_tool_calls_to_history(
-                    [tool_call],
-                    timestamp=datetime.now(),
-                    function_name=function_name,
-                )
-                # Call service with
-                response = self._chat_node.call_tools_external_service(
-                    id, function_name, function_arguments
-                )
-
-                if response is not None and response.ok:
-                    try:
-                        self.add_tool_call_result_to_history(
-                            tool_call=tool_call,
-                            result=json.loads(response.result),
-                            timestamp=datetime.now(),
-                        )
-                    except json.JSONDecodeError as e:
-                        self._chat_node.get_logger().error(
-                            f"Failed to decode JSON: {e}"
-                        )
-                        self.add_tool_call_result_to_history(
-                            tool_call=tool_call,
-                            result={"error": f"Failed to decode JSON {e}"},
-                            timestamp=datetime.now(),
-                        )
-                else:
-                    self._chat_node.get_logger().error(
-                        f"Failed to call external service: {function_name}"
-                    )
-                    self.add_tool_call_result_to_history(
-                        tool_call=tool_call,
-                        result={"error": "Failed to call external service"},
-                        timestamp=datetime.now(),
-                    )
-                # Process final message recursively
-                self.send_request_and_process_response()
-
 
 class OllamaAPI(ChatGPTAPI):
     def __init__(
@@ -490,6 +478,22 @@ class ChatNode(rclpy.node.Node):
             .get_parameter_value()
             .string_value
         )
+        self._context = (
+            self.declare_parameter(
+                "context",
+                "",
+            )
+            .get_parameter_value()
+            .string_value
+        )
+        self._user_name = (
+            self.declare_parameter(
+                "user_name",
+                "general",
+            )
+            .get_parameter_value()
+            .string_value
+        )
         self._streaming = (
             self.declare_parameter("streaming", False).get_parameter_value().bool_value
         )
@@ -502,7 +506,7 @@ class ChatNode(rclpy.node.Node):
             # Path is temporary, it will be changed to send to opentera
             self.declare_parameter(
                 "save_history_path",
-                "~/.ros/chat_history/chat_history.json",
+                f"~/.ros/chat_history/{self._user_name}_chat_history.json",
             )
             .get_parameter_value()
             .string_value
@@ -572,6 +576,8 @@ class ChatNode(rclpy.node.Node):
         self._talk_text_pub = self.create_publisher(Text, "talk/text", 1)
         self._chat_done_pub = self.create_publisher(Done, "chat/done", 1)
 
+        self.add_on_set_parameters_callback(self.parameter_callback)
+
         # Print parameters summary
         self.get_logger().info(f"Language: {self._language}")
         self.get_logger().info(f"Language model: {self._language_model}")
@@ -584,6 +590,28 @@ class ChatNode(rclpy.node.Node):
         self.get_logger().info(f"Save history: {self._save_history}")
         self.get_logger().info(f"Save history path: {self._save_history_path}")
         self.get_logger().info("Chat node initialized")
+
+    def parameter_callback(self, params):
+        for param in params:
+            if param.name == "user_name":
+                self._user_name = param.value
+                self.get_logger().info(
+                    f"Received an update to parameter user_name: {param.value}"
+                )
+            if param.name == "context":
+                self.get_logger().info(
+                    f"Received an update to parameter context: {param.value}"
+                )
+                self._chat_api.reset_history()
+                self._chat_api.load_prompts(self._prompts_file)
+                self.change_save_path()
+                self._chat_api.add_to_history(
+                    message=param.value,
+                    role="system",
+                    timestamp=datetime.now(),
+                )
+
+        return SetParametersResult(successful=True)
 
     def call_tools_external_service(
         self, id: str, function_name: str, function_arguments: str
@@ -628,15 +656,21 @@ class ChatNode(rclpy.node.Node):
             event.set()
 
         future.add_done_callback(service_done_cb)
-        event.wait(timeout=5.0)
+        event.wait(timeout=10.0)
 
-        if future.done() and future.result() is not None:
-            self.get_logger().info(f"Service call result: {future.result()}")
-            return future.result()
+        if future.done():
+            try:
+                response_msg = future.result()
+            except Exception as exc:
+                self.get_logger().error(f"Service call raised: {exc}")
+                return None
 
-        # Something went wrong
-        self.get_logger().error(f"Service call failed: {future.exception()}")
-        return None
+            self.get_logger().info(f"Service call result: {response_msg}")
+            return response_msg
+        else:
+            self.get_logger().error("Service call timed-out or failed")
+            return None
+
 
     def add_pending_message(self, message: str):
         self._pending_messages.append(message)
@@ -771,6 +805,17 @@ class ChatNode(rclpy.node.Node):
                 # Re-Add the remaining sentences to the pending messages
                 for sentence in sentences:
                     self._pending_messages.append(sentence)
+
+    def change_save_path(self):
+        self._save_history_path = os.path.expanduser(
+            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
+        )
+        self._chat_api._save_history_path = os.path.expanduser(
+            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
+        )
+        self.get_logger().info(
+            f"Save history path changed to: {self._chat_api._save_history_path}"
+        )
 
     def run(self):
         self._executor.add_node(self)
