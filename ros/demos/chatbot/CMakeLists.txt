@@ -28,18 +28,21 @@ find_package(perceptions_analyzer REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(fmt REQUIRED)
 
-add_library(chatbot_tools_lib
+add_library(chatbot_lib
   src/tools/chatbot_tools.cpp
+  src/ChatbotStateMachine.cpp
+
 )
 
-target_include_directories(chatbot_tools_lib
+target_include_directories(chatbot_lib
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
-ament_target_dependencies(chatbot_tools_lib
+ament_target_dependencies(chatbot_lib
   rclcpp
+  t_top_hbba_lite
   behavior_srvs
   behavior_msgs
   perception_msgs
@@ -63,19 +66,20 @@ ament_target_dependencies(${PROJECT_NAME}_node
   fmt
 )
 
-install(TARGETS ${PROJECT_NAME}_node chatbot_tools_lib DESTINATION lib/${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME}_node chatbot_lib DESTINATION lib/${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}_node
-  chatbot_tools_lib
+  chatbot_lib
   fmt::fmt
   nlohmann_json::nlohmann_json
 )
 
-ament_export_targets(chatbot_tools_lib HAS_LIBRARY_TARGET)
+ament_export_targets(chatbot_lib HAS_LIBRARY_TARGET)
+ament_export_include_directories(include)
 
 install(
-  TARGETS chatbot_tools_lib
-  EXPORT chatbot_tools_lib
+  TARGETS chatbot_lib
+  EXPORT chatbot_lib
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin

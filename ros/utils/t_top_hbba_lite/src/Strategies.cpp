@@ -319,20 +319,6 @@ ChatStrategy::ChatStrategy(
         "perception/current_objects",
         1,
         [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
-
-    m_startButtonSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
-        "/daemon/start_button_pressed",
-        1,
-        [this](const std_msgs::msg::Empty::SharedPtr) { onStartPressedCallback(); });
-
-    m_stopButtonSubscriber = m_node->create_subscription<std_msgs::msg::Empty>(
-        "/daemon/stop_button_pressed",
-        1,
-        [this](const std_msgs::msg::Empty::SharedPtr) { onStopPressedCallback(); });
-
-
-    m_reviveTimeoutTimer =
-        m_node->create_wall_timer(std::chrono::seconds(5), std::bind(&ChatStrategy::reviveTimeoutCallback, this));
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -353,8 +339,6 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
-    isTalking = true;
-    m_reviveTimer = std::chrono::steady_clock::now();
 }
 
 void ChatStrategy::sendListeningLedAnimation()
@@ -404,7 +388,6 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         message.objects = currentObjects;
         message.revive_conversation = false;
         m_contextInputPublisher->publish(message);
-        isTalking = true;
     }
 }
 
@@ -424,9 +407,6 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 
         sendListeningLedAnimation();
         sendGesture("slow_origin_head");
-
-        isTalking = false;
-        m_reviveTimer = std::chrono::steady_clock::now();
     }
 }
 
@@ -468,38 +448,6 @@ void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::Cont
     currentObjects = msg->objects;
 }
 
-void ChatStrategy::reviveTimeoutCallback()
-{
-    if (isTalking)
-    {
-        m_reviveTimer = std::chrono::steady_clock::now();
-    }
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_reviveTimer).count();
-    if (elapsed > 30)
-    {
-        RCLCPP_WARN(m_node->get_logger(), "Timeout: no activity for 30 seconds.");
-        // Listening done
-        disableFilter("vad/filter_state");
-        disableFilter("speech_to_text/filter_state");
-
-        // Start chatting
-        enableFilter("chat/context_input/filter_state");
-
-        // Start talking
-        enableFilter("talk/filter_state");
-
-        sendTalkingLedAnimation();
-        sendGesture("thinking");
-        perception_msgs::msg::ContextInput message;
-        message.transcript = perception_msgs::msg::Transcript();
-        message.objects = currentObjects;
-        message.revive_conversation = true;
-        m_contextInputPublisher->publish(message);
-        isTalking = true;
-    }
-}
-
 void ChatStrategy::sendGesture(const string& gesture)
 {
     enableFilter("gesture/filter_state");
@@ -507,37 +455,6 @@ void ChatStrategy::sendGesture(const string& gesture)
     msg.name = gesture;
     msg.id = desireId().value();
     m_gesturePublisher->publish(msg);
-}
-
-void ChatStrategy::onStartPressedCallback()
-{
-    RCLCPP_INFO(m_node->get_logger(), "Start button pressed, enabling chat strategy.");
-    // Start listening
-    enableFilter("vad/filter_state");
-    enableFilter("speech_to_text/filter_state");
-
-    // Disable chat & talking
-    disableFilter("chat/context_input/filter_state");
-    disableFilter("talk/filter_state");
-
-    sendListeningLedAnimation();
-    isTalking = true;
-    m_reviveTimer = std::chrono::steady_clock::now();
-}
-
-void ChatStrategy::onStopPressedCallback()
-{
-    RCLCPP_INFO(m_node->get_logger(), "Stop button pressed, disabling chat strategy.");
-    // Stop listening
-    disableFilter("vad/filter_state");
-    disableFilter("speech_to_text/filter_state");
-
-    // Disable chat & talking
-    disableFilter("chat/context_input/filter_state");
-    disableFilter("talk/filter_state");
-
-    sendTalkingLedAnimation();
-    isTalking = true;
 }
 
 unique_ptr<BaseStrategy> createCamera3dRecordingStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)

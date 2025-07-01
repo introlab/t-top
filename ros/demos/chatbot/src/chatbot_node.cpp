@@ -21,6 +21,7 @@
 #include <ctime>
 
 #include <chatbot/tools/chatbot_tools.hpp>
+#include <chatbot/ChatbotStateMachine.hpp>
 
 using json = nlohmann::json;
 using namespace std;
@@ -39,7 +40,6 @@ int startNode()
     auto filterPool = make_shared<RosLogFilterPoolDecorator>(node, move(rosFilterPool));
 
     vector<unique_ptr<BaseStrategy>> strategies;
-
     strategies.emplace_back(createChatStrategy(filterPool, desireSet, node));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createTooCloseReactionStrategy(filterPool));
@@ -49,12 +49,13 @@ int startNode()
     auto strategyStateLogger = make_unique<RosTopicStrategyStateLogger>(node);
     HbbaLite hbba(desireSet, move(strategies), {{"sound", 1}}, move(solver), move(strategyStateLogger));
 
-    desireSet->addDesire(make_unique<ChatDesire>());
     desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
     desireSet->addDesire(make_unique<FastVideoAnalyzer3dWithAnalyzedImageDesire>());
 
-    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    auto fsm = std::make_shared<ChatbotStateMachine>(node, desireSet);
+    fsm->start();
 
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
     RCLCPP_INFO_STREAM(node->get_logger(), "Chatbot started");
     executor.add_node(node);
     executor.spin();
