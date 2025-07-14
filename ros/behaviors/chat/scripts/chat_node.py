@@ -707,7 +707,7 @@ class ChatNode(rclpy.node.Node):
             self._processing = False
             self.get_logger().info("Processing done!")
         else:
-            self.get_logger().error("Empty transcript and not reviving conversation.")
+            self.get_logger().error("Empty transcript")
 
         # Safety always call _process_pending_messages
         self._process_pending_messages()

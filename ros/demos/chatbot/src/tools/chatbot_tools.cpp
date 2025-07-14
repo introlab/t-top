@@ -380,11 +380,9 @@ void ChatbotTools::handle_perceive_objects_request(
 
         // Use a promise/future pattern instead of spin_until_future_complete
         std::promise<std::shared_ptr<perception_msgs::srv::PerceiveObjects::Response>> promise;
-        std::future<std::shared_ptr<perception_msgs::srv::PerceiveObjects::Response>> future =
-            promise.get_future();
+        std::future<std::shared_ptr<perception_msgs::srv::PerceiveObjects::Response>> future = promise.get_future();
 
-        auto callback =
-            [&promise](rclcpp::Client<perception_msgs::srv::PerceiveObjects>::SharedFuture inner_future)
+        auto callback = [&promise](rclcpp::Client<perception_msgs::srv::PerceiveObjects>::SharedFuture inner_future)
         { promise.set_value(inner_future.get()); };
 
         perceive_objects_client_->async_send_request(req, callback);

@@ -141,7 +141,6 @@ class PerceptionsAnalyzer(Node):
                                 text="",
                                 role="",
                                 objects=self.currently_visible_objects,
-                                revive_conversation=False,
                             )
                         )
 
@@ -180,7 +179,6 @@ class PerceptionsAnalyzer(Node):
                             text="",
                             role="",
                             objects=self.currently_visible_objects,
-                            revive_conversation=False,
                         )
                     )
 

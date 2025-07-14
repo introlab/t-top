@@ -386,7 +386,6 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         message.text = msg->text;
         message.role = "user";
         message.objects = currentObjects;
-        message.revive_conversation = false;
         m_contextInputPublisher->publish(message);
     }
 }
