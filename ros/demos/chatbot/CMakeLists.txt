@@ -30,8 +30,6 @@ find_package(fmt REQUIRED)
 
 add_library(chatbot_lib
   src/tools/chatbot_tools.cpp
-  src/ChatbotStateMachine.cpp
-
 )
 
 target_include_directories(chatbot_lib

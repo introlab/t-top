@@ -383,7 +383,8 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         perception_msgs::msg::ContextInput message;
         message.header.stamp = m_node->now();
         message.header.frame_id = "";
-        message.transcript = *msg;
+        message.text = msg->text;
+        message.role = "user";
         message.objects = currentObjects;
         message.revive_conversation = false;
         m_contextInputPublisher->publish(message);

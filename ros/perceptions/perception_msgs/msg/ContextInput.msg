@@ -1,5 +1,6 @@
 std_msgs/Header header
 
-perception_msgs/Transcript transcript
+string text
+string role
 string[] objects
 bool revive_conversation

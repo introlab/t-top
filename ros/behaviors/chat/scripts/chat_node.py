@@ -696,11 +696,11 @@ class ChatNode(rclpy.node.Node):
         self._talking = False
         self._processing = False
 
-        if len(msg.transcript.text) > 0:
-            self.get_logger().info(f"Transcript received: {msg.transcript.text}")
+        if len(msg.text) > 0:
+            self.get_logger().info(f"Transcript received: {msg.text}")
             # Add the transcript to the context history
             self._chat_api.add_to_history(
-                message=msg.transcript.text, role="user", timestamp=datetime.now()
+                message=msg.text, role=msg.role, timestamp=datetime.now()
             )
             # Process the request
             self._processing = True
@@ -712,7 +712,7 @@ class ChatNode(rclpy.node.Node):
 
         elif (
             len(msg.objects) > 0
-            and len(msg.transcript.text) == 0
+            and len(msg.text) == 0
             and self.revive_counter < 2
             and msg.revive_conversation
         ):

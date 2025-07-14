@@ -21,7 +21,6 @@
 #include <ctime>
 
 #include <chatbot/tools/chatbot_tools.hpp>
-#include <chatbot/ChatbotStateMachine.hpp>
 
 using json = nlohmann::json;
 using namespace std;
@@ -51,9 +50,7 @@ int startNode()
 
     desireSet->addDesire(make_unique<NearestFaceFollowingDesire>());
     desireSet->addDesire(make_unique<FastVideoAnalyzer3dWithAnalyzedImageDesire>());
-
-    auto fsm = std::make_shared<ChatbotStateMachine>(node, desireSet);
-    fsm->start();
+    desireSet->addDesire(make_unique<ChatDesire>());
 
     rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
     RCLCPP_INFO_STREAM(node->get_logger(), "Chatbot started");

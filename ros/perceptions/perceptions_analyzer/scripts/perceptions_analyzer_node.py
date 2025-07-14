@@ -14,7 +14,6 @@ from perception_msgs.msg import (
     VideoAnalysis,
     PersonNames,
     ContextInput,
-    Transcript,
     IdentifiedPerson,
     DetectedObjects,
     DetectedAudio,
@@ -97,7 +96,6 @@ class PerceptionsAnalyzer(Node):
         current_time = time.time()
 
         detected_objects_this_frame = set()
-        empty_transcript = Transcript()
 
         for obj in msg.objects:
             if (
@@ -140,7 +138,8 @@ class PerceptionsAnalyzer(Node):
                                 header=Header(
                                     stamp=self.get_clock().now().to_msg(), frame_id=""
                                 ),
-                                transcript=empty_transcript,
+                                text="",
+                                role="",
                                 objects=self.currently_visible_objects,
                                 revive_conversation=False,
                             )
@@ -178,7 +177,8 @@ class PerceptionsAnalyzer(Node):
                             header=Header(
                                 stamp=self.get_clock().now().to_msg(), frame_id=""
                             ),
-                            transcript=empty_transcript,
+                            text="",
+                            role="",
                             objects=self.currently_visible_objects,
                             revive_conversation=False,
                         )
