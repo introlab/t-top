@@ -440,8 +440,6 @@ class ChatNode(rclpy.node.Node):
             ChatNode._replace_enumeration_characters
         )
 
-        self.revive_counter = 0
-
         self._language = (
             self.declare_parameter("language", "fr").get_parameter_value().string_value
         )
@@ -708,28 +706,6 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.send_request_and_process_response()
             self._processing = False
             self.get_logger().info("Processing done!")
-            self.revive_counter = 0
-
-        elif (
-            len(msg.objects) > 0
-            and len(msg.text) == 0
-            and self.revive_counter < 2
-            and msg.revive_conversation
-        ):
-            self.get_logger().info("Reviving with objects")
-            self._chat_api.add_to_history(
-                message=self._revive_conversation_msg(),
-                role="system",
-                timestamp=datetime.now(),
-            )
-            # Process the request
-            self._processing = True
-            self.get_logger().info("Processing...")
-            self._chat_api.send_request_and_process_response()
-            self._processing = False
-            self.get_logger().info("Processing done!")
-            self.revive_counter += 1
-
         else:
             self.get_logger().error("Empty transcript and not reviving conversation.")
 
@@ -751,19 +727,6 @@ class ChatNode(rclpy.node.Node):
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
-
-    def _revive_conversation_msg(self) -> str:
-        if self._language == "fr":
-            revive_msg = (
-                "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
-                "les objets dans ton champ de vision et le contexte de la conversation."
-            )
-        else:
-            revive_msg = (
-                "The conversation has stopped. Try to restart it by using the objects in your field of view "
-                "and the context of the conversation."
-            )
-        return revive_msg
 
     def _process_pending_messages(self):
         if not self._talking:
