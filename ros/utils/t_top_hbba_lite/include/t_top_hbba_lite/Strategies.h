@@ -4,10 +4,10 @@
 #include <t_top_hbba_lite/Desires.h>
 
 #include <rclcpp/rclcpp.hpp>
-
-#include <hbba_lite/core/Strategy.h>
+#include <rclcpp/time.hpp>
 
 #include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/empty.hpp>
 
 #include <behavior_msgs/msg/led_animation.hpp>
 #include <behavior_msgs/msg/text.hpp>
@@ -15,7 +15,13 @@
 #include <behavior_msgs/msg/done.hpp>
 #include <behavior_msgs/msg/sound_file.hpp>
 
+#include <hbba_lite/core/Strategy.h>
+#include <hbba_lite/filters/FilterState.h>
+#include <optional>
+
 #include <perception_msgs/msg/transcript.hpp>
+#include <perception_msgs/msg/context_input.hpp>
+
 
 #include <memory>
 
@@ -184,9 +190,10 @@ class ChatStrategy : public Strategy<ChatDesire>
     std::shared_ptr<rclcpp::Node> m_node;
 
     rclcpp::Subscription<perception_msgs::msg::Transcript>::SharedPtr m_transcriptSubscriber;
-    rclcpp::Publisher<perception_msgs::msg::Transcript>::SharedPtr m_transcriptPublisher;
+    rclcpp::Publisher<perception_msgs::msg::ContextInput>::SharedPtr m_contextInputPublisher;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
+    rclcpp::Subscription<perception_msgs::msg::ContextInput>::SharedPtr m_perceptionSubscriberCallback;
 
     // LEDS
     rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
@@ -226,10 +233,13 @@ private:
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
+    void perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg);
 
     void sendListeningLedAnimation();
     void sendTalkingLedAnimation();
     void sendGesture(const std::string& gesture);
+
+    std::vector<std::string> currentObjects;
 };
 
 
@@ -237,7 +247,6 @@ std::unique_ptr<BaseStrategy>
     createCamera3dRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
     createCamera2dWideRecordingStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
 std::unique_ptr<BaseStrategy>
     createRobotNameDetectorStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy>
@@ -258,7 +267,6 @@ std::unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideWithAnalyzedImageStra
 std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createVadStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
 std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
@@ -299,13 +307,10 @@ std::unique_ptr<BaseStrategy> createPlaySoundStrategy(
     std::shared_ptr<DesireSet> desireSet,
     std::shared_ptr<rclcpp::Node> node,
     uint16_t utility = 1);
-
 std::unique_ptr<BaseStrategy> createTelepresenceStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createTeleoperationStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
 std::unique_ptr<BaseStrategy>
     createTooCloseReactionStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
-
 std::unique_ptr<BaseStrategy> createChatStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>perceptions_analyzer</name>
+  <version>0.0.0</version>
+  <description>The perceptions_analyzer package</description>
+
+  <maintainer email="dominic.letourneau@usherbrooke.ca">Dominic Létourneau</maintainer>
+  <license>GPL-3.0 license</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <depend>rclpy</depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>video_analyzer</depend>
+  <depend>audio_analyzer</depend>
+  <depend>person_identification</depend>
+  <depend>perception_msgs</depend>
+
+  <build_depend>rosidl_default_generators</build_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

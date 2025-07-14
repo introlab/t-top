@@ -1,0 +1,27 @@
+{
+    "video_ignored_classes": [
+        "Lobster"
+    ],
+    "audio_acknowledged_classes": [
+        "Musical_instrument",
+        "Music",
+        "Applause",
+        "Harmonica",
+        "Guitar",
+        "Acoustic_guitar",
+        "Knock",
+        "Cough",
+        "Laughter",
+        "Bell",
+        "Alarm",
+        "Sneeze",
+        "Singing",
+        "Telephone",
+        "Computer_keyboard",
+        "Electric_guitar",
+        "Door",
+        "Microwave",
+        "oven",
+        "Typing"
+    ]
+}

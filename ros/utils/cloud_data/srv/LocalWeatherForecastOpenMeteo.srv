@@ -1,0 +1,27 @@
+# -2 : 2 days ago
+# -1 : yesterday
+# 0  : today
+# 1  : tomorrow
+# ...
+
+uint64 relative_day
+---
+bool ok
+
+string city
+string region
+string country_code
+string country_name
+
+float64 temperature_day_celsius
+float64 temperature_night_celsius
+
+float64 feals_like_temperature_day_celsius
+float64 feals_like_temperature_night_celsius
+
+float64 precipitation_sum
+float64 precipitation_probability_percent
+float64 wind_speed_kph
+
+string sunrise
+string sunset

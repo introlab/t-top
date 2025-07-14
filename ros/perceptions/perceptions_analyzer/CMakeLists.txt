@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
-project(cloud_data)
+project(perceptions_analyzer)
 
-# Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
 endif()
 
-# Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -17,22 +15,27 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(audio_analyzer REQUIRED)
+find_package(hbba_lite REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(video_analyzer REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(perception_msgs)
+find_package(geometry_msgs REQUIRED)
+find_package(person_identification REQUIRED)
 
-# Generate services
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/CurrentLocalWeather.srv"
-  "srv/LocalWeatherForecast.srv"
-  "srv/CurrentLocalWeatherOpenMeteo.srv"
-  "srv/LocalWeatherForecastOpenMeteo.srv"
-  "srv/Location.srv"
+install(PROGRAMS
+  scripts/perceptions_analyzer_node.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-# Python Nodes
-install(PROGRAMS
-  scripts/cloud_data_node.py
-  DESTINATION lib/${PROJECT_NAME}
+install(DIRECTORY
+  classes
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 ament_package()

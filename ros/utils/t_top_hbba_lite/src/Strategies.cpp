@@ -273,7 +273,8 @@ ChatStrategy::ChatStrategy(
            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"chat/transcript/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+           {"chat/context_input/filter_state",
+            FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
       m_node(std::move(node))
@@ -283,8 +284,9 @@ ChatStrategy::ChatStrategy(
         1,
         [this](const perception_msgs::msg::Transcript::SharedPtr msg) { transcriptSubscriberCallback(msg); });
 
-    m_transcriptPublisher =
-        m_node->create_publisher<perception_msgs::msg::Transcript>("chat/transcript", rclcpp::QoS(1).transient_local());
+    m_contextInputPublisher = m_node->create_publisher<perception_msgs::msg::ContextInput>(
+        "chat/context_input",
+        rclcpp::QoS(1).transient_local());
 
     m_chatDoneSubscriber = m_node->create_subscription<behavior_msgs::msg::Done>(
         "chat/done",
@@ -312,6 +314,11 @@ ChatStrategy::ChatStrategy(
         "gesture/done",
         1,
         [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
+
+    m_perceptionSubscriberCallback = m_node->create_subscription<perception_msgs::msg::ContextInput>(
+        "perception/current_objects",
+        1,
+        [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -321,14 +328,13 @@ StrategyType ChatStrategy::strategyType()
 
 void ChatStrategy::onEnabling(const ChatDesire& desire)
 {
-    // Unused parameter for now
     (void)desire;
     // Start listening
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
 
     // Disable chat & talking
-    disableFilter("chat/transcript/filter_state");
+    disableFilter("chat/context_input/filter_state");
     disableFilter("talk/filter_state");
 
     sendListeningLedAnimation();
@@ -367,16 +373,21 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         disableFilter("speech_to_text/filter_state");
 
         // Start chatting
-        enableFilter("chat/transcript/filter_state");
+        enableFilter("chat/context_input/filter_state");
 
-        // Start talking, we need to enable filter first before publishing to make sure the message is not lost
+        // Start talking
         enableFilter("talk/filter_state");
-
-        // Re-Publish the transcript
-        m_transcriptPublisher->publish(*msg);
 
         sendTalkingLedAnimation();
         sendGesture("thinking");
+        perception_msgs::msg::ContextInput message;
+        message.header.stamp = m_node->now();
+        message.header.frame_id = "";
+        message.text = msg->text;
+        message.role = "user";
+        message.objects = currentObjects;
+        message.revive_conversation = false;
+        m_contextInputPublisher->publish(message);
     }
 }
 
@@ -385,7 +396,7 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
     if (msg->ok)
     {
         // Stop chatting
-        disableFilter("chat/transcript/filter_state");
+        disableFilter("chat/context_input/filter_state");
 
         // Stop talking
         disableFilter("talk/filter_state");
@@ -402,7 +413,6 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
 void ChatStrategy::talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg)
 {
     static int counter = 0;
-
     if (msg->ok)
     {
         // Random head position ?
@@ -431,6 +441,11 @@ void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done:
     {
         disableFilter("gesture/filter_state");
     }
+}
+
+void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg)
+{
+    currentObjects = msg->objects;
 }
 
 void ChatStrategy::sendGesture(const string& gesture)

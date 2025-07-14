@@ -1,40 +1,95 @@
 [
-    {
-        "type": "function",
-        "function": {
-            "name": "volume_up",
-            "description": "Increase the volume",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "amount": {
-                        "type": "integer",
-                        "description": "Amount to increase the volume by"
-                    }
-                },
-                "required": ["amount"],
-                "additionalProperties": false
-            }
+  {
+    "type": "function",
+    "function": {
+      "name": "volume_up",
+      "description": "Increase the robot's speaking volume to help the user hear more clearly. Use if the user seems to have difficulty hearing or requests louder speech.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "Amount to increase the volume by"
+          }
         },
-        "strict": true
+        "required": [
+          "amount"
+        ],
+        "additionalProperties": false
+      }
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "volume_down",
-            "description": "Decrease the volume",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                     "amount": {
-                        "type": "integer",
-                        "description": "Amount to decrease the volume by"
-                    }
-                },
-                "required": ["amount"],
-                "additionalProperties": false
-            }
+    "strict": true
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "volume_down",
+      "description": "Lower the robot's speaking volume to make the interaction more comfortable. Use if the user seems sensitive to loud sounds or requests a softer voice.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "Amount to decrease the volume by"
+          }
         },
-        "strict": true
+        "required": [
+          "amount"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "strict": true
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_current_weather",
+      "description": "Retrieve the current weather at the user's location. Useful for making relevant suggestions (e.g., going for a walk or attending an outdoor event).",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
     }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_local_forecast",
+      "description": "Get the weather forecast for a specific day near the user's location. Use to plan or suggest upcoming outdoor activities.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "relative_day": {
+            "type": "integer",
+            "description": "The day for which to get the forecast (-2 = 2 days ago, -1 = yesterday, 0 = today, 1 = tomorrow, until relative day 7.)",
+            "default": 0
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_perceived_objects",
+      "description": "Retrieve a list of objects currently perceived by the robot. Use this to refer to items in the user's environment to support context-aware conversation.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_date_and_time",
+      "description": "Get the current date and time. Always call this before suggesting activities to ensure contextual relevance.",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
 ]
