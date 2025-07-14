@@ -328,11 +328,10 @@ StrategyType ChatStrategy::strategyType()
 
 void ChatStrategy::onEnabling(const ChatDesire& desire)
 {
-    // Unused parameter for now
     (void)desire;
     // Start listening
-    disableFilter("vad/filter_state");
-    disableFilter("speech_to_text/filter_state");
+    enableFilter("vad/filter_state");
+    enableFilter("speech_to_text/filter_state");
 
     // Disable chat & talking
     disableFilter("chat/context_input/filter_state");
