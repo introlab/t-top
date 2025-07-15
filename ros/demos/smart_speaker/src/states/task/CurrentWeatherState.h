@@ -3,12 +3,12 @@
 
 #include "../common/TalkState.h"
 
-#include <cloud_data/srv/current_local_weather.hpp>
+#include <cloud_data/srv/current_local_weather_open_meteo.hpp>
 
 class CurrentWeatherState : public TalkState
 {
     rclcpp::CallbackGroup::SharedPtr m_weatherClientCallbackGroup;
-    rclcpp::Client<cloud_data::srv::CurrentLocalWeather>::SharedPtr m_weatherClient;
+    rclcpp::Client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>::SharedPtr m_weatherClient;
 
 public:
     CurrentWeatherState(
@@ -29,7 +29,7 @@ protected:
     std::string generateFrenchText(const std::string& _) override;
 
 private:
-    void getCurrentLocalWeather(bool& ok, cloud_data::srv::CurrentLocalWeather::Response& response);
+    void getCurrentLocalWeather(bool& ok, cloud_data::srv::CurrentLocalWeatherOpenMeteo::Response& response);
 };
 
 inline std::type_index CurrentWeatherState::type() const
