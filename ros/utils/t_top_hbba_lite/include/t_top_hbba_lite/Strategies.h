@@ -193,7 +193,6 @@ class ChatStrategy : public Strategy<ChatDesire>
     rclcpp::Publisher<perception_msgs::msg::ContextInput>::SharedPtr m_contextInputPublisher;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_chatDoneSubscriber;
     rclcpp::Subscription<behavior_msgs::msg::Done>::SharedPtr m_talkDoneSubscriber;
-    rclcpp::Subscription<perception_msgs::msg::ContextInput>::SharedPtr m_perceptionSubscriberCallback;
 
     // LEDS
     rclcpp::Publisher<behavior_msgs::msg::LedAnimation>::SharedPtr m_ledAnimationPublisher;
@@ -233,13 +232,10 @@ private:
     void talkDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void ledAnimationDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
     void gestureDoneSubscriberCallback(const behavior_msgs::msg::Done::SharedPtr msg);
-    void perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg);
 
     void sendListeningLedAnimation();
     void sendTalkingLedAnimation();
     void sendGesture(const std::string& gesture);
-
-    std::vector<std::string> currentObjects;
 };
 
 

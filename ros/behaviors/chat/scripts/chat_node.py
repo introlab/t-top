@@ -104,7 +104,7 @@ class BaseChatAPI(ABC):
         if self._save_history:
             message = {
                 "role": "assistant",
-                "tool_calls": tool_call.function.name,
+                "tool_calls": tool_call[0].function.name,
                 "datetime": str(timestamp),
             }
             self.save_history(message)
@@ -269,6 +269,7 @@ class ChatGPTAPI(BaseChatAPI):
             self.process_tool_calls(final_tool_calls)
 
         except Exception as e:
+            self._chat_node.get_logger().error(f"Error: {traceback.format_exc()}")
             self._chat_node.get_logger().error(f"Error: {e}")
             self._chat_node.add_pending_message(str(e))
 

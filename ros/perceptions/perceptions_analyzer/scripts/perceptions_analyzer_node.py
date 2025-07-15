@@ -56,10 +56,6 @@ class PerceptionsAnalyzer(Node):
         self.detected_audio_pub = self.create_publisher(
             DetectedAudio, "/perception/detected_audioClass", 10
         )
-        self.current_objects_pub = self.create_publisher(
-            ContextInput, "/perception/current_objects", 10
-        )
-
         self.create_subscription(
             VideoAnalysis, "/camera_3d/video_analysis", self.video_analyzer_callback, 10
         )
@@ -133,17 +129,6 @@ class PerceptionsAnalyzer(Node):
                             )
                         )
 
-                        self.current_objects_pub.publish(
-                            ContextInput(
-                                header=Header(
-                                    stamp=self.get_clock().now().to_msg(), frame_id=""
-                                ),
-                                text="",
-                                role="",
-                                objects=self.currently_visible_objects,
-                            )
-                        )
-
         for obj in list(self.currently_visible_objects):
             if obj not in detected_objects_this_frame:
                 self.currently_visible_objects_detection_status_historic[obj].append(
@@ -170,17 +155,6 @@ class PerceptionsAnalyzer(Node):
                     del self.currently_visible_objects_detection_status_historic[obj]
                     del self.currently_visible_objects_timestamp_historic[obj]
                     self.currently_visible_objects.remove(obj)
-
-                    self.current_objects_pub.publish(
-                        ContextInput(
-                            header=Header(
-                                stamp=self.get_clock().now().to_msg(), frame_id=""
-                            ),
-                            text="",
-                            role="",
-                            objects=self.currently_visible_objects,
-                        )
-                    )
 
     def person_identification_callback(self, msg: PersonNames):
         current_time = time.time()
