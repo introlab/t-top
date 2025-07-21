@@ -12,10 +12,15 @@ from functools import reduce
 import openai
 from openai import OpenAI
 
+from openai import OpenAI
+
 import rclpy
 import rclpy.callback_groups
 import rclpy.executors
 import rclpy.node
+import rclpy.parameter
+from rcl_interfaces.msg import SetParametersResult
+
 import rclpy.parameter
 from rcl_interfaces.msg import SetParametersResult
 
@@ -24,7 +29,10 @@ from ament_index_python.packages import get_package_share_directory
 from behavior_msgs.msg import Done, Text
 from behavior_srvs.srv import ChatToolsFunctionCall
 from perception_msgs.msg import ContextInput
+from perception_msgs.msg import ContextInput
 import hbba_lite
+from openai.types.chat.chat_completion_chunk import ChoiceDeltaToolCall
+import traceback
 from openai.types.chat.chat_completion_chunk import ChoiceDeltaToolCall
 import traceback
 
@@ -72,13 +80,26 @@ class BaseChatAPI(ABC):
         save_history: bool,
         save_history_path: str,
     ):
+    def __init__(
+        self,
+        chat_node: "ChatNode",
+        language: str,
+        language_model: str,
+        streaming: bool,
+        save_history: bool,
+        save_history_path: str,
+    ):
         self._chat_node = chat_node
         self.history = list()
+        self.history_to_save = list()
         self.history_to_save = list()
         self.language = language
         self.language_model = language_model
         self._tools_schema = None
         self._prompts = None
+        self._streaming = streaming
+        self._save_history = save_history
+        self._save_history_path = save_history_path
         self._streaming = streaming
         self._save_history = save_history
         self._save_history_path = save_history_path
@@ -90,7 +111,14 @@ class BaseChatAPI(ABC):
             self.history.append(message)
             if self._save_history:
                 self.save_history(message)
+            message = {"role": role, "content": message, "datetime": str(timestamp)}
+            self.history.append(message)
+            if self._save_history:
+                self.save_history(message)
 
+    def add_tool_calls_to_history(
+        self, tool_call: list, timestamp: datetime, function_name: str
+    ):
     def add_tool_calls_to_history(
         self, tool_call: list, timestamp: datetime, function_name: str
     ):
@@ -122,13 +150,34 @@ class BaseChatAPI(ABC):
         self.history.append(message)
         if self._save_history:
             self.save_history(message)
+        message = {
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "name": tool_call.function.name,
+            "content": json.dumps(result),
+            "datetime": str(timestamp),
+        }
+        self.history.append(message)
+        if self._save_history:
+            self.save_history(message)
 
     def reset_history(self):
         """Reset the history"""
         self.history.clear()
         self.history_to_save.clear()
+        self.history_to_save.clear()
         self._chat_node.get_logger().info("History Reset")
 
+    def save_history(self, message):
+        try:
+            self.history_to_save.append(message)
+            with open(self._save_history_path, "w") as f:
+                json.dump(self.history_to_save, f, indent=4)
+            self._chat_node.get_logger().info(
+                f"History saved to {self._save_history_path}"
+            )
+        except Exception as e:
+            self._chat_node.get_logger().error(f"Failed to save history: {e}")
     def save_history(self, message):
         try:
             self.history_to_save.append(message)
@@ -145,11 +194,13 @@ class BaseChatAPI(ABC):
         if self.language == "fr":
             self.add_to_history(
                 message="Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerez à l'oral, veuillez répondre avec une ponctuation adéquate.",
+                message="Vous êtes un robot assistant. Vous répondez toujours en français. Puisque vous communiquerez à l'oral, veuillez répondre avec une ponctuation adéquate.",
                 role="system",
                 timestamp=datetime.now(),
             )
         else:
             self.add_to_history(
+                message="You are a robot assistant. You always answer in English. Since you will be communicating orally, please respond with proper punctuation.",
                 message="You are a robot assistant. You always answer in English. Since you will be communicating orally, please respond with proper punctuation.",
                 role="system",
                 timestamp=datetime.now(),
@@ -240,6 +291,23 @@ class ChatGPTAPI(BaseChatAPI):
             save_history,
             save_history_path,
         )
+    def __init__(
+        self,
+        chat_node: rclpy.node.Node,
+        language: str,
+        language_model: str,
+        streaming: bool,
+        save_history: bool,
+        save_history_path: str,
+    ):
+        super().__init__(
+            chat_node,
+            language,
+            language_model,
+            streaming,
+            save_history,
+            save_history_path,
+        )
         openai.api_key = os.environ.get("OPENAI_API_KEY")
 
     def create_chat_completion(self):
@@ -252,6 +320,7 @@ class ChatGPTAPI(BaseChatAPI):
             tools=self._tools_schema,
             tool_choice="auto",
             top_p=0.9,  # Avoid repetition
+            stream=self._streaming,  # Enable streaming mode
             stream=self._streaming,  # Enable streaming mode
         )
 
@@ -348,7 +417,50 @@ class ChatGPTAPI(BaseChatAPI):
                 response = self._chat_node.call_tools_external_service(
                     id, function_name, function_arguments
                 )
+    def process_tool_calls(self, final_tool_calls):
+        for tool_call in final_tool_calls.values():
+            if tool_call.type == "function":
+                # Get Function information
+                id = tool_call.id
+                function_name = tool_call.function.name
+                function_arguments = tool_call.function.arguments
+                self.add_tool_calls_to_history(
+                    [tool_call],
+                    timestamp=datetime.now(),
+                    function_name=function_name,
+                )
+                # Call service with
+                response = self._chat_node.call_tools_external_service(
+                    id, function_name, function_arguments
+                )
 
+                if response is not None and response.ok:
+                    try:
+                        self.add_tool_call_result_to_history(
+                            tool_call=tool_call,
+                            result=json.loads(response.result),
+                            timestamp=datetime.now(),
+                        )
+                    except json.JSONDecodeError as e:
+                        self._chat_node.get_logger().error(
+                            f"Failed to decode JSON: {e}"
+                        )
+                        self.add_tool_call_result_to_history(
+                            tool_call=tool_call,
+                            result={"error": f"Failed to decode JSON {e}"},
+                            timestamp=datetime.now(),
+                        )
+                else:
+                    self._chat_node.get_logger().error(
+                        f"Failed to call external service: {function_name}"
+                    )
+                    self.add_tool_call_result_to_history(
+                        tool_call=tool_call,
+                        result={"error": "Failed to call external service"},
+                        timestamp=datetime.now(),
+                    )
+                # Process final message recursively
+                self.send_request_and_process_response()
                 if response is not None and response.ok:
                     try:
                         self.add_tool_call_result_to_history(
@@ -400,12 +512,34 @@ class OllamaAPI(ChatGPTAPI):
             base_url="http://localhost:11434/v1",
             api_key="ollama",  # required, but unused
         )
+    def __init__(
+        self,
+        chat_node: rclpy.node.Node,
+        language: str,
+        language_model: str,
+        streaming: bool,
+        save_history: bool,
+        save_history_path: str,
+    ):
+        super().__init__(
+            chat_node,
+            language,
+            language_model,
+            streaming,
+            save_history,
+            save_history_path,
+        )
+        self.client = OpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="ollama",  # required, but unused
+        )
 
     def create_chat_completion(self):
         # TODO Validate if all parameters are supported in the ollama API.
         # Fine-tuned parameters for ollama could be required, this is why
         # create_chat_completion (identical to the ChatGPTAPI class for now)
         # is overloaded here.
+        return self.client.chat.completions.create(
         return self.client.chat.completions.create(
             model=self.language_model,
             messages=self.get_request_messages(),
@@ -415,6 +549,7 @@ class OllamaAPI(ChatGPTAPI):
             tools=self._tools_schema,
             tool_choice="auto",
             top_p=0.9,  # Avoid repetition
+            stream=self._streaming,  # Enable streaming mode
             stream=self._streaming,  # Enable streaming mode
         )
 
@@ -440,6 +575,8 @@ class ChatNode(rclpy.node.Node):
         self.partial_message_transformations.append(
             ChatNode._replace_enumeration_characters
         )
+
+        self.revive_counter = 0
 
         self._language = (
             self.declare_parameter("language", "fr").get_parameter_value().string_value
@@ -519,6 +656,39 @@ class ChatNode(rclpy.node.Node):
             .get_parameter_value()
             .string_value
         )
+        self._chat_context = (
+            self.declare_parameter(
+                "context",
+                "",
+            )
+            .get_parameter_value()
+            .string_value
+        )
+        self._user_name = (
+            self.declare_parameter(
+                "user_name",
+                "general",
+            )
+            .get_parameter_value()
+            .string_value
+        )
+        self._streaming = (
+            self.declare_parameter("streaming", False).get_parameter_value().bool_value
+        )
+        self._save_history = (
+            self.declare_parameter("save_history", True)
+            .get_parameter_value()
+            .bool_value
+        )
+        self._save_history_path = os.path.expanduser(
+            # Path is temporary, it will be changed to send to opentera
+            self.declare_parameter(
+                "save_history_path",
+                f"~/.ros/chat_history/{self._user_name}_chat_history.json",
+            )
+            .get_parameter_value()
+            .string_value
+        )
         # Initialize API
         if self._model_type == "ollama":
             self._chat_api = OllamaAPI(
@@ -528,9 +698,21 @@ class ChatNode(rclpy.node.Node):
                 streaming=self._streaming,
                 save_history=self._save_history,
                 save_history_path=self._save_history_path,
+                self,
+                language=self._language,
+                language_model=self._language_model,
+                streaming=self._streaming,
+                save_history=self._save_history,
+                save_history_path=self._save_history_path,
             )
         elif self._model_type == "chatgpt":
             self._chat_api = ChatGPTAPI(
+                self,
+                language=self._language,
+                language_model=self._language_model,
+                streaming=self._streaming,
+                save_history=self._save_history,
+                save_history_path=self._save_history_path,
                 self,
                 language=self._language,
                 language_model=self._language_model,
@@ -560,14 +742,21 @@ class ChatNode(rclpy.node.Node):
 
         # Subscribers
         self._context_input_sub = hbba_lite.OnOffHbbaSubscriber(
+        self._context_input_sub = hbba_lite.OnOffHbbaSubscriber(
             self,
+            ContextInput,
+            "chat/context_input",
+            self._on_context_input_received_cb,
             ContextInput,
             "chat/context_input",
             self._on_context_input_received_cb,
             qos_profile=QoSProfile(history=1, depth=1),
             state_service_name="chat/context_input/filter_state",
+            state_service_name="chat/context_input/filter_state",
         )
 
+        self._context_input_sub.on_filter_state_changed(
+            self._on_context_input_filter_state_cb
         self._context_input_sub.on_filter_state_changed(
             self._on_context_input_filter_state_cb
         )
@@ -586,6 +775,8 @@ class ChatNode(rclpy.node.Node):
 
         self.add_on_set_parameters_callback(self.parameter_callback)
 
+        self.add_on_set_parameters_callback(self.parameter_callback)
+
         # Print parameters summary
         self.get_logger().info(f"Language: {self._language}")
         self.get_logger().info(f"Language model: {self._language_model}")
@@ -597,7 +788,32 @@ class ChatNode(rclpy.node.Node):
         self.get_logger().info(f"Streaming: {self._streaming}")
         self.get_logger().info(f"Save history: {self._save_history}")
         self.get_logger().info(f"Save history path: {self._save_history_path}")
+        self.get_logger().info(f"Streaming: {self._streaming}")
+        self.get_logger().info(f"Save history: {self._save_history}")
+        self.get_logger().info(f"Save history path: {self._save_history_path}")
         self.get_logger().info("Chat node initialized")
+
+    def parameter_callback(self, params):
+        for param in params:
+            if param.name == "user_name":
+                self._user_name = param.value
+                self.get_logger().info(
+                    f"Received an update to parameter user_name: {param.value}"
+                )
+            if param.name == "context":
+                self.get_logger().info(
+                    f"Received an update to parameter context: {param.value}"
+                )
+                self._chat_api.reset_history()
+                self._chat_api.load_prompts(self._prompts_file)
+                self.change_save_path()
+                self._chat_api.add_to_history(
+                    message=param.value,
+                    role="system",
+                    timestamp=datetime.now(),
+                )
+
+        return SetParametersResult(successful=True)
 
     def parameter_callback(self, params):
         for param in params:
@@ -665,7 +881,21 @@ class ChatNode(rclpy.node.Node):
 
         future.add_done_callback(service_done_cb)
         event.wait(timeout=10.0)
+        event.wait(timeout=10.0)
 
+        if future.done():
+            try:
+                response_msg = future.result()
+            except Exception as exc:
+                self.get_logger().error(traceback.format_exc())
+                self.get_logger().error(f"Service call raised: {exc}")
+                return None
+
+            self.get_logger().info(f"Service call result: {response_msg}")
+            return response_msg
+        else:
+            self.get_logger().error("Service call timed-out or failed")
+            return None
         if future.done():
             try:
                 response_msg = future.result()
@@ -685,6 +915,7 @@ class ChatNode(rclpy.node.Node):
         self._process_pending_messages()
 
     def _on_context_input_filter_state_cb(
+    def _on_context_input_filter_state_cb(
         self, previous_is_filtering_all_messages, new_is_filtering_all_messages
     ):
         self.get_logger().info(
@@ -692,10 +923,12 @@ class ChatNode(rclpy.node.Node):
         )
 
     def _on_context_input_received_cb(self, msg: ContextInput):
+    def _on_context_input_received_cb(self, msg: ContextInput):
         self._talking = False
         self._processing = False
 
         if len(msg.text) > 0:
+            self.get_logger().info(f"Transcript received: {msg.text}")
             self.get_logger().info(f"Transcript received: {msg.text}")
             # Add the transcript to the context history
             self._chat_api.add_to_history(
@@ -708,7 +941,7 @@ class ChatNode(rclpy.node.Node):
             self._processing = False
             self.get_logger().info("Processing done!")
         else:
-            self.get_logger().error("Empty transcript")
+            self.get_logger().error("Empty transcript and not reviving conversation.")
 
         # Safety always call _process_pending_messages
         self._process_pending_messages()
@@ -728,6 +961,19 @@ class ChatNode(rclpy.node.Node):
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
+
+    def _revive_conversation_msg(self) -> str:
+        if self._language == "fr":
+            revive_msg = (
+                "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
+                "les objets dans ton champ de vision et le contexte de la conversation."
+            )
+        else:
+            revive_msg = (
+                "The conversation has stopped. Try to restart it by using the objects in your field of view "
+                "and the context of the conversation."
+            )
+        return revive_msg
 
     def _process_pending_messages(self):
         if not self._talking:
@@ -778,6 +1024,17 @@ class ChatNode(rclpy.node.Node):
                 # Re-Add the remaining sentences to the pending messages
                 for sentence in sentences:
                     self._pending_messages.append(sentence)
+
+    def change_save_path(self):
+        self._save_history_path = os.path.expanduser(
+            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
+        )
+        self._chat_api._save_history_path = os.path.expanduser(
+            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
+        )
+        self.get_logger().info(
+            f"Save history path changed to: {self._chat_api._save_history_path}"
+        )
 
     def change_save_path(self):
         self._save_history_path = os.path.expanduser(

@@ -314,6 +314,11 @@ ChatStrategy::ChatStrategy(
         "gesture/done",
         1,
         [this](const behavior_msgs::msg::Done::SharedPtr msg) { gestureDoneSubscriberCallback(msg); });
+
+    m_perceptionSubscriberCallback = m_node->create_subscription<perception_msgs::msg::ContextInput>(
+        "perception/current_objects",
+        1,
+        [this](const perception_msgs::msg::ContextInput::SharedPtr msg) { perceptionSubscriberCallback(msg); });
 }
 
 StrategyType ChatStrategy::strategyType()
@@ -434,6 +439,11 @@ void ChatStrategy::gestureDoneSubscriberCallback(const behavior_msgs::msg::Done:
     {
         disableFilter("gesture/filter_state");
     }
+}
+
+void ChatStrategy::perceptionSubscriberCallback(const perception_msgs::msg::ContextInput::SharedPtr msg)
+{
+    currentObjects = msg->objects;
 }
 
 void ChatStrategy::sendGesture(const string& gesture)
