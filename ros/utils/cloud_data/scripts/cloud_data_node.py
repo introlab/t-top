@@ -199,13 +199,12 @@ class OpenMeteoCloudDataNode(rclpy.node.Node):
     def run(self):
         rclpy.spin(self)
 
+
 def main():
     rclpy.init()
-    executor = MultiThreadedExecutor()
     cloud_data_open_meteo_node = OpenMeteoCloudDataNode()
-    executor.add_node(cloud_data_open_meteo_node)
     try:
-        executor.spin()
+        cloud_data_open_meteo_node.run()
     except KeyboardInterrupt:
         pass
     finally:

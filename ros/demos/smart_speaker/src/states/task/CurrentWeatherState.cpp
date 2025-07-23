@@ -38,7 +38,7 @@ string CurrentWeatherState::generateEnglishText([[maybe_unused]] const string& _
     {
         ss << "The current temperature is " << response.temperature_celsius << " degree Celsius and ";
         ss << " it feels like " << response.feels_like_temperature_celsius << " degree Celsius. ";
-        ss << "The precipitation probability is " << response.precipitation_probability_percent << "%, ";
+        ss << "The precipitation probability is " << response.precipitation_probability_percent << "%, and ";
         ss << " wind speed is " << response.wind_speed_kph << " kilometers per hour. ";
     }
     else
@@ -63,7 +63,7 @@ string CurrentWeatherState::generateFrenchText([[maybe_unused]] const string& _)
         ss << "La température courante est de " << response.temperature_celsius << " degré Celsius. ";
         ss << "La température courante ressentie est de " << response.feels_like_temperature_celsius
            << " degré Celsius. ";
-        ss << "La probabilité de précipitation est de " << response.precipitation_probability_percent << "%, ";
+        ss << "La probabilité de précipitation est de " << response.precipitation_probability_percent << "%. ";
         ss << "La vitesse courante du vent est de " << response.wind_speed_kph << " kilomètres par heure. ";
     }
     else

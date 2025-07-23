@@ -391,7 +391,7 @@ void ChatbotTools::handle_perceive_objects_request(
 
         if (status != std::future_status::ready)
         {
-            RCLCPP_ERROR(node_->get_logger(), "Timeout waiting for rerceive objects response");
+            RCLCPP_ERROR(node_->get_logger(), "Timeout waiting for receive objects response");
             response->ok = false;
             response->result = "{\"error\": \"Timeout\"}";
             return;
