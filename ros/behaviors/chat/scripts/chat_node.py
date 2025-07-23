@@ -97,14 +97,14 @@ class BaseChatAPI(ABC):
         """Add tool calls to history"""
         message = {
             "role": "assistant",
-            "tool_calls": tool_call,
+            "tool_calls": [tool_call],
             "datetime": str(timestamp),
         }
         self.history.append(message)
         if self._save_history:
             message = {
                 "role": "assistant",
-                "tool_calls": tool_call[0].function.name,
+                "tool_calls": tool_call.function.name,
                 "datetime": str(timestamp),
             }
             self.save_history(message)
@@ -340,7 +340,7 @@ class ChatGPTAPI(BaseChatAPI):
                 function_name = tool_call.function.name
                 function_arguments = tool_call.function.arguments
                 self.add_tool_calls_to_history(
-                    [tool_call],
+                    tool_call,
                     timestamp=datetime.now(),
                     function_name=function_name,
                 )
