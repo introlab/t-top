@@ -92,13 +92,13 @@ class BaseChatAPI(ABC):
             if self._save_history:
                 self.save_history(message)
 
-    def add_tool_calls_to_history(
+    def add_tool_call_to_history(
         self, tool_call: ChatCompletionMessageToolCall, timestamp: datetime, function_name: str
     ):
         """Add tool calls to history"""
         message = {
             "role": "assistant",
-            "tool_call": [tool_call],
+            "tool_calls": [tool_call],
             "datetime": str(timestamp),
         }
         self.history.append(message)
