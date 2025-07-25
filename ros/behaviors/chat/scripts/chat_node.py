@@ -27,6 +27,7 @@ from perception_msgs.msg import ContextInput
 import hbba_lite
 from openai.types.chat.chat_completion_chunk import ChoiceDeltaToolCall
 import traceback
+from openai.types.chat import ChatCompletionMessageToolCall
 
 
 class ModelNotFoundError(Exception):
@@ -92,19 +93,19 @@ class BaseChatAPI(ABC):
                 self.save_history(message)
 
     def add_tool_calls_to_history(
-        self, tool_call: list, timestamp: datetime, function_name: str
+        self, tool_call: ChatCompletionMessageToolCall, timestamp: datetime, function_name: str
     ):
         """Add tool calls to history"""
         message = {
             "role": "assistant",
-            "tool_calls": [tool_call],
+            "tool_call": [tool_call],
             "datetime": str(timestamp),
         }
         self.history.append(message)
         if self._save_history:
             message = {
                 "role": "assistant",
-                "tool_calls": tool_call.function.name,
+                "tool_call": tool_call.function.name,
                 "datetime": str(timestamp),
             }
             self.save_history(message)
