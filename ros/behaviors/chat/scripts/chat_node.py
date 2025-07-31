@@ -93,7 +93,10 @@ class BaseChatAPI(ABC):
                 self.save_history(message)
 
     def add_tool_call_to_history(
-        self, tool_call: ChatCompletionMessageToolCall, timestamp: datetime, function_name: str
+        self,
+        tool_call: ChatCompletionMessageToolCall,
+        timestamp: datetime,
+        function_name: str,
     ):
         """Add tool calls to history"""
         message = {
@@ -340,7 +343,7 @@ class ChatGPTAPI(BaseChatAPI):
                 id = tool_call.id
                 function_name = tool_call.function.name
                 function_arguments = tool_call.function.arguments
-                self.add_tool_calls_to_history(
+                self.add_tool_call_to_history(
                     tool_call,
                     timestamp=datetime.now(),
                     function_name=function_name,
@@ -784,9 +787,20 @@ class ChatNode(rclpy.node.Node):
         self._save_history_path = os.path.expanduser(
             f"~/.ros/chat_history/{self._user_name}_chat_history.json"
         )
-        self._chat_api._save_history_path = os.path.expanduser(
-            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
+        self._chat_api._save_history_path = self._save_history_path
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+
+        self.set_parameters(
+            [
+                rclpy.parameter.Parameter(
+                    "save_history_path",
+                    rclpy.Parameter.Type.STRING,
+                    f"~/.ros/chat_history/{self._user_name}_chat_history_{timestamp}.json",
+                )
+            ]
         )
+
         self.get_logger().info(
             f"Save history path changed to: {self._chat_api._save_history_path}"
         )
