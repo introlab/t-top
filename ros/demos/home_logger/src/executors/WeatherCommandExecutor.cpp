@@ -18,11 +18,11 @@ WeatherCommandExecutor::WeatherCommandExecutor(StateManager& stateManager, rclcp
       m_node(move(node))
 {
     m_weatherClientCallbackGroup = m_node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-    m_currentWeatherClient = m_node->create_client<cloud_data::srv::CurrentLocalWeather>(
+    m_currentWeatherClient = m_node->create_client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>(
         "cloud_data/current_local_weather",
         rmw_qos_profile_services_default,
         m_weatherClientCallbackGroup);
-    m_weatherForecastClient = m_node->create_client<cloud_data::srv::LocalWeatherForecast>(
+    m_weatherForecastClient = m_node->create_client<cloud_data::srv::LocalWeatherForecastOpenMeteo>(
         "cloud_data/local_weather_forecast",
         rmw_qos_profile_services_default,
         m_weatherClientCallbackGroup);
@@ -79,7 +79,7 @@ void WeatherCommandExecutor::executeSpecific(const shared_ptr<WeatherCommand>& c
 
 void WeatherCommandExecutor::getCurrentWeatherText(string& text, bool& ok)
 {
-    auto request = make_shared<cloud_data::srv::CurrentLocalWeather::Request>();
+    auto request = make_shared<cloud_data::srv::CurrentLocalWeatherOpenMeteo::Request>();
     auto future = m_currentWeatherClient->async_send_request(request);
 
     if (future.wait_for(WEATHER_SERVICE_TIMEOUT) != future_status::ready)
@@ -98,13 +98,12 @@ void WeatherCommandExecutor::getCurrentWeatherText(string& text, bool& ok)
     ok = true;
     text = Formatter::format(
         StringResources::getValue("dialogs.commands.weather.current"),
-        fmt::arg("temperature_celsius", response->temperature_celsius),
-        fmt::arg("weather_description", response->weather_description));
+        fmt::arg("temperature_celsius", response->temperature_celsius));
 }
 
 void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
 {
-    auto request = make_shared<cloud_data::srv::LocalWeatherForecast::Request>();
+    auto request = make_shared<cloud_data::srv::LocalWeatherForecastOpenMeteo::Request>();
     request->relative_day = 0;
     auto future = m_weatherForecastClient->async_send_request(request);
 
@@ -124,28 +123,11 @@ void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
     ok = true;
 
     stringstream ss;
-    auto currentTime = Time::now();
-    if (currentTime < Time(12, 00))
-    {
-        ss << Formatter::format(
-            StringResources::getValue("dialogs.commands.weather.today.morning"),
-            fmt::arg("temperature_celsius", response->temperature_morning_celsius));
-        ss << "\n";
-    }
-    if (currentTime < Time(17, 00))
-    {
-        ss << Formatter::format(
-            StringResources::getValue("dialogs.commands.weather.today.day"),
-            fmt::arg("temperature_celsius", response->temperature_day_celsius));
-        ss << "\n";
-    }
-    if (currentTime < Time(21, 00))
-    {
-        ss << Formatter::format(
-            StringResources::getValue("dialogs.commands.weather.today.evening"),
-            fmt::arg("temperature_celsius", response->temperature_evening_celsius));
-        ss << "\n";
-    }
+
+    ss << Formatter::format(
+        StringResources::getValue("dialogs.commands.weather.today.day"),
+        fmt::arg("temperature_celsius", response->temperature_day_celsius));
+    ss << "\n";
 
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.today.night"),
@@ -156,7 +138,7 @@ void WeatherCommandExecutor::getTodayWeatherForecastText(string& text, bool& ok)
 
 void WeatherCommandExecutor::getTomorrowWeatherForecastText(string& text, bool& ok)
 {
-    auto request = make_shared<cloud_data::srv::LocalWeatherForecast::Request>();
+    auto request = make_shared<cloud_data::srv::LocalWeatherForecastOpenMeteo::Request>();
     request->relative_day = 1;
     auto future = m_weatherForecastClient->async_send_request(request);
 
@@ -177,16 +159,8 @@ void WeatherCommandExecutor::getTomorrowWeatherForecastText(string& text, bool& 
 
     stringstream ss;
     ss << Formatter::format(
-        StringResources::getValue("dialogs.commands.weather.tomorrow.morning"),
-        fmt::arg("temperature_celsius", response->temperature_morning_celsius));
-    ss << "\n";
-    ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.tomorrow.day"),
         fmt::arg("temperature_celsius", response->temperature_day_celsius));
-    ss << "\n";
-    ss << Formatter::format(
-        StringResources::getValue("dialogs.commands.weather.tomorrow.evening"),
-        fmt::arg("temperature_celsius", response->temperature_evening_celsius));
     ss << "\n";
     ss << Formatter::format(
         StringResources::getValue("dialogs.commands.weather.tomorrow.night"),
@@ -200,7 +174,7 @@ void WeatherCommandExecutor::getWeekWeatherForecastText(string& text, bool& ok)
     constexpr int DAY_COUNT = 7;
     float temperatures[DAY_COUNT];
 
-    auto request = make_shared<cloud_data::srv::LocalWeatherForecast::Request>();
+    auto request = make_shared<cloud_data::srv::LocalWeatherForecastOpenMeteo::Request>();
 
     for (size_t i = 0; i < DAY_COUNT; i++)
     {

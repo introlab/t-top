@@ -19,7 +19,7 @@ CurrentWeatherState::CurrentWeatherState(
     : TalkState(language, stateManager, desireSet, move(node), nextStateType)
 {
     m_weatherClientCallbackGroup = m_node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-    m_weatherClient = m_node->create_client<cloud_data::srv::CurrentLocalWeather>(
+    m_weatherClient = m_node->create_client<cloud_data::srv::CurrentLocalWeatherOpenMeteo>(
         "cloud_data/current_local_weather",
         rmw_qos_profile_services_default,
         m_weatherClientCallbackGroup);
@@ -28,7 +28,7 @@ CurrentWeatherState::CurrentWeatherState(
 string CurrentWeatherState::generateEnglishText([[maybe_unused]] const string& _)
 {
     bool ok;
-    cloud_data::srv::CurrentLocalWeather::Response response;
+    cloud_data::srv::CurrentLocalWeatherOpenMeteo::Response response;
     getCurrentLocalWeather(ok, response);
 
     stringstream ss;
@@ -38,7 +38,7 @@ string CurrentWeatherState::generateEnglishText([[maybe_unused]] const string& _
     {
         ss << "The current temperature is " << response.temperature_celsius << " degree Celsius and ";
         ss << " it feels like " << response.feels_like_temperature_celsius << " degree Celsius. ";
-        ss << "Humidity is " << response.humidity_percent << "% and ";
+        ss << "The precipitation probability is " << response.precipitation_probability_percent << "%, and ";
         ss << " wind speed is " << response.wind_speed_kph << " kilometers per hour. ";
     }
     else
@@ -52,7 +52,7 @@ string CurrentWeatherState::generateEnglishText([[maybe_unused]] const string& _
 string CurrentWeatherState::generateFrenchText([[maybe_unused]] const string& _)
 {
     bool ok;
-    cloud_data::srv::CurrentLocalWeather::Response response;
+    cloud_data::srv::CurrentLocalWeatherOpenMeteo::Response response;
     getCurrentLocalWeather(ok, response);
 
     stringstream ss;
@@ -63,7 +63,7 @@ string CurrentWeatherState::generateFrenchText([[maybe_unused]] const string& _)
         ss << "La température courante est de " << response.temperature_celsius << " degré Celsius. ";
         ss << "La température courante ressentie est de " << response.feels_like_temperature_celsius
            << " degré Celsius. ";
-        ss << "L'humidité courante est de " << response.humidity_percent << "%. ";
+        ss << "La probabilité de précipitation est de " << response.precipitation_probability_percent << "%. ";
         ss << "La vitesse courante du vent est de " << response.wind_speed_kph << " kilomètres par heure. ";
     }
     else
@@ -74,9 +74,9 @@ string CurrentWeatherState::generateFrenchText([[maybe_unused]] const string& _)
     return ss.str();
 }
 
-void CurrentWeatherState::getCurrentLocalWeather(bool& ok, cloud_data::srv::CurrentLocalWeather::Response& response)
+void CurrentWeatherState::getCurrentLocalWeather(bool& ok, cloud_data::srv::CurrentLocalWeatherOpenMeteo::Response& response)
 {
-    auto request = make_shared<cloud_data::srv::CurrentLocalWeather::Request>();
+    auto request = make_shared<cloud_data::srv::CurrentLocalWeatherOpenMeteo::Request>();
     auto future = m_weatherClient->async_send_request(request);
     auto status = future.wait_for(WEATHER_SERVICE_TIMEOUT);
     if (status == future_status::ready)

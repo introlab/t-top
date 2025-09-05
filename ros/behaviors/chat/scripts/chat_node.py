@@ -27,6 +27,7 @@ from perception_msgs.msg import ContextInput
 import hbba_lite
 from openai.types.chat.chat_completion_chunk import ChoiceDeltaToolCall
 import traceback
+from openai.types.chat import ChatCompletionMessageToolCall
 
 
 class ModelNotFoundError(Exception):
@@ -91,20 +92,23 @@ class BaseChatAPI(ABC):
             if self._save_history:
                 self.save_history(message)
 
-    def add_tool_calls_to_history(
-        self, tool_call: list, timestamp: datetime, function_name: str
+    def add_tool_call_to_history(
+        self,
+        tool_call: ChatCompletionMessageToolCall,
+        timestamp: datetime,
+        function_name: str,
     ):
         """Add tool calls to history"""
         message = {
             "role": "assistant",
-            "tool_calls": tool_call,
+            "tool_calls": [tool_call],
             "datetime": str(timestamp),
         }
         self.history.append(message)
         if self._save_history:
             message = {
                 "role": "assistant",
-                "tool_calls": tool_call.function.name,
+                "tool_call": tool_call.function.name,
                 "datetime": str(timestamp),
             }
             self.save_history(message)
@@ -269,6 +273,7 @@ class ChatGPTAPI(BaseChatAPI):
             self.process_tool_calls(final_tool_calls)
 
         except Exception as e:
+            self._chat_node.get_logger().error(f"Error: {traceback.format_exc()}")
             self._chat_node.get_logger().error(f"Error: {e}")
             self._chat_node.add_pending_message(str(e))
 
@@ -338,8 +343,8 @@ class ChatGPTAPI(BaseChatAPI):
                 id = tool_call.id
                 function_name = tool_call.function.name
                 function_arguments = tool_call.function.arguments
-                self.add_tool_calls_to_history(
-                    [tool_call],
+                self.add_tool_call_to_history(
+                    tool_call,
                     timestamp=datetime.now(),
                     function_name=function_name,
                 )
@@ -439,8 +444,6 @@ class ChatNode(rclpy.node.Node):
         self.partial_message_transformations.append(
             ChatNode._replace_enumeration_characters
         )
-
-        self.revive_counter = 0
 
         self._language = (
             self.declare_parameter("language", "fr").get_parameter_value().string_value
@@ -708,30 +711,8 @@ class ChatNode(rclpy.node.Node):
             self._chat_api.send_request_and_process_response()
             self._processing = False
             self.get_logger().info("Processing done!")
-            self.revive_counter = 0
-
-        elif (
-            len(msg.objects) > 0
-            and len(msg.text) == 0
-            and self.revive_counter < 2
-            and msg.revive_conversation
-        ):
-            self.get_logger().info("Reviving with objects")
-            self._chat_api.add_to_history(
-                message=self._revive_conversation_msg(),
-                role="system",
-                timestamp=datetime.now(),
-            )
-            # Process the request
-            self._processing = True
-            self.get_logger().info("Processing...")
-            self._chat_api.send_request_and_process_response()
-            self._processing = False
-            self.get_logger().info("Processing done!")
-            self.revive_counter += 1
-
         else:
-            self.get_logger().error("Empty transcript and not reviving conversation.")
+            self.get_logger().error("Empty transcript")
 
         # Safety always call _process_pending_messages
         self._process_pending_messages()
@@ -751,19 +732,6 @@ class ChatNode(rclpy.node.Node):
         # Avoid "*" because TTS will say "Asterisk"
         # TODO find a better replacement
         return partial_message.replace("*", "-")
-
-    def _revive_conversation_msg(self) -> str:
-        if self._language == "fr":
-            revive_msg = (
-                "La conversation est arrêtée, essaie de relancer la conversation en utilisant "
-                "les objets dans ton champ de vision et le contexte de la conversation."
-            )
-        else:
-            revive_msg = (
-                "The conversation has stopped. Try to restart it by using the objects in your field of view "
-                "and the context of the conversation."
-            )
-        return revive_msg
 
     def _process_pending_messages(self):
         if not self._talking:
@@ -819,9 +787,20 @@ class ChatNode(rclpy.node.Node):
         self._save_history_path = os.path.expanduser(
             f"~/.ros/chat_history/{self._user_name}_chat_history.json"
         )
-        self._chat_api._save_history_path = os.path.expanduser(
-            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
+        self._chat_api._save_history_path = self._save_history_path
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+
+        self.set_parameters(
+            [
+                rclpy.parameter.Parameter(
+                    "save_history_path",
+                    rclpy.Parameter.Type.STRING,
+                    f"~/.ros/chat_history/{self._user_name}_chat_history_{timestamp}.json",
+                )
+            ]
         )
+
         self.get_logger().info(
             f"Save history path changed to: {self._chat_api._save_history_path}"
         )

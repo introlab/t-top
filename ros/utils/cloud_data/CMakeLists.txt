@@ -22,8 +22,6 @@ find_package(rosidl_default_generators REQUIRED)
 
 # Generate services
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "srv/CurrentLocalWeather.srv"
-  "srv/LocalWeatherForecast.srv"
   "srv/CurrentLocalWeatherOpenMeteo.srv"
   "srv/LocalWeatherForecastOpenMeteo.srv"
   "srv/Location.srv"
