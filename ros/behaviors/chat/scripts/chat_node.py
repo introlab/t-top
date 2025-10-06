@@ -606,9 +606,11 @@ class ChatNode(rclpy.node.Node):
     def parameter_callback(self, params):
         for param in params:
             if param.name == "user_name":
-                self._user_name = param.value
+                # Safe user name preserving accents but removing problematic filename characters
+                self._user_name = re.sub(r'[<>:"/\\|?*\s]+', '_', param.value)
+
                 self.get_logger().info(
-                    f"Received an update to parameter user_name: {param.value}"
+                    f"Received an update to parameter user_name: {self._user_name}"
                 )
             if param.name == "context":
                 self.get_logger().info(
@@ -784,19 +786,20 @@ class ChatNode(rclpy.node.Node):
                     self._pending_messages.append(sentence)
 
     def change_save_path(self):
-        self._save_history_path = os.path.expanduser(
-            f"~/.ros/chat_history/{self._user_name}_chat_history.json"
-        )
-        self._chat_api._save_history_path = self._save_history_path
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+
+        self._save_history_path = os.path.expanduser(
+            f"~/.ros/chat_history/{self._user_name}_chat_history_{timestamp}.json"
+        )
+        self._chat_api._save_history_path = self._save_history_path
 
         self.set_parameters(
             [
                 rclpy.parameter.Parameter(
                     "save_history_path",
                     rclpy.Parameter.Type.STRING,
-                    f"~/.ros/chat_history/{self._user_name}_chat_history_{timestamp}.json",
+                    self._save_history_path,
                 )
             ]
         )
