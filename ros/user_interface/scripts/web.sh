@@ -11,6 +11,8 @@ SERVER_PID=$!
 trap "kill ${SERVER_PID}; exit 1" INT
 sleep 1
 
+echo "Script started with parameters: $1, $2"
+
 if [ "$1" == "true" ]
 then
   if [ "$2" == "true" ]
