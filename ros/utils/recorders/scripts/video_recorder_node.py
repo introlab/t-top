@@ -353,7 +353,7 @@ class VideoRecorderConfiguration:
         output_directory = node.declare_parameter('output_directory', '').get_parameter_value().string_value
         filename_prefix = node.declare_parameter('filename_prefix', '').get_parameter_value().string_value
 
-        video_stream_parameters = {
+        video_stream_parameters: VideoStreamConfiguration.VideoStreamParameters = {
             'name': node.declare_parameter('video_stream_name', '').get_parameter_value().string_value,
             'format': node.declare_parameter('video_stream_format', '').get_parameter_value().string_value,
             'width': node.declare_parameter('video_stream_width', 0).get_parameter_value().integer_value,
@@ -365,7 +365,7 @@ class VideoRecorderConfiguration:
             'language_code': node.declare_parameter('video_stream_language_code', 'eng').get_parameter_value().string_value,
         }
 
-        audio_stream_parameters = {
+        audio_stream_parameters: AudioStreamConfiguration.AudioStreamParameters = {
             'name': node.declare_parameter('audio_stream_name', '').get_parameter_value().string_value,
             'format': node.declare_parameter('audio_stream_format', '').get_parameter_value().string_value,
             'channel_count': node.declare_parameter('audio_stream_channel_count', 0).get_parameter_value().integer_value,
@@ -375,8 +375,15 @@ class VideoRecorderConfiguration:
             'language_code': node.declare_parameter('audio_stream_language_code', 'eng').get_parameter_value().string_value,
         }
 
-        video_streams = [VideoStreamConfiguration.from_parameters(video_stream_parameters, 0)]
-        audio_streams = [AudioStreamConfiguration.from_parameters(audio_stream_parameters, 0)]
+        if node.declare_parameter('video_stream_disabled', False).get_parameter_value().bool_value:
+            video_streams = []
+        else:
+            video_streams = [VideoStreamConfiguration.from_parameters(video_stream_parameters, 0)]
+        
+        if node.declare_parameter('audio_stream_disabled', False).get_parameter_value().bool_value:
+            audio_streams = []
+        else:
+            audio_streams = [AudioStreamConfiguration.from_parameters(audio_stream_parameters, 0)]
 
         streams_count = len(video_streams) + len(audio_streams)
         if streams_count < 1:

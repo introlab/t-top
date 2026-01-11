@@ -165,8 +165,11 @@ void WebSocketProtocolWrapper::websocketConnected()
 void WebSocketProtocolWrapper::websocketDisconnected()
 {
     qDebug() << "WebSocketProtocolWrapper::websocketDisconnected() " << m_websocket;
-    m_websocket->deleteLater();
-    m_websocket = nullptr;
+    if (m_websocket)
+    {
+        m_websocket->deleteLater();
+        m_websocket = nullptr;
+    }
     emit disconnected();
 }
 

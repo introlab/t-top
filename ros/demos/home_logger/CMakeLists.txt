@@ -58,6 +58,7 @@ ament_target_dependencies(home_logger_common
   perception_msgs
 )
 target_link_libraries(home_logger_common ${recorders_LIBRARIES})
+install(TARGETS home_logger_common DESTINATION lib)
 
 add_executable(${PROJECT_NAME}_node
   src/home_logger_node.cpp
@@ -102,6 +103,9 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 install(TARGETS ${PROJECT_NAME}_node DESTINATION lib/${PROJECT_NAME})
 
+# Header files
+install(DIRECTORY include/home_logger_common DESTINATION include)
+
 # Launch files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
@@ -138,5 +142,11 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_test ${recorders_LIBRARIES} home_logger_common fmt)
 endif()
 
+ament_export_include_directories(
+  include
+)
+ament_export_libraries(
+  home_logger_common
+)
 
 ament_package()
