@@ -250,13 +250,15 @@ class ChatGPTAPI(BaseChatAPI):
         return openai.chat.completions.create(
             model=self.language_model,
             messages=self.get_request_messages(),
-            max_tokens=1600,
-            temperature=0.5,  # Somewhat creative
-            frequency_penalty=0.5,  # Avoid repetition
+            max_completion_tokens=1600,
             tools=self._tools_schema,
             tool_choice="auto",
-            top_p=0.9,  # Avoid repetition
             stream=self._streaming,  # Enable streaming mode
+            # Deprecated parameters for gpt-5-mini, kept for reference
+            #max_tokens=1600,
+            #temperature=0.5,  # Somewhat creative
+            #frequency_penalty=0.5,  # Avoid repetition
+            #top_p=0.9,  # Avoid repetition
         )
 
     def send_request_and_process_response(self):
