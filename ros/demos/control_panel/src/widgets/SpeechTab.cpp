@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
+#include <audio_utils_msgs/msg/detail/complete_utterance__struct.hpp>
 #include <t_top_hbba_lite/Desires.h>
 
 using namespace std;
@@ -17,6 +18,10 @@ SpeechTab::SpeechTab(rclcpp::Node::SharedPtr node, shared_ptr<DesireSet> desireS
     createUi();
     m_desireSet->addObserver(this);
 
+    m_eouSubscriber = m_node->create_subscription<audio_utils_msgs::msg::CompleteUtterance>(
+        "/utterance",
+        1,
+        [this](const audio_utils_msgs::msg::CompleteUtterance::SharedPtr msg) { eouSubscriberCallback(msg); });
     m_speechToTextSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
         1,
@@ -85,6 +90,22 @@ void SpeechTab::onVadButtonToggled(bool checked)
     }
 }
 
+void SpeechTab::onEouButtonToggled(bool checked)
+{
+    if (checked)
+    {
+        auto desire = make_unique<EouDesire>();
+        m_EouDesireId = static_cast<qint64>(desire->id());
+        m_desireSet->addDesire(std::move(desire));
+    }
+    else if (m_EouDesireId.isValid())
+    {
+        m_desireSet->removeDesire(m_EouDesireId.toULongLong());
+        m_EouDesireId.clear();
+        m_eouLineEdit->setText("");
+    }
+}
+
 void SpeechTab::speechToTextSubscriberCallback(const perception_msgs::msg::Transcript::SharedPtr msg)
 {
     invokeLater([=]() { m_listenedTextTextEdit->append(QString::fromStdString(msg->text)); });
@@ -111,6 +132,22 @@ void SpeechTab::vadSubscriberCallback(const audio_utils_msgs::msg::VoiceActivity
         });
 }
 
+void SpeechTab::eouSubscriberCallback(const audio_utils_msgs::msg::CompleteUtterance::SharedPtr msg)
+{
+    invokeLater(
+        [=]()
+        {
+            if (!m_vadDesireId.isValid())
+            {
+                return;
+            }
+
+            QString header = "Last complete utterance:";
+            QString utterance =  msg->data.c_str();
+            m_eouLineEdit->setText(header + utterance);
+        });
+}
+
 void SpeechTab::createUi()
 {
     m_textToSayTextEdit = new QTextEdit;
@@ -130,13 +167,24 @@ void SpeechTab::createUi()
     m_vadButton = new QPushButton("VAD");
     m_vadButton->setCheckable(true);
     connect(m_vadButton, &QPushButton::toggled, this, &SpeechTab::onVadButtonToggled);
-
+    
     m_vadLineEdit = new QLineEdit;
     m_vadLineEdit->setReadOnly(true);
-
+    
     auto vadLayout = new QHBoxLayout;
     vadLayout->addWidget(m_vadButton, 1);
     vadLayout->addWidget(m_vadLineEdit, 1);
+
+    m_eouButton = new QPushButton("EOU");
+    m_eouButton->setCheckable(true);
+    connect(m_eouButton, &QPushButton::toggled, this, &SpeechTab::onEouButtonToggled);
+
+    m_eouLineEdit = new QLineEdit;
+    m_eouLineEdit->setReadOnly(true);
+
+    auto eouLayout = new QHBoxLayout;
+    eouLayout->addWidget(m_eouButton, 1);
+    eouLayout->addWidget(m_eouLineEdit, 1);
 
     auto globalLayout = new QVBoxLayout;
     globalLayout->addWidget(new QLabel("Text to say :"));
@@ -146,6 +194,7 @@ void SpeechTab::createUi()
     globalLayout->addWidget(new QLabel("Listened Text :"));
     globalLayout->addWidget(m_listenedTextTextEdit);
     globalLayout->addLayout(vadLayout);
+    globalLayout->addLayout(eouLayout);
 
     setLayout(globalLayout);
 }

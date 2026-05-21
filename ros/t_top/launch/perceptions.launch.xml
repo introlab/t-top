@@ -110,6 +110,10 @@
         <arg name="speech_to_text_perception_delay" value="$(var speech_to_text_perception_delay)"/>
     </include>
 
+    <!-- End of Utterance -->
+    <include file="$(find-pkg-share t_top)/launch/perceptions/eou.launch.xml">
+    </include>
+
     <!-- Robot Name Detector -->
     <include file="$(find-pkg-share t_top)/launch/perceptions/robot_name_detector.launch.xml">
         <arg name="neural_network_inference_type" value="$(var neural_network_inference_type)"/>

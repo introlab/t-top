@@ -1,0 +1,9 @@
+<launch>
+    <arg name="utterance_max_delay" default="4"/>
+    <node name="eou_node" exec="end_of_utterance_node.py" pkg="audio_utils"  output="screen">
+        <param name="_utterance_max_delay" value="$(var utterance_max_delay)"/>
+
+        <remap from="eou_filter" to="eou/filter_state"/>
+        <remap from="transcript" to="speech_to_text/transcript"/>
+    </node>
+</launch>

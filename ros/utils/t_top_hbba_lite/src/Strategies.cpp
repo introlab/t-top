@@ -1,3 +1,4 @@
+#include "t_top_hbba_lite/Desires.h"
 #include <t_top_hbba_lite/Strategies.h>
 
 using namespace std;
@@ -271,6 +272,7 @@ ChatStrategy::ChatStrategy(
           {{"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+           {"eou/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
            {"chat/context_input/filter_state",
@@ -327,6 +329,7 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     // Start listening
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
+    enableFilter("eou/filter_state");
 
     // Disable chat & talking
     disableFilter("chat/context_input/filter_state");
@@ -366,6 +369,7 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         // Listening done
         disableFilter("vad/filter_state");
         disableFilter("speech_to_text/filter_state");
+        disableFilter("eou/filter_state");
 
         // Start chatting
         enableFilter("chat/context_input/filter_state");
@@ -397,6 +401,7 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
         // Start listening
         enableFilter("vad/filter_state");
         enableFilter("speech_to_text/filter_state");
+        enableFilter("eou/filter_state");
 
         sendListeningLedAnimation();
         sendGesture("slow_origin_head");
@@ -585,6 +590,17 @@ unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filte
         std::move(filterPool));
 }
 
+unique_ptr<BaseStrategy> createEouStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<EouDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"eou/filter_state", FilterConfiguration::onOff()},
+            {"speech_to_text/filter_state", FilterConfiguration::onOff()},
+            {"vad/filter_state", FilterConfiguration::onOff()}},
+        std::move(filterPool));
+}
 
 unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {

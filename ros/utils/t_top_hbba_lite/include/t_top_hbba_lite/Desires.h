@@ -138,6 +138,15 @@ public:
     DECLARE_DESIRE_METHODS(SpeechToTextDesire)
 };
 
+class EouDesire : public Desire
+{
+public: 
+    explicit EouDesire(uint16_t intensity = 1);
+    ~EouDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(EouDesire)
+};
+
 
 class ExploreDesire : public Desire
 {

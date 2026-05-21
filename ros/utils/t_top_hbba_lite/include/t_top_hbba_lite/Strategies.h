@@ -265,6 +265,7 @@ std::unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideWithAnalyzedImageStra
 std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createVadStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createEouStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
