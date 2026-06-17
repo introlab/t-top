@@ -14,7 +14,7 @@ import rclpy.node
 from perception_msgs.msg import Transcript
 
 from audio_utils import get_format_information, convert_audio_data_to_numpy_frames
-from audio_utils_msgs.msg import AudioFrame, VoiceActivity
+from audio_utils_msgs.msg import AudioFrame, VoiceActivity, CompleteUtterance
 
 import hbba_lite
 
@@ -42,11 +42,14 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
         self._model = WhisperModel(self._model_size, device=self._device, compute_type=self._compute_type)
 
         self._is_voice = False
+        self._is_complete_sentence = False
         self._frames = []
+        self._pending_frames = []
         self._voice_sequence_queue = queue.Queue()
 
         self._text_pub = self.create_publisher(Transcript, 'transcript', 10)
-        self._voice_activity_pub = self.create_subscription(VoiceActivity, 'voice_activity', self._voice_activity_cb, 10)
+        self._voice_activity_sub = self.create_subscription(VoiceActivity, 'voice_activity', self._voice_activity_cb, 10)
+        self._semantic_analysis_sub = self.create_subscription(CompleteUtterance, 'semantic_analysis', self._semantic_analysis_cb, 10)
         self._audio_sub = hbba_lite.OnOffHbbaSubscriber(self, AudioFrame, 'audio_in', self._audio_cb, 10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
 
@@ -55,6 +58,16 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
         self._is_voice = msg.is_voice
 
         if last_is_voice and not self._is_voice:
+            # Snapshot frames at the exact moment VAD drops,
+            # before _audio_cb starts trimming them
+            if len(self._frames) > 0:
+                self._pending_frames.extend(self._frames)
+            self._frames.clear()
+
+    def _semantic_analysis_cb(self, msg):
+        self._is_complete_sentence = msg.sentence_complete
+
+        if msg.sentence_complete:
             self._put_frames_in_voice_sequence_queue()
 
     def _audio_cb(self, msg):
@@ -76,9 +89,9 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
             self._put_frames_in_voice_sequence_queue()
 
     def _put_frames_in_voice_sequence_queue(self):
-        if len(self._frames) > 0:
-            self._voice_sequence_queue.put(np.concatenate(self._frames))
-            self._frames.clear()
+        if len(self._pending_frames) > 0:
+            self._voice_sequence_queue.put(np.concatenate(self._pending_frames))
+            self._pending_frames.clear()
 
     def run(self):
         speech_to_text_thread = threading.Thread(target=self._speech_to_text_thread_run)

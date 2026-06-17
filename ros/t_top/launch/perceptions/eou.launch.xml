@@ -4,6 +4,7 @@
         <param name="_utterance_max_delay" value="$(var utterance_max_delay)"/>
 
         <remap from="eou_filter" to="eou/filter_state"/>
-        <remap from="transcript" to="speech_to_text/transcript"/>
+        <remap from="audio_in" to="/audio_input_signed_16_16000"/>
+        <remap from="semantic_analysis" to="EoU/semantic_analysis"/>
     </node>
 </launch>
