@@ -38,6 +38,11 @@
     <arg name="fullscreen_face" default="false"/>
     <arg name="record_session" default="false"/>
 
+    <arg name="sound_following_torso_enabled" default="true"/>
+    <arg name="sound_following_head_enabled" default="false"/>
+    <arg name="face_following_torso_enabled" default="true"/>
+    <arg name="face_following_head_enabled" default="true"/>
+
 
     <arg name="platform_delay" default="0.0"/>
 
@@ -101,6 +106,10 @@
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="open_browser" value="$(var open_browser)"/>
         <arg name="fullscreen_face" value="$(var fullscreen_face)"/>
+        <arg name="sound_following_torso_enabled" value="$(var sound_following_torso_enabled)"/>
+        <arg name="sound_following_head_enabled" value="$(var sound_following_head_enabled)"/>
+        <arg name="face_following_torso_enabled" value="$(var face_following_torso_enabled)"/>
+        <arg name="face_following_head_enabled" value="$(var face_following_head_enabled)"/>
 
         <!-- Delays -->
         <arg name="dance_behavior_delay" value="$(eval '$(var platform_delay) + 0.0')"/>

@@ -17,6 +17,7 @@ class FaceFollowingNode(rclpy.node.Node):
         self._simulation = self.declare_parameter('simulation', False).get_parameter_value().bool_value
         self._control_frequency = self.declare_parameter('control_frequency', 30.0).get_parameter_value().double_value
         self._torso_control_alpha = self.declare_parameter('torso_control_alpha', 0.2).get_parameter_value().double_value
+        self._torso_enabled = self.declare_parameter('torso_enabled', True).get_parameter_value().bool_value
         self._head_control_p_gain = self.declare_parameter('head_control_p_gain', 0.175).get_parameter_value().double_value
         self._head_enabled = self.declare_parameter('head_enabled', True).get_parameter_value().bool_value
         self._min_head_pitch = self.declare_parameter('min_head_pitch_rad', -0.35).get_parameter_value().double_value
@@ -38,8 +39,8 @@ class FaceFollowingNode(rclpy.node.Node):
     def _timer_callback(self):
         if self._movement_commands.is_filtering_all_messages:
             return
-
-        self._update_torso()
+        if self._torso_enabled:
+            self._update_torso()
         if self._head_enabled:
             self._update_head()
 

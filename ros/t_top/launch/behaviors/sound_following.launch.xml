@@ -2,13 +2,16 @@
     <arg name="simulation"/>
     <arg name="min_activity" default="0.1"/>
     <arg name="sound_following_behavior_delay" default="0"/>
+    <arg name="torso_enabled" default="true"/>
+    <arg name="head_enabled" default="false"/>
 
     <node pkg="sound_following" exec="sound_following_node.py" name="sound_following_node" launch-prefix="bash -c 'sleep $(var sound_following_behavior_delay); $0 $@' ">
         <param name="simulation" value="$(var simulation)"/>
         <param name="control_frequency" value="30.0"/>
         <param name="torso_control_alpha" value="0.2"/>
+        <param name="torso_enabled" value="$(var torso_enabled)"/>
         <param name="head_control_alpha" value="0.2"/>
-        <param name="head_enabled" value="false"/>
+        <param name="head_enabled" value="$(var head_enabled)"/>
         <param name="min_head_pitch_rad" value="-0.35"/>
         <param name="max_head_pitch_rad" value="0.35"/>
         <param name="min_activity" value="$(var min_activity)"/>

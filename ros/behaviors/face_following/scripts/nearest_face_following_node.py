@@ -14,6 +14,9 @@ from t_top import vector_to_angles
 
 from face_following.lib_face_following_node import FaceFollowingNode
 
+# import debugpy
+# debugpy.listen(("0.0.0.0", 20000))
+# debugpy.wait_for_client()
 
 PERSON_POSE_NOSE_INDEX = 0
 
