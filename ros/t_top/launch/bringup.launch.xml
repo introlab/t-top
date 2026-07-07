@@ -7,6 +7,7 @@
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
     <arg name="speech_to_text_type" default="whisper"/> <!-- Options: google or whisper -->
     <arg name="whisper_model" default="base"/> <!-- Options: tiny, base, small, medium -->
+    <arg name="eou_detection_enabled" default="true"/>
 
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
@@ -80,6 +81,7 @@
 
         <arg name="speech_to_text_type" value="$(var speech_to_text_type)"/>
         <arg name="whisper_model" value="$(var whisper_model)"/>
+        <arg name="eou_detection_enabled" value="$(var eou_detection_enabled)"/>
         <arg name="visualization" value="$(var visualization)"/>
         <arg name="slam" value="$(var slam)"/>
 

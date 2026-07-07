@@ -32,6 +32,7 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
         self._model_size = self.declare_parameter('model_size', 'base.en').get_parameter_value().string_value
         self._device = self.declare_parameter('device', 'cpu').get_parameter_value().string_value
         self._compute_type = self.declare_parameter('compute_type', 'float32').get_parameter_value().string_value
+        self._eou_enabled = self.declare_parameter('eou_enabled', True).get_parameter_value().bool_value
 
         self._prebuffering_frame_count = self.declare_parameter('prebuffering_frame_count', 4).get_parameter_value().integer_value
         self._minimum_voice_sequence_size = self.declare_parameter('minimum_voice_sequence_size', 8000).get_parameter_value().integer_value
@@ -49,9 +50,10 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
 
         self._text_pub = self.create_publisher(Transcript, 'transcript', 10)
         self._voice_activity_sub = self.create_subscription(VoiceActivity, 'voice_activity', self._voice_activity_cb, 10)
-        self._semantic_analysis_sub = self.create_subscription(CompleteUtterance, 'semantic_analysis', self._semantic_analysis_cb, 10)
         self._audio_sub = hbba_lite.OnOffHbbaSubscriber(self, AudioFrame, 'audio_in', self._audio_cb, 10)
         self._audio_sub.on_filter_state_changed(self._filter_state_changed_cb)
+        if self._eou_enabled:
+            self._semantic_analysis_sub = self.create_subscription(CompleteUtterance, 'semantic_analysis', self._semantic_analysis_cb, 10)
 
     def _voice_activity_cb(self, msg):
         """
@@ -78,11 +80,14 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
         self._is_voice = msg.is_voice
 
         if last_is_voice and not self._is_voice:
-            # Snapshot frames at the exact moment VAD drops,
-            # before _audio_cb starts trimming them
-            if len(self._frames) > 0:
-                self._pending_frames.extend(self._frames)
-            self._frames.clear()
+            if(self._eou_enabled):
+                # Snapshot frames at the exact moment VAD drops,
+                # before _audio_cb starts trimming them
+                if len(self._frames) > 0:
+                    self._pending_frames.extend(self._frames)
+                self._frames.clear()
+            else:
+                self._put_frames_in_voice_sequence_queue()
 
     def _semantic_analysis_cb(self, msg):
         """
@@ -185,9 +190,14 @@ class WhisperSpeechToTextNode(rclpy.node.Node):
             if `self._pending_frames` is non-empty.
             - Clears `self._pending_frames`.
         """
-        if  len(self._pending_frames) > 0:
-            self._voice_sequence_queue.put(np.concatenate(self._pending_frames))
-            self._pending_frames.clear()
+        if self._eou_enabled:
+            if  len(self._pending_frames) > 0:
+                self._voice_sequence_queue.put(np.concatenate(self._pending_frames))
+                self._pending_frames.clear()
+        else:
+            if len(self._frames) > 0:
+                self._voice_sequence_queue.put(np.concatenate(self._frames))
+                self._frames.clear()
 
     def run(self):
         speech_to_text_thread = threading.Thread(target=self._speech_to_text_thread_run)

@@ -25,6 +25,7 @@
 
     <arg name="speech_to_text_type"/> <!-- Options: google or whisper -->
     <arg name="whisper_model"/> <!-- Options: tiny, base, small, medium -->
+    <arg name="eou_detection_enabled" default="true"/>
     <arg name="visualization" default="false"/>
     <arg name="use_echo_cancellation" default="false"/>
     <arg name="slam" default="true"/>
@@ -108,10 +109,11 @@
         <arg name="type" value="$(var speech_to_text_type)"/>
         <arg name="whisper_model" value="$(var whisper_model)"/>
         <arg name="speech_to_text_perception_delay" value="$(var speech_to_text_perception_delay)"/>
+        <arg name="eou_detection_enabled" value="$(var eou_detection_enabled)"/>
     </include>
 
     <!-- End of Utterance -->
-    <include file="$(find-pkg-share t_top)/launch/perceptions/eou.launch.xml">
+    <include file="$(find-pkg-share t_top)/launch/perceptions/eou.launch.xml" if="$(var eou_detection_enabled)">
     </include>
 
     <!-- Robot Name Detector -->
