@@ -1,10 +1,15 @@
 <launch>
     <arg name="utterance_max_delay" default="4"/>
+    <node pkg="hbba_lite" exec="on_off_hbba_filter_node" name="eou_node_filter">
+        <param name="input_topic" value="audio_input_signed_16_16000"/>
+        <param name="output_topic" value="eou/audio_input_signed_16_16000"/>
+        <param name="state_service" value="eou/filter_state"/>
+    </node>
     <node name="eou_node" exec="end_of_utterance_node.py" pkg="audio_utils"  output="screen">
         <param name="_utterance_max_delay" value="$(var utterance_max_delay)"/>
 
-        <remap from="eou_filter" to="eou/filter_state"/>
-        <remap from="audio_in" to="/audio_input_signed_16_16000"/>
-        <remap from="semantic_analysis" to="EoU/semantic_analysis"/>
+
+        <remap from="audio_in" to="eou/audio_input_signed_16_16000"/>
+        <remap from="semantic_analysis" to="eou/semantic_analysis"/>
     </node>
 </launch>

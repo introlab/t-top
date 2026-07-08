@@ -29,7 +29,7 @@
         <remap from="audio_in" to="/audio_input_signed_16_16000"/>
         <remap from="audio_in/filter_state" to="speech_to_text/filter_state"/>
         <remap from="transcript" to="speech_to_text/transcript"/>
-        <remap from="semantic_analysis" to="EoU/semantic_analysis"/>
+        <remap from="semantic_analysis" to="eou/semantic_analysis"/>
 
         <env name="OPENBLAS_NUM_THREADS" value="1"/>
     </node>

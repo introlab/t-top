@@ -19,7 +19,7 @@ SpeechTab::SpeechTab(rclcpp::Node::SharedPtr node, shared_ptr<DesireSet> desireS
     m_desireSet->addObserver(this);
 
     m_eouSubscriber = m_node->create_subscription<audio_utils_msgs::msg::CompleteUtterance>(
-        "EoU/semantic_analysis",
+        "eou/semantic_analysis",
         1,
         [this](const audio_utils_msgs::msg::CompleteUtterance::SharedPtr msg) { eouSubscriberCallback(msg); });
     m_speechToTextSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
