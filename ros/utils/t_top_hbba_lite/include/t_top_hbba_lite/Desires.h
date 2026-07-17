@@ -1,7 +1,6 @@
 #ifndef T_TOP_HBBA_LITE_DESIRES_H
 #define T_TOP_HBBA_LITE_DESIRES_H
 
-// #include <hbba_lite/core/Desire.h>
 #include <hbba_lite/core/DesireSet.h>
 
 #include <daemon_ros_client/msg/led_color.hpp>
