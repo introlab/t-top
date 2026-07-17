@@ -137,7 +137,7 @@ void SpeechTab::eouSubscriberCallback(const audio_utils_msgs::msg::CompleteUtter
     invokeLater(
         [=]()
         {
-            if (!m_vadDesireId.isValid())
+            if (!m_EouDesireId.isValid())
             {
                 return;
             }

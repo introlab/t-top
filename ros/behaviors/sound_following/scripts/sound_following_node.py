@@ -11,10 +11,6 @@ from odas_ros_msgs.msg import OdasSstArrayStamped
 
 from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_PITCH_INDEX
 
-# import debugpy
-# debugpy.listen(("0.0.0.0", 20000))
-# debugpy.wait_for_client() 
-
 TARGET_TOLERANCE = 0.02
 
 
