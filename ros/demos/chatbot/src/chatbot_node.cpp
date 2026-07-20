@@ -28,9 +28,20 @@ using namespace std;
 constexpr bool WAIT_FOR_SERVICE = true;
 constexpr const char* NODE_NAME = "chatbot_node";
 
+namespace {
+    shared_ptr<const unordered_set<string>> buildRemovedFeatureSet(bool eou){
+        auto retval = make_shared<unordered_set<string>> ();
+        if(!eou){
+            retval->emplace("eou");
+        }
+        return retval;
+    }
+}
+
 int startNode()
 {
     auto node = rclcpp::Node::make_shared(NODE_NAME);
+    node->declare_parameter("eou_detection_enabled", true);
     auto callbackGroup = node->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
     auto tools = std::make_shared<ChatbotTools>(node, callbackGroup);
 
@@ -39,7 +50,7 @@ int startNode()
     auto filterPool = make_shared<RosLogFilterPoolDecorator>(node, move(rosFilterPool));
 
     vector<unique_ptr<BaseStrategy>> strategies;
-    strategies.emplace_back(createChatStrategy(filterPool, desireSet, node));
+    strategies.emplace_back(createChatStrategy(filterPool, desireSet, node, buildRemovedFeatureSet(node->get_parameter("eou_detection_enabled").as_bool())));
     strategies.emplace_back(createNearestFaceFollowingStrategy(filterPool));
     strategies.emplace_back(createTooCloseReactionStrategy(filterPool));
     strategies.emplace_back(createFastVideoAnalyzer3dWithAnalyzedImageStrategy(filterPool));

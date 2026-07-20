@@ -22,6 +22,12 @@
     <arg name="talk_behavior_delay" default="0"/>
     <arg name="too_close_reaction_behavior_delay" default="0"/>
 
+    <!-- Activated Behaviors -->
+    <arg name="sound_following_torso_enabled" default="true"/>
+    <arg name="sound_following_head_enabled" default="false"/>
+    <arg name="face_following_torso_enabled" default="true"/>
+    <arg name="face_following_head_enabled" default="true"/>
+
     <!-- Telepresence -->
     <!-- See opentera-webrtc-ros -->
 
@@ -61,12 +67,16 @@
     <include file="$(find-pkg-share t_top)/launch/behaviors/sound_following.launch.xml">
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="sound_following_behavior_delay" value="$(var sound_following_behavior_delay)"/>
+        <arg name="torso_enabled" value="$(var sound_following_torso_enabled)"/>
+        <arg name="head_enabled" value="$(var sound_following_head_enabled)"/>
     </include>
 
     <!-- Face Following -->
     <include file="$(find-pkg-share t_top)/launch/behaviors/face_following.launch.xml">
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="face_following_behavior_delay" value="$(var face_following_behavior_delay)"/>
+        <arg name="torso_enabled" value="$(var face_following_torso_enabled)"/>
+        <arg name="head_enabled" value="$(var face_following_head_enabled)"/>
     </include>
 
     <!-- Sound Object Person Following -->

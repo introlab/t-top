@@ -2,6 +2,29 @@
 
 using namespace std;
 
+namespace {
+std::unordered_map<std::string, FilterConfiguration> buildFilterConfig(
+    const std::shared_ptr<const std::unordered_set<std::string>>& removedFeatureSet)
+{
+    std::unordered_map<std::string, FilterConfiguration> config{
+        {"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+        {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+        {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+        {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+        {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+        {"chat/context_input/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
+    };
+
+    if (!removedFeatureSet || removedFeatureSet->find("eou") == removedFeatureSet->end())
+    {
+        config.emplace("eou/filter_state",
+                        FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED));
+    }
+
+    return config;
+}
+}
+
 FaceAnimationStrategy::FaceAnimationStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
@@ -264,20 +287,16 @@ ChatStrategy::ChatStrategy(
     uint16_t utility,
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
-    shared_ptr<rclcpp::Node> node)
+    shared_ptr<rclcpp::Node> node,
+    std::shared_ptr<const std::unordered_set<std::string>> removedFeatureSet)
     : Strategy<ChatDesire>(
           utility,
           {{"sound", 1}},
-          {{"talk/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"speech_to_text/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"vad/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"led_animations/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"gesture/filter_state", FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)},
-           {"chat/context_input/filter_state",
-            FilterConfiguration::onOff(FilterConfiguration::DefaultState::DISABLED)}},
+          buildFilterConfig(removedFeatureSet),
           std::move(filterPool)),
       m_desireSet(std::move(desireSet)),
-      m_node(std::move(node))
+      m_node(std::move(node)),
+      m_removedFeatureSet(std::move(removedFeatureSet))
 {
     m_transcriptSubscriber = m_node->create_subscription<perception_msgs::msg::Transcript>(
         "speech_to_text/transcript",
@@ -327,6 +346,9 @@ void ChatStrategy::onEnabling(const ChatDesire& desire)
     // Start listening
     enableFilter("vad/filter_state");
     enableFilter("speech_to_text/filter_state");
+    if(m_removedFeatureSet->find("eou") == m_removedFeatureSet->end()){
+        enableFilter("eou/filter_state");
+    }
 
     // Disable chat & talking
     disableFilter("chat/context_input/filter_state");
@@ -366,6 +388,9 @@ void ChatStrategy::transcriptSubscriberCallback(const perception_msgs::msg::Tran
         // Listening done
         disableFilter("vad/filter_state");
         disableFilter("speech_to_text/filter_state");
+        if(m_removedFeatureSet->find("eou") == m_removedFeatureSet->end()){
+            disableFilter("eou/filter_state");
+        }
 
         // Start chatting
         enableFilter("chat/context_input/filter_state");
@@ -397,6 +422,9 @@ void ChatStrategy::chatDoneSubscriberCallback(const behavior_msgs::msg::Done::Sh
         // Start listening
         enableFilter("vad/filter_state");
         enableFilter("speech_to_text/filter_state");
+        if(m_removedFeatureSet->find("eou") == m_removedFeatureSet->end()){
+            enableFilter("eou/filter_state");
+        }
 
         sendListeningLedAnimation();
         sendGesture("slow_origin_head");
@@ -585,6 +613,17 @@ unique_ptr<BaseStrategy> createSpeechToTextStrategy(shared_ptr<FilterPool> filte
         std::move(filterPool));
 }
 
+unique_ptr<BaseStrategy> createEouStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
+{
+    return make_unique<Strategy<EouDesire>>(
+        utility,
+        unordered_map<string, uint16_t>{},
+        unordered_map<string, FilterConfiguration>{
+            {"eou/filter_state", FilterConfiguration::onOff()},
+            {"speech_to_text/filter_state", FilterConfiguration::onOff()},
+            {"vad/filter_state", FilterConfiguration::onOff()}},
+        std::move(filterPool));
+}
 
 unique_ptr<BaseStrategy> createExploreStrategy(shared_ptr<FilterPool> filterPool, uint16_t utility)
 {
@@ -731,7 +770,8 @@ unique_ptr<BaseStrategy> createChatStrategy(
     shared_ptr<FilterPool> filterPool,
     shared_ptr<DesireSet> desireSet,
     shared_ptr<rclcpp::Node> node,
+    shared_ptr<const std::unordered_set<std::string>> removedFeatureSet,
     uint16_t utility)
 {
-    return make_unique<ChatStrategy>(utility, std::move(filterPool), std::move(desireSet), std::move(node));
+    return make_unique<ChatStrategy>(utility, std::move(filterPool), std::move(desireSet), std::move(node), std::move(removedFeatureSet));
 }

@@ -5,6 +5,7 @@
     <arg name="model_type" default="chatgpt"/> <!-- Options: ollama or chatgpt-->
     <arg name="streaming" default="false"/>
     <arg name="save_history" default="false"/>
+    <arg name="eou_detection_enabled" default="true"/>
 
 
     <!-- Base robot -->
@@ -17,6 +18,7 @@
         <arg name="voice_generator_type" value="piper"/> <!-- Options: google or piper -->
         <arg name="fullscreen_face" value="true"/>
         <arg name="whisper_model" value="small"/> <!-- Options: tiny, base, small, medium -->
+        <arg name="eou_detection_enabled" value="$(var eou_detection_enabled)"/>
     </include>
 
     <!-- Chat Behavior -->
@@ -37,6 +39,8 @@
     <node pkg="perceptions_analyzer" exec="perceptions_analyzer_node.py" name="perceptions_analyzer_node" output="screen"/>
 
     <!-- Motivation / HBBA -->
-    <node pkg="chatbot" exec="chatbot_node" name="chatbot_node" output="screen"/>
+    <node pkg="chatbot" exec="chatbot_node" name="chatbot_node" output="screen">
+        <param name="eou_detection_enabled" value="$(var eou_detection_enabled)"/>
+    </node>
 
 </launch>

@@ -1,7 +1,6 @@
 #ifndef T_TOP_HBBA_LITE_DESIRES_H
 #define T_TOP_HBBA_LITE_DESIRES_H
 
-#include <hbba_lite/core/Desire.h>
 #include <hbba_lite/core/DesireSet.h>
 
 #include <daemon_ros_client/msg/led_color.hpp>
@@ -136,6 +135,15 @@ public:
     ~SpeechToTextDesire() override = default;
 
     DECLARE_DESIRE_METHODS(SpeechToTextDesire)
+};
+
+class EouDesire : public Desire
+{
+public: 
+    explicit EouDesire(uint16_t intensity = 1);
+    ~EouDesire() override = default;
+
+    DECLARE_DESIRE_METHODS(EouDesire)
 };
 
 

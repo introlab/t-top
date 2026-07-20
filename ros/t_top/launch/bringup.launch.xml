@@ -7,6 +7,7 @@
     <arg name="speaking_rate" default="1.0"/> <!-- Range: [0.25, 4.0] -->
     <arg name="speech_to_text_type" default="whisper"/> <!-- Options: google or whisper -->
     <arg name="whisper_model" default="base"/> <!-- Options: tiny, base, small, medium -->
+    <arg name="eou_detection_enabled" default="true"/>
 
     <arg name="camera_2d_wide_enabled" default="false"/>
     <arg name="neural_network_inference_type" default="trt_gpu"/>
@@ -37,6 +38,11 @@
     <arg name="open_browser" default="true"/>
     <arg name="fullscreen_face" default="false"/>
     <arg name="record_session" default="false"/>
+
+    <arg name="sound_following_torso_enabled" default="true"/>
+    <arg name="sound_following_head_enabled" default="false"/>
+    <arg name="face_following_torso_enabled" default="true"/>
+    <arg name="face_following_head_enabled" default="true"/>
 
 
     <arg name="platform_delay" default="0.0"/>
@@ -75,6 +81,7 @@
 
         <arg name="speech_to_text_type" value="$(var speech_to_text_type)"/>
         <arg name="whisper_model" value="$(var whisper_model)"/>
+        <arg name="eou_detection_enabled" value="$(var eou_detection_enabled)"/>
         <arg name="visualization" value="$(var visualization)"/>
         <arg name="slam" value="$(var slam)"/>
 
@@ -101,6 +108,10 @@
         <arg name="simulation" value="$(var simulation)"/>
         <arg name="open_browser" value="$(var open_browser)"/>
         <arg name="fullscreen_face" value="$(var fullscreen_face)"/>
+        <arg name="sound_following_torso_enabled" value="$(var sound_following_torso_enabled)"/>
+        <arg name="sound_following_head_enabled" value="$(var sound_following_head_enabled)"/>
+        <arg name="face_following_torso_enabled" value="$(var face_following_torso_enabled)"/>
+        <arg name="face_following_head_enabled" value="$(var face_following_head_enabled)"/>
 
         <!-- Delays -->
         <arg name="dance_behavior_delay" value="$(eval '$(var platform_delay) + 0.0')"/>

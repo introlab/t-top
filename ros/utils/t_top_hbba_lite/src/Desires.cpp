@@ -1,3 +1,4 @@
+#include <hbba_lite/core/Desire.h>
 #include <t_top_hbba_lite/Desires.h>
 
 using namespace std;
@@ -33,6 +34,8 @@ AudioAnalyzerDesire::AudioAnalyzerDesire(uint16_t intensity) : Desire(intensity)
 VadDesire::VadDesire(uint16_t intensity) : Desire(intensity) {}
 
 SpeechToTextDesire::SpeechToTextDesire(uint16_t intensity) : Desire(intensity) {}
+
+EouDesire::EouDesire(uint16_t intensity) : Desire(intensity) {}
 
 
 ExploreDesire::ExploreDesire(uint16_t intensity) : Desire(intensity) {}

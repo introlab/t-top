@@ -207,7 +207,8 @@ public:
         uint16_t utility,
         std::shared_ptr<FilterPool> filterPool,
         std::shared_ptr<DesireSet> desireSet,
-        std::shared_ptr<rclcpp::Node> node);
+        std::shared_ptr<rclcpp::Node> node,
+        std::shared_ptr<const std::unordered_set<std::string>> removedFeatureSet);
 
     DECLARE_NOT_COPYABLE(ChatStrategy);
     DECLARE_NOT_MOVABLE(ChatStrategy);
@@ -238,6 +239,8 @@ private:
     void sendGesture(const std::string& gesture);
 
     std::vector<std::string> currentObjects;
+    std::shared_ptr<const std::unordered_set<std::string> > m_removedFeatureSet;
+
 };
 
 
@@ -265,6 +268,7 @@ std::unique_ptr<BaseStrategy> createFastVideoAnalyzer2dWideWithAnalyzedImageStra
 std::unique_ptr<BaseStrategy> createAudioAnalyzerStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createVadStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createSpeechToTextStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
+std::unique_ptr<BaseStrategy> createEouStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createExploreStrategy(std::shared_ptr<FilterPool> filterPool, uint16_t utility = 1);
 std::unique_ptr<BaseStrategy> createFaceAnimationStrategy(
     std::shared_ptr<FilterPool> filterPool,
@@ -313,6 +317,7 @@ std::unique_ptr<BaseStrategy> createChatStrategy(
     std::shared_ptr<FilterPool> filterPool,
     std::shared_ptr<DesireSet> desireSet,
     std::shared_ptr<rclcpp::Node> node,
+    std::shared_ptr<const std::unordered_set<std::string>> removedFeatureSet,
     uint16_t utility = 1);
 
 #endif

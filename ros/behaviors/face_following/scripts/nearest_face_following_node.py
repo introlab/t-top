@@ -14,7 +14,6 @@ from t_top import vector_to_angles
 
 from face_following.lib_face_following_node import FaceFollowingNode
 
-
 PERSON_POSE_NOSE_INDEX = 0
 
 

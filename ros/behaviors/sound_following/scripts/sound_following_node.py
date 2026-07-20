@@ -5,11 +5,11 @@ import math
 import rclpy
 import rclpy.node
 import rclpy.executors
+import numpy as np
 
 from odas_ros_msgs.msg import OdasSstArrayStamped
 
 from t_top import MovementCommands, vector_to_angles, HEAD_ZERO_Z, HEAD_POSE_PITCH_INDEX
-
 
 TARGET_TOLERANCE = 0.02
 
@@ -21,6 +21,7 @@ class SoundFollowingNode(rclpy.node.Node):
         self._simulation = self.declare_parameter('simulation', False).get_parameter_value().bool_value
         self._control_frequency = self.declare_parameter('control_frequency', 30.0).get_parameter_value().double_value
         self._torso_control_alpha = self.declare_parameter('torso_control_alpha', 0.2).get_parameter_value().double_value
+        self._torso_enabled = self.declare_parameter('torso_enabled', True).get_parameter_value().bool_value
         self._head_control_alpha = self.declare_parameter('head_control_alpha', 0.2).get_parameter_value().double_value
         self._head_enabled = self.declare_parameter('head_enabled', False).get_parameter_value().bool_value
         self._min_head_pitch = self.declare_parameter('min_head_pitch_rad', -0.35).get_parameter_value().double_value
@@ -60,8 +61,8 @@ class SoundFollowingNode(rclpy.node.Node):
     def _timer_callback(self):
         if self._movement_commands.is_filtering_all_messages:
             return
-
-        self._update_torso()
+        if self._torso_enabled:
+            self._update_torso()
         if self._head_enabled:
             self._update_head()
 
@@ -94,8 +95,16 @@ class SoundFollowingNode(rclpy.node.Node):
         if abs(self._target_head_pitch - current_pitch) < TARGET_TOLERANCE:
             return
 
-        pitch = self._head_control_alpha * self._target_head_pitch + (1 - self._head_control_alpha) * current_pitch
+        pitch_1 = self._head_control_alpha * self._target_head_pitch + (1 - self._head_control_alpha) * current_pitch
+        pitch = max(self._min_head_pitch, min(pitch_1, self._max_head_pitch))
+        self.get_logger().info(f'====== in_pitch: {pitch_1} ======')
         self._movement_commands.move_head([0, 0, HEAD_ZERO_Z, 0, pitch, 0])
+
+    # def _map_pitch(self, pitch_in: float) -> float:
+    #     in_range = [-0.16, -0.10]
+    #     out_range = [-0.35, 0.35]
+    #     pitch_out = np.interp(pitch_in, in_range, out_range)
+    #     return pitch_out
 
 
 def main():
