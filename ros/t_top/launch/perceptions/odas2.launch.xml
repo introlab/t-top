@@ -1,0 +1,7 @@
+<launch>
+    <arg name="odas2_perception_delay" default="0"/>
+    <node name="odas2_node" exec="odas2_node" pkg="odas2_ros" launch-prefix="bash -c 'sleep $(var odas2_perception_delay); $0 $@' ">
+        <remap from="audio_in" to="audio_input_before_odas_signed_32_16000"/>
+        <remap from="audio_out" to="audio_input_signed_16_16000"/>
+    </node>
+</launch>

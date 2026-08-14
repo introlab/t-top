@@ -86,11 +86,16 @@
         <arg name="ego_noise_reduction_perception_delay" value="$(var ego_noise_reduction_perception_delay)"/>
     </include>
 
-    <!-- ODAS -->
+    <!-- ODAS
     <include file="$(find-pkg-share t_top)/launch/perceptions/odas.launch.xml">
         <arg name="visualization" value="$(var visualization)"/>
         <arg name="use_echo_cancellation" value="$(var use_echo_cancellation)"/>
         <arg name="odas_perception_delay" value="$(var odas_perception_delay)"/>
+    </include> -->
+
+    <!-- ODAS2 -->
+    <include file="$(find-pkg-share t_top)/launch/perceptions/odas2.launch.xml">
+        <arg name="odas2_perception_delay" value="0"/>
     </include>
 
     <!-- Music Beat Detector -->
